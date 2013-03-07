@@ -1,0 +1,90 @@
+@import "compass/css3";
+
+$light: #f5f4f1;
+
+$light-blue: #50b9f3;
+$darker-light-blue: #48a6da;
+$dark-blue: #1e4f6f;
+
+@mixin unlink {
+  color: white;
+  text-decoration: none;
+}
+
+@mixin button-gradient($gradient-start, $gradient-end) {
+  @include background(linear-gradient($gradient-start, $gradient-end));
+}
+
+@mixin button {
+  line-height: 60px;
+  background:  $light-blue;
+  font-size: 1.4em;
+  padding: 0.8em 1.2em;
+
+  @include border-radius(5px);
+  @include box-shadow($dark-blue 0 5px 0);
+  @include text-shadow(1px 1px 0px rgba(0,0,0,.6));
+  @include unlink;
+
+  @include button-gradient($light-blue, $darker-light-blue);
+
+  &:hover {
+    @include button-gradient(darken($light-blue, 5%),
+                             darken($darker-light-blue, 5%));
+  }
+
+  &:active {
+    @include button-gradient(darken($light-blue, 25%),
+                             darken($darker-light-blue, 25%));
+    @include box-shadow($dark-blue 0 2px 0);
+    position: relative;
+    top: 3px;
+  }
+}
+
+body {
+  background: $light url(/images/bg.png);
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: black;
+
+  a {
+    color: darken($light-blue, 25%);
+    text-decoration: none;
+
+    &:hover {
+      background: black;
+      color: $light;
+    }
+  }
+
+  .wrapper.landing {
+    width: 600px;
+    margin: 0 auto;
+    padding: 4em 0 0 0;
+
+    .big {
+      font-size: 1.6em;
+      font-weight: 500;
+    }
+
+    .buttons a {
+      @include button;
+
+      .icon {
+        position: relative;
+        bottom: -15px;
+        left: -15px;
+      }
+    }
+
+    .footer.help {
+      margin: 80px 0 0 0;
+      background: transparent url(/images/html.png) 0 center no-repeat;
+      padding-left: 50px;
+      font-size: 0.8em;
+      color: darken($light, 30%);
+    }
+  }
+}

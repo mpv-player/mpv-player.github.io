@@ -1,0 +1,20 @@
+# vim:filetype=ruby
+
+require 'rake-pipeline-web-filters'
+
+output "compiled"
+
+input "source" do
+  match "css/**/*.scss" do
+    scss
+    concat "mpv.css"
+  end
+
+  match "images/**/*" do
+    copy
+  end
+
+  match "index.html" do
+    copy
+  end
+end
