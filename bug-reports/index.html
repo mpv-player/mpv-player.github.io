@@ -4,7 +4,7 @@
     <meta charset='utf-8'>
     <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
     <link href='/images/favicon-44d68c3f.png' rel='icon' type='image/png'>
-    <title>mpv.io</title>
+    <title>Bug reports</title>
     <link href="/stylesheets/all-c39420c3.css" media="screen" rel="stylesheet" type="text/css" />
     
   </head>
@@ -52,105 +52,127 @@
           <i class='fa fa-bug'></i>
           Bug reports
         </h1>
-        Issue tracker
-        =============
+        <h3 id="issue-tracker">Issue tracker</h3>
         
-        `The issue tracker is located on GitHub <https://github.com/mpv-player/mpv/issues>`_.
-        Report bugs and feature requests there.
+        <p>The issue tracker is located on <a href="https://github.com/mpv-player/mpv/issues">GitHub</a>.
+        Report bugs and feature requests there.</p>
         
-        Please provide enough information so that the bug can be reproduced without
+        <p>Please provide enough information so that the bug can be reproduced without
         much trouble. Also include any details that could help us hunt down the bug.
         Use your common sense for this: if it looks a platform specific bug, include
         you OS version; if it's a video display problem, include video card model
-        and video driver type and version; etc.
+        and video driver type and version; etc.</p>
         
-        This guide goes on with recurring scenarios and which information might be
-        needed to properly isolate the bug.
+        <p>This guide goes on with recurring scenarios and which information might be
+        needed to properly isolate the bug.</p>
         
-        Compilation failures
-        ====================
+        <h3 id="compilation-failures">Compilation failures</h3>
         
-        - Paste the content of the ``config.log`` file that waf creates in the
-          ``build`` directory.
+        <ul>
+          <li>
+            <p>Paste the content of the <code>config.log</code> file that waf creates in the
+        <code>build</code> directory.</p>
+          </li>
+          <li>
+            <p>Paste the compilation error result from <code>./waf build</code> if you went past
+        the configure step.</p>
+          </li>
+        </ul>
         
-        - Paste the compilation error result from ``./waf build`` if you went past
-          the configure step.
+        <h3 id="mind-the-config">Mind the config</h3>
         
-        Mind the config
-        ===============
+        <ul>
+          <li>
+            <p>Make sure it's actually a bug. A lot of times users forget they added
+        something in their config file and think mpv is misbehaving. Always try
+        to use the <code>--no-config</code> CLI option before reporting.</p>
+          </li>
+          <li>
+            <p>If <code>--no-config</code> removes the buggy behavior, the bug is triggered by a 
+        particular set of options. Work your way through your config the config file
+        and add the options manually one-by-one <em>together</em> with <code>--no-config</code> until
+        you find the smallest set of options that triggers the bug. Include the
+        <code>./mpv [options] file</code> command in your bug report.</p>
+          </li>
+        </ul>
         
-        - Make sure it's actually a bug. A lot of times users forget they added
-          something in their config file and think mpv is misbehaving. Always try
-          to use the ``--no-config`` CLI option before reporting.
+        <h3 id="bugs-related-to-specific-files-and-formats">Bugs related to specific files and formats:</h3>
         
-        - If ``--no-config`` removes the buggy behavior, the bug is triggered by a 
-          particular set of options. Work your way through your config the config file
-          and add the options manually one-by-one _together_ with ``--no-config`` until
-          you find the smallest set of options that triggers the bug. Include the
-          ``./mpv [options] file`` command in your bug report.
+        <ul>
+          <li>
+            <p>If the bug is related to a particular format or container, make sure that
+        it works with <code>ffplay</code> or <code>avplay</code> compiled against the same FFmpeg
+        or Libav version you compiled mpv against.</p>
+          </li>
+          <li>
+            <p>Include a sample that triggers the bug. You don't need to upload the entire
+        file. Generally, cutting a sample that triggers the problem is good enough.</p>
         
-        Bugs related to specific files and formats:
-        ===========================================
+            <p>To cut a sample you can use the <code>dd</code> UNIX command, like follows:</p>
         
-        - If the bug is related to a particular format or container, make sure that
-          it works with ``ffplay`` or ``avplay`` compiled against the same FFmpeg
-          or Libav version you compiled mpv against.
+            <p>dd if=sample-file of=small-sample-file bs=1024 count=10000</p>
         
-        - Include a sample that triggers the bug. You don't need to upload the entire
-          file. Generally, cutting a sample that triggers the problem is good enough.
+            <p>The above command will copy the first <code>block size (bs) x count</code> bytes of
+        the input file (<code>if</code>) to the output file (<code>of</code>).</p>
         
-          To cut a sample you can use the ``dd`` UNIX command, like follows:::
+            <p>Cutting the sample can sometimes cause the file not to work anymore (always
+        for mp4) or the bug not to be triggered.</p>
         
-            dd if=sample-file of=small-sample-file bs=1024 count=10000
+            <p>Unfortunately the mpv project doesn't have a private FTP to host files since
+        it would cost money, so you will have to host the file on a server of yours.
+        Using a hosting service is also ok but make sure it doesn't need people to
+        queue in order to download stuff (Dropbox and datafilehost.com are
+        recommended).</p>
+          </li>
+        </ul>
         
-          The above command will copy the first ``block size (bs) x count`` bytes of
-          the input file (``if``) to the output file (``of``).
+        <h3 id="crashes--segmentation-faults">Crashes / Segmentation faults</h3>
         
-          Cutting the sample can sometimes cause the file not to work anymore (always
-          for mp4) or the bug not to be triggered.
+        <ul>
+          <li>
+            <p>Include the stacktrace. On UNIX systems you can get the stacktrace with the
+        following steps:</p>
         
-          Unfortunately the mpv project doesn't have a private FTP to host files since
-          it would cost money, so you will have to host the file on a server of yours.
-          Using a hosting service is also ok but make sure it doesn't need people to
-          queue in order to download stuff (Dropbox and datafilehost.com are
-          recommended).
+            <ul>
+              <li>Start mpv within gdb: <code>gdb mpv</code></li>
+              <li>Run it with: <code>run --no-config [options] file</code></li>
+              <li>Perform any operation that triggers the crash</li>
+              <li>Type <code>thread apply all backtrace</code> and include its result in your
+        report.</li>
+            </ul>
         
-        Crashes / Segmentation faults
-        =============================
+            <p>On OS X if you are running the application bundle <code>mpv.app</code> the system
+        will automatically generate a backtrace among other user useful information
+        as part of the "Crash Report". You can just paste that in that case.</p>
+          </li>
+        </ul>
         
-        - Include the stacktrace. On UNIX systems you can get the stacktrace with the
-          following steps:
+        <h3 id="regressions--functionality-that-once-worked">Regressions / functionality that once worked:</h3>
         
-            - Start mpv within gdb: ``gdb mpv``
-            - Run it with: ``run --no-config [options] file``
-            - Perform any operation that triggers the crash
-            - Type ``thread apply all backtrace`` and include its result in your
-              report.
+        <ul>
+          <li>
+            <p>Please provide the a git commit from the past (or a mpv version in case of
+        stable releases) where you recall the functionality used to work correctly.</p>
+          </li>
+          <li>
+            <p>BONUS: If you want to be extra nice you can perform a binary search with
+        <code>git bisect</code> to find the exact commit that broke this functionality.</p>
+          </li>
+        </ul>
         
-          On OS X if you are running the application bundle ``mpv.app`` the system
-          will automatically generate a backtrace among other user useful information
-          as part of the "Crash Report". You can just paste that in that case.
+        <h3 id="timing-bugs--mpv-hangs-at-last-frame">Timing bugs / mpv hangs at last frame</h3>
         
-        Regressions / functionality that once worked:
-        =============================================
+        <ul>
+          <li>Are you using <code>ao_pulse</code>? If so it's probably PulseAudio's fault :)</li>
+        </ul>
         
-        - Please provide the a git commit from the past (or a mpv version in case of
-          stable releases) where you recall the functionality used to work correctly.
+        <h3 id="mpv-hangs-after-pausing">mpv hangs after pausing</h3>
         
-        - BONUS: If you want to be extra nice you can perform a binary search with
-          ``git bisect`` to find the exact commit that broke this functionality.
-        
-        Timing bugs / mpv hangs at last frame
-        =====================================
-        
-        - Are you using ``ao_pulse``? If so it's probably PulseAudio's fault :)
-        
-        mpv hangs after pausing
-        =======================
-        
-        - Are you using Mesa drivers and ``vo_vdpau``? If so it's a problem in Mesa's
-          implementation of the VDPAU presentation queue. You can workaround this
-          problem with ``--vo=vdpau:fps=-1``.
+        <ul>
+          <li>Are you using Mesa drivers and <code>vo_vdpau</code>? If so it's a problem in Mesa's
+        implementation of the VDPAU presentation queue. You can workaround this
+        problem with <code>--vo=vdpau:fps=-1</code>.</li>
+        </ul>
       </div>
     </div>
     <footer>
