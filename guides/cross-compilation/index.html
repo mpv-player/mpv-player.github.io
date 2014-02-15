@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <link href='/images/favicon-44d68c3f.png' rel='icon' type='image/png'>
+    <title>mpv.io</title>
+    <link href="/stylesheets/all-c39420c3.css" media="screen" rel="stylesheet" type="text/css" />
+    
+  </head>
+  <body class='guides guides_cross-compilation guides_cross-compilation_index'>
+    <div class='navbar navbar-inverse navbar-static-top' role='navigation'>
+      <div class='container'>
+        <div class='navbar-header'>
+          <a class='hidden-xs navbar-brand' href='/'>
+            <img width="40px" height="40px" src="/images/mpv-logo-128-4c17f733.png" />
+            <span class='title'>mpv</span>
+            <i class='fa fa-home'></i>
+          </a>
+        </div>
+        <div class='pull-right'>
+          <ul class='nav navbar-nav'>
+            <li>
+                        <a href="/installation"><i class='fa fa-cloud-download'></i>
+              Installation
+              </a>
+    
+            </li>
+            <!-- %li{nav_class(guides_path)} -->
+            <!-- = link_to guides_path do -->
+            <!-- %i.fa.fa-book -->
+            <!-- Guides -->
+            <li>
+                        <a href="/bug-reports"><i class='fa fa-bug'></i>
+              Bug Reports
+              </a>
+    
+            </li>
+            <li>
+                        <a href="/community"><i class='fa fa-comments'></i>
+              Community
+              </a>
+    
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class='main-content'>
+      <div class='container'>
+        <h1>
+          <i class='fa fa-windows'></i>
+          Cross-compilation
+        </h1>
+        Cross compiling mpv to Windows is supported with MinGW-w64. This can be used to
+        produce both 32 bit and 64 bit executables. MinGW-w64 is available from
+        http://mingw-w64.sourceforge.net.
+        
+        You have to run mpv's configure with these arguments:::
+        
+          DEST_OS=win32 TARGET=i686-w64-mingw32 ./waf configure
+        
+        Using mingw-w64-cmake to setup a MinGW-w64 environment is recommended (this will
+        also build mpv and its dependencies): https://github.com/lachs0r/mingw-w64-cmake
+        
+        Alternatively, use MXE: http://mxe.cc
+        
+        Warning: the original MinGW (http://www.mingw.org) is unsupported.
+        
+        Note that MinGW environments included in Linux distributions are often broken,
+        outdated and useless, and usually don't use MinGW-w64.
+        
+        Example with MXE
+        ================
+        
+        Download MXE. Note that compiling the required packages requires about 1 GB
+        or more!::
+        
+          cd /opt
+          git clone https://github.com/mxe/mxe mingw
+          cd mingw
+        
+        Edit the MXE target, so that MinGW-w64 for 32 bit targets is built.::
+        
+          echo "MXE_TARGETS := i686-w64-mingw32" > settings.mk
+        
+        Build required packages. The following provide a minimum required to build
+        mpv. (Not all of the following packages are strictly required.)::
+        
+          make gcc
+          make ffmpeg
+          make libass
+          make jpeg
+          make pthreads
+        
+        Build mpv. The target will be used to automatically select the name of the
+        build tools involved (e.g. it will use i686-w64-mingw32-gcc).::
+        
+          git clone https://github.com/mpv-player/mpv.git
+          cd mpv
+          export PATH=/opt/mingw/usr/bin/:$PATH
+          DEST_OS=win32 TARGET=i686-w64-mingw32 ./waf configure
+          ./waf build
+        
+        This should work. Note however that MXE’s ffmpeg package might be very old
+        in order to avoid breaking e.g. xine-lib, so you might want to update that
+        or build it manually as well.
+      </div>
+    </div>
+    <footer>
+      <div class='container'>
+        <small class='pull-left text-muted copyright'>
+          &copy; 2012-2014 mpv.io
+        </small>
+        <div class='social-icons pull-right'>
+                    <a target="_blank" href="https://github.com/mpv-player/mpv"><i class='fa fa-github-alt'></i>
+          </a>
+
+                    <a target="_blank" href="https://twitter.com/mpv_player"><i class='fa fa-twitter'></i>
+          </a>
+
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
