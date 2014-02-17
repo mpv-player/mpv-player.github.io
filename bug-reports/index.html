@@ -105,8 +105,13 @@
         or Libav version you compiled mpv against.</p>
           </li>
           <li>
-            <p>Include a sample that triggers the bug. You don't need to upload the entire
-        file. Generally, cutting a sample that triggers the problem is good enough.</p>
+            <p>Include a sample that triggers the bug. If the file is too large, you can try
+        cutting a sample to avoid uploading the entire file. Test whether the small
+        file still works and still triggers the problem.</p>
+        
+            <p>Cutting the sample can sometimes cause the file not to work anymore (usually
+        the case for mp4), or the bug not to be triggered (e.g. when the bug is
+        related to seeking).</p>
         
             <p>To cut a sample you can use the <code>dd</code> UNIX command, like follows:</p>
         
@@ -115,14 +120,14 @@
             <p>The above command will copy the first <code>block size (bs) x count</code> bytes of
         the input file (<code>if</code>) to the output file (<code>of</code>).</p>
         
-            <p>Cutting the sample can sometimes cause the file not to work anymore (always
-        for mp4) or the bug not to be triggered.</p>
-        
             <p>Unfortunately the mpv project doesn't have a private FTP to host files since
         it would cost money, so you will have to host the file on a server of yours.
         Using a hosting service is also ok but make sure it doesn't need people to
         queue in order to download stuff (Dropbox and datafilehost.com are
         recommended).</p>
+        
+            <p>If the bug can be triggered with ffmpeg/ffplay/avconv/avplay, you can upload
+        the sample to the ffmpeg samples FTP. See http://ffmpeg.org/bugreports.html.</p>
           </li>
         </ul>
         
@@ -163,7 +168,8 @@
         <h3 id="timing-bugs--mpv-hangs-at-last-frame">Timing bugs / mpv hangs at last frame</h3>
         
         <ul>
-          <li>Are you using <code>ao_pulse</code>? If so it's probably PulseAudio's fault :)</li>
+          <li>Try using a different audio output. You can list available audio output
+        drivers with <code>--ao=help</code> and use them e.g. with <code>--ao=alsa</code>.</li>
         </ul>
         
         <h3 id="mpv-hangs-after-pausing">mpv hangs after pausing</h3>
