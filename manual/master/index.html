@@ -2004,6 +2004,11 @@
             </div>
             <p class="last">See also <tt class="docutils literal"><span class="pre">--screen</span></tt>.</p>
             </dd>
+            </dl>
+            <p><tt class="docutils literal"><span class="pre">--fs-black-out-screens</span></tt></p>
+            <blockquote>
+            OS X only. Black out other displays when going fullscreen.</blockquote>
+            <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--keep-open</span></tt></dt>
             <dd><p class="first">Do not terminate when playing or seeking beyond the end of the file, and
             there is not next file to be played (and <tt class="docutils literal"><span class="pre">--loop</span></tt> is not used).
@@ -3750,8 +3755,6 @@
             <dt><tt class="docutils literal"><span class="pre">device=&lt;device&gt;</span></tt></dt>
             <dd>Sets the device name. For ac3 output via S/PDIF, use an &quot;iec958&quot; or
             &quot;spdif&quot; device, unless you really know how to set it correctly.</dd>
-            <dt><tt class="docutils literal"><span class="pre">no-block</span></tt></dt>
-            <dd>Sets noblock-mode.</dd>
             <dt><tt class="docutils literal">resample=yes</tt></dt>
             <dd>Enable ALSA resampling plugin. (This is disabled by default, because
             some drivers report incorrect audio delay in some cases.)</dd>
@@ -5916,193 +5919,6 @@
             <dt><tt class="docutils literal">&lt;fmt&gt;</tt></dt>
             <dd>Format name, e.g. rgb15, bgr24, 420p, etc. (default: 420p).</dd>
             </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">pp=[filter</span> string]</tt></dt>
-            <dd><p class="first">Enables the specified chain of post-processing subfilters. Subfilters must
-            be separated by '/' and can be disabled by prepending a '-'. Each
-            subfilter and some options have a short and a long name that can be used
-            interchangeably, i.e. <tt class="docutils literal">dr</tt>/<tt class="docutils literal">dering</tt> are the same.</p>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">Unlike in MPlayer or in earlier versions, you must quote the pp string
-            if it contains <tt class="docutils literal">:</tt> characters, e.g. <tt class="docutils literal"><span class="pre">'--vf=pp=[...]'</span></tt>.</p>
-            </div>
-            <div class="admonition-warning admonition">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This filter is most likely useless on modern HD video. It might be
-            helpful with old low-resolution files.</p>
-            </div>
-            <p>All subfilters share common options to determine their scope:</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">a/autoq</tt></dt>
-            <dd>Automatically switch the subfilter off if the CPU is too slow.</dd>
-            <dt><tt class="docutils literal">c/chrom</tt></dt>
-            <dd>Do chrominance filtering, too (default).</dd>
-            <dt><tt class="docutils literal">y/nochrom</tt></dt>
-            <dd>Do luminance filtering only (no chrominance).</dd>
-            <dt><tt class="docutils literal">n/noluma</tt></dt>
-            <dd>Do chrominance filtering only (no luminance).</dd>
-            </dl>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">--vf=pp:help</span></tt> shows a list of available subfilters.</p>
-            </div>
-            <p>Available subfilters are:</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">hb/hdeblock[:difference[:flatness]]</span></tt></dt>
-            <dd><p class="first">horizontal deblocking filter</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">&lt;difference&gt;:</th><td class="field-body">Difference factor where higher values mean more
-            deblocking (default: 32).</td>
-            </tr>
-            <tr class="field"><th class="field-name">&lt;flatness&gt;:</th><td class="field-body">Flatness threshold where lower values mean more
-            deblocking (default: 39).</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">vb/vdeblock[:difference[:flatness]]</span></tt></dt>
-            <dd><p class="first">vertical deblocking filter</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">&lt;difference&gt;:</th><td class="field-body">Difference factor where higher values mean more
-            deblocking (default: 32).</td>
-            </tr>
-            <tr class="field"><th class="field-name">&lt;flatness&gt;:</th><td class="field-body">Flatness threshold where lower values mean more
-            deblocking (default: 39).</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">ha/hadeblock[:difference[:flatness]]</span></tt></dt>
-            <dd><p class="first">accurate horizontal deblocking filter</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">&lt;difference&gt;:</th><td class="field-body">Difference factor where higher values mean more
-            deblocking (default: 32).</td>
-            </tr>
-            <tr class="field"><th class="field-name">&lt;flatness&gt;:</th><td class="field-body">Flatness threshold where lower values mean more
-            deblocking (default: 39).</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">va/vadeblock[:difference[:flatness]]</span></tt></dt>
-            <dd><p class="first">accurate vertical deblocking filter</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">&lt;difference&gt;:</th><td class="field-body">Difference factor where higher values mean more
-            deblocking (default: 32).</td>
-            </tr>
-            <tr class="field"><th class="field-name">&lt;flatness&gt;:</th><td class="field-body">Flatness threshold where lower values mean more
-            deblocking (default: 39).</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            </dl>
-            <p>The horizontal and vertical deblocking filters share the difference and
-            flatness values so you cannot set different horizontal and vertical
-            thresholds.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">h1/x1hdeblock</tt></dt>
-            <dd>experimental horizontal deblocking filter</dd>
-            <dt><tt class="docutils literal">v1/x1vdeblock</tt></dt>
-            <dd>experimental vertical deblocking filter</dd>
-            <dt><tt class="docutils literal">dr/dering</tt></dt>
-            <dd>deringing filter</dd>
-            <dt><tt class="docutils literal"><span class="pre">tn/tmpnoise[:threshold1[:threshold2[:threshold3]]]</span></tt></dt>
-            <dd><p class="first">temporal noise reducer</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">&lt;threshold1&gt;:</th><td class="field-body">larger -&gt; stronger filtering</td>
-            </tr>
-            <tr class="field"><th class="field-name">&lt;threshold2&gt;:</th><td class="field-body">larger -&gt; stronger filtering</td>
-            </tr>
-            <tr class="field"><th class="field-name">&lt;threshold3&gt;:</th><td class="field-body">larger -&gt; stronger filtering</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">al/autolevels[:f/fullyrange]</span></tt></dt>
-            <dd><p class="first">automatic brightness / contrast correction</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">f/fullyrange:</th><td class="field-body">Stretch luminance to (0-255).</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal">lb/linblenddeint</tt></dt>
-            <dd>Linear blend deinterlacing filter that deinterlaces the given block by
-            filtering all lines with a (1 2 1) filter.</dd>
-            <dt><tt class="docutils literal">li/linipoldeint</tt></dt>
-            <dd>Linear interpolating deinterlacing filter that deinterlaces the given
-            block by linearly interpolating every second line.</dd>
-            <dt><tt class="docutils literal">ci/cubicipoldeint</tt></dt>
-            <dd>Cubic interpolating deinterlacing filter deinterlaces the given block
-            by cubically interpolating every second line.</dd>
-            <dt><tt class="docutils literal">md/mediandeint</tt></dt>
-            <dd>Median deinterlacing filter that deinterlaces the given block by
-            applying a median filter to every second line.</dd>
-            <dt><tt class="docutils literal">fd/ffmpegdeint</tt></dt>
-            <dd>FFmpeg deinterlacing filter that deinterlaces the given block by
-            filtering every second line with a (-1 4 2 4 -1) filter.</dd>
-            <dt><tt class="docutils literal">l5/lowpass5</tt></dt>
-            <dd>Vertically applied FIR low-pass deinterlacing filter that deinterlaces
-            the given block by filtering all lines with a (-1 2 6 2 -1) filter.</dd>
-            <dt><tt class="docutils literal"><span class="pre">fq/forceQuant[:quantizer]</span></tt></dt>
-            <dd><p class="first">Overrides the quantizer table from the input with the constant
-            quantizer you specify.</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">&lt;quantizer&gt;:</th><td class="field-body">quantizer to use</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal">de/default</tt></dt>
-            <dd>default pp filter combination (hb:a,vb:a,dr:a)</dd>
-            <dt><tt class="docutils literal">fa/fast</tt></dt>
-            <dd>fast pp filter combination (h1:a,v1:a,dr:a)</dd>
-            <dt><tt class="docutils literal">ac</tt></dt>
-            <dd>high quality pp filter combination (ha:a:128:7,va:a,dr:a)</dd>
-            </dl>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This filter is only available if FFmpeg/Libav has been compiled
-            with libpostproc enabled.</p>
-            </div>
-            <div class="admonition-examples admonition last">
-            <p class="first admonition-title">Examples</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--vf=pp=hb/vb/dr/al</span></tt></dt>
-            <dd>horizontal and vertical deblocking, deringing and automatic
-            brightness/contrast</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vf=pp=de/-al</span></tt></dt>
-            <dd>default filters without brightness/contrast correction</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vf=pp=[default/tmpnoise:1:2:3]</span></tt></dt>
-            <dd>Enable default filters &amp; temporal denoiser.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vf=pp=[hb:y/vb:a]</span></tt></dt>
-            <dd>Horizontal deblocking on luminance only, and switch vertical
-            deblocking on or off automatically depending on available CPU time.</dd>
-            </dl>
-            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">lavfi=graph[:sws-flags[:o=opts]]</span></tt></dt>
             <dd><p class="first">Filter video using FFmpeg's libavfilter.</p>
@@ -8502,7 +8318,7 @@
             <h3>Key Bindings</h3>
             <p>These key bindings are active by default if nothing else is already bound to
             these keys. In case of collision, the function needs to be bound to a
-            different key. See <a class="reference internal" href="#script-commands">Script Commands</a> section.</p>
+            different key. See the <a class="reference internal" href="#script-commands">Script Commands</a> section.</p>
             <table border="1" class="docutils">
             <colgroup>
             <col width="21%" />
@@ -8629,10 +8445,11 @@
             the OSC show up</div>
             </div>
             </dd>
-            <dt><tt class="docutils literal">seektooltip</tt></dt>
+            <dt><tt class="docutils literal">layout</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: yes</div>
-            <div class="line">Display a tooltip over the seekbar indicating time at mouse position.</div>
+            <div class="line">Default: box</div>
+            <div class="line">The layout for the OSC. Currently available are: box, slimbox,
+            bottombar and topbar.</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">seekbarstyle</tt></dt>
