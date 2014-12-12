@@ -875,10 +875,13 @@
             used (which currently displays it as a graph).</p>
             <p class="last">This option is useful for debugging only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--idle</span></tt></dt>
-            <dd>Makes mpv wait idly instead of quitting when there is no file to play.
+            <dt><tt class="docutils literal"><span class="pre">--idle=&lt;no|yes|once&gt;</span></tt></dt>
+            <dd><p class="first">Makes mpv wait idly instead of quitting when there is no file to play.
             Mostly useful in slave mode, where mpv can be controlled through input
-            commands (see also <tt class="docutils literal"><span class="pre">--slave-broken</span></tt>).</dd>
+            commands (see also <tt class="docutils literal"><span class="pre">--slave-broken</span></tt>).</p>
+            <p class="last"><tt class="docutils literal">once</tt> will only idle at start and let the player close once the
+            first playlist has finished playing back.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--include=&lt;configuration-file&gt;</span></tt></dt>
             <dd>Specify configuration file to be parsed after the default ones.</dd>
             <dt><tt class="docutils literal"><span class="pre">--load-scripts=&lt;yes|no&gt;</span></tt></dt>
@@ -957,17 +960,18 @@
             <dd><p class="first">Enable the youtube-dl hook-script. It will look at the input URL, and will
             play the video located on the website. This works with many streaming sites,
             not just the one the scripts are named after. This requires a recent version
-            of youtube-dl to be installed on the system.</p>
+            of youtube-dl to be installed on the system. (Enabled by default.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
-            <p>Currently disabled by default, because youtube-dl's generic extractor can
-            get stuck on some URL, preventing playback.</p>
             <p class="last">(Note: this is the replacement for the now removed libquvi support.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ytdl-format=&lt;best|worst|mp4|webm|...&gt;</span></tt></dt>
             <dd>Video format/quality that is directly passed to youtube-dl. The possible
             values are specific to the website and the video, for a given url the
             available formats can be found with the command
-            <tt class="docutils literal"><span class="pre">youtube-dl</span> <span class="pre">--list-formats</span> URL</tt>.</dd>
+            <tt class="docutils literal"><span class="pre">youtube-dl</span> <span class="pre">--list-formats</span> URL</tt>. See youtube-dl's documentation for
+            available aliases. To use experimental DASH support for youtube, use
+            <tt class="docutils literal">bestvideo+bestaudio</tt>.
+            (Default: <tt class="docutils literal">best</tt>)</dd>
             </dl>
             </div>
             <div class="section" id="video">
@@ -1115,7 +1119,7 @@
             <dd><p class="first">Disable scaling of the video. If the window is larger than the video,
             black bars are added. Otherwise, the video is cropped. The video still
             can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. (If the
-            <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> option is set to a value other than <tt class="docutils literal">1</tt>, scaling is
+            <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> option is set to a value other than <tt class="docutils literal">0</tt>, scaling is
             enabled, but the video isn't automatically scaled to the window size.)</p>
             <p>The video and monitor aspects aspect will be ignored. Aspect correction
             would require to scale the video in the X or Y direction, but this option
@@ -2646,6 +2650,8 @@
             should buffer ahead in seconds (default: 0.2). As long as no packet has
             a timestamp difference higher than the readahead amount relative to the
             last packet returned to the decoder, the demuxer keeps reading.</p>
+            <p>Note that the <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> option will override this value if a cache
+            is enabled, and the value is larger.</p>
             <p class="last">(This value tends to be fuzzy, because many file formats don't store linear
             timestamps.)</p>
             </dd>
@@ -3466,7 +3472,7 @@
             <dt><tt class="docutils literal"><span class="pre">--cache-secs=&lt;seconds&gt;</span></tt></dt>
             <dd>How many seconds of audio/video to prefetch if the cache is active. This
             overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
-            is enabled. (Default: 2.)</dd>
+            is enabled and the value is larger. (Default: 2.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-pause</span></tt>, <tt class="docutils literal"><span class="pre">--no-cache-pause</span></tt></dt>
             <dd>Whether the player should automatically pause when the cache runs low,
             and unpause once more data is available (&quot;buffering&quot;).</dd>
@@ -3743,8 +3749,8 @@
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
             <li><tt class="docutils literal"><span class="pre">--ao=alsa,oss,</span></tt> Try the ALSA driver, then the OSS driver, then others.</li>
-            <li><tt class="docutils literal"><span class="pre">--ao=alsa:no-block:device=[hw:0,3]</span></tt> Sets noblock-mode and the
-            device-name as first card, fourth device.</li>
+            <li><tt class="docutils literal"><span class="pre">--ao=alsa:resample=yes:device=[plughw:0,3]</span></tt> Lets ALSA resample and
+            sets the device-name as first card, fourth device.</li>
             </ul>
             </div>
             <p>Available audio output drivers are:</p>
@@ -4573,6 +4579,9 @@
             <dd>Force use of rectangle textures (default: no). Normally this shouldn't
             have any advantages over normal textures. Note that hardware decoding
             overrides this flag.</dd>
+            <dt><tt class="docutils literal"><span class="pre">background=&lt;color&gt;</span></tt></dt>
+            <dd>Color used to draw parts of the mpv window not covered by video.
+            See <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-hq</span></tt></dt>
@@ -4918,6 +4927,9 @@
             uses more memory.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
+            <dd>For use with libmpv direct OpenGL embedding; useless in any other contexts.
+            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</dd>
             </dl>
             </div>
             <div class="section" id="audio-filters">
@@ -7471,6 +7483,9 @@
             </dd>
             <dt><tt class="docutils literal">pause</tt> (RW)</dt>
             <dd>Pause status. This is usually <tt class="docutils literal">yes</tt> or <tt class="docutils literal">no</tt>. See <tt class="docutils literal"><span class="pre">--pause</span></tt>.</dd>
+            <dt><tt class="docutils literal">idle</tt></dt>
+            <dd>Return <tt class="docutils literal">yes</tt> if no file is loaded, but the player is staying around
+            because of the <tt class="docutils literal"><span class="pre">--idle</span></tt> option.</dd>
             <dt><tt class="docutils literal"><span class="pre">core-idle</span></tt></dt>
             <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the playback core is paused, otherwise <tt class="docutils literal">no</tt>. This can
             be different <tt class="docutils literal">pause</tt> in special situations, such as when the player
@@ -7896,6 +7911,16 @@
             <dd>Return whether the VO is configured right now. Usually this corresponds to
             whether the video window is visible. If the <tt class="docutils literal"><span class="pre">--force-window</span></tt> option is
             used, this is usually always returns <tt class="docutils literal">yes</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">packet-video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-audio-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-sub-bitrate</span></tt></dt>
+            <dd><p class="first">Bitrate values calculated on the packet level. This works by dividing the
+            bit size of all packets between two keyframes by their presentation
+            timestamp distance. (This uses the timestamps are stored in the file, so
+            e.g. playback speed does not influence the returned values.) In particular,
+            the video bitrate will update only per keyframe, and show the &quot;past&quot;
+            bitrate. To make the property more UI friendly, updates to these properties
+            are throttled in a certain way.</p>
+            <p class="last">How exactly these values are calculated might change in the future.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">audio-device-list</span></tt></dt>
             <dd><p class="first">Return the list of discovered audio devices. This is mostly for use with
             the client API, and reflects what <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt> with the command
@@ -9422,8 +9447,8 @@
             <li>Matroska edition switching at runtime.</li>
             <li>Support for playing URLs of popular streaming sites directly.
             (e.g. <tt class="docutils literal">mpv <span class="pre">https://www.youtube.com/watch?v=...</span></tt>).
-            Requires a recent version of <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> to be installed, and
-            <tt class="docutils literal">ytdl=yes</tt> in the mpv config file.</li>
+            Requires a recent version of <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> to be installed. Can be
+            disabled with <tt class="docutils literal">ytdl=no</tt> in the mpv config file.</li>
             <li>Support for precise scrolling which scales the parameter of commands. If the
             input doesn't support precise scrolling the scale factor stays 1.</li>
             <li>Allow changing/adjusting video filters at runtime. (This is also used to make
