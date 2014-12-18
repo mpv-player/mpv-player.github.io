@@ -885,16 +885,16 @@
             <dt><tt class="docutils literal"><span class="pre">--include=&lt;configuration-file&gt;</span></tt></dt>
             <dd>Specify configuration file to be parsed after the default ones.</dd>
             <dt><tt class="docutils literal"><span class="pre">--load-scripts=&lt;yes|no&gt;</span></tt></dt>
-            <dd>If set to <tt class="docutils literal">no</tt>, don't auto-load scripts from the <tt class="docutils literal">lua</tt> configuration
-            subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/lua/</span></tt>).
+            <dd>If set to <tt class="docutils literal">no</tt>, don't auto-load scripts from the <tt class="docutils literal">scripts</tt>
+            configuration subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt>).
             (Default: <tt class="docutils literal">yes</tt>)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--lua=&lt;filename&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--script=&lt;filename&gt;</span></tt></dt>
             <dd>Load a Lua script. You can load multiple scripts by separating them with
             commas (<tt class="docutils literal">,</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--lua-opts=key1=value1,key2=value2,...</span></tt></dt>
-            <dd>Set options for scripts. A Lua script can query an option by key. If an
+            <dt><tt class="docutils literal"><span class="pre">--script-opts=key1=value1,key2=value2,...</span></tt></dt>
+            <dd>Set options for scripts. A script can query an option by key. If an
             option is used and what semantics the option value has depends entirely on
-            the loaded Lua scripts. Values not claimed by any scripts are ignored.</dd>
+            the loaded scripts. Values not claimed by any scripts are ignored.</dd>
             <dt><tt class="docutils literal"><span class="pre">--merge-files</span></tt></dt>
             <dd><p class="first">Pretend that all files passed to mpv are concatenated into a single, big
             file. This uses timeline/EDL support internally. Note that this won't work
@@ -946,6 +946,8 @@
             disabled by default.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt></dt>
+            <dd>Ignore path (i.e. use filename only) when using watch later feature.</dd>
             <dt><tt class="docutils literal"><span class="pre">--show-profile=&lt;profile&gt;</span></tt></dt>
             <dd>Show the description and content of a profile.</dd>
             <dt><tt class="docutils literal"><span class="pre">--use-filedir-conf</span></tt></dt>
@@ -1444,7 +1446,7 @@
             <p class="last"><tt class="docutils literal"><span class="pre">--dtshd</span></tt> and <tt class="docutils literal"><span class="pre">--no-dtshd</span></tt> are deprecated aliases.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-channels=&lt;number|layout&gt;</span></tt></dt>
-            <dd><p class="first">Request a channel layout for audio output (default: stereo). This  will ask
+            <dd><p class="first">Request a channel layout for audio output (default: auto). This  will ask
             the AO to open a device with the given channel layout. It's up to the AO
             to accept this layout, or to pick a fallback or to error out if the
             requested layout is not supported.</p>
@@ -1454,9 +1456,9 @@
             <p>See <tt class="docutils literal"><span class="pre">--audio-channels=help</span></tt> output for defined default layouts. This also
             lists speaker names, which can be used to express arbitrary channel
             layouts (e.g. <tt class="docutils literal"><span class="pre">fl-fr-lfe</span></tt> is 2.1).</p>
-            <p>You can use <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt> to disable this. In this case, the AO
-            use the channel layout as the audio filter chain indicates. (<tt class="docutils literal">empty</tt> is
-            an accepted obsolete for <tt class="docutils literal">auto</tt>.)</p>
+            <p>The default is <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt>, which tries to play audio using
+            the input file's channel layout. (Or more precisely, the output of the
+            audio filter chain.) (<tt class="docutils literal">empty</tt> is an accepted obsolete alias for <tt class="docutils literal">auto</tt>.)</p>
             <p>This will also request the channel layout from the decoder. If the decoder
             does not support the layout, it will fall back to its native channel layout.
             (You can use <tt class="docutils literal"><span class="pre">--ad-lavc-downmix=no</span></tt> to make the decoder always output
@@ -2013,25 +2015,42 @@
             <blockquote>
             OS X only. Black out other displays when going fullscreen.</blockquote>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--keep-open</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--keep-open=&lt;yes|no|always&gt;</span></tt></dt>
             <dd><p class="first">Do not terminate when playing or seeking beyond the end of the file, and
             there is not next file to be played (and <tt class="docutils literal"><span class="pre">--loop</span></tt> is not used).
             Instead, pause the player. When trying to seek beyond end of the file, the
-            player will pause at an arbitrary playback position (or, in corner cases,
-            not redraw the window at all).</p>
+            player will attempt to seek to the last frame.</p>
+            <p>The following arguments can be given:</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">If the current file ends, go to the next file or terminate.
+            (Default.)</td>
+            </tr>
+            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Don't terminate if the current file is the last playlist entry.
+            Equivalent to <tt class="docutils literal"><span class="pre">--keep-open</span></tt> without arguments.</td>
+            </tr>
+            <tr class="field"><th class="field-name">always:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also applies to files before the last playlist
+            entry. This means playback will never automatically advance to
+            the next file.</td>
+            </tr>
+            </tbody>
+            </table>
             <div class="note">
             <p class="first admonition-title">Note</p>
-            <p class="last">This option is not respected when using <tt class="docutils literal"><span class="pre">--frames</span></tt>, <tt class="docutils literal"><span class="pre">--end</span></tt>,
-            <tt class="docutils literal"><span class="pre">--length</span></tt>, or when passing a chapter range to <tt class="docutils literal"><span class="pre">--chapter</span></tt>.
-            Explicitly skipping to the next file or skipping beyond the last
-            chapter will terminate playback as well, even if <tt class="docutils literal"><span class="pre">--keep-open</span></tt> is
-            given.</p>
+            <p>This option is not respected when using <tt class="docutils literal"><span class="pre">--frames</span></tt>. Explicitly
+            skipping to the next file if the binding uses <tt class="docutils literal">force</tt> will terminate
+            playback as well.</p>
+            <p class="last">Also, if errors or unusual circumstances happen, the player can quit
+            anyway.</p>
             </div>
             <p class="last">Since mpv 0.6.0, this doesn't pause if there is a next file in the playlist,
             or the playlist is looped. Approximately, this will pause when the player
             would normally exit, but in practice there are corner cases in which this
             is not the case (e.g. <tt class="docutils literal">mpv <span class="pre">--keep-open</span> file.mkv /dev/null</tt> will play
-            file.mkv normally, then fail to open <tt class="docutils literal">/dev/null</tt>, then exit).</p>
+            file.mkv normally, then fail to open <tt class="docutils literal">/dev/null</tt>, then exit). (In
+            mpv 0.8.0, <tt class="docutils literal">always</tt> was introduced, which restores the old behavior.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--force-window</span></tt></dt>
             <dd><p class="first">Create a video output window even if there is no video. This can be useful
@@ -3778,16 +3797,45 @@
             this format). Currently disabled by default, because some popular
             ALSA plugins are utterly broken with non-interleaved formats.</dd>
             </dl>
-            <div class="note last">
+            <div class="note">
             <p class="first admonition-title">Note</p>
             <p>MPlayer and mplayer2 required you to replace any ',' with '.' and
             any ':' with '=' in the ALSA device name. mpv does not do this anymore.
             Instead, quote the device name:</p>
             <blockquote>
             <tt class="docutils literal"><span class="pre">--ao=alsa:device=[plug:surround50]</span></tt></blockquote>
-            <p class="last">Note that the <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt> simply quote the device name. With some
+            <p>Note that the <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt> simply quote the device name. With some
             shells (like zsh), you have to quote the option string to prevent the
             shell from interpreting the brackets instead of passing them to mpv.</p>
+            <p class="last">Actually, you should use the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option, instead of
+            setting the device directly.</p>
+            </div>
+            <div class="warning last">
+            <p class="first admonition-title">Warning</p>
+            <p>Handling of multichannel/surround audio changed in mpv 0.8.0 from the
+            behavior in MPlayer/mplayer2 and older versions of mpv.</p>
+            <p>The old behavior is that the player always downmixed to stereo by
+            default. The <tt class="docutils literal"><span class="pre">--audio-channels</span></tt> (or <tt class="docutils literal"><span class="pre">--channels</span></tt> before that) option
+            had to be set to get multichannel audio. Then playing stereo would
+            use the <tt class="docutils literal">default</tt> device (which typically allows multiple programs
+            to play audio at the same time via dmix), while playing anything with
+            more channels would open one of the hardware devices, e.g. via the
+            <tt class="docutils literal">surround51</tt> alias (typically with exclusive access). Whether the
+            player would use exclusive access or not would depend on the file
+            being played.</p>
+            <p>The new behavior since mpv 0.8.0 always enables multichannel audio,
+            i.e. <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt> is the default. However, since ALSA
+            provides no good way to play multichannel audio in a non-exclusive
+            way (without blocking other applications from using audio), the player
+            is restricted to the capabilities of the <tt class="docutils literal">default</tt> device by default,
+            which means it supports only stereo and mono (at least with current
+            typical ALSA configurations). But if a hardware device is selected,
+            then multichannel audio will typically work.</p>
+            <p>The short story is: if you want multichannel audio with ALSA, use
+            <tt class="docutils literal"><span class="pre">--audio-device</span></tt> to select the device (use <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt>
+            to get a list of all devices and their mpv name).</p>
+            <p class="last">You can also try
+            <a class="reference external" href="https://github.com/mpv-player/mpv/wiki/ALSA:-Surround-Sound-and-Upmixing">Using the upmix plugin</a>.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal">oss</tt></dt>
@@ -4361,22 +4409,6 @@
             Note that this option never affects <tt class="docutils literal">cscale</tt>, although the different
             processing chain might do chroma scaling differently if <tt class="docutils literal">lscale</tt> is
             disabled.</dd>
-            <dt><tt class="docutils literal"><span class="pre">stereo=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Select a method for stereo display. You may have to use
-            <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> to fix the aspect value. Experimental, do not expect
-            too much from it.</p>
-            <dl class="last docutils">
-            <dt>no</dt>
-            <dd>Normal 2D display</dd>
-            <dt>red-cyan</dt>
-            <dd>Convert side by side input to full-color red-cyan stereo.</dd>
-            <dt>green-magenta</dt>
-            <dd>Convert side by side input to full-color green-magenta stereo.</dd>
-            <dt>quadbuffer</dt>
-            <dd>Convert side by side input to quad buffered stereo. Only supported
-            by very few OpenGL cards.</dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal">srgb</tt></dt>
             <dd><p class="first">Convert and color correct the output to sRGB before displaying it on
             the screen. This option enables linear light scaling. It also forces
@@ -4505,7 +4537,7 @@
             always used, and typically only when using extended scalers.)
             <tt class="docutils literal">fmt</tt> can be one of: rgb, rgba, rgb8, rgb10, rgb10_a2, rgb16, rgb16f,
             rgb32f, rgba12, rgba16, rgba16f, rgba32f.
-            Default: rgb.</dd>
+            Default: rgba.</dd>
             <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.0..10.0&gt;</span></tt></dt>
             <dd><p class="first">Set a gamma value. If gamma is adjusted in other ways (like with
             the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt> property), the
@@ -6816,11 +6848,20 @@
             <dd>Always restart playback at keyframe boundaries (fast).</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">revert_seek</tt></dt>
-            <dd>Undoes the <tt class="docutils literal">seek</tt> command, and some other commands that seek (but not
+            <dt><tt class="docutils literal">revert_seek [mode]</tt></dt>
+            <dd><p class="first">Undoes the <tt class="docutils literal">seek</tt> command, and some other commands that seek (but not
             necessarily all of them). Calling this command once will jump to the
             playback position before the seek. Calling it a second time undoes the
-            <tt class="docutils literal">revert_seek</tt> command itself.</dd>
+            <tt class="docutils literal">revert_seek</tt> command itself. This only works within a single file.</p>
+            <p>The first argument is optional, and can change the behavior:</p>
+            <dl class="docutils">
+            <dt>mark</dt>
+            <dd>Mark the current time position. The next normal <tt class="docutils literal">revert_seek</tt> command
+            will seek back to this point, no matter how many seeks happened since
+            last time.</dd>
+            </dl>
+            <p class="last">Using it without any arguments gives you the default behavior.</p>
+            </dd>
             <dt><tt class="docutils literal">frame_step</tt></dt>
             <dd>Play one frame, then pause. Does nothing with audio-only playback.</dd>
             <dt><tt class="docutils literal">frame_back_step</tt></dt>
@@ -7386,7 +7427,30 @@
             <dd>Current MKV edition number. Setting this property to a different value will
             restart playback. The number of the first edition is 0.</dd>
             <dt><tt class="docutils literal"><span class="pre">disc-titles</span></tt></dt>
-            <dd>Number of BD/DVD titles.</dd>
+            <dd><p class="first">Number of BD/DVD titles.</p>
+            <p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based edition
+            index.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">disc-titles/count</span></tt></dt>
+            <dd>Number of titles.</dd>
+            <dt><tt class="docutils literal"><span class="pre">disc-titles/id</span></tt></dt>
+            <dd>Title ID as integer. Currently, this is the same as the title index.</dd>
+            <dt><tt class="docutils literal"><span class="pre">disc-titles/length</span></tt></dt>
+            <dd>Length in seconds. Can be unavailable in a number of cases (currently
+            it works for libdvdnav only).</dd>
+            </dl>
+            <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+            or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+            the following contents:</p>
+            <pre class="last literal-block">
+            MPV_FORMAT_NODE_ARRAY
+                MPV_FORMAT_NODE_MAP (for each edition)
+                    &quot;id&quot;                MPV_FORMAT_INT64
+                    &quot;length&quot;            MPV_FORMAT_DOUBLE
+            </pre>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">disc-title-list</span></tt></dt>
+            <dd>List of BD/DVD titles.</dd>
             <dt><tt class="docutils literal"><span class="pre">disc-title</span></tt> (RW)</dt>
             <dd>Current BD/DVD title number. Writing works only for <tt class="docutils literal"><span class="pre">dvdnav://</span></tt> and
             <tt class="docutils literal"><span class="pre">bd://</span></tt> (and aliases for these).</dd>
@@ -8361,7 +8425,7 @@
             <h2>Configuration</h2>
             <p>The OSC offers limited configuration through a config file
             <tt class="docutils literal"><span class="pre">lua-settings/osc.conf</span></tt> placed in mpv's user dir and through the
-            <tt class="docutils literal"><span class="pre">--lua-opts</span></tt> command-line option. Options provided through the command-line
+            <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line option. Options provided through the command-line
             will override those from the config file.</p>
             <div class="section" id="config-syntax">
             <h3>Config Syntax</h3>
@@ -8380,7 +8444,7 @@
             <tt class="docutils literal">osc-</tt>.</p>
             <p>Example:</p>
             <pre class="literal-block">
-            --lua-opts=osc-optionA=value1,osc-optionB=value2
+            --script-opts=osc-optionA=value1,osc-optionB=value2
             </pre>
             </div>
             <div class="section" id="configurable-options">
@@ -8507,10 +8571,10 @@
             </div>
             <div class="section" id="lua-scripting">
             <h1>LUA SCRIPTING</h1>
-            <p>mpv can load Lua scripts. Scripts passed to the <tt class="docutils literal"><span class="pre">--lua</span></tt> option, or found in
-            the <tt class="docutils literal">lua</tt> subdirectory of the mpv configuration directory (usually
-            <tt class="docutils literal"><span class="pre">~/.config/mpv/lua/</span></tt>) will be loaded on program start. mpv also appends the
-            <tt class="docutils literal">lua</tt> subdirectory to the end of Lua's path so you can import scripts from
+            <p>mpv can load Lua scripts. Scripts passed to the <tt class="docutils literal"><span class="pre">--script</span></tt> option, or found in
+            the <tt class="docutils literal">scripts</tt> subdirectory of the mpv configuration directory (usually
+            <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt>) will be loaded on program start. mpv also appends the
+            <tt class="docutils literal">scripts</tt> subdirectory to the end of Lua's path so you can import scripts from
             there too. Since it's added to the end, don't name scripts you want to import
             the same as Lua libraries because they will be overshadowed by them.</p>
             <p>mpv provides the built-in module <tt class="docutils literal">mp</tt>, which provides functions to send
@@ -8534,9 +8598,9 @@
             </div>
             <div class="section" id="mode-of-operation">
             <h2>Mode of operation</h2>
-            <p>Your script will be loaded by the player at program start from the <tt class="docutils literal">lua</tt>
-            configuration subdirectory, from a path specified with the <tt class="docutils literal"><span class="pre">--lua</span></tt> option, or
-            in some cases, internally (like <tt class="docutils literal"><span class="pre">--osc</span></tt>). Each script runs in its own
+            <p>Your script will be loaded by the player at program start from the <tt class="docutils literal">scripts</tt>
+            configuration subdirectory, from a path specified with the <tt class="docutils literal"><span class="pre">--script</span></tt> option,
+            or in some cases, internally (like <tt class="docutils literal"><span class="pre">--osc</span></tt>). Each script runs in its own
             thread. Your script is first run &quot;as is&quot;, and once that is done, the event loop
             is entered. This event loop will dispatch events received by mpv and call your
             own event handlers which you have registered with <tt class="docutils literal">mp.register_event</tt>, or
@@ -8811,7 +8875,7 @@
             </blockquote>
             </dd>
             <dt><tt class="docutils literal">mp.get_opt(key)</tt></dt>
-            <dd>Return a setting from the <tt class="docutils literal"><span class="pre">--lua-opts</span></tt> option. It's up to the user and
+            <dd>Return a setting from the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> option. It's up to the user and
             the script how this mechanism is used. Currently, all scripts can access
             this equally, so you should be careful about collisions.</dd>
             <dt><tt class="docutils literal">mp.get_script_name()</tt></dt>
@@ -8947,11 +9011,11 @@
             optionB=9999
             optionC=no
             </pre>
-            <p>Command-line options are read from the <tt class="docutils literal"><span class="pre">--lua-opts</span></tt> parameter. To avoid
+            <p>Command-line options are read from the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> parameter. To avoid
             collisions, all keys have to be prefixed with <tt class="docutils literal">identifier-</tt>.</p>
             <p>Example command-line:</p>
             <pre class="literal-block">
-            --lua-opts=myscript-optionA=TEST:myscript-optionB=0:myscript-optionC=yes
+            --script-opts=myscript-optionA=TEST:myscript-optionB=0:myscript-optionC=yes
             </pre>
             </div>
             <div class="section" id="mp-utils-options">
@@ -10110,9 +10174,9 @@
             <dd>mpv user settings</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/input.conf</span></tt></dt>
             <dd>key bindings (see <a class="reference internal" href="#input-conf">INPUT.CONF</a> section)</dd>
-            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/lua/</span></tt></dt>
-            <dd>All files in this directly are loaded as if they were passed to the
-            <tt class="docutils literal"><span class="pre">--lua</span></tt> option. They are loaded in alphabetical order, and sub-directories
+            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt></dt>
+            <dd>All files in this directory are loaded as if they were passed to the
+            <tt class="docutils literal"><span class="pre">--script</span></tt> option. They are loaded in alphabetical order, and sub-directories
             and files with no <tt class="docutils literal">.lua</tt> extension are ignored. The <tt class="docutils literal"><span class="pre">--load-scripts=no</span></tt>
             option disables loading these files.</dd>
             </dl>
@@ -10132,8 +10196,8 @@
             find the exact path by running <tt class="docutils literal">echo <span class="pre">%APPDATA%\mpv\mpv.conf</span></tt> in cmd.exe.</dd>
             <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/input.conf</span></tt></dt>
             <dd>key bindings (see <a class="reference internal" href="#input-conf">INPUT.CONF</a> section)</dd>
-            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/lua/</span></tt></dt>
-            <dd>equivalent of <tt class="docutils literal"><span class="pre">~/.config/mpv/lua/</span></tt> on Unix.</dd>
+            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/scripts/</span></tt></dt>
+            <dd>equivalent of <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt> on Unix.</dd>
             </dl>
             <p>The environment variable <tt class="docutils literal">$MPV_HOME</tt> completely overrides these, like on
             UNIX.</p>
