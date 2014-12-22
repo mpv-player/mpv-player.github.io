@@ -957,17 +957,18 @@
             <dd><p class="first">Enable the youtube-dl hook-script. It will look at the input URL, and will
             play the video located on the website. This works with many streaming sites,
             not just the one the scripts are named after. This requires a recent version
-            of youtube-dl to be installed on the system.</p>
+            of youtube-dl to be installed on the system. (Enabled by default.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
-            <p>Currently disabled by default, because youtube-dl's generic extractor can
-            get stuck on some URL, preventing playback.</p>
             <p class="last">(Note: this is the replacement for the now removed libquvi support.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ytdl-format=&lt;best|worst|mp4|webm|...&gt;</span></tt></dt>
             <dd>Video format/quality that is directly passed to youtube-dl. The possible
             values are specific to the website and the video, for a given url the
             available formats can be found with the command
-            <tt class="docutils literal"><span class="pre">youtube-dl</span> <span class="pre">--list-formats</span> URL</tt>.</dd>
+            <tt class="docutils literal"><span class="pre">youtube-dl</span> <span class="pre">--list-formats</span> URL</tt>. See youtube-dl's documentation for
+            available aliases. To use experimental DASH support for youtube, use
+            <tt class="docutils literal">bestvideo+bestaudio</tt>.
+            (Default: <tt class="docutils literal">best</tt>)</dd>
             </dl>
             </div>
             <div class="section" id="video">
@@ -1115,7 +1116,7 @@
             <dd><p class="first">Disable scaling of the video. If the window is larger than the video,
             black bars are added. Otherwise, the video is cropped. The video still
             can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. (If the
-            <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> option is set to a value other than <tt class="docutils literal">1</tt>, scaling is
+            <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> option is set to a value other than <tt class="docutils literal">0</tt>, scaling is
             enabled, but the video isn't automatically scaled to the window size.)</p>
             <p>The video and monitor aspects aspect will be ignored. Aspect correction
             would require to scale the video in the X or Y direction, but this option
@@ -9592,8 +9593,8 @@
             <li>Matroska edition switching at runtime.</li>
             <li>Support for playing URLs of popular streaming sites directly.
             (e.g. <tt class="docutils literal">mpv <span class="pre">https://www.youtube.com/watch?v=...</span></tt>).
-            Requires a recent version of <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> to be installed, and
-            <tt class="docutils literal">ytdl=yes</tt> in the mpv config file.</li>
+            Requires a recent version of <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> to be installed. Can be
+            disabled with <tt class="docutils literal">ytdl=no</tt> in the mpv config file.</li>
             <li>Support for precise scrolling which scales the parameter of commands. If the
             input doesn't support precise scrolling the scale factor stays 1.</li>
             <li>Allow changing/adjusting video filters at runtime. (This is also used to make
