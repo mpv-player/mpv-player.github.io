@@ -8579,7 +8579,7 @@
             <tt class="docutils literal">scripts</tt> subdirectory to the end of Lua's path so you can import scripts from
             there too. Since it's added to the end, don't name scripts you want to import
             the same as Lua libraries because they will be overshadowed by them.</p>
-            <p>mpv provides the built-in module <tt class="docutils literal">mp</tt>, which provides functions to send
+            <p>mpv provides the built-in module <tt class="docutils literal">mp</tt>, which contains functions to send
             commands to the mpv core and to retrieve information about playback state, user
             settings, file information, and so on.</p>
             <p>These scripts can be used to control mpv in a similar way to slave mode.
@@ -8595,15 +8595,13 @@
             end
             mp.observe_property(&quot;pause&quot;, &quot;bool&quot;, on_pause_change)
             </pre>
-            <p>This script provides a pretty weird feature, but Lua scripting was made to
-            allow users implement features which are not going to be added to the mpv core.</p>
             </div>
-            <div class="section" id="mode-of-operation">
-            <h2>Mode of operation</h2>
+            <div class="section" id="details-on-the-script-initialization-and-lifecycle">
+            <h2>Details on the script initialization and lifecycle</h2>
             <p>Your script will be loaded by the player at program start from the <tt class="docutils literal">scripts</tt>
-            configuration subdirectory, from a path specified with the <tt class="docutils literal"><span class="pre">--script</span></tt> option,
-            or in some cases, internally (like <tt class="docutils literal"><span class="pre">--osc</span></tt>). Each script runs in its own
-            thread. Your script is first run &quot;as is&quot;, and once that is done, the event loop
+            configuration subdirectory, or from a path specified with the <tt class="docutils literal"><span class="pre">--script</span></tt>
+            option. Some scripts are loaded internally (like <tt class="docutils literal"><span class="pre">--osc</span></tt>). Each script runs in
+            its own thread. Your script is first run &quot;as is&quot;, and once that is done, the event loop
             is entered. This event loop will dispatch events received by mpv and call your
             own event handlers which you have registered with <tt class="docutils literal">mp.register_event</tt>, or
             timers added with <tt class="docutils literal">mp.add_timeout</tt> or similar.</p>
@@ -9017,7 +9015,7 @@
             collisions, all keys have to be prefixed with <tt class="docutils literal">identifier-</tt>.</p>
             <p>Example command-line:</p>
             <pre class="literal-block">
-            --script-opts=myscript-optionA=TEST:myscript-optionB=0:myscript-optionC=yes
+            --script-opts=myscript-optionA=TEST,myscript-optionB=0,myscript-optionC=yes
             </pre>
             </div>
             <div class="section" id="mp-utils-options">
@@ -9131,7 +9129,7 @@
                 print(&quot;start of playback!&quot;)
             end
             
-            mp.register_event(&quot;playback-start&quot;, my_fn)
+            mp.register_event(&quot;file-loaded&quot;, my_fn)
             </pre>
             </div>
             <div class="section" id="list-of-events">
@@ -9146,7 +9144,9 @@
             <dt><tt class="docutils literal"><span class="pre">file-loaded</span></tt></dt>
             <dd>Happens after a file was loaded and begins playback.</dd>
             <dt><tt class="docutils literal">seek</tt></dt>
-            <dd>Happens on seeking (including ordered chapter segment changes).</dd>
+            <dd>Happens on seeking. (This might include cases when the player seeks
+            internally, even without user interaction. This includes e.g. segment
+            changes when playing ordered chapters Matroska files.)</dd>
             <dt><tt class="docutils literal"><span class="pre">playback-restart</span></tt></dt>
             <dd>Start of playback after seek or after file was loaded.</dd>
             <dt><tt class="docutils literal">idle</tt></dt>
@@ -9159,7 +9159,7 @@
             to avoid wasting CPU when the player is paused.</dd>
             <dt><tt class="docutils literal">shutdown</tt></dt>
             <dd>Sent when the player quits, and the script should terminate. Normally
-            handled automatically. See <a class="reference internal" href="#mode-of-operation">Mode of operation</a>.</dd>
+            handled automatically. See <a href="#id5"><span class="problematic" id="id6">`Mode of operation`_</span></a>.</dd>
             <dt><tt class="docutils literal"><span class="pre">log-message</span></tt></dt>
             <dd><p class="first">Receives messages enabled with <tt class="docutils literal">mp.enable_messages</tt>. The message data
             is contained in the table passed as first parameter to the event handler.
@@ -9175,13 +9175,8 @@
             Note that later versions of mpv might add new levels or remove
             (undocumented) existing ones.</dd>
             <dt><tt class="docutils literal">text</tt></dt>
-            <dd><p class="first">The log message. Note that this is the direct output of a printf()
-            style output API. The text will contain embedded newlines, and it's
-            possible that a single message contains multiple lines, or that a
-            message contains a partial line.</p>
-            <p class="last">It's safe to display messages only if they end with a newline character,
-            and to buffer them otherwise.</p>
-            </dd>
+            <dd>The log message. The text will end with a newline character. Sometimes
+            it can contain multiple lines.</dd>
             </dl>
             <p class="last">Keep in mind that these messages are meant to be hints for humans. You
             should not parse them, and prefix/level/text of messages might change
@@ -9206,8 +9201,8 @@
             </div>
             <div class="section" id="extras">
             <h2>Extras</h2>
-            <p>This documents experimental features, or features that are &quot;too special&quot; and
-            we don't guarantee a stable interface to it.</p>
+            <p>This documents experimental features, or features that are &quot;too special&quot; to
+            guarantee a stable interface.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">mp.add_hook(type, priority, fn)</tt></dt>
             <dd><p class="first">Add a hook callback for <tt class="docutils literal">type</tt> (a string identifying a certain kind of
@@ -10257,6 +10252,12 @@
             a list of some of the many other contributors.</p>
             <p>MPlayer is (C) 2000-2013 The MPlayer Team</p>
             <p>This man page was written mainly by Gabucino, Jonas Jermann and Diego Biurrun.</p>
+            </div>
+            <div class="system-messages section">
+            <h1>Docutils System Messages</h1>
+            <div class="system-message" id="id5">
+            <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">mpv/DOCS/man/lua.rst</tt>, line 684); <em><a href="#id6">backlink</a></em></p>
+            Unknown target name: &quot;mode of operation&quot;.</div>
             </div>
           </div>
         </div>
