@@ -675,8 +675,8 @@
             <dd>Specify which chapter to start playing at. Optionally specify which
             chapter to end playing at. Also see <tt class="docutils literal"><span class="pre">--start</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--playlist=&lt;filename&gt;</span></tt></dt>
-            <dd><p class="first">Play files according to a playlist file (Supports some common formats.If
-            no format is detected, t will be treated as list of files, separated by
+            <dd><p class="first">Play files according to a playlist file (Supports some common formats. If
+            no format is detected, it will be treated as list of files, separated by
             newline characters. Note that XML playlist formats are not supported.)</p>
             <p>You can play playlists directly and without this option, however, this
             option disables any security mechanisms that might be in place. You may
@@ -898,13 +898,9 @@
             option is used and what semantics the option value has depends entirely on
             the loaded scripts. Values not claimed by any scripts are ignored.</dd>
             <dt><tt class="docutils literal"><span class="pre">--merge-files</span></tt></dt>
-            <dd><p class="first">Pretend that all files passed to mpv are concatenated into a single, big
+            <dd>Pretend that all files passed to mpv are concatenated into a single, big
             file. This uses timeline/EDL support internally. Note that this won't work
-            for ordered chapter files.</p>
-            <p class="last">This option is interpreted at program start, and doesn't affect for
-            example files or playlists loaded with the <tt class="docutils literal">loadfile</tt> or <tt class="docutils literal">loadlist</tt>
-            commands.</p>
-            </dd>
+            for ordered chapter files.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-resume-playback</span></tt></dt>
             <dd>Do not restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
             subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>).
@@ -3659,6 +3655,13 @@
             <div class="section" id="miscellaneous">
             <h2>Miscellaneous</h2>
             <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--display-tags=tag1,tags2,...</span></tt></dt>
+            <dd><p class="first">Set the list of tags that should be displayed on the terminal. Tags that
+            are in the list, but are not present in the played file, will not be shown.
+            The special value <tt class="docutils literal">all</tt> disables filtering.</p>
+            <p class="last">The default includes a common list of tags, call mpv with <tt class="docutils literal"><span class="pre">--list-options</span></tt>
+            to see it.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--mc=&lt;seconds/frame&gt;</span></tt></dt>
             <dd>Maximum A-V sync correction per frame (in seconds)</dd>
             <dt><tt class="docutils literal"><span class="pre">--mf-fps=&lt;value&gt;</span></tt></dt>
@@ -3668,13 +3671,16 @@
             <dd>Input file type for <tt class="docutils literal"><span class="pre">mf://</span></tt> (available: jpeg, png, tga, sgi). By default,
             this is guessed from the file extension.</dd>
             <dt><tt class="docutils literal"><span class="pre">--stream-capture=&lt;filename&gt;</span></tt></dt>
-            <dd>Allows capturing the primary stream (not additional audio tracks or other
+            <dd><p class="first">Allows capturing the primary stream (not additional audio tracks or other
             kind of streams) into the given file. Capturing can also be started and
             stopped by changing the filename with the <tt class="docutils literal"><span class="pre">stream-capture</span></tt> slave property.
             Generally this will not produce usable results for anything else than MPEG
             or raw streams, unless capturing includes the file headers and is not
             interrupted. Note that, due to cache latencies, captured data may begin and
-            end somewhat delayed compared to what you see displayed.</dd>
+            end somewhat delayed compared to what you see displayed.</p>
+            <p class="last">The destination file is always appended. (Before mpv 0.8.0, the file was
+            overwritten.)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--stream-dump=&lt;filename&gt;</span></tt></dt>
             <dd>Same as <tt class="docutils literal"><span class="pre">--stream-capture</span></tt>, but do not start playback. Instead, the entire
             file is dumped.</dd>
@@ -3921,22 +3927,6 @@
             enabled, mpv will do elaborate latency calculations on its own. If
             disabled, it will use PulseAudio automatically updated timing
             information. Disabling this might help with e.g. networked audio.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal">portaudio</tt></dt>
-            <dd><p class="first">PortAudio audio output driver. This works on all platforms, and has
-            extensive MS Windows support.</p>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This driver is not very useful. It was added in the hope of
-            providing portable audio API across all platforms, but turned
-            out semi-broken and underfeatured.</p>
-            </div>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">device</tt></dt>
-            <dd>Specify the subdevice to use. Giving <tt class="docutils literal">help</tt> as device name lists all
-            devices found by PortAudio. Devices can be given as numeric values,
-            starting from <tt class="docutils literal">1</tt>.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">dsound</tt> (Windows only)</dt>
@@ -7191,16 +7181,14 @@
             different memory region to prevent tearing).</p>
             <p>It is also possible to pass a raw memory address for use as bitmap memory
             by passing a memory address as integer prefixed with a <tt class="docutils literal">&amp;</tt> character.
-            Passing the wrong thing here will crash the player. The <tt class="docutils literal">offset</tt> parameter
-            is not used and must be 0. This mode might be useful for use with libmpv.</p>
-            <p>On Windows, currently only raw memory addresses work. File mapping is not
-            implemented because a <tt class="docutils literal">mmap</tt> compatibility layer is missing, and because
-            this kind of shared memory method would perhaps not be overly useful on
-            Windows.</p>
-            <p><tt class="docutils literal">offset</tt> is the offset of the first pixel in the source file. It is
-            passed directly to <tt class="docutils literal">mmap</tt> and is subject to certain restrictions
-            (see <tt class="docutils literal">man mmap</tt> for details). In particular, this value has to be a
-            multiple of the system's page size.</p>
+            Passing the wrong thing here will crash the player. This mode might be
+            useful for use with libmpv. The <tt class="docutils literal">offset</tt> parameter is simply added to the
+            memory address (since mpv 0.8.0, ignored before).</p>
+            <p><tt class="docutils literal">offset</tt> is the byte offset of the first pixel in the source file.
+            (The current implementation always mmap's the whole file from position 0 to
+            the end of the image, so large offsets should be avoided. Before mpv 0.8.0,
+            the offset was actually passed directly to <tt class="docutils literal">mmap</tt>, but it was changed to
+            make using it easier.)</p>
             <p><tt class="docutils literal">fmt</tt> is a string identifying the image format. Currently, only <tt class="docutils literal">bgra</tt>
             is defined. This format has 4 bytes per pixels, with 8 bits per component.
             The least significant 8 bits are blue, and the most significant 8 bits
@@ -7530,6 +7518,9 @@
                 (key and string value for each metadata entry)
             </pre>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">filtered-metadata</span></tt></dt>
+            <dd>Like <tt class="docutils literal">metadata</tt>, but includes only fields listed in the <tt class="docutils literal"><span class="pre">--display-tags</span></tt>
+            option. This is the same set of tags that is printed to the terminal.</dd>
             <dt><tt class="docutils literal"><span class="pre">chapter-metadata</span></tt></dt>
             <dd><p class="first">Metadata of current chapter. Works similar to <tt class="docutils literal">metadata</tt> property. It
             also allows the same access methods (using sub-properties).</p>
@@ -9159,7 +9150,7 @@
             to avoid wasting CPU when the player is paused.</dd>
             <dt><tt class="docutils literal">shutdown</tt></dt>
             <dd>Sent when the player quits, and the script should terminate. Normally
-            handled automatically. See <a href="#id5"><span class="problematic" id="id6">`Mode of operation`_</span></a>.</dd>
+            handled automatically. See <a class="reference internal" href="#details-on-the-script-initialization-and-lifecycle">Details on the script initialization and lifecycle</a>.</dd>
             <dt><tt class="docutils literal"><span class="pre">log-message</span></tt></dt>
             <dd><p class="first">Receives messages enabled with <tt class="docutils literal">mp.enable_messages</tt>. The message data
             is contained in the table passed as first parameter to the event handler.
@@ -10252,12 +10243,6 @@
             a list of some of the many other contributors.</p>
             <p>MPlayer is (C) 2000-2013 The MPlayer Team</p>
             <p>This man page was written mainly by Gabucino, Jonas Jermann and Diego Biurrun.</p>
-            </div>
-            <div class="system-messages section">
-            <h1>Docutils System Messages</h1>
-            <div class="system-message" id="id5">
-            <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">mpv/DOCS/man/lua.rst</tt>, line 684); <em><a href="#id6">backlink</a></em></p>
-            Unknown target name: &quot;mode of operation&quot;.</div>
             </div>
           </div>
         </div>
