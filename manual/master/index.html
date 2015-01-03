@@ -959,8 +959,8 @@
             <dt><tt class="docutils literal"><span class="pre">--ytdl</span></tt>, <tt class="docutils literal"><span class="pre">--no-ytdl</span></tt></dt>
             <dd><p class="first">Enable the youtube-dl hook-script. It will look at the input URL, and will
             play the video located on the website. This works with many streaming sites,
-            not just the one the scripts are named after. This requires a recent version
-            of youtube-dl to be installed on the system. (Enabled by default.)</p>
+            not just the one that the script is named after. This requires a recent
+            version of youtube-dl to be installed on the system. (Enabled by default.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
             <p class="last">(Note: this is the replacement for the now removed libquvi support.)</p>
             </dd>
@@ -1026,7 +1026,7 @@
             in mpv 0.5.x and before.) This tells the decoder to skip frames (unless
             they are needed to decode future frames). May help with slow systems,
             but can produce unwatchably choppy output, or even freeze the display
-            complete. Not recommended.
+            completely. Not recommended.
             The <tt class="docutils literal"><span class="pre">--vd-lavc-framedrop</span></tt> option controls what frames to drop.</dd>
             <dt>&lt;decoder+vo&gt;</dt>
             <dd>Enable both modes. Not recommended.</dd>
@@ -4702,11 +4702,7 @@
             control. Gamma can also be set independently for red, green and
             blue.</dd>
             <dt>5</dt>
-            <dd>Use ATI-specific method (for older cards). This uses an
-            ATI-specific extension (<tt class="docutils literal">GL_ATI_fragment_shader</tt> - not
-            <tt class="docutils literal">GL_ARB_fragment_shader</tt>!). At least three texture units are
-            needed. Provides saturation and hue control. This method is fast
-            but inexact.</dd>
+            <dd>Removed. Used ATI-specific method (for older cards).</dd>
             <dt>6</dt>
             <dd>Use a 3D texture to do conversion via lookup. Needs the
             <tt class="docutils literal">GL_ARB_fragment_program extension</tt> and at least four texture
@@ -6457,7 +6453,7 @@
             requires random frame access (see <tt class="docutils literal"><span class="pre">buffered-frames</span></tt> parameter).</p>
             <p>This filter is experimental. If it turns out that it works well and is
             used, it will be ported to libavfilter. Otherwise, it will be just removed.</p>
-            <dl class="last docutils">
+            <dl class="docutils">
             <dt><tt class="docutils literal">file</tt></dt>
             <dd><p class="first">Filename of the script source. Currently, this is always a python
             script. The variable <tt class="docutils literal">video_in</tt> is set to the mpv video source,
@@ -6502,6 +6498,24 @@
             proportional to the number of cores on your machine. Most time,
             making it higher than the number of cores can actually make it
             slower.</dd>
+            </dl>
+            <p>The following variables are defined by mpv:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">video_in</tt></dt>
+            <dd>The mpv video source as vapoursynth clip. Note that this has no length
+            set, which confuses many filters. Using <tt class="docutils literal">Trim</tt> on the clip with a
+            high dummy length can turn it into a finite clip.</dd>
+            <dt><tt class="docutils literal">video_in_dw</tt>, <tt class="docutils literal">video_in_dh</tt></dt>
+            <dd>Display size of the video. Can be different from video size if the
+            video does not use square pixels (e.g. DVD).</dd>
+            <dt><tt class="docutils literal">container_fps</tt></dt>
+            <dd><p class="first">FPS value as reported by file headers. This value can be wrong or
+            completely broken (e.g. 0 or NaN). Even if the value is correct,
+            if another filter changes the real FPS (by dropping or inserting
+            frames), the value of this variable might not be useful. Note that
+            the <tt class="docutils literal"><span class="pre">--fps</span></tt> command line option overrides this value.</p>
+            <p class="last">Useful for some filters which insist on having a FPS.</p>
+            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vapoursynth-lazy</span></tt></dt>
@@ -6967,8 +6981,7 @@
             because index2 refers to the target entry, not the index the entry
             will have after moving.)</dd>
             <dt><tt class="docutils literal">run &quot;command&quot; &quot;arg1&quot; &quot;arg2&quot; ...</tt></dt>
-            <dd><p class="first">(Unix only)
-            Run the given command. Unlike in MPlayer/mplayer2 and earlier versions of
+            <dd><p class="first">Run the given command. Unlike in MPlayer/mplayer2 and earlier versions of
             mpv (0.2.x and older), this doesn't call the shell. Instead, the command
             is run directly, with each argument passed separately. Each argument is
             expanded like in <a class="reference internal" href="#property-expansion">Property Expansion</a>. Note that there is a static limit
@@ -8551,6 +8564,9 @@
             <dd>Undoes <tt class="docutils literal"><span class="pre">disable-osc</span></tt> or the effect of the <tt class="docutils literal">del</tt> key.</dd>
             <dt><tt class="docutils literal"><span class="pre">disable-osc</span></tt></dt>
             <dd>Hide the OSC permanently. This is also what the <tt class="docutils literal">del</tt> key does.</dd>
+            <dt><tt class="docutils literal"><span class="pre">osc-message</span></tt></dt>
+            <dd>Show a message on screen using the OSC. First argument is the message,
+            second the duration in seconds.</dd>
             </dl>
             <p>Example</p>
             <p>You could put this into <tt class="docutils literal">input.conf</tt> to hide the OSC with the <tt class="docutils literal">a</tt> key and
@@ -10251,7 +10267,7 @@
     <footer>
       <div class='container'>
         <small class='pull-left text-muted copyright'>
-          &copy; 2012-2014 mpv.io
+          &copy; 2012-2015 mpv.io
         </small>
         <div class='social-icons pull-right'>
                     <a target="_blank" href="https://github.com/mpv-player/mpv"><i class='fa fa-github-alt'></i>
