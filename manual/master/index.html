@@ -237,12 +237,35 @@
             is the same as <tt class="docutils literal"><span class="pre">--no-fs</span></tt>.</p>
             <p>If an option is marked as <em>(XXX only)</em>, it will only work in combination with
             the <em>XXX</em> option or if <em>XXX</em> is compiled in.</p>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">The suboption parser (used for example for <tt class="docutils literal"><span class="pre">--ao=pcm</span></tt> suboptions)
-            supports a special kind of string-escaping intended for use with external
-            GUIs.</p>
-            </div>
+            <div class="section" id="escaping-spaces-and-other-special-characters">
+            <h2>Escaping spaces and other special characters</h2>
+            <p>Keep in mind that the shell will partially parse and mangle the arguments you
+            pass to mpv. For example, you might need to quote or escape options and
+            filenames:</p>
+            <blockquote>
+            <tt class="docutils literal">mpv &quot;filename with spaces.mkv&quot; <span class="pre">--title=&quot;window</span> title&quot;</tt></blockquote>
+            <p>It gets more complicated if the suboption parser is involved. The suboption
+            parser puts several options into a single string, and passes them to a
+            component at once, instead of using multiple options on the level of the
+            command line.</p>
+            <p>The suboption parser can quote strings with <tt class="docutils literal">&quot;</tt>, <tt class="docutils literal">'</tt>, and <tt class="docutils literal"><span class="pre">[...]</span></tt>.
+            Additionally, there is a special form of quoting with <tt class="docutils literal">%n%</tt> described below.</p>
+            <p>For example, the <tt class="docutils literal">opengl</tt> VO can take multiple options:</p>
+            <blockquote>
+            <tt class="docutils literal">mpv test.mkv <span class="pre">--vo=opengl:lscale=lanczos2:icc-profile=file.icc,xv</span></tt></blockquote>
+            <p>This passed <tt class="docutils literal">lscale=lanczos2</tt> and <tt class="docutils literal"><span class="pre">icc-profile=file.icc</span></tt> to <tt class="docutils literal">opengl</tt>,
+            and also specifies <tt class="docutils literal">xv</tt> as fallback VO. If the icc-profile path contains
+            spaces or characters like <tt class="docutils literal">,</tt> or <tt class="docutils literal">:</tt>, you need to quote them:</p>
+            <blockquote>
+            <tt class="docutils literal">mpv <span class="pre">'--vo=opengl:icc-profile=&quot;file</span> with <span class="pre">spaces.icc&quot;,xv'</span></tt></blockquote>
+            <p>Shells may actually strip some quotes from the string passed to the commandline,
+            so the example quotes the string twice, ensuring that mpv recieves the <tt class="docutils literal">&quot;</tt>
+            quotes.</p>
+            <p>The <tt class="docutils literal"><span class="pre">[...]</span></tt> from of quotes wraps everything between <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt>. It's
+            useful with shells that don't interpret these characters in the middle of
+            an argument (like bash).</p>
+            <p>A special kind of string-escaping intended for use with external scripts and
+            programs is started with <tt class="docutils literal">%</tt>.</p>
             <p>It has the following format:</p>
             <pre class="literal-block">
             %n%string_of_length_n
@@ -252,6 +275,15 @@
             <p><tt class="docutils literal">mpv <span class="pre">--ao=pcm:file=%10%C:test.wav</span> test.avi</tt></p>
             <p>Or in a script:</p>
             <p class="last"><tt class="docutils literal">mpv <span class="pre">--ao=pcm:file=%`expr</span> length <span class="pre">&quot;$NAME&quot;`%&quot;$NAME&quot;</span> test.avi</tt></p>
+            </div>
+            <p>Suboptions passed to the client API are also subject to escaping. Using
+            <tt class="docutils literal">mpv_set_option_string()</tt> is exactly like passing <tt class="docutils literal"><span class="pre">--name=data</span></tt> to the
+            command line (but without shell processing of the string). Some options
+            support passing values in a more structured way instead of flat strings, and
+            can avoid the suboption parsing mess. For example, <tt class="docutils literal"><span class="pre">--vf</span></tt> supports
+            <tt class="docutils literal">MPV_FORMAT_NODE</tt>, which let's you pass suboptions as a nested data structure
+            of maps and arrays. (<tt class="docutils literal"><span class="pre">--vo</span></tt> supports this in the same way, although this
+            fact is undocumented.)</p>
             </div>
             <div class="section" id="paths">
             <h2>Paths</h2>
@@ -359,6 +391,16 @@
             status-msg=&quot;Time: ${time-pos}&quot;
             </pre>
             </div>
+            </div>
+            <div class="section" id="escaping-spaces-and-special-characters">
+            <h2>Escaping spaces and special characters</h2>
+            <p>This is done like with command line options. The shell is not involved here,
+            but option values still need to be quoted as a whole if it contains certain
+            characters like spaces. A config entry can be quoted with <tt class="docutils literal">&quot;</tt> and <tt class="docutils literal">'</tt>,
+            as well as with the <tt class="docutils literal">%n%</tt> syntax mentioned before. This is like passing
+            the exact contents of the quoted string as command line option. C-style escapes
+            are currently _not_ interpreted on this level, although some options to this
+            manually. (This is a mess and should probably be changed at some point.)</p>
             </div>
             <div class="section" id="putting-command-line-options-into-the-configuration-file">
             <h2>Putting Command Line Options into the Configuration File</h2>
@@ -1118,9 +1160,8 @@
             <dt><tt class="docutils literal"><span class="pre">--video-unscaled</span></tt></dt>
             <dd><p class="first">Disable scaling of the video. If the window is larger than the video,
             black bars are added. Otherwise, the video is cropped. The video still
-            can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. (If the
-            <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> option is set to a value other than <tt class="docutils literal">0</tt>, scaling is
-            enabled, but the video isn't automatically scaled to the window size.)</p>
+            can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. (But not all; for
+            example <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> does nothing if this option is enabled.)</p>
             <p>The video and monitor aspects aspect will be ignored. Aspect correction
             would require to scale the video in the X or Y direction, but this option
             disables scaling, disabling all aspect correction.</p>
@@ -1628,11 +1669,20 @@
             rendering. Use with care, or use <tt class="docutils literal"><span class="pre">--sub-text-font-size</span></tt> instead.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-scale-by-window=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Whether to scale subtitles with the window size (default: yes). If this is
+            disabled, changing the window size won't change the subtitle font size.</p>
+            <p class="last">Like <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>, this can break ASS subtitles.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Make the subtitle font size relative to the window, instead of the video.
             This is useful if you always want the same font size, even if the video
             doesn't covert the window fully, e.g. because screen aspect and window
             aspect mismatch (and the player adds black bars).</p>
+            <p>This option is misnamed. The difference to the confusingly similar sounding
+            option <tt class="docutils literal"><span class="pre">--sub-scale-by-window</span></tt> is that <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> still
+            scales with the approximate window size, while the other option disables
+            this scaling.</p>
             <p class="last">Like <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>, this can break ASS subtitles.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--embeddedfonts</span></tt>, <tt class="docutils literal"><span class="pre">--no-embeddedfonts</span></tt></dt>
@@ -2913,7 +2963,7 @@
             <p>Alternatively, the color can be specified as a RGB hex triplet in the form
             <tt class="docutils literal">#RRGGBB</tt>, where each 2-digit group expresses a color value in the
             range 0 (<tt class="docutils literal">00</tt>) to 255 (<tt class="docutils literal">FF</tt>). For example, <tt class="docutils literal">#FF0000</tt> is red.
-            This is similar to web colors.</p>
+            This is similar to web colors. Alpha is given with <tt class="docutils literal">#AARRGGBB</tt>.</p>
             <div class="admonition-examples admonition last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -3567,10 +3617,27 @@
             <dd>Instructs mpv to read the channels list from <tt class="docutils literal">&lt;filename&gt;</tt>. The default is
             in the mpv configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv</span></tt>) with the
             filename <tt class="docutils literal"><span class="pre">channels.conf.{sat,ter,cbl,atsc}</span></tt> (based on your card type) or
-            <tt class="docutils literal">channels.conf</tt> as a last resort.</dd>
+            <tt class="docutils literal">channels.conf</tt> as a last resort.
+            For DVB-S/2 cards, a VDR 1.7.x format channel list is recommended
+            as it allows tuning to DVB-S2 channels, enabling subtitles and
+            decoding the PMT (which largely improves the demuxing).
+            Classic mplayer format channel lists are still supported (without
+            these improvements), and for other card types, only limited VDR
+            format channel list support is implemented (patches welcome).
+            For channels with dynamic PID switching or incomplete
+            <tt class="docutils literal">channels.conf</tt>, <tt class="docutils literal"><span class="pre">--dvbin-full-transponder</span></tt> or the magic PID
+            <tt class="docutils literal">8192</tt> are recommended.</dd>
             <dt><tt class="docutils literal"><span class="pre">--dvbin-timeout=&lt;1-30&gt;</span></tt></dt>
             <dd>Maximum number of seconds to wait when trying to tune a frequency before
             giving up (default: 30).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--dvbin-full-transponder=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Apply no filters on program PIDs, only tune to frequency and pass full
+            transponder to demuxer. This is useful to record multiple programs
+            on a single transponder, or to work around issues in the <tt class="docutils literal">channels.conf</tt>.
+            It is also recommended to use this for channels which switch PIDs
+            on-the-fly, e.g. for regional news.</p>
+            <p class="last">Default: <tt class="docutils literal">no</tt></p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="pvr">
@@ -3923,10 +3990,15 @@
             value makes the audio stream react faster, e.g. to playback speed
             changes. Default: 250.</dd>
             <dt><tt class="docutils literal"><span class="pre">latency-hacks=&lt;yes|no&gt;</span></tt></dt>
-            <dd>Enable hacks to workaround PulseAudio timing bugs (default: yes). If
+            <dd><p class="first">Enable hacks to workaround PulseAudio timing bugs (default: no). If
             enabled, mpv will do elaborate latency calculations on its own. If
             disabled, it will use PulseAudio automatically updated timing
-            information. Disabling this might help with e.g. networked audio.</dd>
+            information. Disabling this might help with e.g. networked audio or
+            some plugins, while enabling it might help in some unknown situations
+            (it used to be required to get good behavior on old PulseAudio versions).</p>
+            <p class="last">If you have stuttering video when using pulse, try to enable this
+            option. (Or alternatively, try to update PulseAudio.)</p>
+            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">dsound</tt> (Windows only)</dt>
@@ -4948,8 +5020,12 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
-            <dd>For use with libmpv direct OpenGL embedding; useless in any other contexts.
-            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</dd>
+            <dd><p class="first">For use with libmpv direct OpenGL embedding; useless in any other contexts.
+            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
+            <p>This supports many of the suboptions the <tt class="docutils literal">opengl</tt> VO has. Run
+            <tt class="docutils literal">mpv <span class="pre">--vo=opengl-cb:help</span></tt> for a list.</p>
+            <p class="last">This also supports the <tt class="docutils literal">vo_cmdline</tt> command.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="audio-filters">
@@ -6492,12 +6568,15 @@
             filters work anyway.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">concurrent-frames</span></tt></dt>
-            <dd>Number of frames that should be requested in parallel (default: 2). The
+            <dd><p class="first">Number of frames that should be requested in parallel. The
             level of concurrency depends on the filter and how quickly mpv can
             decode video to feed the filter. This value should probably be
             proportional to the number of cores on your machine. Most time,
             making it higher than the number of cores can actually make it
-            slower.</dd>
+            slower.</p>
+            <p class="last">By default, this uses the special value <tt class="docutils literal">auto</tt>, which sets the option
+            to the number of detected logical CPU cores.</p>
+            </dd>
             </dl>
             <p>The following variables are defined by mpv:</p>
             <dl class="last docutils">
