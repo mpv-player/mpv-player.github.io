@@ -458,12 +458,11 @@
             <p class="first admonition-title">Example mpv profile</p>
             <pre class="last literal-block">
             [vo.vdpau]
-            # Use hardware decoding (might break playback of some h264 files)
+            # Use hardware decoding
             hwdec=vdpau
             
             [protocol.dvd]
             profile-desc=&quot;profile for dvd:// streams&quot;
-            vf=pp=hb/vb/dr/al/fd
             alang=en
             
             [extension.flv]
@@ -2017,14 +2016,14 @@
             <h2>Window</h2>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--title=&lt;string&gt;</span></tt></dt>
-            <dd><p class="first">Set the window title. Properties are expanded on playback start.
-            (See <a class="reference internal" href="#property-expansion">Property Expansion</a>.)</p>
+            <dd><p class="first">Set the window title. This is used for the video window, and if possible,
+            also sets the audio stream title.</p>
+            <p>Properties are expanded. (See <a class="reference internal" href="#property-expansion">Property Expansion</a>.)</p>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">There is a danger of this causing significant CPU usage, depending on
-            the properties used and the window manager. Changing the window title
-            is often a slow operation, and if the title changes every frame,
-            playback can be ruined.</p>
+            the properties used. Changing the window title is often a slow
+            operation, and if the title changes every frame, playback can be ruined.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--screen=&lt;default|0-32&gt;</span></tt></dt>
@@ -2822,7 +2821,7 @@
             count the right Alt as an Alt modifier key. Enabled by default.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-vo-keyboard=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Disable all keyboard input on for VOs which can't participate in proper
-            keyboard input dispatching. This currently affects X11. Generally useful for
+            keyboard input dispatching. May not affect all VOs. Generally useful for
             embedding only.</p>
             <p>On X11, a sub-window with input enabled grabs all keyboard input as long
             as it is 1. a child of a focused window, and 2. the mouse is inside of
@@ -2832,10 +2831,13 @@
             even though mpv has focus. Modern toolkits work around this weird X11
             behavior, but naively embedding foreign windows breaks it.</p>
             <p>The only way to handle this reasonably is using the XEmbed protocol, which
-            was designed to solve these problems. But Qt has questionable support, and
-            mpv doesn't implement it yet.</p>
-            <p>As a workaround, this option is disabled by default in libmpv. (Note that
-            <tt class="docutils literal"><span class="pre">input-default-bindings</span></tt> is disabled by default in libmpv as well.)</p>
+            was designed to solve these problems. GTK provides <tt class="docutils literal">GtkSocket</tt>, which
+            supports XEmbed. Qt doesn't seem to provide anything working in newer
+            versions.</p>
+            <p>If the embedder supports XEmbed, input should work with default settings
+            and with this option disabled. Note that <tt class="docutils literal"><span class="pre">input-default-bindings</span></tt> is
+            disabled by default in libmpv as well - it should be enabled if you want
+            the mpv default key bindings.</p>
             <p class="last">(This option was renamed from <tt class="docutils literal"><span class="pre">--input-x11-keyboard</span></tt>.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--input-app-events=&lt;yes|no&gt;</span></tt></dt>
@@ -3725,7 +3727,8 @@
             <dt><tt class="docutils literal"><span class="pre">--display-tags=tag1,tags2,...</span></tt></dt>
             <dd><p class="first">Set the list of tags that should be displayed on the terminal. Tags that
             are in the list, but are not present in the played file, will not be shown.
-            The special value <tt class="docutils literal">all</tt> disables filtering.</p>
+            If a value ends with <tt class="docutils literal">*</tt>, all tags are matched by prefix (though there
+            is no general globbing). Just passing <tt class="docutils literal">*</tt> essentially filtering.</p>
             <p class="last">The default includes a common list of tags, call mpv with <tt class="docutils literal"><span class="pre">--list-options</span></tt>
             to see it.</p>
             </dd>
@@ -4069,6 +4072,10 @@
             <dd>Write the sound to <tt class="docutils literal">&lt;filename&gt;</tt> instead of the default
             <tt class="docutils literal">audiodump.wav</tt>. If <tt class="docutils literal"><span class="pre">no-waveheader</span></tt> is specified, the default is
             <tt class="docutils literal">audiodump.pcm</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">(no-)append</span></tt></dt>
+            <dd>Append to the file, instead of overwriting it. Always use this with the
+            <tt class="docutils literal"><span class="pre">no-waveheader</span></tt> option - with <tt class="docutils literal">waveheader</tt> it's broken, because
+            it will write a WAVE header every time the file is opened.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">rsound</tt></dt>
@@ -4423,6 +4430,11 @@
             <dd>Lanczos with radius=3.</dd>
             <dt><tt class="docutils literal">lanczos</tt></dt>
             <dd>Generic Lanczos scaling filter. Set radius with <tt class="docutils literal">lradius</tt>.</dd>
+            <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
+            <dd>Generic elliptic weighted average Lanczos scaling filter. Also
+            known as Jinc. The radius can be set with <tt class="docutils literal">lradius</tt> up to a
+            maximum value of 16, but note that performance drops very quickly
+            as the radius increases.</dd>
             <dt><tt class="docutils literal">spline36</tt></dt>
             <dd>This is the default when using <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>.</dd>
             <dt><tt class="docutils literal">bicubic_fast</tt></dt>
@@ -4461,7 +4473,7 @@
             <dd><p class="first">Set radius for filters listed below, must be a float number between 1.0
             and 8.0. Defaults to be 2.0 if not specified.</p>
             <blockquote>
-            <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt></blockquote>
+            <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">ewa_lanczos</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt></blockquote>
             <p class="last">Note that depending on filter implementation details and video scaling
             ratio, the radius that actually being used might be different
             (most likely being increased a bit).</p>
@@ -4555,6 +4567,15 @@
             <p class="last">This is automatically disabled for anamorphic video, because this
             feature doesn't work correctly with this.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt></dt>
+            <dd>When upscaling in linear light, use a sigmoidal color transform
+            to avoid emphasizing ringing artifacts.</dd>
+            <dt><tt class="docutils literal"><span class="pre">sigmoid-center</span></tt></dt>
+            <dd>The center of the sigmoid curve used for <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt>, must
+            be a float between 0.0 and 1.0. Defaults to 0.75 if not specified.</dd>
+            <dt><tt class="docutils literal"><span class="pre">sigmoid-slope</span></tt></dt>
+            <dd>The slope of the sigmoid curve used for <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt>, must
+            be a float between 1.0 and 20.0. Defaults to 6.5 if not specified.</dd>
             <dt><tt class="docutils literal"><span class="pre">no-npot</span></tt></dt>
             <dd>Force use of power-of-2 texture sizes. For debugging only.
             Borders will be distorted due to filtering.</dd>
@@ -4639,15 +4660,6 @@
             <dd>absolute colorimetric</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">approx-gamma</span></tt></dt>
-            <dd><p class="first">Approximate the actual gamma function as a pure power curve of
-            1.95. A number of video editing programs and studios apparently use this
-            for mastering instead of the true curve. Most notably, anything in the
-            Apple ecosystem uses this approximation - including all programs
-            compatible with it. It's a sound idea to try enabling this flag first
-            when watching videos and shows to see if things look better that way.</p>
-            <p class="last">This only affects the output when using either <tt class="docutils literal"><span class="pre">icc-profile</span></tt> or <tt class="docutils literal">srgb</tt>.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">3dlut-size=&lt;r&gt;x&lt;g&gt;x&lt;b&gt;</span></tt></dt>
             <dd>Size of the 3D LUT generated from the ICC profile in each dimension.
             Default is 128x256x64.
@@ -4684,7 +4696,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:lscale=spline36:dither-depth=auto:fbo-format=rgba16:fancy-downscaling
+            --vo=opengl:lscale=spline36:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -5021,8 +5033,28 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
             <dd><p class="first">For use with libmpv direct OpenGL embedding; useless in any other contexts.
-            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
-            <p>This supports many of the suboptions the <tt class="docutils literal">opengl</tt> VO has. Run
+            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)
+            Usually, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> renders frames asynchronously by client and this
+            can cause some frame drops. In order to provide a way to handle this
+            situation, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> has its own frame queue and calls update callback
+            more frequently if the queue is not empty regardless of existence of new frame.
+            Once the queue is filled, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> drops frames automatically.</p>
+            <p>With default options, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> renders only the latest frame and drops
+            all frames handed over while waiting render function after update callback.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">frame-queue-size=&lt;1..100&gt;</span></tt></dt>
+            <dd>The maximum count of frames which the frame queue can hold (default: 1)</dd>
+            <dt><tt class="docutils literal"><span class="pre">frame-drop-mode=&lt;pop|clear&gt;</span></tt></dt>
+            <dd><p class="first">Select the behavior when the frame queue is full.</p>
+            <dl class="last docutils">
+            <dt>pop</dt>
+            <dd>Drop the oldest frame in the frame queue. (default)</dd>
+            <dt>clear</dt>
+            <dd>Drop all frames in the frame queue.</dd>
+            </dl>
+            </dd>
+            </dl>
+            <p>This also supports many of the suboptions the <tt class="docutils literal">opengl</tt> VO has. Runs
             <tt class="docutils literal">mpv <span class="pre">--vo=opengl-cb:help</span></tt> for a list.</p>
             <p class="last">This also supports the <tt class="docutils literal">vo_cmdline</tt> command.</p>
             </dd>
@@ -7772,6 +7804,14 @@
             <dt><tt class="docutils literal"><span class="pre">video-params/pixelformat</span></tt></dt>
             <dd>The pixel format as string. This uses the same names as used in other
             places of mpv.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-params/average-bpp</span></tt></dt>
+            <dd>Average bits-per-pixel as integer. Subsampled planar formats use a
+            different resolution, which is the reason this value can sometimes be
+            odd or confusing. Can be unavailable with some formats.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-params/plane-depth</span></tt></dt>
+            <dd>Bit depth for each color component as integer. This is only exposed
+            for planar or single-component formats, and is unavailable for other
+            formats.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/w</span></tt>, <tt class="docutils literal"><span class="pre">video-params/h</span></tt></dt>
             <dd>Video size as integers, with no aspect correction applied.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/dw</span></tt>, <tt class="docutils literal"><span class="pre">video-params/dh</span></tt></dt>
@@ -8050,11 +8090,15 @@
             which set OSD messages.</p>
             <div class="admonition-example admonition">
             <p class="first admonition-title">Example</p>
-            <p class="last">--osd-status-msg='This is ${osd-ass-cc/0}{\b1}bold text'</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--osd-status-msg='This</span> is <span class="pre">${osd-ass-cc/0}{\\b1}bold</span> text'</tt></li>
+            <li><tt class="docutils literal">show_text &quot;This is <span class="pre">${osd-ass-cc/0}{\b1}bold</span> text&quot;</tt></li>
+            </ul>
             </div>
             <p>Any ASS override tags as understood by libass can be used.</p>
-            <p class="last">Note that you need to escape the <tt class="docutils literal">\</tt> character, because the string is
+            <p>Note that you need to escape the <tt class="docutils literal">\</tt> character, because the string is
             processed for C escape sequences before passing it to the OSD code.</p>
+            <p class="last">A list of tags can be found here: <a class="reference external" href="http://docs.aegisub.org/latest/ASS_Tags/">http://docs.aegisub.org/latest/ASS_Tags/</a></p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vo-configured</span></tt></dt>
             <dd>Return whether the VO is configured right now. Usually this corresponds to
@@ -9551,7 +9595,14 @@
             using most of FFmpeg's filters, which improve greatly on the old MPlayer
             filters in features, performance, and correctness.</p>
             </li>
-            <li><p class="first">More correct color reproduction (color matrix generation).</p>
+            <li><p class="first">More correct color reproduction (color matrix generation), including support
+            for BT.2020 (Ultra HD) and linear XYZ (Digital Cinema) inputs.</p>
+            </li>
+            <li><p class="first">Support for color managed displays, via ICC profiles.</p>
+            </li>
+            <li><p class="first">More high-quality image resamplers (see the <tt class="docutils literal">lscale</tt> suboption).</p>
+            </li>
+            <li><p class="first">Support for scaling in (sigmoidized) linear light.</p>
             </li>
             <li><p class="first">Better subtitle rendering using libass by default.</p>
             </li>
@@ -9836,10 +9887,10 @@
             <td><tt class="docutils literal"><span class="pre">--term-playing-msg</span></tt></td>
             </tr>
             <tr><td><tt class="docutils literal"><span class="pre">-pp</span> ...</tt></td>
-            <td><tt class="docutils literal"><span class="pre">'--vf=pp=[...]'</span></tt></td>
+            <td><tt class="docutils literal"><span class="pre">'--vf=lavfi=[pp=...]'</span></tt></td>
             </tr>
             <tr><td><tt class="docutils literal"><span class="pre">-pphelp</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--vf=pp:help</span></tt></td>
+            <td>(See FFmpeg libavfilter documentation.)</td>
             </tr>
             <tr><td><tt class="docutils literal"><span class="pre">-rawaudio</span> ...</tt></td>
             <td><tt class="docutils literal"><span class="pre">--demuxer-rawaudio-...</span></tt></td>
