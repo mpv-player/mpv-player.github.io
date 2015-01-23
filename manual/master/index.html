@@ -2118,6 +2118,9 @@
             <dt><tt class="docutils literal"><span class="pre">--border</span></tt>, <tt class="docutils literal"><span class="pre">--no-border</span></tt></dt>
             <dd>Play video with window border and decorations. Since this is on by
             default, use <tt class="docutils literal"><span class="pre">--no-border</span></tt> to disable the standard window decorations.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--on-all-workspaces</span></tt></dt>
+            <dd>(X11 only)
+            Show the video window on all virtual desktops.</dd>
             <dt><tt class="docutils literal"><span class="pre">--geometry=&lt;[W[xH]][+-x+-y]&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--geometry=&lt;x:y&gt;</span></tt></dt>
             <dd><p class="first">Adjust the initial window position or size. <tt class="docutils literal">W</tt> and <tt class="docutils literal">H</tt> set the window
             size in pixels. <tt class="docutils literal">x</tt> and <tt class="docutils literal">y</tt> set the window position, measured in pixels
@@ -2214,6 +2217,19 @@
             <dd>If the video is larger than 90% of the screen width or 80% of the
             screen height, make the window smaller until either its width is 90%
             of the screen, or its height is 80% of the screen.</dd>
+            </dl>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--autofit-smaller=&lt;[W[xH]]&gt;</span></tt></dt>
+            <dd><p class="first">This option behaves exactly like <tt class="docutils literal"><span class="pre">--autofit</span></tt>, except that it sets the
+            minimum size of the window (just as <tt class="docutils literal"><span class="pre">--autofit-larger</span></tt> sets the maximum).</p>
+            <div class="admonition-example admonition last">
+            <p class="first admonition-title">Example</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">500x500</tt></dt>
+            <dd>Make the window at least 500 pixels wide and 500 pixels high
+            (depending on the video aspect ratio, the width or height will be
+            larger than 500 in order to keep the aspect ratio the same).</dd>
             </dl>
             </div>
             </dd>
@@ -4410,85 +4426,77 @@
             <p>By default, it tries to use fast and fail-safe settings. Use the alias
             <tt class="docutils literal"><span class="pre">opengl-hq</span></tt> to use this driver with defaults set to high quality
             rendering.</p>
-            <p>Requires at least OpenGL 2.1 and the <tt class="docutils literal">GL_ARB_texture_rg</tt> extension. For
-            older drivers, <tt class="docutils literal"><span class="pre">opengl-old</span></tt> may work.</p>
+            <p>Requires at least OpenGL 2.1.</p>
             <p>Some features are available with OpenGL 3 capable graphics drivers only
             (or if the necessary extensions are available).</p>
             <p>Hardware decoding over OpenGL-interop is supported to some degree. Note
             that in this mode, some corner case might not be gracefully handled, and
             color space conversion and chroma upsampling is generally in the hand of
             the hardware decoder APIs.</p>
-            <p><tt class="docutils literal"><span class="pre">lscale=&lt;filter&gt;</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">scale=&lt;filter&gt;</span></tt></p>
             <blockquote>
             <dl class="docutils">
             <dt><tt class="docutils literal">bilinear</tt></dt>
-            <dd>Bilinear hardware texture filtering (fastest, mid-quality).
-            This is the default.</dd>
-            <dt><tt class="docutils literal">lanczos2</tt></dt>
-            <dd>Lanczos scaling with radius=2. Provides good quality and speed.</dd>
-            <dt><tt class="docutils literal">lanczos3</tt></dt>
-            <dd>Lanczos with radius=3.</dd>
-            <dt><tt class="docutils literal">lanczos</tt></dt>
-            <dd>Generic Lanczos scaling filter. Set radius with <tt class="docutils literal">lradius</tt>.</dd>
-            <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
-            <dd>Generic elliptic weighted average Lanczos scaling filter. Also
-            known as Jinc. The radius can be set with <tt class="docutils literal">lradius</tt> up to a
-            maximum value of 16, but note that performance drops very quickly
-            as the radius increases.</dd>
+            <dd>Bilinear hardware texture filtering (fastest, very low quality).
+            This is the default for compatibility reasons.</dd>
             <dt><tt class="docutils literal">spline36</tt></dt>
-            <dd>This is the default when using <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>.</dd>
-            <dt><tt class="docutils literal">bicubic_fast</tt></dt>
-            <dd>Bicubic filter. Has a blurring effect on the image, even if no
-            scaling is done.</dd>
-            <dt><tt class="docutils literal">sharpen3</tt></dt>
-            <dd>Unsharp masking (sharpening) with radius=3 and a default strength
-            of 0.5 (see <tt class="docutils literal">lparam1</tt>).</dd>
-            <dt><tt class="docutils literal">sharpen5</tt></dt>
-            <dd>Unsharp masking (sharpening) with radius=5 and a default strength
-            of 0.5 (see <tt class="docutils literal">lparam1</tt>).</dd>
+            <dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>.</dd>
+            <dt><tt class="docutils literal">lanczos</tt></dt>
+            <dd><p class="first">Lanczos scaling. Provides mid quality and speed. Generally worse
+            than <tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image
+            which is good for some content types. The number of taps can be
+            controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>, but is best left unchanged.</p>
+            <p class="last">If the radius is not changed, this filter corresponds to the old
+            <tt class="docutils literal">lanczos3</tt> alias, while <tt class="docutils literal">lanczos2</tt> corresponds to a radius of 2.</p>
+            </dd>
+            <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
+            <dd><p class="first">Elliptic weighted average Lanczos scaling. Also known as Jinc.
+            Relatively slow, but very good quality. The number of taps can
+            be controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>. Adding extra taps makes the
+            filter sharper but adds more ringing.</p>
+            <p class="last">This filter supports antiringing (see <tt class="docutils literal"><span class="pre">scale-antiring</span></tt>).</p>
+            </dd>
             <dt><tt class="docutils literal">mitchell</tt></dt>
             <dd>Mitchell-Netravali. The <tt class="docutils literal">b</tt> and <tt class="docutils literal">c</tt> parameters can be set with
-            <tt class="docutils literal">lparam1</tt> and <tt class="docutils literal">lparam2</tt>. Both are set to 1/3 by default.</dd>
-            <dt><tt class="docutils literal">gaussian</tt></dt>
-            <dd><p class="first">Gaussian filter with a parameter <tt class="docutils literal">p</tt> for sharpness control.
-            <tt class="docutils literal">p</tt> can be set to float number between 1(blurry) and 100(sharp)
-            and has a default value of about 28.8 (see <tt class="docutils literal">lparam1</tt>).</p>
-            <p class="last">Note that for extremely small value of <tt class="docutils literal">p</tt>, a large filter radius
-            might be required to avoid unintended artifacts (see <tt class="docutils literal">lradius</tt>).</p>
-            </dd>
+            <tt class="docutils literal"><span class="pre">scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">scale-param2</span></tt>. Both are set to 1/3 by default.
+            This filter is very good at downscaling (see <tt class="docutils literal"><span class="pre">scale-down</span></tt>).</dd>
             </dl>
-            <p>There are some more filters. For a complete list, pass <tt class="docutils literal">help</tt> as
-            value, e.g.:</p>
+            <p>There are some more filters, but most are not as useful. For a complete
+            list, pass <tt class="docutils literal">help</tt> as value, e.g.:</p>
             <pre class="literal-block">
-            mpv --vo=opengl:lscale=help
+            mpv --vo=opengl:scale=help
             </pre>
             </blockquote>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">lparam1=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">scale-param1=&lt;value&gt;</span></tt></dt>
             <dd>Set filter parameters. Ignored if the filter is not tunable. These are
             unset by default, and use the filter specific default if applicable.</dd>
-            <dt><tt class="docutils literal"><span class="pre">lparam2=&lt;value&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal">lparam1</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">lradius=&lt;r&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">scale-param2=&lt;value&gt;</span></tt></dt>
+            <dd>See <tt class="docutils literal"><span class="pre">scale-param1</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">scale-radius=&lt;r&gt;</span></tt></dt>
             <dd><p class="first">Set radius for filters listed below, must be a float number between 1.0
-            and 8.0. Defaults to be 2.0 if not specified.</p>
+            and 16.0. Defaults to be 3.0 if not specified.</p>
             <blockquote>
             <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">ewa_lanczos</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt></blockquote>
             <p class="last">Note that depending on filter implementation details and video scaling
             ratio, the radius that actually being used might be different
             (most likely being increased a bit).</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">scale-antiring=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Set the antiringing strength. This tries to eliminate ringing, but can
+            introduce other artifacts in the process. Must be a float number
+            between 0.0 and 1.0. The default value of 0.0 disables antiringing
+            entirely.</p>
+            <p class="last">Note that this currently only affects <tt class="docutils literal">ewa_lanczos</tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">scaler-resizes-only</span></tt></dt>
             <dd>Disable the scaler if the video image is not resized. In that case,
-            <tt class="docutils literal">bilinear</tt> is used instead whatever is set with <tt class="docutils literal">lscale</tt>. Bilinear
+            <tt class="docutils literal">bilinear</tt> is used instead whatever is set with <tt class="docutils literal">scale</tt>. Bilinear
             will reproduce the source image perfectly if no scaling is performed.
-            Note that this option never affects <tt class="docutils literal">cscale</tt>, although the different
-            processing chain might do chroma scaling differently if <tt class="docutils literal">lscale</tt> is
-            disabled.</dd>
+            Note that this option never affects <tt class="docutils literal">cscale</tt>.</dd>
             <dt><tt class="docutils literal">srgb</tt></dt>
             <dd><p class="first">Convert and color correct the output to sRGB before displaying it on
-            the screen. This option enables linear light scaling. It also forces
-            the options <tt class="docutils literal">indirect</tt> and <tt class="docutils literal">gamma</tt>.</p>
+            the screen. This option enables linear light scaling.</p>
             <p>This option is equivalent to using <tt class="docutils literal"><span class="pre">icc-profile</span></tt> with an sRGB ICC
             profile, but it is implemented without a 3DLUT and does not require
             LittleCMS 2. If both <tt class="docutils literal">srgb</tt> and <tt class="docutils literal"><span class="pre">icc-profile</span></tt> are present, the
@@ -4541,25 +4549,20 @@
             <dt><tt class="docutils literal"><span class="pre">swapinterval=&lt;n&gt;</span></tt></dt>
             <dd>Interval in displayed frames between two buffer swaps.
             1 is equivalent to enable VSYNC, 0 to disable VSYNC.</dd>
-            <dt><tt class="docutils literal"><span class="pre">no-scale-sep</span></tt></dt>
-            <dd>When using a separable scale filter for luma, usually two filter
-            passes are done. This is often faster. However, it forces
-            conversion to RGB in an extra pass, so it can actually be slower
-            if used with fast filters on small screen resolutions. Using
-            this options will make rendering a single operation.
-            Note that chroma scalers are always done as 1-pass filters.</dd>
             <dt><tt class="docutils literal"><span class="pre">cscale=&lt;filter&gt;</span></tt></dt>
-            <dd>As <tt class="docutils literal">lscale</tt>, but for chroma (2x slower with little visible effect).
-            Note that with some scaling filters, upscaling is always done in
-            RGB. If chroma is not subsampled, this option is ignored, and the
-            luma scaler is used instead. Setting this option is often useless.</dd>
-            <dt><tt class="docutils literal"><span class="pre">lscale-down=&lt;filter&gt;</span></tt>, <tt class="docutils literal"><span class="pre">cscale-down=&lt;filter&gt;</span></tt></dt>
-            <dd>Like <tt class="docutils literal">lscale</tt> and <tt class="docutils literal">cscale</tt>, but apply these filters on downscaling
-            instead. If these options are unset, the filter implied by <tt class="docutils literal">lscale</tt>
-            (and <tt class="docutils literal">cscale</tt>, respectively) will be applied.</dd>
-            <dt><tt class="docutils literal">cparam1</tt>, <tt class="docutils literal">cparam2</tt>, <tt class="docutils literal">cradius</tt></dt>
+            <dd>As <tt class="docutils literal">scale</tt>, but for interpolating chroma information. If the image
+            is not subsampled, this option is ignored entirely. Note that the
+            implementation is currently always done as a single pass, so using
+            it with separable filters will result in slow performance for very
+            little visible benefit.</dd>
+            <dt><tt class="docutils literal"><span class="pre">scale-down=&lt;filter&gt;</span></tt></dt>
+            <dd>Like <tt class="docutils literal">scale</tt>, but apply these filters on downscaling
+            instead. If this option is unset, the filter implied by <tt class="docutils literal">scale</tt>
+            will be applied.</dd>
+            <dt><tt class="docutils literal"><span class="pre">cscale-param1</span></tt>, <tt class="docutils literal"><span class="pre">cscale-param2</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-antiring</span></tt></dt>
             <dd><p class="first">Set filter parameters and radius for <tt class="docutils literal">cscale</tt>.</p>
-            <p class="last">See <tt class="docutils literal">lparam1</tt>, <tt class="docutils literal">lparam2</tt> and <tt class="docutils literal">lradius</tt>.</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">scale-param1</span></tt>, <tt class="docutils literal"><span class="pre">scale-param2</span></tt>, <tt class="docutils literal"><span class="pre">scale-radius</span></tt> and
+            <tt class="docutils literal"><span class="pre">scale-antiring</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">fancy-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size
@@ -4608,14 +4611,6 @@
             <dd>Wayland/EGL</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">indirect</tt></dt>
-            <dd>Do YUV conversion and scaling as separate passes. This will first render
-            the video into a video-sized RGB texture, and draw the result on screen.
-            The luma scaler is used to scale the RGB image when rendering to screen.
-            The chroma scaler is used only on YUV conversion, and only if the video
-            is chroma-subsampled (usually the case).
-            This mechanism is disabled on RGB input.
-            Specifying this option directly is generally useful for debugging only.</dd>
             <dt><tt class="docutils literal"><span class="pre">fbo-format=&lt;fmt&gt;</span></tt></dt>
             <dd>Selects the internal format of textures used for FBOs. The format can
             influence performance and quality of the video output. (FBOs are not
@@ -4690,13 +4685,20 @@
             <dt><tt class="docutils literal"><span class="pre">background=&lt;color&gt;</span></tt></dt>
             <dd>Color used to draw parts of the mpv window not covered by video.
             See <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
+            <dt><tt class="docutils literal">smoothmotion</tt></dt>
+            <dd>Use frame interpolation to reduce stuttering caused by mismatches in
+            video fps and display refresh rate (similar to MadVR's smoothmotion,
+            thus the naming).</dd>
+            <dt><tt class="docutils literal"><span class="pre">smoothmotion-threshold=&lt;threshold&gt;</span></tt></dt>
+            <dd>Mix threshold at which interpolation is skipped (default: 0.0 – never
+            skip).</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-hq</span></tt></dt>
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:lscale=spline36:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
+            --vo=opengl:scale=spline36:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -4706,193 +4708,6 @@
             Mesa/Intel not accepting <tt class="docutils literal">rgb16</tt>, Mesa sometimes not being compiled with
             float texture support, and some OS X setups being very slow with <tt class="docutils literal">rgb16</tt>
             but fast with <tt class="docutils literal">rgb32f</tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">opengl-old</span></tt></dt>
-            <dd><p class="first">OpenGL video output driver, old version. Video size must be smaller
-            than the maximum texture size of your OpenGL implementation. Intended to
-            work even with the most basic OpenGL implementations, but also makes use
-            of newer extensions which allow support for more color spaces.</p>
-            <p>The code performs very few checks, so if a feature does not work, this
-            might be because it is not supported by your card and/or OpenGL
-            implementation, even if you do not get any error message. Use <tt class="docutils literal">glxinfo</tt>
-            or a similar tool to display the supported OpenGL extensions.</p>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This driver is for compatibility with old systems.</p>
-            </div>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">(no-)ati-hack</span></tt></dt>
-            <dd>ATI drivers may give a corrupted image when PBOs are used (when using
-            <tt class="docutils literal"><span class="pre">force-pbo</span></tt>). This option fixes this, at the expense of using a bit
-            more memory.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)force-pbo</span></tt></dt>
-            <dd>Always uses PBOs to transfer textures even if this involves an extra
-            copy. Currently this gives a little extra speed with NVIDIA drivers
-            and a lot more speed with ATI drivers. May need the <tt class="docutils literal"><span class="pre">ati-hack</span></tt>
-            suboption to work correctly.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)scaled-osd</span></tt></dt>
-            <dd>Scales the OSD and subtitles instead of rendering them at display size
-            (default: disabled).</dd>
-            <dt><tt class="docutils literal"><span class="pre">rectangle=&lt;0,1,2&gt;</span></tt></dt>
-            <dd><p class="first">Select usage of rectangular textures, which saves video RAM, but often
-            is slower (default: 0).</p>
-            <dl class="last docutils">
-            <dt>0</dt>
-            <dd>Use power-of-two textures (default).</dd>
-            <dt>1</dt>
-            <dd>Use the <tt class="docutils literal">GL_ARB_texture_rectangle</tt> extension.</dd>
-            <dt>2</dt>
-            <dd>Use the <tt class="docutils literal">GL_ARB_texture_non_power_of_two</tt> extension. In some
-            cases only supported in software and thus very slow.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">swapinterval=&lt;n&gt;</span></tt></dt>
-            <dd>Minimum interval between two buffer swaps, counted in displayed frames
-            (default: 1). 1 is equivalent to enabling VSYNC, 0 to disabling VSYNC.
-            Values below 0 will leave it at the system default. This limits the
-            framerate to (horizontal refresh rate / n). Requires
-            <tt class="docutils literal">GLX_SGI_swap_control</tt> support to work. With some (most/all?)
-            implementations this only works in fullscreen mode.</dd>
-            <dt><tt class="docutils literal">ycbcr</tt></dt>
-            <dd>Use the <tt class="docutils literal">GL_MESA_ycbcr_texture</tt> extension to convert YUV to RGB. In
-            most cases this is probably slower than doing software conversion to
-            RGB.</dd>
-            <dt><tt class="docutils literal"><span class="pre">yuv=&lt;n&gt;</span></tt></dt>
-            <dd><p class="first">Select the type of YUV to RGB conversion. The default is
-            auto-detection deciding between values 0 and 2.</p>
-            <dl class="last docutils">
-            <dt>0</dt>
-            <dd>Use software conversion. Compatible with all OpenGL versions.
-            Provides brightness, contrast and saturation control.</dd>
-            <dt>1</dt>
-            <dd>Same as 2. This used to use NVIDIA-specific extensions, which
-            did not provide any advantages over using fragment programs, except
-            possibly on very ancient graphics cards. It produced a gray-ish
-            output, which is why it has been removed.</dd>
-            <dt>2</dt>
-            <dd>Use a fragment program. Needs the <tt class="docutils literal">GL_ARB_fragment_program</tt>
-            extension and at least three texture units. Provides brightness,
-            contrast, saturation and hue control.</dd>
-            <dt>3</dt>
-            <dd>Use a fragment program using the <tt class="docutils literal">POW</tt> instruction. Needs the
-            <tt class="docutils literal">GL_ARB_fragment_program</tt> extension and at least three texture
-            units. Provides brightness, contrast, saturation, hue and gamma
-            control. Gamma can also be set independently for red, green and
-            blue. Method 4 is usually faster.</dd>
-            <dt>4</dt>
-            <dd>Use a fragment program with additional lookup. Needs the
-            <tt class="docutils literal">GL_ARB_fragment_program</tt> extension and at least four texture
-            units. Provides brightness, contrast, saturation, hue and gamma
-            control. Gamma can also be set independently for red, green and
-            blue.</dd>
-            <dt>5</dt>
-            <dd>Removed. Used ATI-specific method (for older cards).</dd>
-            <dt>6</dt>
-            <dd>Use a 3D texture to do conversion via lookup. Needs the
-            <tt class="docutils literal">GL_ARB_fragment_program extension</tt> and at least four texture
-            units. Extremely slow (software emulation) on some (all?) ATI
-            cards since it uses a texture with border pixels. Provides
-            brightness, contrast, saturation, hue and gamma control. Gamma can
-            also be set independently for red, green and blue. Speed depends
-            more on GPU memory bandwidth than other methods.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">lscale=&lt;n&gt;</span></tt></dt>
-            <dd><p class="first">Select the scaling function to use for luminance scaling. Only valid
-            for yuv modes 2, 3, 4 and 6.</p>
-            <dl class="last docutils">
-            <dt>0</dt>
-            <dd>Use simple linear filtering (default).</dd>
-            <dt>1</dt>
-            <dd>Use bicubic B-spline filtering (better quality). Needs one
-            additional texture unit. Older cards will not be able to handle
-            this for chroma at least in fullscreen mode.</dd>
-            <dt>2</dt>
-            <dd>Use cubic filtering in horizontal, linear filtering in vertical
-            direction. Works on a few more cards than method 1.</dd>
-            <dt>3</dt>
-            <dd>Same as 1 but does not use a lookup texture. Might be faster on
-            some cards.</dd>
-            <dt>4</dt>
-            <dd>Use experimental unsharp masking with 3x3 support and a default
-            strength of 0.5 (see <tt class="docutils literal"><span class="pre">filter-strength</span></tt>).</dd>
-            <dt>5</dt>
-            <dd>Use experimental unsharp masking with 5x5 support and a default
-            strength of 0.5 (see <tt class="docutils literal"><span class="pre">filter-strength</span></tt>).</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">cscale=&lt;n&gt;</span></tt></dt>
-            <dd>Select the scaling function to use for chrominance scaling. For
-            details see <tt class="docutils literal">lscale</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">filter-strength=&lt;value&gt;</span></tt></dt>
-            <dd>Set the effect strength for the <tt class="docutils literal">lscale</tt>/<tt class="docutils literal">cscale</tt> filters that
-            support it.</dd>
-            <dt><tt class="docutils literal"><span class="pre">stereo=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Select a method for stereo display. You may have to use
-            <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> to fix the aspect value. Experimental, do not expect
-            too much from it.</p>
-            <dl class="last docutils">
-            <dt>0</dt>
-            <dd>Normal 2D display</dd>
-            <dt>1</dt>
-            <dd>Convert side by side input to full-color red-cyan stereo.</dd>
-            <dt>2</dt>
-            <dd>Convert side by side input to full-color green-magenta stereo.</dd>
-            <dt>3</dt>
-            <dd>Convert side by side input to quad buffered stereo. Only supported
-            by very few OpenGL cards.</dd>
-            </dl>
-            </dd>
-            </dl>
-            <p>The following options are only useful if writing your own fragment programs.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">customprog=&lt;filename&gt;</span></tt></dt>
-            <dd>Load a custom fragment program from <tt class="docutils literal">&lt;filename&gt;</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">customtex=&lt;filename&gt;</span></tt></dt>
-            <dd>Load a custom &quot;gamma ramp&quot; texture from <tt class="docutils literal">&lt;filename&gt;</tt>. This can be used
-            in combination with <tt class="docutils literal">yuv=4</tt> or with the <tt class="docutils literal">customprog</tt> option.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)customtlin</span></tt></dt>
-            <dd>If enabled (default) use <tt class="docutils literal">GL_LINEAR</tt> interpolation, otherwise use
-            <tt class="docutils literal">GL_NEAREST</tt> for customtex texture.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)customtrect</span></tt></dt>
-            <dd>If enabled, use <tt class="docutils literal">texture_rectangle</tt> for the <tt class="docutils literal">customtex</tt> texture.
-            Default is disabled.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)mipmapgen</span></tt></dt>
-            <dd>If enabled, mipmaps for the video are automatically generated. This
-            should be useful together with the <tt class="docutils literal">customprog</tt> and the <tt class="docutils literal">TXB</tt>
-            instruction to implement blur filters with a large radius. For most
-            OpenGL implementations, this is very slow for any non-RGB formats.
-            Default is disabled.</dd>
-            </dl>
-            <p>Normally there is no reason to use the following options; they mostly
-            exist for testing purposes.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">(no-)glfinish</span></tt></dt>
-            <dd>Call <tt class="docutils literal">glFinish()</tt> before swapping buffers. Slower but in some cases
-            more correct output (default: disabled).</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)manyfmts</span></tt></dt>
-            <dd>Enables support for more (RGB and BGR) color formats (default: enabled).
-            Needs OpenGL version &gt;= 1.2.</dd>
-            <dt><tt class="docutils literal"><span class="pre">slice-height=&lt;0-...&gt;</span></tt></dt>
-            <dd>Number of lines copied to texture in one piece (default: 0). 0 for
-            whole image.</dd>
-            <dt><tt class="docutils literal">sw</tt></dt>
-            <dd>Continue even if a software renderer is detected.</dd>
-            <dt><tt class="docutils literal"><span class="pre">backend=&lt;sys&gt;</span></tt></dt>
-            <dd><dl class="first last docutils">
-            <dt>auto</dt>
-            <dd>auto-select (default)</dd>
-            <dt>cocoa</dt>
-            <dd>Cocoa/OS X</dd>
-            <dt>win</dt>
-            <dd>Win32/WGL</dd>
-            <dt>x11</dt>
-            <dd>X11/GLX</dd>
-            <dt>wayland</dt>
-            <dd>Wayland/EGL</dd>
-            </dl>
-            </dd>
-            </dl>
             </dd>
             <dt><tt class="docutils literal">sdl</tt></dt>
             <dd><p class="first">SDL 2.0+ Render video output driver, depending on system with or without
@@ -6667,6 +6482,10 @@
             <dd>Show only first field (going by <tt class="docutils literal"><span class="pre">--field-dominance</span></tt>).</dd>
             <dt>bob</dt>
             <dd>bob deinterlacing (default).</dd>
+            <dt>weave, motion-adaptive, motion-compensated</dt>
+            <dd>Advanced deinterlacing algorithms. Whether these actually work
+            depends on the GPU hardware, the GPU drivers, driver bugs, and
+            mpv bugs.</dd>
             </dl>
             </dd>
             </dl>
@@ -7764,6 +7583,8 @@
             <dd>See <tt class="docutils literal"><span class="pre">--ontop</span></tt>.</dd>
             <dt><tt class="docutils literal">border</tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--border</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">on-all-workspaces</span></tt> (RW)</dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--on-all-workspaces</span></tt>. Unsetting may not work on all WMs.</dd>
             <dt><tt class="docutils literal">framedrop</tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--framedrop</span></tt>.</dd>
             <dt><tt class="docutils literal">gamma</tt> (RW)</dt>
