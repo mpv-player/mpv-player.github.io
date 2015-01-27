@@ -176,6 +176,8 @@
             PGUP/PGDWN without Shift.)</dd>
             <dt>D</dt>
             <dd>Activate/deactivate deinterlacer.</dd>
+            <dt>A</dt>
+            <dd>Cycle aspect ratio override.</dd>
             </dl>
             <p>(The following keys are valid only when using a video output that supports the
             corresponding adjustment, or the software equalizer (<tt class="docutils literal"><span class="pre">--vf=eq</span></tt>).)</p>
@@ -252,8 +254,8 @@
             Additionally, there is a special form of quoting with <tt class="docutils literal">%n%</tt> described below.</p>
             <p>For example, the <tt class="docutils literal">opengl</tt> VO can take multiple options:</p>
             <blockquote>
-            <tt class="docutils literal">mpv test.mkv <span class="pre">--vo=opengl:lscale=lanczos2:icc-profile=file.icc,xv</span></tt></blockquote>
-            <p>This passed <tt class="docutils literal">lscale=lanczos2</tt> and <tt class="docutils literal"><span class="pre">icc-profile=file.icc</span></tt> to <tt class="docutils literal">opengl</tt>,
+            <tt class="docutils literal">mpv test.mkv <span class="pre">--vo=opengl:scale=lanczos:icc-profile=file.icc,xv</span></tt></blockquote>
+            <p>This passes <tt class="docutils literal">scale=lanczos</tt> and <tt class="docutils literal"><span class="pre">icc-profile=file.icc</span></tt> to <tt class="docutils literal">opengl</tt>,
             and also specifies <tt class="docutils literal">xv</tt> as fallback VO. If the icc-profile path contains
             spaces or characters like <tt class="docutils literal">,</tt> or <tt class="docutils literal">:</tt>, you need to quote them:</p>
             <blockquote>
@@ -1013,6 +1015,10 @@
             available aliases. To use experimental DASH support for youtube, use
             <tt class="docutils literal">bestvideo+bestaudio</tt>.
             (Default: <tt class="docutils literal">best</tt>)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--log-file=&lt;path&gt;</span></tt></dt>
+            <dd>Opens the given path for writing, and print log messages to it. Existing
+            files will be truncated. The log level always corresponds to <tt class="docutils literal"><span class="pre">-v</span></tt>,
+            regardless of terminal verbosity levels.</dd>
             </dl>
             </div>
             <div class="section" id="video">
@@ -3613,11 +3619,11 @@
             <col class="field-body" />
             <tbody valign="top">
             <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't do anything special. Typically, this will simply pick the
-            first audio/video streams it can find. (Default.)</td>
+            first audio/video streams it can find.</td>
             </tr>
             <tr class="field"><th class="field-name">min:</th><td class="field-body">Pick the streams with the lowest bitrate.</td>
             </tr>
-            <tr class="field"><th class="field-name">max:</th><td class="field-body">Same, but highest bitrate.</td>
+            <tr class="field"><th class="field-name">max:</th><td class="field-body">Same, but highest bitrate. (Default.)</td>
             </tr>
             </tbody>
             </table>
@@ -4429,6 +4435,7 @@
             <p>Requires at least OpenGL 2.1.</p>
             <p>Some features are available with OpenGL 3 capable graphics drivers only
             (or if the necessary extensions are available).</p>
+            <p>OpenGL ES 2.0 and 3.0 are supported as well.</p>
             <p>Hardware decoding over OpenGL-interop is supported to some degree. Note
             that in this mode, some corner case might not be gracefully handled, and
             color space conversion and chroma upsampling is generally in the hand of
@@ -4446,8 +4453,8 @@
             than <tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image
             which is good for some content types. The number of taps can be
             controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>, but is best left unchanged.</p>
-            <p class="last">If the radius is not changed, this filter corresponds to the old
-            <tt class="docutils literal">lanczos3</tt> alias, while <tt class="docutils literal">lanczos2</tt> corresponds to a radius of 2.</p>
+            <p class="last">This filter corresponds to the old <tt class="docutils literal">lanczos3</tt> alias if the default
+            radius is used, while <tt class="docutils literal">lanczos2</tt> corresponds to a radius of 2.</p>
             </dd>
             <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
             <dd><p class="first">Elliptic weighted average Lanczos scaling. Also known as Jinc.
@@ -4535,7 +4542,8 @@
             <p class="last">Used in <tt class="docutils literal">dither=fruit</tt> mode only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">dither=&lt;fruit|ordered|no&gt;</span></tt></dt>
-            <dd>Select dithering algorithm (default: fruit).</dd>
+            <dd>Select dithering algorithm (default: fruit). (Normally, the
+            <tt class="docutils literal"><span class="pre">dither-depth</span></tt> option controls whether dithering is enabled.)</dd>
             <dt><tt class="docutils literal"><span class="pre">temporal-dither</span></tt></dt>
             <dd>Enable temporal dithering. (Only active if dithering is enabled in
             general.) This changes between 8 different dithering pattern on each
@@ -4556,9 +4564,8 @@
             it with separable filters will result in slow performance for very
             little visible benefit.</dd>
             <dt><tt class="docutils literal"><span class="pre">scale-down=&lt;filter&gt;</span></tt></dt>
-            <dd>Like <tt class="docutils literal">scale</tt>, but apply these filters on downscaling
-            instead. If this option is unset, the filter implied by <tt class="docutils literal">scale</tt>
-            will be applied.</dd>
+            <dd>Like <tt class="docutils literal">scale</tt>, but apply these filters on downscaling instead. If this
+            option is unset, the filter implied by <tt class="docutils literal">scale</tt> will be applied.</dd>
             <dt><tt class="docutils literal"><span class="pre">cscale-param1</span></tt>, <tt class="docutils literal"><span class="pre">cscale-param2</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-antiring</span></tt></dt>
             <dd><p class="first">Set filter parameters and radius for <tt class="docutils literal">cscale</tt>.</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">scale-param1</span></tt>, <tt class="docutils literal"><span class="pre">scale-param2</span></tt>, <tt class="docutils literal"><span class="pre">scale-radius</span></tt> and
@@ -4568,7 +4575,8 @@
             <dd><p class="first">When using convolution based filters, extend the filter size
             when downscaling. Trades quality for reduced downscaling performance.</p>
             <p class="last">This is automatically disabled for anamorphic video, because this
-            feature doesn't work correctly with this.</p>
+            feature doesn't work correctly with different scale factors in
+            different directions.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt></dt>
             <dd>When upscaling in linear light, use a sigmoidal color transform
@@ -4585,12 +4593,13 @@
             <dt><tt class="docutils literal">glfinish</tt></dt>
             <dd>Call <tt class="docutils literal">glFinish()</tt> before and after swapping buffers (default: disabled).
             Slower, but might help getting better results when doing framedropping.
-            The details depend entirely on the OpenGL driver.</dd>
+            Can completely ruin performance. The details depend entirely on the
+            OpenGL driver.</dd>
             <dt><tt class="docutils literal">waitvsync</tt></dt>
             <dd><p class="first">Call <tt class="docutils literal">glXWaitVideoSyncSGI</tt> after each buffer swap (default: disabled).
             This may or may not help with video timing accuracy and frame drop. It's
             possible that this makes video output slower, or has no effect at all.</p>
-            <p class="last">X11 only.</p>
+            <p class="last">X11/GLX only.</p>
             </dd>
             <dt><tt class="docutils literal">sw</tt></dt>
             <dd>Continue even if a software renderer is detected.</dd>
@@ -4605,10 +4614,12 @@
             <dd>Cocoa/OS X</dd>
             <dt>win</dt>
             <dd>Win32/WGL</dd>
-            <dt>x11</dt>
-            <dd>X11/GLX</dd>
+            <dt>x11, x11es</dt>
+            <dd>X11/GLX (the <tt class="docutils literal">es</tt> variant forces GLES)</dd>
             <dt>wayland</dt>
             <dd>Wayland/EGL</dd>
+            <dt>x11egl, x11egles</dt>
+            <dd>X11/EGL (the <tt class="docutils literal">es</tt> variant forces GLES)</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">fbo-format=&lt;fmt&gt;</span></tt></dt>
@@ -4633,7 +4644,7 @@
             <dt><tt class="docutils literal"><span class="pre">icc-profile-auto</span></tt></dt>
             <dd><p class="first">Automatically select the ICC display profile currently specified by
             the display settings of the operating system.</p>
-            <p class="last">NOTE: Only implemented on OS X with Cocoa.</p>
+            <p class="last">NOTE: Only implemented on OS X and X11</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">icc-cache=&lt;file&gt;</span></tt></dt>
             <dd>Store and load the 3D LUT created from the ICC profile in this file.
@@ -4669,8 +4680,8 @@
             if the video contains alpha information (which is extremely rare). May
             not be supported on all platforms. If alpha framebuffers are
             unavailable, it silently falls back on a normal framebuffer. Note
-            that when using FBO indirections (such as with <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>), an FBO
-            format with alpha must be specified with the <tt class="docutils literal"><span class="pre">fbo-format</span></tt> option.</dd>
+            that if you set the <tt class="docutils literal"><span class="pre">fbo-format</span></tt> option to a non-default value,
+            a format with alpha must be specified, or this won't work.</dd>
             <dt>no</dt>
             <dd>Ignore alpha component.</dd>
             </dl>
@@ -4686,10 +4697,18 @@
             <dd>Color used to draw parts of the mpv window not covered by video.
             See <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
             <dt><tt class="docutils literal">smoothmotion</tt></dt>
-            <dd>Use frame interpolation to reduce stuttering caused by mismatches in
+            <dd><p class="first">Use frame interpolation to reduce stuttering caused by mismatches in
             video fps and display refresh rate (similar to MadVR's smoothmotion,
-            thus the naming).</dd>
-            <dt><tt class="docutils literal"><span class="pre">smoothmotion-threshold=&lt;threshold&gt;</span></tt></dt>
+            thus the naming). GPU drivers or compositing window managers overriding
+            vsync behavior can lead to bad results. If the framerate is close to or
+            over the display refresh rate, results can be bad as well.</p>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">On systems other than Linux, you currently must set the
+            <tt class="docutils literal"><span class="pre">--display-fps</span></tt> option, or the results will be bad.</p>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">smoothmotion-threshold=&lt;0.0-0.5&gt;</span></tt></dt>
             <dd>Mix threshold at which interpolation is skipped (default: 0.0 – never
             skip).</dd>
             </dl>
@@ -4698,7 +4717,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
+            --vo=opengl:scale=spline36:scale-down=mitchell:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -7014,6 +7033,22 @@
             <dd>Stop playback and clear playlist. With default settings, this is
             essentially like <tt class="docutils literal">quit</tt>. Useful for the client API: playback can be
             stopped without terminating the player.</dd>
+            <dt><tt class="docutils literal">mouse &lt;x&gt; &lt;y&gt; [&lt;button&gt; [single|double]]</tt></dt>
+            <dd><p class="first">Send a mouse event with given coordinate (<tt class="docutils literal">&lt;x&gt;</tt>, <tt class="docutils literal">&lt;y&gt;</tt>).</p>
+            <p>Second argument:</p>
+            <dl class="docutils">
+            <dt>&lt;button&gt;</dt>
+            <dd>The button number of clicked mouse button. This should be one of 0-19.
+            If <tt class="docutils literal">&lt;button&gt;</tt> is omitted, only the position will be updated.</dd>
+            </dl>
+            <p>Third argument:</p>
+            <dl class="last docutils">
+            <dt>&lt;single&gt; (default)</dt>
+            <dd>The mouse event represents regular single click.</dd>
+            <dt>&lt;double&gt;</dt>
+            <dd>The mouse event represents double-click.</dd>
+            </dl>
+            </dd>
             </dl>
             </div>
             <div class="section" id="input-commands-that-are-possibly-subject-to-change">
@@ -7310,6 +7345,10 @@
             <p>Otherwise, if the media type is DVD, return the volume ID of DVD.</p>
             <p class="last">Otherwise, return the <tt class="docutils literal">filename</tt> property.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">file-format</span></tt></dt>
+            <dd>Symbolic name of the file format. In some cases, this is a comma-separated
+            list of format names, e.g. mp4 is <tt class="docutils literal">mov,mp4,m4a,3gp,3g2,mj2</tt> (the list
+            may grow in the future for any format).</dd>
             <dt><tt class="docutils literal">demuxer</tt></dt>
             <dd>Name of the current demuxer. (This is useless.)</dd>
             <dt><tt class="docutils literal"><span class="pre">stream-path</span></tt></dt>
@@ -7891,6 +7930,13 @@
             <dd>See <tt class="docutils literal"><span class="pre">--video-rotate</span></tt> option.</dd>
             <dt><tt class="docutils literal">seekable</tt></dt>
             <dd>Return whether it's generally possible to seek in the current file.</dd>
+            <dt><tt class="docutils literal"><span class="pre">partially-seekable</span></tt></dt>
+            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the current file is considered seekable, but only because
+            the cache is active. This means small relative seeks may be fine, but larger
+            seeks may fail anyway. Whether a seek will succeed or not is generally not
+            known in advance.</p>
+            <p class="last">If this property returns true, <tt class="docutils literal">seekable</tt> will also return true.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">playback-abort</span></tt></dt>
             <dd>Return whether playback is stopped or is to be stopped. (Useful in obscure
             situations like during <tt class="docutils literal">on_load</tt> hook processing, when the user can
@@ -9421,7 +9467,7 @@
             </li>
             <li><p class="first">Support for color managed displays, via ICC profiles.</p>
             </li>
-            <li><p class="first">More high-quality image resamplers (see the <tt class="docutils literal">lscale</tt> suboption).</p>
+            <li><p class="first">High-quality image resamplers (see the <tt class="docutils literal">opengl</tt> <tt class="docutils literal">scale</tt> suboption).</p>
             </li>
             <li><p class="first">Support for scaling in (sigmoidized) linear light.</p>
             </li>
@@ -10141,6 +10187,24 @@
             <tt class="docutils literal"><span class="pre">--script</span></tt> option. They are loaded in alphabetical order, and sub-directories
             and files with no <tt class="docutils literal">.lua</tt> extension are ignored. The <tt class="docutils literal"><span class="pre">--load-scripts=no</span></tt>
             option disables loading these files.</dd>
+            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt></dt>
+            <dd><p class="first">Contains temporary config files needed for resuming playback of files with
+            the watch later feature. See for example the <tt class="docutils literal">Q</tt> key binding, or the
+            <tt class="docutils literal">quit_watch_later</tt> input command.</p>
+            <p class="last">Each file is a small config file which is loaded if the corresponding media
+            file is loaded. It contains the playback position and some (not necessarily
+            all) settings that were changed during playback. The filenames are hashed
+            from the full paths of the media files. It's in general not possible to
+            extract the media filename from this hash. However, you can set the
+            <tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt> option, and the player will
+            add the media filename to the contents of the resume config file.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/lua-settings/osc.conf</span></tt></dt>
+            <dd><p class="first">This is loaded by the OSC script. See the <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a> docs
+            for details.</p>
+            <p class="last">Other files in this directory are specific to the corresponding scripts
+            as well, and the mpv core doesn't touch them.</p>
+            </dd>
             </dl>
             <p>Note that the environment variables <tt class="docutils literal">$XDG_CONFIG_HOME</tt> and <tt class="docutils literal">$MPV_HOME</tt> can
             override the standard directory <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>.</p>
@@ -10150,17 +10214,14 @@
             <div class="section" id="files-on-windows">
             <h1>FILES ON WINDOWS</h1>
             <p>On win32 (if compiled with MinGW, but not Cygwin), the default config file
-            locations are different:</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/mpv.conf</span></tt></dt>
-            <dd>Preferred mpv config file. This maps to a system and user-specific path,
-            for example <tt class="docutils literal"><span class="pre">C:\users\USERNAME\Application</span> Data\mpv\mpv.conf</tt>. You can
-            find the exact path by running <tt class="docutils literal">echo <span class="pre">%APPDATA%\mpv\mpv.conf</span></tt> in cmd.exe.</dd>
-            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/input.conf</span></tt></dt>
-            <dd>key bindings (see <a class="reference internal" href="#input-conf">INPUT.CONF</a> section)</dd>
-            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/scripts/</span></tt></dt>
-            <dd>equivalent of <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt> on Unix.</dd>
-            </dl>
+            locations are different. They are generally located under <tt class="docutils literal"><span class="pre">%APPDATA%/mpv/</span></tt>.
+            For example, the path to mpv.conf is <tt class="docutils literal"><span class="pre">%APPDATA%/mpv/mpv.conf</span></tt>, which maps to
+            a system and user-specific path, for example</p>
+            <blockquote>
+            <tt class="docutils literal"><span class="pre">C:\users\USERNAME\Application</span> Data\mpv\mpv.conf</tt></blockquote>
+            <p>You can find the exact path by running <tt class="docutils literal">echo <span class="pre">%APPDATA%\mpv\mpv.conf</span></tt> in cmd.exe.</p>
+            <p>Other config files (such as <tt class="docutils literal">input.conf</tt>) are in the same directory. See the
+            <a class="reference internal" href="#files">FILES</a> section above.</p>
             <p>The environment variable <tt class="docutils literal">$MPV_HOME</tt> completely overrides these, like on
             UNIX.</p>
             <p>Config files located in the same directory as <tt class="docutils literal">mpv.exe</tt> are loaded with

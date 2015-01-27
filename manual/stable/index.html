@@ -237,12 +237,35 @@
             is the same as <tt class="docutils literal"><span class="pre">--no-fs</span></tt>.</p>
             <p>If an option is marked as <em>(XXX only)</em>, it will only work in combination with
             the <em>XXX</em> option or if <em>XXX</em> is compiled in.</p>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">The suboption parser (used for example for <tt class="docutils literal"><span class="pre">--ao=pcm</span></tt> suboptions)
-            supports a special kind of string-escaping intended for use with external
-            GUIs.</p>
-            </div>
+            <div class="section" id="escaping-spaces-and-other-special-characters">
+            <h2>Escaping spaces and other special characters</h2>
+            <p>Keep in mind that the shell will partially parse and mangle the arguments you
+            pass to mpv. For example, you might need to quote or escape options and
+            filenames:</p>
+            <blockquote>
+            <tt class="docutils literal">mpv &quot;filename with spaces.mkv&quot; <span class="pre">--title=&quot;window</span> title&quot;</tt></blockquote>
+            <p>It gets more complicated if the suboption parser is involved. The suboption
+            parser puts several options into a single string, and passes them to a
+            component at once, instead of using multiple options on the level of the
+            command line.</p>
+            <p>The suboption parser can quote strings with <tt class="docutils literal">&quot;</tt>, <tt class="docutils literal">'</tt>, and <tt class="docutils literal"><span class="pre">[...]</span></tt>.
+            Additionally, there is a special form of quoting with <tt class="docutils literal">%n%</tt> described below.</p>
+            <p>For example, the <tt class="docutils literal">opengl</tt> VO can take multiple options:</p>
+            <blockquote>
+            <tt class="docutils literal">mpv test.mkv <span class="pre">--vo=opengl:lscale=lanczos2:icc-profile=file.icc,xv</span></tt></blockquote>
+            <p>This passed <tt class="docutils literal">lscale=lanczos2</tt> and <tt class="docutils literal"><span class="pre">icc-profile=file.icc</span></tt> to <tt class="docutils literal">opengl</tt>,
+            and also specifies <tt class="docutils literal">xv</tt> as fallback VO. If the icc-profile path contains
+            spaces or characters like <tt class="docutils literal">,</tt> or <tt class="docutils literal">:</tt>, you need to quote them:</p>
+            <blockquote>
+            <tt class="docutils literal">mpv <span class="pre">'--vo=opengl:icc-profile=&quot;file</span> with <span class="pre">spaces.icc&quot;,xv'</span></tt></blockquote>
+            <p>Shells may actually strip some quotes from the string passed to the commandline,
+            so the example quotes the string twice, ensuring that mpv recieves the <tt class="docutils literal">&quot;</tt>
+            quotes.</p>
+            <p>The <tt class="docutils literal"><span class="pre">[...]</span></tt> from of quotes wraps everything between <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt>. It's
+            useful with shells that don't interpret these characters in the middle of
+            an argument (like bash).</p>
+            <p>A special kind of string-escaping intended for use with external scripts and
+            programs is started with <tt class="docutils literal">%</tt>.</p>
             <p>It has the following format:</p>
             <pre class="literal-block">
             %n%string_of_length_n
@@ -252,6 +275,15 @@
             <p><tt class="docutils literal">mpv <span class="pre">--ao=pcm:file=%10%C:test.wav</span> test.avi</tt></p>
             <p>Or in a script:</p>
             <p class="last"><tt class="docutils literal">mpv <span class="pre">--ao=pcm:file=%`expr</span> length <span class="pre">&quot;$NAME&quot;`%&quot;$NAME&quot;</span> test.avi</tt></p>
+            </div>
+            <p>Suboptions passed to the client API are also subject to escaping. Using
+            <tt class="docutils literal">mpv_set_option_string()</tt> is exactly like passing <tt class="docutils literal"><span class="pre">--name=data</span></tt> to the
+            command line (but without shell processing of the string). Some options
+            support passing values in a more structured way instead of flat strings, and
+            can avoid the suboption parsing mess. For example, <tt class="docutils literal"><span class="pre">--vf</span></tt> supports
+            <tt class="docutils literal">MPV_FORMAT_NODE</tt>, which let's you pass suboptions as a nested data structure
+            of maps and arrays. (<tt class="docutils literal"><span class="pre">--vo</span></tt> supports this in the same way, although this
+            fact is undocumented.)</p>
             </div>
             <div class="section" id="paths">
             <h2>Paths</h2>
@@ -360,6 +392,16 @@
             </pre>
             </div>
             </div>
+            <div class="section" id="escaping-spaces-and-special-characters">
+            <h2>Escaping spaces and special characters</h2>
+            <p>This is done like with command line options. The shell is not involved here,
+            but option values still need to be quoted as a whole if it contains certain
+            characters like spaces. A config entry can be quoted with <tt class="docutils literal">&quot;</tt> and <tt class="docutils literal">'</tt>,
+            as well as with the <tt class="docutils literal">%n%</tt> syntax mentioned before. This is like passing
+            the exact contents of the quoted string as command line option. C-style escapes
+            are currently _not_ interpreted on this level, although some options to this
+            manually. (This is a mess and should probably be changed at some point.)</p>
+            </div>
             <div class="section" id="putting-command-line-options-into-the-configuration-file">
             <h2>Putting Command Line Options into the Configuration File</h2>
             <p>Almost all command line options can be put into the configuration file. Here
@@ -462,7 +504,7 @@
             <ul class="simple">
             <li><tt class="docutils literal">AV:</tt> or <tt class="docutils literal">V:</tt> (video only) or <tt class="docutils literal">A:</tt> (audio only)</li>
             <li>The current time position in <tt class="docutils literal">HH:MM:SS</tt> format (<tt class="docutils literal"><span class="pre">playback-time</span></tt> property)</li>
-            <li>The total file duration (or <tt class="docutils literal">00:00:00</tt> if unknown) (<tt class="docutils literal">length</tt> property)</li>
+            <li>The total file duration (absent if unknown) (<tt class="docutils literal">length</tt> property)</li>
             <li>Playback speed, e.g. `` x2.0``. Only visible if the speed is not normal. This
             is the user-requested speed, and not the actual speed  (usually they should
             be the same, unless playback is too slow). (<tt class="docutils literal">speed</tt> property.)</li>
@@ -510,7 +552,7 @@
             <dt><tt class="docutils literal"><span class="pre">bd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--bluray-device=PATH</span></tt></dt>
             <dd>Play a Blu-Ray disc. Currently, this does not accept ISO files. Instead,
             you must mount the ISO file as filesystem, and point <tt class="docutils literal"><span class="pre">--bluray-device</span></tt>
-            to the mounted directly.</dd>
+            to the mounted directory directly.</dd>
             <dt><tt class="docutils literal"><span class="pre">bdnav://[title][/device]</span></tt></dt>
             <dd>Play a Blu-Ray disc, with navigation features enabled. This feature is
             permanently experimental.</dd>
@@ -610,8 +652,8 @@
             stream index is relatively arbitrary, but useful when interacting with
             other software using FFmpeg (consider <tt class="docutils literal">ffprobe</tt>).</p>
             <p class="last">Note that with external tracks (added with <tt class="docutils literal"><span class="pre">--sub-file</span></tt> and similar
-            options) will have duplicate IDs. In that case, the first stream in order
-            is selected.</p>
+            options), there will be streams with duplicate IDs. In this case, the
+            first stream in order is selected.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--edition=&lt;ID|auto&gt;</span></tt></dt>
             <dd>(Matroska files only)
@@ -675,8 +717,8 @@
             <dd>Specify which chapter to start playing at. Optionally specify which
             chapter to end playing at. Also see <tt class="docutils literal"><span class="pre">--start</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--playlist=&lt;filename&gt;</span></tt></dt>
-            <dd><p class="first">Play files according to a playlist file (Supports some common formats.If
-            no format is detected, t will be treated as list of files, separated by
+            <dd><p class="first">Play files according to a playlist file (Supports some common formats. If
+            no format is detected, it will be treated as list of files, separated by
             newline characters. Note that XML playlist formats are not supported.)</p>
             <p>You can play playlists directly and without this option, however, this
             option disables any security mechanisms that might be in place. You may
@@ -895,13 +937,9 @@
             option is used and what semantics the option value has depends entirely on
             the loaded Lua scripts. Values not claimed by any scripts are ignored.</dd>
             <dt><tt class="docutils literal"><span class="pre">--merge-files</span></tt></dt>
-            <dd><p class="first">Pretend that all files passed to mpv are concatenated into a single, big
+            <dd>Pretend that all files passed to mpv are concatenated into a single, big
             file. This uses timeline/EDL support internally. Note that this won't work
-            for ordered chapter files.</p>
-            <p class="last">This option is interpreted at program start, and doesn't affect for
-            example files or playlists loaded with the <tt class="docutils literal">loadfile</tt> or <tt class="docutils literal">loadlist</tt>
-            commands.</p>
-            </dd>
+            for ordered chapter files.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-resume-playback</span></tt></dt>
             <dd>Do not restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
             subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>).
@@ -958,8 +996,8 @@
             <dt><tt class="docutils literal"><span class="pre">--ytdl</span></tt>, <tt class="docutils literal"><span class="pre">--no-ytdl</span></tt></dt>
             <dd><p class="first">Enable the youtube-dl hook-script. It will look at the input URL, and will
             play the video located on the website. This works with many streaming sites,
-            not just the one the scripts are named after. This requires a recent version
-            of youtube-dl to be installed on the system. (Enabled by default.)</p>
+            not just the one that the script is named after. This requires a recent
+            version of youtube-dl to be installed on the system. (Enabled by default.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
             <p class="last">(Note: this is the replacement for the now removed libquvi support.)</p>
             </dd>
@@ -1025,7 +1063,7 @@
             in mpv 0.5.x and before.) This tells the decoder to skip frames (unless
             they are needed to decode future frames). May help with slow systems,
             but can produce unwatchably choppy output, or even freeze the display
-            complete. Not recommended.
+            completely. Not recommended.
             The <tt class="docutils literal"><span class="pre">--vd-lavc-framedrop</span></tt> option controls what frames to drop.</dd>
             <dt>&lt;decoder+vo&gt;</dt>
             <dd>Enable both modes. Not recommended.</dd>
@@ -1117,9 +1155,8 @@
             <dt><tt class="docutils literal"><span class="pre">--video-unscaled</span></tt></dt>
             <dd><p class="first">Disable scaling of the video. If the window is larger than the video,
             black bars are added. Otherwise, the video is cropped. The video still
-            can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. (If the
-            <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> option is set to a value other than <tt class="docutils literal">0</tt>, scaling is
-            enabled, but the video isn't automatically scaled to the window size.)</p>
+            can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. (But not all; for
+            example <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> does nothing if this option is enabled.)</p>
             <p>The video and monitor aspects aspect will be ignored. Aspect correction
             would require to scale the video in the X or Y direction, but this option
             disables scaling, disabling all aspect correction.</p>
@@ -1966,14 +2003,14 @@
             <h2>Window</h2>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--title=&lt;string&gt;</span></tt></dt>
-            <dd><p class="first">Set the window title. Properties are expanded on playback start.
-            (See <a class="reference internal" href="#property-expansion">Property Expansion</a>.)</p>
+            <dd><p class="first">Set the window title. This is used for the video window, and if possible,
+            also sets the audio stream title.</p>
+            <p>Properties are expanded. (See <a class="reference internal" href="#property-expansion">Property Expansion</a>.)</p>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">There is a danger of this causing significant CPU usage, depending on
-            the properties used and the window manager. Changing the window title
-            is often a slow operation, and if the title changes every frame,
-            playback can be ruined.</p>
+            the properties used. Changing the window title is often a slow
+            operation, and if the title changes every frame, playback can be ruined.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--screen=&lt;default|0-32&gt;</span></tt></dt>
@@ -2888,7 +2925,7 @@
             <p>Alternatively, the color can be specified as a RGB hex triplet in the form
             <tt class="docutils literal">#RRGGBB</tt>, where each 2-digit group expresses a color value in the
             range 0 (<tt class="docutils literal">00</tt>) to 255 (<tt class="docutils literal">FF</tt>). For example, <tt class="docutils literal">#FF0000</tt> is red.
-            This is similar to web colors.</p>
+            This is similar to web colors. Alpha is given with <tt class="docutils literal">#AARRGGBB</tt>.</p>
             <div class="admonition-examples admonition last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -3741,8 +3778,8 @@
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
             <li><tt class="docutils literal"><span class="pre">--ao=alsa,oss,</span></tt> Try the ALSA driver, then the OSS driver, then others.</li>
-            <li><tt class="docutils literal"><span class="pre">--ao=alsa:no-block:device=[hw:0,3]</span></tt> Sets noblock-mode and the
-            device-name as first card, fourth device.</li>
+            <li><tt class="docutils literal"><span class="pre">--ao=alsa:resample=yes:device=[plughw:0,3]</span></tt> Lets ALSA resample and
+            sets the device-name as first card, fourth device.</li>
             </ul>
             </div>
             <p>Available audio output drivers are:</p>
@@ -3861,10 +3898,15 @@
             value makes the audio stream react faster, e.g. to playback speed
             changes. Default: 250.</dd>
             <dt><tt class="docutils literal"><span class="pre">latency-hacks=&lt;yes|no&gt;</span></tt></dt>
-            <dd>Enable hacks to workaround PulseAudio timing bugs (default: yes). If
+            <dd><p class="first">Enable hacks to workaround PulseAudio timing bugs (default: no). If
             enabled, mpv will do elaborate latency calculations on its own. If
             disabled, it will use PulseAudio automatically updated timing
-            information. Disabling this might help with e.g. networked audio.</dd>
+            information. Disabling this might help with e.g. networked audio or
+            some plugins, while enabling it might help in some unknown situations
+            (it used to be required to get good behavior on old PulseAudio versions).</p>
+            <p class="last">If you have stuttering video when using pulse, try to enable this
+            option. (Or alternatively, try to update PulseAudio.)</p>
+            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">portaudio</tt></dt>
@@ -4440,7 +4482,7 @@
             RGB. If chroma is not subsampled, this option is ignored, and the
             luma scaler is used instead. Setting this option is often useless.</dd>
             <dt><tt class="docutils literal"><span class="pre">lscale-down=&lt;filter&gt;</span></tt>, <tt class="docutils literal"><span class="pre">cscale-down=&lt;filter&gt;</span></tt></dt>
-            <dd>Like <tt class="docutils literal">lscale</tt> and <tt class="docutils literal">cscale</tt>, but apply these filters on downscaling
+            <dd>Like <tt class="docutils literal">lscale</tt>, but apply these filters on downscaling
             instead. If these options are unset, the filter implied by <tt class="docutils literal">lscale</tt>
             (and <tt class="docutils literal">cscale</tt>, respectively) will be applied.</dd>
             <dt><tt class="docutils literal">cparam1</tt>, <tt class="docutils literal">cparam2</tt>, <tt class="docutils literal">cradius</tt></dt>
@@ -6605,7 +6647,7 @@
             requires random frame access (see <tt class="docutils literal"><span class="pre">buffered-frames</span></tt> parameter).</p>
             <p>This filter is experimental. If it turns out that it works well and is
             used, it will be ported to libavfilter. Otherwise, it will be just removed.</p>
-            <dl class="last docutils">
+            <dl class="docutils">
             <dt><tt class="docutils literal">file</tt></dt>
             <dd><p class="first">Filename of the script source. Currently, this is always a python
             script. The variable <tt class="docutils literal">video_in</tt> is set to the mpv video source,
@@ -6650,6 +6692,24 @@
             proportional to the number of cores on your machine. Most time,
             making it higher than the number of cores can actually make it
             slower.</dd>
+            </dl>
+            <p>The following variables are defined by mpv:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">video_in</tt></dt>
+            <dd>The mpv video source as vapoursynth clip. Note that this has no length
+            set, which confuses many filters. Using <tt class="docutils literal">Trim</tt> on the clip with a
+            high dummy length can turn it into a finite clip.</dd>
+            <dt><tt class="docutils literal">video_in_dw</tt>, <tt class="docutils literal">video_in_dh</tt></dt>
+            <dd>Display size of the video. Can be different from video size if the
+            video does not use square pixels (e.g. DVD).</dd>
+            <dt><tt class="docutils literal">container_fps</tt></dt>
+            <dd><p class="first">FPS value as reported by file headers. This value can be wrong or
+            completely broken (e.g. 0 or NaN). Even if the value is correct,
+            if another filter changes the real FPS (by dropping or inserting
+            frames), the value of this variable might not be useful. Note that
+            the <tt class="docutils literal"><span class="pre">--fps</span></tt> command line option overrides this value.</p>
+            <p class="last">Useful for some filters which insist on having a FPS.</p>
+            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vapoursynth-lazy</span></tt></dt>
@@ -6891,8 +6951,14 @@
             encoding (which is enabled by default).</dd>
             </dl>
             </div>
+            <div class="section" id="command-interface">
+            <h1>COMMAND INTERFACE</h1>
+            <p>The mpv core can be controlled with commands and properties. A number of ways
+            to interact with the player use them: key bindings (<tt class="docutils literal">input.conf</tt>), OSD
+            (showing information with properties), JSON IPC, the client API (<tt class="docutils literal">libmpv</tt>),
+            and the classic slave mode.</p>
             <div class="section" id="input-conf">
-            <h1>INPUT.CONF</h1>
+            <h2>input.conf</h2>
             <p>The input.conf file consists of a list of key bindings, for example:</p>
             <pre class="literal-block">
             s screenshot      # take a screenshot with the s key
@@ -6922,6 +6988,7 @@
             </pre>
             <p>(Only closing the window will make <strong>mpv</strong> exit, pressing normal keys will
             merely display the binding, even if mapped to quit.)</p>
+            </div>
             <div class="section" id="general-input-command-syntax">
             <h2>General Input Command Syntax</h2>
             <p><tt class="docutils literal"><span class="pre">[Shift+][Ctrl+][Alt+][Meta+]&lt;key&gt;</span> <span class="pre">[{&lt;section&gt;}]</span> [&lt;prefixes&gt;] &lt;command&gt; <span class="pre">(&lt;argument&gt;)*</span> [; &lt;command&gt;]</tt></p>
@@ -7099,8 +7166,7 @@
             because index2 refers to the target entry, not the index the entry
             will have after moving.)</dd>
             <dt><tt class="docutils literal">run &quot;command&quot; &quot;arg1&quot; &quot;arg2&quot; ...</tt></dt>
-            <dd><p class="first">(Unix only)
-            Run the given command. Unlike in MPlayer/mplayer2 and earlier versions of
+            <dd><p class="first">Run the given command. Unlike in MPlayer/mplayer2 and earlier versions of
             mpv (0.2.x and older), this doesn't call the shell. Instead, the command
             is run directly, with each argument passed separately. Each argument is
             expanded like in <a class="reference internal" href="#property-expansion">Property Expansion</a>. Note that there is a static limit
@@ -7592,7 +7658,7 @@
                     &quot;default&quot;           MPV_FORMAT_FLAG
             </pre>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">ab-loop-a</span></tt>, <tt class="docutils literal"><span class="pre">ab-loop-b</span></tt> (TW)</dt>
+            <dt><tt class="docutils literal"><span class="pre">ab-loop-a</span></tt>, <tt class="docutils literal"><span class="pre">ab-loop-b</span></tt> (RW)</dt>
             <dd>Set/get A-B loop points. See corresponding options and <tt class="docutils literal">ab_loop</tt> command.
             The special value <tt class="docutils literal">no</tt> on either of these properties disables looping.</dd>
             <dt><tt class="docutils literal">angle</tt> (RW)</dt>
@@ -8063,11 +8129,15 @@
             which set OSD messages.</p>
             <div class="admonition-example admonition">
             <p class="first admonition-title">Example</p>
-            <p class="last">--osd-status-msg='This is ${osd-ass-cc/0}{\b1}bold text'</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--osd-status-msg='This</span> is <span class="pre">${osd-ass-cc/0}{\\b1}bold</span> text'</tt></li>
+            <li><tt class="docutils literal">show_text &quot;This is <span class="pre">${osd-ass-cc/0}{\b1}bold</span> text&quot;</tt></li>
+            </ul>
             </div>
             <p>Any ASS override tags as understood by libass can be used.</p>
-            <p class="last">Note that you need to escape the <tt class="docutils literal">\</tt> character, because the string is
+            <p>Note that you need to escape the <tt class="docutils literal">\</tt> character, because the string is
             processed for C escape sequences before passing it to the OSD code.</p>
+            <p class="last">A list of tags can be found here: <a class="reference external" href="http://docs.aegisub.org/latest/ASS_Tags/">http://docs.aegisub.org/latest/ASS_Tags/</a></p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vo-configured</span></tt></dt>
             <dd>Return whether the VO is configured right now. Usually this corresponds to
@@ -8673,10 +8743,12 @@
             <h2>Example</h2>
             <p>A script which leaves fullscreen mode when the player is paused:</p>
             <pre class="literal-block">
-            function on_pause()
-                mp.set_property(&quot;fullscreen&quot;, &quot;no&quot;)
+            function on_pause_change(name, value)
+                if value == true then
+                    mp.set_property(&quot;fullscreen&quot;, &quot;no&quot;)
+                end
             end
-            mp.register_event(&quot;pause&quot;, on_pause)
+            mp.observe_property(&quot;pause&quot;, &quot;bool&quot;, on_pause_change)
             </pre>
             <p>This script provides a pretty weird feature, but Lua scripting was made to
             allow users implement features which are not going to be added to the mpv core.</p>
@@ -9197,6 +9269,9 @@
             trailing text is returned as 3rd return value. (The 3rd return value is
             always there, but with <tt class="docutils literal">trail</tt> set, no error is raised.)</p>
             </dd>
+            <dt><tt class="docutils literal">utils.to_string(v)</tt></dt>
+            <dd>Turn the given value into a string. Formats tables and their contents. This
+            doesn't do anything special; it is only needed because Lua is terrible.</dd>
             </dl>
             </div>
             <div class="section" id="events">
@@ -9273,8 +9348,6 @@
             <dd>Undocumented (not useful for Lua scripts).</dd>
             <dt><tt class="docutils literal"><span class="pre">command-reply</span></tt></dt>
             <dd>Undocumented (not useful for Lua scripts).</dd>
-            <dt><tt class="docutils literal"><span class="pre">script-input-dispatch</span></tt></dt>
-            <dd>Undocumented (used internally).</dd>
             <dt><tt class="docutils literal"><span class="pre">client-message</span></tt></dt>
             <dd>Undocumented (used internally).</dd>
             <dt><tt class="docutils literal"><span class="pre">video-reconfig</span></tt></dt>
@@ -10263,6 +10336,24 @@
             <tt class="docutils literal"><span class="pre">--lua</span></tt> option. They are loaded in alphabetical order, and sub-directories
             and files with no <tt class="docutils literal">.lua</tt> extension are ignored. The <tt class="docutils literal"><span class="pre">--load-scripts=no</span></tt>
             option disables loading these files.</dd>
+            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt></dt>
+            <dd><p class="first">Contains temporary config files needed for resuming playback of files with
+            the watch later feature. See for example the <tt class="docutils literal">Q</tt> key binding, or the
+            <tt class="docutils literal">quit_watch_later</tt> input command.</p>
+            <p class="last">Each file is a small config file which is loaded if the corresponding media
+            file is loaded. It contains the playback position and some (not necessarily
+            all) settings that were changed during playback. The filenames are hashed
+            from the full paths of the media files. It's in general not possible to
+            extract the media filename from this hash. However, you can set the
+            <tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt> option, and the player will
+            add the media filename to the contents of the resume config file.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/lua-settings/osc.conf</span></tt></dt>
+            <dd><p class="first">This is loaded by the OSC script. See the <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a> docs
+            for details.</p>
+            <p class="last">Other files in this directory are specific to the corresponding scripts
+            as well, and the mpv core doesn't touch them.</p>
+            </dd>
             </dl>
             <p>Note that the environment variables <tt class="docutils literal">$XDG_CONFIG_HOME</tt> and <tt class="docutils literal">$MPV_HOME</tt> can
             override the standard directory <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>.</p>
@@ -10272,17 +10363,14 @@
             <div class="section" id="files-on-windows">
             <h1>FILES ON WINDOWS</h1>
             <p>On win32 (if compiled with MinGW, but not Cygwin), the default config file
-            locations are different:</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/mpv.conf</span></tt></dt>
-            <dd>Preferred mpv config file. This maps to a system and user-specific path,
-            for example <tt class="docutils literal"><span class="pre">C:\users\USERNAME\Application</span> Data\mpv\mpv.conf</tt>. You can
-            find the exact path by running <tt class="docutils literal">echo <span class="pre">%APPDATA%\mpv\mpv.conf</span></tt> in cmd.exe.</dd>
-            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/input.conf</span></tt></dt>
-            <dd>key bindings (see <a class="reference internal" href="#input-conf">INPUT.CONF</a> section)</dd>
-            <dt><tt class="docutils literal"><span class="pre">%APPDATA%/mpv/lua/</span></tt></dt>
-            <dd>equivalent of <tt class="docutils literal"><span class="pre">~/.config/mpv/lua/</span></tt> on Unix.</dd>
-            </dl>
+            locations are different. They are generally located under <tt class="docutils literal"><span class="pre">%APPDATA%/mpv/</span></tt>.
+            For example, the path to mpv.conf is <tt class="docutils literal"><span class="pre">%APPDATA%/mpv/mpv.conf</span></tt>, which maps to
+            a system and user-specific path, for example</p>
+            <blockquote>
+            <tt class="docutils literal"><span class="pre">C:\users\USERNAME\Application</span> Data\mpv\mpv.conf</tt></blockquote>
+            <p>You can find the exact path by running <tt class="docutils literal">echo <span class="pre">%APPDATA%\mpv\mpv.conf</span></tt> in cmd.exe.</p>
+            <p>Other config files (such as <tt class="docutils literal">input.conf</tt>) are in the same directory. See the
+            <a class="reference internal" href="#files">FILES</a> section above.</p>
             <p>The environment variable <tt class="docutils literal">$MPV_HOME</tt> completely overrides these, like on
             UNIX.</p>
             <p>Config files located in the same directory as <tt class="docutils literal">mpv.exe</tt> are loaded with
