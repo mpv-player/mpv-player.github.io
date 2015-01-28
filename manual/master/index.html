@@ -895,6 +895,10 @@
             <dd>Print a list of the available properties.</dd>
             <dt><tt class="docutils literal"><span class="pre">--list-protocols</span></tt></dt>
             <dd>Print a list of the supported protocols.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--log-file=&lt;path&gt;</span></tt></dt>
+            <dd>Opens the given path for writing, and print log messages to it. Existing
+            files will be truncated. The log level always corresponds to <tt class="docutils literal"><span class="pre">-v</span></tt>,
+            regardless of terminal verbosity levels.</dd>
             <dt><tt class="docutils literal"><span class="pre">--config-dir=&lt;path&gt;</span></tt></dt>
             <dd><p class="first">Force a different configuration directory. If this is set, the given
             directory is used to load configuration files, and all other configuration
@@ -1015,10 +1019,6 @@
             available aliases. To use experimental DASH support for youtube, use
             <tt class="docutils literal">bestvideo+bestaudio</tt>.
             (Default: <tt class="docutils literal">best</tt>)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--log-file=&lt;path&gt;</span></tt></dt>
-            <dd>Opens the given path for writing, and print log messages to it. Existing
-            files will be truncated. The log level always corresponds to <tt class="docutils literal"><span class="pre">-v</span></tt>,
-            regardless of terminal verbosity levels.</dd>
             </dl>
             </div>
             <div class="section" id="video">
@@ -4698,10 +4698,16 @@
             See <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
             <dt><tt class="docutils literal">smoothmotion</tt></dt>
             <dd><p class="first">Use frame interpolation to reduce stuttering caused by mismatches in
-            video fps and display refresh rate (similar to MadVR's smoothmotion,
-            thus the naming). GPU drivers or compositing window managers overriding
-            vsync behavior can lead to bad results. If the framerate is close to or
-            over the display refresh rate, results can be bad as well.</p>
+            video fps and display refresh rate.</p>
+            <p>Instead of drawing each frame exactly once, smoothmotion redraws the
+            the OpenGL scene at the display refresh rate. If a vsync is detected
+            to be the one when a frame changes to the next, a linear interpolation
+            of the previous frame with next is shown instead.</p>
+            <p>This means that displaying a 1fps video on a 60hz monitor will blend
+            at most during 1 vsync for each second of playback.</p>
+            <p>GPU drivers or compositing window managers overriding vsync behavior
+            can lead to bad results. If the framerate is close to or over the
+            display refresh rate, results can be bad as well.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">On systems other than Linux, you currently must set the
@@ -6008,28 +6014,6 @@
             the way down while 1.0 leaves it at its full strength (default: 1.0).</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">ilpack[=mode]</span></tt></dt>
-            <dd><p class="first">When interlaced video is stored in YUV 4:2:0 formats, chroma interlacing
-            does not line up properly due to vertical downsampling of the chroma
-            channels. This filter packs the planar 4:2:0 data into YUY2 (4:2:2) format
-            with the chroma lines in their proper locations, so that in any given
-            scanline, the luma and chroma data both come from the same field.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">&lt;mode&gt;</tt></dt>
-            <dd><p class="first">Select the sampling mode.</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">0:</th><td class="field-body">nearest-neighbor sampling, fast but incorrect</td>
-            </tr>
-            <tr class="field"><th class="field-name">1:</th><td class="field-body">linear interpolation (default)</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">unsharp[=lx:ly:la:cx:cy:ca]</span></tt></dt>
             <dd><p class="first">unsharp mask / Gaussian blur</p>
             <p><tt class="docutils literal">l</tt> is for the luma component, <tt class="docutils literal">c</tt> for the chroma component. <tt class="docutils literal">x</tt>/<tt class="docutils literal">y</tt>
@@ -6054,8 +6038,6 @@
             </dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">swapuv</tt></dt>
-            <dd>Swap U &amp; V plane.</dd>
             <dt><tt class="docutils literal"><span class="pre">pullup[=jl:jr:jt:jb:sb:mp]</span></tt></dt>
             <dd><p class="first">Pulldown reversal (inverse telecine) filter, capable of handling mixed
             hard-telecine, 24000/1001 fps progressive, and 30000/1001 fps progressive
@@ -6084,107 +6066,6 @@
             especially if there is chroma noise (rainbow effect) or any grayscale
             video. The main purpose of setting <tt class="docutils literal">mp</tt> to a chroma plane is to reduce
             CPU load and make pullup usable in realtime on slow machines.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">divtc[=options]</span></tt></dt>
-            <dd><p class="first">Inverse telecine for deinterlaced video. If 3:2-pulldown telecined video
-            has lost one of the fields or is deinterlaced using a method that keeps
-            one field and interpolates the other, the result is a juddering video that
-            has every fourth frame duplicated. This filter is intended to find and
-            drop those duplicates and restore the original film framerate. Two
-            different modes are available: One-pass mode is the default and is
-            straightforward to use, but has the disadvantage that any changes in the
-            telecine phase (lost frames or bad edits) cause momentary judder until the
-            filter can resync again. Two-pass mode avoids this by analyzing the entire
-            video beforehand so it will have forward knowledge about the phase changes
-            and can resync at the exact spot. These passes do <em>not</em> correspond to pass
-            one and two of the encoding process. You must run an extra pass using
-            <tt class="docutils literal">divtc</tt> pass one before the actual encoding throwing the resulting video
-            away. Then use <tt class="docutils literal">divtc</tt> pass two for the actual encoding. If you use
-            multiple encoder passes, use <tt class="docutils literal">divtc</tt> pass two for all of them.</p>
-            <p>The options are:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">pass=1|2</tt></dt>
-            <dd>Use two pass mode.</dd>
-            <dt><tt class="docutils literal"><span class="pre">file=&lt;filename&gt;</span></tt></dt>
-            <dd>Set the two pass log filename (default: <tt class="docutils literal">framediff.log</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">threshold=&lt;value&gt;</span></tt></dt>
-            <dd>Set the minimum strength the telecine pattern must have for the filter
-            to believe in it (default: 0.5). This is used to avoid recognizing
-            false pattern from the parts of the video that are very dark or very
-            still.</dd>
-            <dt><tt class="docutils literal"><span class="pre">window=&lt;numframes&gt;</span></tt></dt>
-            <dd>Set the number of past frames to look at when searching for pattern
-            (default: 30). Longer window improves the reliability of the pattern
-            search, but shorter window improves the reaction time to the changes
-            in the telecine phase. This only affects the one-pass mode. The
-            two-pass mode currently uses fixed window that extends to both future
-            and past.</dd>
-            <dt><tt class="docutils literal">phase=0|1|2|3|4</tt></dt>
-            <dd>Sets the initial telecine phase for one pass mode (default: 0). The
-            two-pass mode can see the future, so it is able to use the correct
-            phase from the beginning, but one-pass mode can only guess. It catches
-            the correct phase when it finds it, but this option can be used to fix
-            the possible juddering at the beginning. The first pass of the two
-            pass mode also uses this, so if you save the output from the first
-            pass, you get constant phase result.</dd>
-            <dt><tt class="docutils literal"><span class="pre">deghost=&lt;value&gt;</span></tt></dt>
-            <dd>Set the deghosting threshold (0-255 for one-pass mode, -255-255 for
-            two-pass mode, default 0). If nonzero, deghosting mode is used. This
-            is for video that has been deinterlaced by blending the fields
-            together instead of dropping one of the fields. Deghosting amplifies
-            any compression artifacts in the blended frames, so the parameter
-            value is used as a threshold to exclude those pixels from deghosting
-            that differ from the previous frame less than specified value. If two
-            pass mode is used, then negative value can be used to make the filter
-            analyze the whole video in the beginning of pass-2 to determine
-            whether it needs deghosting or not and then select either zero or the
-            absolute value of the parameter. Specify this option for pass 2, it
-            makes no difference on pass 1.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">phase[=t|b|p|a|u|T|B|A|U][:v]</span></tt></dt>
-            <dd><p class="first">Delay interlaced video by one field time so that the field order changes.
-            The intended use is to fix PAL videos that have been captured with the
-            opposite field order to the film-to-video transfer. The options are:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">t</tt></dt>
-            <dd>Capture field order top-first, transfer bottom-first. Filter will
-            delay the bottom field.</dd>
-            <dt><tt class="docutils literal">b</tt></dt>
-            <dd>Capture bottom-first, transfer top-first. Filter will delay the top
-            field.</dd>
-            <dt><tt class="docutils literal">p</tt></dt>
-            <dd>Capture and transfer with the same field order. This mode only exists
-            for the documentation of the other options to refer to, but if you
-            actually select it, the filter will faithfully do nothing ;-)</dd>
-            <dt><tt class="docutils literal">a</tt></dt>
-            <dd>Capture field order determined automatically by field flags, transfer
-            opposite. Filter selects among <tt class="docutils literal">t</tt> and <tt class="docutils literal">b</tt> modes on a frame by frame
-            basis using field flags. If no field information is available, then this
-            works just like <tt class="docutils literal">u</tt>.</dd>
-            <dt><tt class="docutils literal">u</tt></dt>
-            <dd>Capture unknown or varying, transfer opposite. Filter selects among
-            <tt class="docutils literal">t</tt> and <tt class="docutils literal">b</tt> on a frame by frame basis by analyzing the images and
-            selecting the alternative that produces best match between the fields.</dd>
-            <dt><tt class="docutils literal">T</tt></dt>
-            <dd>Capture top-first, transfer unknown or varying. Filter selects among
-            <tt class="docutils literal">t</tt> and <tt class="docutils literal">p</tt> using image analysis.</dd>
-            <dt><tt class="docutils literal">B</tt></dt>
-            <dd>Capture bottom-first, transfer unknown or varying. Filter selects
-            among <tt class="docutils literal">b</tt> and <tt class="docutils literal">p</tt> using image analysis.</dd>
-            <dt><tt class="docutils literal">A</tt></dt>
-            <dd>Capture determined by field flags, transfer unknown or varying. Filter
-            selects among <tt class="docutils literal">t</tt>, <tt class="docutils literal">b</tt> and <tt class="docutils literal">p</tt> using field flags and image
-            analysis. If no field information is available, then this works just
-            like <tt class="docutils literal">U</tt>. This is the default mode.</dd>
-            <dt><tt class="docutils literal">U</tt></dt>
-            <dd>Both capture and transfer unknown or varying. Filter selects among
-            <tt class="docutils literal">t</tt>, <tt class="docutils literal">b</tt> and <tt class="docutils literal">p</tt> using image analysis only.</dd>
-            <dt><tt class="docutils literal">v</tt></dt>
-            <dd>Verbose operation. Prints the selected mode for each frame and the
-            average squared difference between fields for <tt class="docutils literal">t</tt>, <tt class="docutils literal">b</tt>, and <tt class="docutils literal">p</tt>
-            alternatives. (Ignored when libavfilter is used.)</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">yadif=[mode[:enabled=yes|no]]</span></tt></dt>
