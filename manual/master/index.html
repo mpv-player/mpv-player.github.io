@@ -1366,7 +1366,7 @@
             <h2>Audio</h2>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--audio-pitch-correction=&lt;yes|no&gt;</span></tt></dt>
-            <dd>If this is enabled (default), playing with a speed higher than normal
+            <dd>If this is enabled (default), playing with a speed different from normal
             automatically inserts the <tt class="docutils literal">scaletempo</tt> audio filter. For details, see
             audio filter section.</dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-device=&lt;name&gt;</span></tt></dt>
@@ -1593,6 +1593,25 @@
             maximum amplification, i.e. amplify by 200%. The default volume (no
             change in volume) will be <tt class="docutils literal">50</tt> in this case.</p>
             </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-file-auto=&lt;no|exact|fuzzy|all&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--no-audio-file-auto</span></tt></dt>
+            <dd><p class="first">Load additional audio files matching the video filename. The parameter
+            specifies how external audio files are matched. <tt class="docutils literal">exact</tt> is enabled by
+            default.</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't automatically load external audio files.</td>
+            </tr>
+            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with audio file extension (default).</td>
+            </tr>
+            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all audio files containing media filename.</td>
+            </tr>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all audio files in the current directory.</td>
+            </tr>
+            </tbody>
+            </table>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-client-name=&lt;name&gt;</span></tt></dt>
             <dd>The application name the player reports to the audio API. Can be useful
@@ -3235,7 +3254,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--no-msg-color</span></tt></dt>
             <dd>Disable colorful console output on terminals.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--msg-level=&lt;module1=level1:module2=level2:...&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--msg-level=&lt;module1=level1,module2=level2,...&gt;</span></tt></dt>
             <dd><p class="first">Control verbosity directly for each module. The <tt class="docutils literal">all</tt> module changes the
             verbosity of all the modules not explicitly specified on the command line.</p>
             <p>Run mpv with <tt class="docutils literal"><span class="pre">--msg-level=all=trace</span></tt> to see all messages mpv outputs. You
@@ -3607,6 +3626,10 @@
             (Silently fails with older FFmpeg or Libav versions.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--referrer=&lt;string&gt;</span></tt></dt>
             <dd>Specify a referrer path or URL for HTTP requests.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--network-timeout=&lt;seconds&gt;</span></tt></dt>
+            <dd>Specify the network timeout in seconds. This affects at least HTTP. The
+            special value 0 (default) uses the FFmpeg/Libav defaults. If a protocol
+            is used which does not support timeouts, this option is silently ignored.</dd>
             <dt><tt class="docutils literal"><span class="pre">--rtsp-transport=&lt;lavf|udp|tcp|http&gt;</span></tt></dt>
             <dd>Select RTSP transport method (default: tcp). This selects the underlying
             network transport when playing <tt class="docutils literal"><span class="pre">rtsp://...</span></tt> URLs. The value <tt class="docutils literal">lavf</tt>
@@ -4082,6 +4105,8 @@
             <dt><tt class="docutils literal"><span class="pre">broken-eof</span></tt></dt>
             <dd>Simulate broken audio drivers, which always add the fixed device
             latency to the reported audio playback position.</dd>
+            <dt><tt class="docutils literal"><span class="pre">broken-delay</span></tt></dt>
+            <dd>Simulate broken audio drivers, which don't report latency correctly.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">pcm</tt></dt>
@@ -4503,7 +4528,7 @@
             Note that this option never affects <tt class="docutils literal">cscale</tt>.</dd>
             <dt><tt class="docutils literal">srgb</tt></dt>
             <dd><p class="first">Convert and color correct the output to sRGB before displaying it on
-            the screen. This option enables linear light scaling.</p>
+            the screen. This option enables <tt class="docutils literal"><span class="pre">linear-scaling</span></tt>.</p>
             <p>This option is equivalent to using <tt class="docutils literal"><span class="pre">icc-profile</span></tt> with an sRGB ICC
             profile, but it is implemented without a 3DLUT and does not require
             LittleCMS 2. If both <tt class="docutils literal">srgb</tt> and <tt class="docutils literal"><span class="pre">icc-profile</span></tt> are present, the
@@ -4571,6 +4596,10 @@
             <p class="last">See <tt class="docutils literal"><span class="pre">scale-param1</span></tt>, <tt class="docutils literal"><span class="pre">scale-param2</span></tt>, <tt class="docutils literal"><span class="pre">scale-radius</span></tt> and
             <tt class="docutils literal"><span class="pre">scale-antiring</span></tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">linear-scaling</span></tt></dt>
+            <dd>Scale in linear light. This is automatically enabled if <tt class="docutils literal">srgb</tt>,
+            <tt class="docutils literal"><span class="pre">icc-profile</span></tt> or <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt> is set. It should only
+            be used with a <tt class="docutils literal"><span class="pre">fbo-format</span></tt> that has at least 16 bit precision.</dd>
             <dt><tt class="docutils literal"><span class="pre">fancy-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size
             when downscaling. Trades quality for reduced downscaling performance.</p>
@@ -4579,8 +4608,8 @@
             different directions.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt></dt>
-            <dd>When upscaling in linear light, use a sigmoidal color transform
-            to avoid emphasizing ringing artifacts.</dd>
+            <dd>When upscaling, use a sigmoidal color transform to avoid emphasizing
+            ringing artifacts. This also enables <tt class="docutils literal"><span class="pre">linear-scaling</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">sigmoid-center</span></tt></dt>
             <dd>The center of the sigmoid curve used for <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt>, must
             be a float between 0.0 and 1.0. Defaults to 0.75 if not specified.</dd>
@@ -4629,18 +4658,25 @@
             <tt class="docutils literal">fmt</tt> can be one of: rgb, rgba, rgb8, rgb10, rgb10_a2, rgb16, rgb16f,
             rgb32f, rgba12, rgba16, rgba16f, rgba32f.
             Default: rgba.</dd>
-            <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.0..10.0&gt;</span></tt></dt>
-            <dd><p class="first">Set a gamma value. If gamma is adjusted in other ways (like with
-            the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt> property), the
-            value is multiplied with the other gamma value.</p>
-            <p class="last">Setting this value to 1.0 can be used to always enable gamma control.
-            (Disables delayed enabling.)</p>
+            <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.1..2.0&gt;</span></tt></dt>
+            <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways
+            (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt>
+            property), the value is multiplied with the other gamma value.</p>
+            <p>Recommended values based on the environmental brightness:</p>
+            <dl class="last docutils">
+            <dt>1.0</dt>
+            <dd>Brightly illuminated (default)</dd>
+            <dt>0.9</dt>
+            <dd>Slightly dim</dd>
+            <dt>0.8</dt>
+            <dd>Pitch black room</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">icc-profile=&lt;file&gt;</span></tt></dt>
             <dd>Load an ICC profile and use it to transform linear RGB to screen output.
             Needs LittleCMS 2 support compiled in. This option overrides the <tt class="docutils literal">srgb</tt>
-            property, as using both is somewhat redundant. It also enables linear
-            light scaling.</dd>
+            property, as using both is somewhat redundant. It also enables
+            <tt class="docutils literal"><span class="pre">linear-scaling</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">icc-profile-auto</span></tt></dt>
             <dd><p class="first">Automatically select the ICC display profile currently specified by
             the display settings of the operating system.</p>
@@ -4710,8 +4746,8 @@
             display refresh rate, results can be bad as well.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
-            <p class="last">On systems other than Linux, you currently must set the
-            <tt class="docutils literal"><span class="pre">--display-fps</span></tt> option, or the results will be bad.</p>
+            <p class="last">On systems other than Linux or OS X, you currently must set
+            the <tt class="docutils literal"><span class="pre">--display-fps</span></tt> option, or the results will be bad.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">smoothmotion-threshold=&lt;0.0-0.5&gt;</span></tt></dt>
@@ -5539,9 +5575,9 @@
             <dd>Scale tempo in sync with speed (default).</dd>
             <dt>pitch</dt>
             <dd><p class="first">Reverses effect of filter. Scales pitch without altering tempo.
-            Add <tt class="docutils literal">[ speed_mult 0.9438743126816935</tt> and <tt class="docutils literal">] speed_mult
-            1.059463094352953</tt> to your <tt class="docutils literal">input.conf</tt> to step by musical
-            semi-tones.</p>
+            Add <tt class="docutils literal">[ multiply speed 0.9438743126816935</tt> and
+            <tt class="docutils literal">] multiply speed 1.059463094352953</tt> to your <tt class="docutils literal">input.conf</tt>
+            to step by musical semi-tones.</p>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">Loses sync with video.</p>
@@ -5575,6 +5611,19 @@
             1.2x.</dd>
             </dl>
             </div>
+            </dd>
+            <dt><tt class="docutils literal">rubberband</tt></dt>
+            <dd><p class="first">High quality pitch correction with librubberband. This can be used in place
+            of <tt class="docutils literal">scaletempo</tt>, and will be used to adjust audio pitch when playing
+            at speed different from normal.</p>
+            <p class="last">This filter has a number of sub-options. You can list them with
+            <tt class="docutils literal">mpv <span class="pre">--af=rubberband=help</span></tt>. This will also show the default values
+            for each option. The options are not documented here, because they are
+            merely passed to librubberband. Look at the librubberband documentation
+            to learn what each option does:
+            <a class="reference external" href="http://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html">http://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html</a>
+            (The mapping of the mpv rubberband filter sub-option names and values to
+            those of librubberband follows a simple pattern: <tt class="docutils literal">&quot;Option&quot; + Name + Value</tt>.)</p>
             </dd>
             <dt><tt class="docutils literal">lavfi=graph</tt></dt>
             <dd><p class="first">Filter audio using FFmpeg's libavfilter.</p>
@@ -5967,9 +6016,6 @@
             <dd>temporal noise (noise pattern changes between frames)</dd>
             <dt><tt class="docutils literal">uniform</tt></dt>
             <dd>uniform noise (Gaussian otherwise)</dd>
-            <dt><tt class="docutils literal">hq</tt></dt>
-            <dd>high quality (slightly better looking, slightly slower) - not available
-            when using libavfilter</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">hqdn3d[=luma_spatial:chroma_spatial:luma_tmp:chroma_tmp]</span></tt></dt>
@@ -6930,6 +6976,12 @@
             <dd>The mouse event represents double-click.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal">audio_add &quot;&lt;file&gt;&quot; [&lt;flags&gt; [&lt;title&gt; <span class="pre">[&lt;lang&gt;]]]</span></tt></dt>
+            <dd>Load the given audio file. See <tt class="docutils literal">sub_add</tt> command.</dd>
+            <dt><tt class="docutils literal">audio_remove [&lt;id&gt;]</tt></dt>
+            <dd>Remove the given audio track. See <tt class="docutils literal">sub_remove</tt> command.</dd>
+            <dt><tt class="docutils literal">audio_reload [&lt;id&gt;]</tt></dt>
+            <dd>Reload the given audio tracks. See <tt class="docutils literal">sub_reload</tt> command.</dd>
             </dl>
             </div>
             <div class="section" id="input-commands-that-are-possibly-subject-to-change">
@@ -7123,6 +7175,62 @@
             </dl>
             <p>Undocumented commands: <tt class="docutils literal">tv_last_channel</tt> (TV/DVB only), <tt class="docutils literal">get_property</tt> (?),
             <tt class="docutils literal">ao_reload</tt> (experimental/internal).</p>
+            <div class="section" id="hooks">
+            <h3>Hooks</h3>
+            <p>Hooks are synchronous events between player core and a script or similar. This
+            applies to the Lua scripting interface and the client API and only. Normally,
+            events are supposed to be asynchronous, and the hook API provides an awkward
+            and obscure way to handle events that require stricter coordination. There are
+            no API stability guarantees made. Not following the protocol exactly can make
+            the player freeze randomly. Basically, nobody should use this API.</p>
+            <p>There are two special commands involved. Also, the client must listen for
+            client messages (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt> in the C API).</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">hook_add <span class="pre">&lt;hook-name&gt;</span> &lt;id&gt; &lt;priority&gt;</tt></dt>
+            <dd><p class="first">Subscribe to the hook identified by the first argument (basically, the
+            name of event). The <tt class="docutils literal">id</tt> argument is an arbitrary integer chosen by the
+            user. <tt class="docutils literal">priority</tt> is used to sort all hook handlers globally across all
+            clients. Each client can register multiple hook handlers (even for the
+            same hook-name). Once the hook is registered, it cannot be unregistered.</p>
+            <p>When a specific event happens, all registered handlers are run serially.
+            This uses a protocol every client has to follow explicitly. When a hook
+            handler is run, a client message (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt>) is sent to
+            the client which registered the hook. This message has the following
+            arguments:</p>
+            <ol class="arabic simple">
+            <li>the string <tt class="docutils literal">hook_run</tt></li>
+            <li>the <tt class="docutils literal">id</tt> argument the hook was registered with as string (this can be
+            used to correctly handle multiple hooks registered by the same client,
+            as long as the <tt class="docutils literal">id</tt> argument is unique in the client)</li>
+            <li>something undefined, used by the hook mechanism to track hook execution
+            (currently, it's the hook-name, but this might change without warning)</li>
+            </ol>
+            <p>Upon receiving this message, the client can handle the event. While doing
+            this, the player core will still react to requests, but playback will
+            typically be stopped.</p>
+            <p class="last">When the client is done, it must continue the core's hook execution by
+            running the <tt class="docutils literal">hook_ack</tt> command.</p>
+            </dd>
+            <dt><tt class="docutils literal">hook_ack &lt;string&gt;</tt></dt>
+            <dd>Run the next hook in the global chain of hooks. The argument is the 3rd
+            argument of the client message that starts hook execution for the
+            current client.</dd>
+            </dl>
+            <p>The following hooks are currently defined:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">on_load</tt></dt>
+            <dd>Called when a file is to be opened, before anything is actually done.
+            For example, you could read and write the <tt class="docutils literal"><span class="pre">stream-open-filename</span></tt>
+            property to redirect an URL to something else (consider support for
+            streaming sites which rarely give the user a direct media URL), or
+            you could set per-file options with by setting the property
+            <tt class="docutils literal"><span class="pre">file-local-options/&lt;option</span> name&gt;</tt>. The player will wait until all
+            hooks are run.</dd>
+            <dt><tt class="docutils literal">on_unload</tt></dt>
+            <dd>Run before closing a file, and before actually uninitializing
+            everything. It's not possible to resume playback in this state.</dd>
+            </dl>
+            </div>
             </div>
             <div class="section" id="input-command-prefixes">
             <h2>Input Command Prefixes</h2>
@@ -7526,6 +7634,16 @@
             <p class="last">Note that you don't know the success of the operation immediately after
             writing this property. It happens with a delay as video is reinitialized.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">detected-hwdec</span></tt></dt>
+            <dd><p class="first">Return the current hardware decoder that was detected and opened. Returns
+            the same values as <tt class="docutils literal">hwdec</tt>.</p>
+            <p class="last">This is known only once the VO has opened (and possibly later). With some
+            VOs (like <tt class="docutils literal">opengl</tt>), this is never known in advance, but only when the
+            decoder attempted to create the hw decoder successfully. Also, hw decoders
+            with <tt class="docutils literal"><span class="pre">-copy</span></tt> suffix are returned only while hw decoding is active (and
+            unset afterwards). All this reflects how detecting hw decoders are
+            detected and used internally in mpv.</p>
+            </dd>
             <dt><tt class="docutils literal">panscan</tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--panscan</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-format</span></tt></dt>
@@ -7890,6 +8008,13 @@
             <p>This property also doesn't tell you which audio device is actually in use.</p>
             <p class="last">How these details are handled may change in the future.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">current-vo</span></tt></dt>
+            <dd>Current video output driver (name as used with <tt class="docutils literal"><span class="pre">--vo</span></tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">current-ao</span></tt></dt>
+            <dd>Current audio output driver (name as used with <tt class="docutils literal"><span class="pre">--ao</span></tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">audio-out-detected-device</span></tt></dt>
+            <dd>Return the audio device selected by the AO driver (only implemented for
+            some drivers: currently only <tt class="docutils literal">coreaudio</tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">mpv-version</span></tt></dt>
             <dd>Return the mpv version/copyright string. Depending on how the binary was
             built, it might contain either a release version, or just a git hash.</dd>
@@ -9090,17 +9215,9 @@
             that allows ordering among hooks of the same kind. Using the value 50 is
             recommended as neutral default value. <tt class="docutils literal">fn</tt> is the function that will be
             called during execution of the hook.</p>
-            <p>Currently existing hooks:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">on_load</tt></dt>
-            <dd>Called when a file is to be opened, before anything is actually done.
-            For example, you could read and write the <tt class="docutils literal"><span class="pre">stream-open-filename</span></tt>
-            property to redirect an URL to something else (consider support for
-            streaming sites which rarely give the user a direct media URL), or
-            you could set per-file options with by setting the property
-            <tt class="docutils literal"><span class="pre">file-local-options/&lt;option</span> name&gt;</tt>. The player will wait until all
-            hooks are run.</dd>
-            </dl>
+            <p class="last">See <a class="reference internal" href="#hooks">Hooks</a> for currently existing hooks and what they do - only the hook
+            list is interesting; handling hook execution is done by the Lua script
+            function automatically.</p>
             </dd>
             </dl>
             </div>
@@ -9111,7 +9228,8 @@
             can be enabled by specifying the path to a unix socket using the option
             <tt class="docutils literal"><span class="pre">--input-unix-socket</span></tt>. Clients can connect to this socket and send commands to
             the player or receive events from it. You can use the <tt class="docutils literal">socat</tt> tool to send
-            commands (and receive reply) from the shell.</p>
+            commands (and receive reply) from the shell. See the <tt class="docutils literal"><span class="pre">--idle</span></tt> option how to
+            make mpv start without exiting immediately or playing a file.</p>
             <div class="warning">
             <p class="first admonition-title">Warning</p>
             <p class="last">This is not intended to be a secure network protocol. It is explicitly
@@ -9264,661 +9382,21 @@
             <p>mpv will not attempt to construct invalid UTF-8 with broken escape sequences.</p>
             </div>
             </div>
-            <div class="section" id="changes-from-other-versions-of-mplayer">
-            <h1>CHANGES FROM OTHER VERSIONS OF MPLAYER</h1>
-            <p><strong>mpv</strong> is based on mplayer2, which in turn is based on the original MPlayer
-            (also called mplayer, mplayer-svn, mplayer1). Many changes have been made, a
-            large part of which is incompatible or completely changes how the player
-            behaves. Although there are still many similarities to its ancestors, <strong>mpv</strong>
-            should generally be treated as a completely different program.</p>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">These lists are incomplete.</p>
-            </div>
-            <div class="section" id="general-changes-from-mplayer-to-mpv">
-            <h2>General Changes from MPlayer to mpv</h2>
-            <p>This listing is about changes introduced by mplayer2 and mpv relatively to
-            MPlayer.</p>
-            <div class="section" id="player">
-            <h3>Player</h3>
-            <ul class="simple">
-            <li>New name for the binary (<tt class="docutils literal">mpv</tt>). New location for config files (either
-            <tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt>, or if you want, <tt class="docutils literal"><span class="pre">~/.mpv/config</span></tt>).</li>
-            <li>Encoding functionality (replacement for MEncoder, see the <a class="reference internal" href="#encoding">ENCODING</a> section).</li>
-            <li>Support for Lua scripting (see the <a class="reference internal" href="#lua-scripting">LUA SCRIPTING</a> section).</li>
-            <li>Better pause handling (e.g. do not unpause on a command).</li>
-            <li>Precise seeking support.</li>
-            <li>Improvements in audio/video sync handling.</li>
-            <li>Do not lose settings when playing a new file in the same player instance.</li>
-            <li>Slave mode compatibility broken (see below).</li>
-            <li>Re-enable screensaver while the player is paused.</li>
-            <li>Allow resuming playback at a later point with <tt class="docutils literal">Shift+q</tt>, also see the
-            <tt class="docutils literal">quit_watch_later</tt> input command.</li>
-            <li><tt class="docutils literal"><span class="pre">--keep-open</span></tt> option to stop the player from closing the window and
-            exiting after playback ends.</li>
-            <li>A client API, that allows embedding <strong>mpv</strong> into applications
-            (see <tt class="docutils literal">libmpv/client.h</tt> in the sources).</li>
-            </ul>
-            </div>
-            <div class="section" id="id1">
-            <h3>Input</h3>
-            <ul class="simple">
-            <li>Improved default keybindings. MPlayer bindings are also available (see
-            <tt class="docutils literal"><span class="pre">etc/mplayer-input.conf</span></tt> in the source tree).</li>
-            <li>Improved responsiveness on user input.</li>
-            <li>Support for modifier keys (alt, shift, ctrl) in input.conf.</li>
-            <li>Allow customizing whether a key binding for seeking shows the video time, the
-            OSD bar, or nothing (see the <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> section).</li>
-            <li>Support mapping multiple commands to one key.</li>
-            </ul>
-            </div>
-            <div class="section" id="id2">
-            <h3>Audio</h3>
-            <ul class="simple">
-            <li>Support for gapless audio (see the <tt class="docutils literal"><span class="pre">--gapless-audio</span></tt> option).</li>
-            <li>Support for OSS4 volume control.</li>
-            <li>Improved support for PulseAudio.</li>
-            <li>Make <tt class="docutils literal"><span class="pre">--softvol</span></tt> default (<strong>mpv</strong> is not a mixer control panel).</li>
-            <li>By default, do pitch correction if playback speed is increased.</li>
-            <li>Improved downmixing and output of surround audio:<ul>
-            <li>Instead of using hardcoded pan filters to do remixing, libavresample is used</li>
-            <li>Channel maps are used to identify the channel layout, so e.g. <tt class="docutils literal">3.0</tt> and
-            <tt class="docutils literal">2.1</tt> audio can be distinguished.</li>
-            </ul>
-            </li>
-            </ul>
-            </div>
-            <div class="section" id="id3">
-            <h3>Video</h3>
+            <div class="section" id="changelog">
+            <h1>CHANGELOG</h1>
+            <p>There is no real changelog, but you can look at the following things:</p>
             <ul>
-            <li><p class="first">Wayland support.</p>
+            <li><p class="first">The release changelog, which should contain most user-visible changes,
+            including new features and bug fixes:</p>
+            <p><a class="reference external" href="https://github.com/mpv-player/mpv/releases">https://github.com/mpv-player/mpv/releases</a></p>
             </li>
-            <li><p class="first">Native support for VAAPI and VDA. Improved VDPAU video output.</p>
+            <li><p class="first">The git log, which is the &quot;real&quot; changelog</p>
             </li>
-            <li><p class="first">Improved OpenGL output (see the <tt class="docutils literal"><span class="pre">opengl-hq</span></tt> video output).</p>
-            </li>
-            <li><p class="first">Make hardware decoding work with the <tt class="docutils literal">opengl</tt> video output.</p>
-            </li>
-            <li><p class="first">Support for libavfilter (for video-&gt;video and audio-&gt;audio). This allows
-            using most of FFmpeg's filters, which improve greatly on the old MPlayer
-            filters in features, performance, and correctness.</p>
-            </li>
-            <li><p class="first">More correct color reproduction (color matrix generation), including support
-            for BT.2020 (Ultra HD) and linear XYZ (Digital Cinema) inputs.</p>
-            </li>
-            <li><p class="first">Support for color managed displays, via ICC profiles.</p>
-            </li>
-            <li><p class="first">High-quality image resamplers (see the <tt class="docutils literal">opengl</tt> <tt class="docutils literal">scale</tt> suboption).</p>
-            </li>
-            <li><p class="first">Support for scaling in (sigmoidized) linear light.</p>
-            </li>
-            <li><p class="first">Better subtitle rendering using libass by default.</p>
-            </li>
-            <li><p class="first">Improvements when playing multiple files (<tt class="docutils literal"><span class="pre">--fixed-vo</span></tt> is default, do not
-            reset settings by default when playing a new file).</p>
-            </li>
-            <li><p class="first">Replace image video outputs (<tt class="docutils literal"><span class="pre">--vo=jpeg</span></tt> etc.) with <tt class="docutils literal"><span class="pre">--vo=image</span></tt>.</p>
-            </li>
-            <li><p class="first">Removal of <tt class="docutils literal"><span class="pre">--vo=gif89a</span></tt>, <tt class="docutils literal"><span class="pre">--vo=md5sum</span></tt>, <tt class="docutils literal"><span class="pre">--vo=yuv4mpeg</span></tt>, as encoding
-            can handle these use cases. For yuv4mpeg, for example, use:</p>
-            <pre class="literal-block">
-            mpv input.mkv -o output.y4m --no-audio --oautofps --oneverdrop
-            </pre>
-            </li>
-            <li><p class="first">Image subtitles (DVDs etc.) are rendered in color and use more correct
-            positioning (color for image subs can be disabled with <tt class="docutils literal"><span class="pre">--sub-gray</span></tt>).</p>
+            <li><p class="first">The file <tt class="docutils literal"><span class="pre">mplayer-changes.rst</span></tt> in the <tt class="docutils literal">DOCS</tt> sub directory on the git
+            repository, which used to be in place of this section. It documents some
+            changes that happened since mplayer2 forked off MPlayer.</p>
             </li>
             </ul>
-            </div>
-            <div class="section" id="osd-and-terminal">
-            <h3>OSD and terminal</h3>
-            <ul class="simple">
-            <li>Cleaned up terminal output: nicer status line, less useless noise.</li>
-            <li>Improved OSD rendering using libass, with full Unicode support.</li>
-            <li>New OSD bar with chapter marks. Not positioned in the middle of the video
-            (this can be customized with the <tt class="docutils literal"><span class="pre">--osd-bar-align-y</span></tt> option).</li>
-            <li>Display list of chapters and audio/subtitle tracks on OSD (see the
-            <a class="reference internal" href="#properties">Properties</a> section).</li>
-            </ul>
-            </div>
-            <div class="section" id="screenshots">
-            <h3>Screenshots</h3>
-            <ul class="simple">
-            <li>Instant screenshots without 1-frame delay.</li>
-            <li>Support for taking screenshots even with hardware decoding.</li>
-            <li>Support for saving screenshots as JPEG or PNG.</li>
-            <li>Support for configurable file names.</li>
-            <li>Support for taking screenshots with or without subtitles.</li>
-            </ul>
-            <p>Note that the <tt class="docutils literal">screenshot</tt> video filter is not needed anymore, and should not
-            be put into the mpv config file.</p>
-            </div>
-            <div class="section" id="id4">
-            <h3>Miscellaneous</h3>
-            <ul class="simple">
-            <li>Better MKV support (e.g. ordered chapters, 3D metadata).</li>
-            <li>Matroska edition switching at runtime.</li>
-            <li>Support for playing URLs of popular streaming sites directly.
-            (e.g. <tt class="docutils literal">mpv <span class="pre">https://www.youtube.com/watch?v=...</span></tt>).
-            Requires a recent version of <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> to be installed. Can be
-            disabled with <tt class="docutils literal">ytdl=no</tt> in the mpv config file.</li>
-            <li>Support for precise scrolling which scales the parameter of commands. If the
-            input doesn't support precise scrolling the scale factor stays 1.</li>
-            <li>Allow changing/adjusting video filters at runtime. (This is also used to make
-            the <tt class="docutils literal">D</tt> key insert vf_yadif if deinterlacing is not supported otherwise).</li>
-            <li>Improved support for .cue files.</li>
-            </ul>
-            </div>
-            <div class="section" id="mac-os-x">
-            <h3>Mac OS X</h3>
-            <ul class="simple">
-            <li>Native OpenGL backend.</li>
-            <li>Cocoa event loop is independent from MPlayer's event loop, so user
-            actions like accessing menus and live resizing do not block the playback.</li>
-            <li>Apple Remote support.</li>
-            <li>Media Keys support.</li>
-            <li>VDA support using libavcodec hwaccel API instead of FFmpeg's decoder with up
-            to 2-2.5x reduction in CPU usage.</li>
-            </ul>
-            </div>
-            <div class="section" id="windows">
-            <h3>Windows</h3>
-            <ul class="simple">
-            <li>Improved support for Unicode file names.</li>
-            <li>Improved window handling.</li>
-            <li>Do not block playback when moving the window.</li>
-            <li>Improved Direct3D video output.</li>
-            <li>Added WASAPI audio output.</li>
-            </ul>
-            </div>
-            <div class="section" id="internal-changes">
-            <h3>Internal changes</h3>
-            <ul class="simple">
-            <li>Switch to GPLv2+ (see <tt class="docutils literal">Copyright</tt> file for details).</li>
-            <li>Removal of lots of cruft:<ul>
-            <li>Internal GUI (replaced by the OSC, see the <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a> section).</li>
-            <li>MEncoder (replaced by native encoding, see the <a class="reference internal" href="#encoding">ENCODING</a> section).</li>
-            <li>OSD menu.</li>
-            <li>Kernel video drivers for Linux 2.4 (including VIDIX).</li>
-            <li>Teletext support.</li>
-            <li>Support for dead platforms.</li>
-            <li>Most built-in demuxers have been replaced by their libavformat counterparts.</li>
-            <li>Built-in network support has been replaced by libavformat's (which also
-            supports https URLs).</li>
-            <li>Embedded copies of libraries (such as FFmpeg).</li>
-            </ul>
-            </li>
-            <li>General code cleanups (including refactoring or rewrites of many parts).</li>
-            <li>New build system.</li>
-            <li>Many bug fixes and removal of long-standing issues.</li>
-            <li>Generally preferring FFmpeg/Libav over internal demuxers, decoders, and
-            filters.</li>
-            </ul>
-            </div>
-            </div>
-            <div class="section" id="detailed-listing-of-user-visible-changes">
-            <h2>Detailed Listing of User-visible Changes</h2>
-            <p>This listing is about changed command line switches, slave commands, and similar
-            things. Completely removed features are not listed.</p>
-            <div class="section" id="command-line-switches">
-            <h3>Command Line Switches</h3>
-            <ul>
-            <li><p class="first">There is a new command line syntax, which is generally preferred over the old
-            syntax. <tt class="docutils literal"><span class="pre">-optname</span> optvalue</tt> becomes <tt class="docutils literal"><span class="pre">--optname=optvalue</span></tt>.</p>
-            <p>The old syntax will not be removed. However, the new syntax is mentioned in
-            all documentation and so on, and unlike the old syntax is not ambiguous,
-            so it is a good thing to know about this change.</p>
-            </li>
-            <li><p class="first">In general, negating switches like <tt class="docutils literal"><span class="pre">-noopt</span></tt> now have to be written as
-            <tt class="docutils literal"><span class="pre">-no-opt</span></tt> or <tt class="docutils literal"><span class="pre">--no-opt</span></tt>.</p>
-            </li>
-            <li><p class="first">Per-file options are not the default anymore. You can explicitly specify
-            file-local options. See <tt class="docutils literal">Usage</tt> section.</p>
-            </li>
-            <li><p class="first">Many options have been renamed, removed or changed semantics. Some options
-            that are required for a good playback experience with MPlayer are now
-            superfluous or even worse than the defaults, so make sure to read the manual
-            before trying to use your existing configuration with <strong>mpv</strong>.</p>
-            </li>
-            <li><p class="first">Table of renamed/replaced switches:</p>
-            <blockquote>
-            <table border="1" class="docutils">
-            <colgroup>
-            <col width="39%" />
-            <col width="61%" />
-            </colgroup>
-            <thead valign="bottom">
-            <tr><th class="head">Old</th>
-            <th class="head">New</th>
-            </tr>
-            </thead>
-            <tbody valign="top">
-            <tr><td><tt class="docutils literal"><span class="pre">-no&lt;opt&gt;</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--no-&lt;opt&gt;</span></tt> (add a dash)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-a52drc</span> level</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--ad-lavc-ac3drc=level</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-ac</span> spdifac3</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--ad=spdif:ac3</span></tt> (see <tt class="docutils literal"><span class="pre">--ad=help</span></tt>)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-af</span> volnorm</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--af=drc</span></tt> (renamed)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-afm</span> hwac3</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--ad=spdif:ac3,spdif:dts</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-ao</span> alsa:device=hw=0.3</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--ao=alsa:device=[hw:0,3]</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-aspect</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--video-aspect</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-ass-bottom-margin</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--vf=sub=bottom:top</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-ass</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-ass</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-audiofile-cache</span></tt></td>
-            <td>(removed; the main cache settings are used)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-audiofile</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--audio-file</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-benchmark</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--untimed</span></tt> (no stats)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-capture</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--stream-capture=&lt;filename&gt;</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-channels</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--audio-channels</span></tt> (changed semantics)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-cursor-autohide-delay</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--cursor-autohide</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-delay</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--audio-delay</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-dumpstream</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--stream-dump=&lt;filename&gt;</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-dvdangle</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--dvd-angle</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-endpos</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--length</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-font</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--osd-font</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-forcedsubsonly</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-forced-only</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-forceidx</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--index</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-format</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--audio-format</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-fsmode-dontuse</span></tt></td>
-            <td>(removed)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-fstype</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--x11-netwm</span></tt> (changed semantics)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-hardframedrop</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--framedrop=hard</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-identify</span></tt></td>
-            <td>(removed; use TOOLS/mpv_identify.sh)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-idx</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--index</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-lavdopts</span> ...</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--vd-lavc-...</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-lavfdopts</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--demuxer-lavf-...</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-lircconf</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--input-lirc-conf</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-loop</span> 0</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--loop=inf</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-mixer-channel</span></tt></td>
-            <td>AO suboptions (<tt class="docutils literal">alsa</tt>, <tt class="docutils literal">oss</tt>)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-mixer</span></tt></td>
-            <td>AO suboptions (<tt class="docutils literal">alsa</tt>, <tt class="docutils literal">oss</tt>)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-mouse-movements</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--input-cursor</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-msgcolor</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--msg-color</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-msglevel</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--msg-level</span></tt> (changed semantics)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-msgmodule</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--msg-module</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-name</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--x11-name</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-noar</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--no-input-appleremote</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-noautosub</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--no-sub-auto</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-noconsolecontrols</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--no-input-terminal</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-nojoystick</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--no-input-joystick</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-nosound</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--no-audio</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-osdlevel</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--osd-level</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-panscanrange</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--video-zoom</span></tt>, <tt class="docutils literal"><span class="pre">--video-pan-x/y</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-playing-msg</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--term-playing-msg</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-pp</span> ...</tt></td>
-            <td><tt class="docutils literal"><span class="pre">'--vf=lavfi=[pp=...]'</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-pphelp</span></tt></td>
-            <td>(See FFmpeg libavfilter documentation.)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-rawaudio</span> ...</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--demuxer-rawaudio-...</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-rawvideo</span> ...</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--demuxer-rawvideo-...</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-spugauss</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-gauss</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-srate</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--audio-samplerate</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-ss</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--start</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-ssf</span> &lt;sub&gt;</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sws-...</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-stop-xscreensaver</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-sub-fuzziness</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-auto</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-sub</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-file</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subcp</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-codepage</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subdelay</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-delay</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subfile</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-file</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subfont-*</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-text-*</span></tt>, <tt class="docutils literal"><span class="pre">--osd-*</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subfont-text-scale</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-scale</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subfont</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-text-font</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subfps</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-fps</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-subpos</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-pos</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-sws</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sws-scaler</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-tvscan</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--tv-scan</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-use-filename-title</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--title='${filename}'</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-vc</span> ffh264vdpau</tt> (etc.)</td>
-            <td><tt class="docutils literal"><span class="pre">--hwdec=vdpau</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-vobsub</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--sub-file</span></tt> (pass the .idx file)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-x</span> W</tt>, <tt class="docutils literal"><span class="pre">-y</span> H</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--geometry=WxH</span></tt> + <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-xineramascreen</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">--screen</span></tt> (different values)</td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-xy</span> W</tt></td>
-            <td><tt class="docutils literal"><span class="pre">--autofit=W</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">-zoom</span></tt></td>
-            <td>Inverse available as <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">dvdnav://</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">dvdnav://menu</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal"><span class="pre">dvd://1</span></tt></td>
-            <td><tt class="docutils literal"><span class="pre">dvd://0</span></tt> (0-based offset)</td>
-            </tr>
-            </tbody>
-            </table>
-            </blockquote>
-            </li>
-            </ul>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">-opt</span> val</tt> becomes <tt class="docutils literal"><span class="pre">--opt=val</span></tt>.</p>
-            </div>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p>Quite some video filters, video outputs, audio filters, audio outputs, had
-            changes in their option parsing. These aren't mentioned in the table above.</p>
-            <p class="last">Also, some video and audio filters have been removed, and you have to use
-            libavfilter (using <tt class="docutils literal"><span class="pre">--vf=lavfi=[...]</span></tt> or <tt class="docutils literal"><span class="pre">--af=lavfi=[...]</span></tt>) to get
-            them back.</p>
-            </div>
-            </div>
-            <div class="section" id="input-conf-and-slave-commands">
-            <h3>input.conf and Slave Commands</h3>
-            <ul>
-            <li><p class="first">Table of renamed input commands:</p>
-            <blockquote>
-            <p>This lists only commands that are not always gracefully handled by the
-            internal legacy translation layer. If an input.conf contains any legacy
-            commands, a warning will be printed when starting the player. The warnings
-            also show the replacement commands.</p>
-            <p>Properties containing <tt class="docutils literal">_</tt> to separate words use <tt class="docutils literal">-</tt> instead.</p>
-            <table border="1" class="docutils">
-            <colgroup>
-            <col width="44%" />
-            <col width="56%" />
-            </colgroup>
-            <thead valign="bottom">
-            <tr><th class="head">Old</th>
-            <th class="head">New</th>
-            </tr>
-            </thead>
-            <tbody valign="top">
-            <tr><td><tt class="docutils literal">pt_step 1 [0|1]</tt></td>
-            <td><tt class="docutils literal">playlist_next [weak|force]</tt>
-            (translation layer cannot deal with
-            whitespace)</td>
-            </tr>
-            <tr><td><tt class="docutils literal">pt_step <span class="pre">-1</span> [0|1]</tt></td>
-            <td><tt class="docutils literal">playlist_prev [weak|force] (same)</tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">switch_ratio [&lt;ratio&gt;]</tt></td>
-            <td><p class="first"><tt class="docutils literal">set <span class="pre">video-aspect</span> &lt;ratio&gt;</tt></p>
-            <p class="last"><tt class="docutils literal">set <span class="pre">video-aspect</span> 0</tt> (reset aspect)</p>
-            </td>
-            </tr>
-            <tr><td><tt class="docutils literal">step_property_osd &lt;prop&gt;</tt>
-            <tt class="docutils literal">&lt;step&gt; &lt;dir&gt;</tt></td>
-            <td><tt class="docutils literal">cycle &lt;prop&gt; &lt;step&gt;</tt> (wraps),
-            <tt class="docutils literal">add &lt;prop&gt; &lt;step&gt;</tt> (clamps).
-            <tt class="docutils literal">&lt;dir&gt;</tt> parameter unsupported. Use
-            a negative <tt class="docutils literal">&lt;step&gt;</tt> instead.</td>
-            </tr>
-            <tr><td><tt class="docutils literal">step_property &lt;prop&gt;</tt>
-            <tt class="docutils literal">&lt;step&gt; &lt;dir&gt;</tt></td>
-            <td>Prefix <tt class="docutils literal">cycle</tt> or <tt class="docutils literal">add</tt> with
-            <tt class="docutils literal"><span class="pre">no-osd</span></tt>: <tt class="docutils literal"><span class="pre">no-osd</span> cycle &lt;prop&gt;</tt>
-            <tt class="docutils literal">&lt;step&gt;</tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">osd_show_property_text</tt>
-            <tt class="docutils literal">&lt;text&gt;</tt></td>
-            <td><tt class="docutils literal">show_text &lt;text&gt;</tt>
-            The property expansion format string
-            syntax slightly changed.</td>
-            </tr>
-            <tr><td><tt class="docutils literal">osd_show_text</tt></td>
-            <td>Now does the same as
-            <tt class="docutils literal">osd_show_property_text</tt>. Use the
-            <tt class="docutils literal">raw</tt> prefix to disable property
-            expansion.</td>
-            </tr>
-            <tr><td><tt class="docutils literal">show_tracks</tt></td>
-            <td><tt class="docutils literal">show_text <span class="pre">${track-list}</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">show_chapters</tt></td>
-            <td><tt class="docutils literal">show_text <span class="pre">${chapter-list}</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">af_switch</tt>, <tt class="docutils literal">af_add</tt>, ...</td>
-            <td><tt class="docutils literal">af <span class="pre">set|add|...</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">tv_start_scan</tt></td>
-            <td><tt class="docutils literal">set <span class="pre">tv-scan</span> yes</tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">tv_set_channel &lt;val&gt;</tt></td>
-            <td><tt class="docutils literal">set <span class="pre">tv-channel</span> &lt;val&gt;</tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">tv_step_channel</tt></td>
-            <td><tt class="docutils literal">cycle <span class="pre">tv-channel</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">dvb_set_channel &lt;v1&gt; &lt;v2&gt;</tt></td>
-            <td><tt class="docutils literal">set <span class="pre">dvb-channel</span> <span class="pre">&lt;v1&gt;-&lt;v2&gt;</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">dvb_step_channel</tt></td>
-            <td><tt class="docutils literal">cycle <span class="pre">dvb-channel</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">tv_set_freq &lt;val&gt;</tt></td>
-            <td><tt class="docutils literal">set <span class="pre">tv-freq</span> &lt;val&gt;</tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">tv_step_freq</tt></td>
-            <td><tt class="docutils literal">cycle <span class="pre">tv-freq</span></tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">tv_set_norm &lt;norm&gt;</tt></td>
-            <td><tt class="docutils literal">set <span class="pre">tv-norm</span> &lt;norm&gt;</tt></td>
-            </tr>
-            <tr><td><tt class="docutils literal">tv_step_norm</tt></td>
-            <td><tt class="docutils literal">cycle <span class="pre">tv-norm</span></tt></td>
-            </tr>
-            </tbody>
-            </table>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">Due to lack of hardware and users using the TV/DVB/PVR features, and
-            due to the need to cleanup the related command code, it's possible
-            that the new commands are buggy or behave worse. This can be improved
-            if testers are available. Otherwise, some of the TV code will be
-            removed at some point.</p>
-            </div>
-            </blockquote>
-            </li>
-            </ul>
-            </div>
-            <div class="section" id="slave-mode">
-            <h3>Slave mode</h3>
-            <ul>
-            <li><p class="first">Slave mode was removed. A proper slave mode application needed tons of code
-            and hacks to get
-            it right. The main problem is that slave mode is a bad and incomplete
-            interface, and to get around that, applications parsed output messages
-            intended for users. It is hard to know which messages exactly are parsed by
-            slave mode applications. This makes it virtually impossible to improve
-            terminal output intended for users without possibly breaking something.</p>
-            <p>This is absolutely insane, and since initial improvements to <strong>mpv</strong> quickly
-            made slave mode incompatible to most applications, it was removed as useless
-            cruft. The client API (see below) is provided instead.</p>
-            <p><tt class="docutils literal"><span class="pre">--identify</span></tt> was replaced by the <tt class="docutils literal">TOOLS/mpv_identify.sh</tt> wrapper script.</p>
-            </li>
-            <li><p class="first">For some time (until including release 0.4.x), mpv supported a
-            <tt class="docutils literal"><span class="pre">--slave-broken</span></tt> option. The following options are equivalent:</p>
-            <pre class="literal-block">
-            --input-file=/dev/stdin --input-terminal=no
-            </pre>
-            <p>Assuming the system supports <tt class="docutils literal">/dev/stdin</tt>.</p>
-            <p>(The option was readded in 0.5.1 and sets exactly these options.)</p>
-            </li>
-            <li><p class="first">A JSON RPC protocol giving access to the client API is also supported. See
-            <a class="reference internal" href="#json-ipc">JSON IPC</a> for more information.</p>
-            </li>
-            <li><p class="first"><strong>mpv</strong> also provides a client API, which can be used to embed the player
-            by loading it as shared library. (See <tt class="docutils literal">libmpv/client.h</tt> in the sources.)
-            It might also be possible to implement a custom slave mode-like protocol
-            using Lua scripting.</p>
-            </li>
-            </ul>
-            </div>
-            </div>
-            <div class="section" id="policy-for-removed-features">
-            <h2>Policy for Removed Features</h2>
-            <p><strong>mpv</strong> is in active development. If something is in the way of more important
-            development (such as fixing bugs or implementing new features), we sometimes
-            remove features. Usually this happens only with old features that either seem
-            to be useless, or are not used by anyone. Often these are obscure, or
-            &quot;inherited&quot;, or were marked experimental, but never received any particular
-            praise by any users.</p>
-            <p>Sometimes, features are replaced by something new. The new code will be either
-            simpler or more powerful, but doesn't necessarily provide everything the old
-            feature did.</p>
-            <p>We can not exclude that we accidentally remove features that are actually
-            popular. Generally, we do not know how much a specific functionality is used.
-            If you miss a feature and think it should be re-added, please open an issue
-            on the mpv bug tracker. Hopefully, a solution can be found. Often, it turns
-            out that re-adding something is not much of a problem, or that there are
-            better alternatives.</p>
-            </div>
-            <div class="section" id="why-this-fork">
-            <h2>Why this Fork?</h2>
-            <p>mplayer2 is practically dead, and mpv started out as a branch containing
-            new/experimental development. (Some of it was merged right <em>after</em> the fork
-            was made public, seemingly as an acknowledgment that development, or at
-            least merging, should have been more active.)</p>
-            <p>MPlayer is focused on not breaking anything, but is stuck with a horrible
-            codebase resistant to cleanup. (Unless you do what mpv did - merciless and
-            consequent pruning of bad, old code.) Cleanup and keeping broken things
-            conflict, so the kind of development mpv strives for can't be done within
-            MPlayer due to clashing development policies.</p>
-            <p>Additionally, mplayer2 already had lots of changes over MPlayer, which would
-            have needed to be backported to the MPlayer codebase. This would not only
-            have been hard (several years of diverging development), but also would have
-            been impossible due to the aforementioned MPlayer development policy.</p>
-            </div>
             </div>
             <div class="section" id="environment-variables">
             <h1>ENVIRONMENT VARIABLES</h1>
