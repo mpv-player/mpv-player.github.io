@@ -705,11 +705,16 @@
             <p class="last">If <tt class="docutils literal"><span class="pre">--audio-pitch-correction</span></tt> is used, playing with a speed higher than
             normal automatically inserts the <tt class="docutils literal">scaletempo</tt> audio filter.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|no&gt;</span></tt></dt>
-            <dd>Loops playback <tt class="docutils literal">N</tt> times. A value of <tt class="docutils literal">1</tt> plays it one time (default),
+            <dt><tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|force|no&gt;</span></tt></dt>
+            <dd><p class="first">Loops playback <tt class="docutils literal">N</tt> times. A value of <tt class="docutils literal">1</tt> plays it one time (default),
             <tt class="docutils literal">2</tt> two times, etc. <tt class="docutils literal">inf</tt> means forever. <tt class="docutils literal">no</tt> is the same as <tt class="docutils literal">1</tt> and
             disables looping. If several files are specified on command line, the
-            entire playlist is looped.</dd>
+            entire playlist is looped.</p>
+            <p class="last">The <tt class="docutils literal">force</tt> mode is like <tt class="docutils literal">inf</tt>, but does not skip playlist entries
+            which have been marked as failing. This means the player might waste CPU
+            time trying to loop a file that doesn't exist. But it might be useful for
+            playing webradios under very bad network conditions.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--pause</span></tt></dt>
             <dd>Start the player in paused state.</dd>
             <dt><tt class="docutils literal"><span class="pre">--shuffle</span></tt></dt>
@@ -1007,7 +1012,8 @@
             <dd><p class="first">Enable the youtube-dl hook-script. It will look at the input URL, and will
             play the video located on the website. This works with many streaming sites,
             not just the one that the script is named after. This requires a recent
-            version of youtube-dl to be installed on the system. (Enabled by default.)</p>
+            version of youtube-dl to be installed on the system. (Enabled by default,
+            except when the client API / libmpv is used.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
             <p class="last">(Note: this is the replacement for the now removed libquvi support.)</p>
             </dd>
@@ -1703,11 +1709,18 @@
             This is useful if you always want the same font size, even if the video
             doesn't covert the window fully, e.g. because screen aspect and window
             aspect mismatch (and the player adds black bars).</p>
+            <p>Default: yes.</p>
             <p>This option is misnamed. The difference to the confusingly similar sounding
             option <tt class="docutils literal"><span class="pre">--sub-scale-by-window</span></tt> is that <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> still
             scales with the approximate window size, while the other option disables
             this scaling.</p>
-            <p class="last">Like <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>, this can break ASS subtitles.</p>
+            <p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt> is
+            set high enough).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--ass-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Like <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt>, but affects subtitles in ASS format only.
+            Like <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>, this can break ASS subtitles.</p>
+            <p class="last">Default: no.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--embeddedfonts</span></tt>, <tt class="docutils literal"><span class="pre">--no-embeddedfonts</span></tt></dt>
             <dd>Use fonts embedded in Matroska container files and ASS scripts (default:
@@ -1816,9 +1829,19 @@
             </tbody>
             </table>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-use-margins</span></tt></dt>
-            <dd>Enables placing toptitles and subtitles in black borders when they are
-            available.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--ass-force-margins</span></tt></dt>
+            <dd><p class="first">Enables placing toptitles and subtitles in black borders when they are
+            available, if the subtitles are in the ASS format.</p>
+            <p class="last">Default: no.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt></dt>
+            <dd><p class="first">Enables placing toptitles and subtitles in black borders when they are
+            available, if the subtitles are in a plain text format  (or ASS if
+            <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt> is set high enough).</p>
+            <p>Default: yes.</p>
+            <p class="last">Renamed from <tt class="docutils literal"><span class="pre">--ass-use-margins</span></tt>. To place ASS subtitles in the borders
+            too (like the old option did), also add <tt class="docutils literal"><span class="pre">--ass-force-margins</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--ass-vsfilter-aspect-compat=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Stretch SSA/ASS subtitles when playing anamorphic videos for compatibility
             with traditional VSFilter behavior. This switch has no effect when the
@@ -3049,6 +3072,15 @@
             subtitle position, use <tt class="docutils literal"><span class="pre">--sub-pos</span></tt>.</p>
             <p class="last">Default: 22.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-align-x=&lt;left|center|right&gt;</span></tt>,  <tt class="docutils literal"><span class="pre">--sub-text-align-x=...</span></tt></dt>
+            <dd><p class="first">Control to which corner of the screen OSD or text subtitles should be
+            aligned to (default: <tt class="docutils literal">center</tt> for subs, <tt class="docutils literal">left</tt> for OSD).</p>
+            <p class="last">Never applied to ASS subtitles, except in <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> mode. Likewise,
+            this does not apply to image subtitles.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-align-y=&lt;top|center|bottom&gt;</span></tt> <tt class="docutils literal"><span class="pre">--sub-text-align-y=...</span></tt></dt>
+            <dd>Vertical position (default: <tt class="docutils literal">bottom</tt> for subs, <tt class="docutils literal">top</tt> for OSD).
+            Details see <tt class="docutils literal"><span class="pre">--osd-align-x</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-scale=&lt;factor&gt;</span></tt></dt>
             <dd>OSD font size multiplier, multiplied with <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> value.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-scale-by-window=&lt;yes|no&gt;</span></tt></dt>
@@ -6189,9 +6221,9 @@
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">&lt;bottom-margin&gt;</span></tt></dt>
             <dd>Adds a black band at the bottom of the frame. The SSA/ASS renderer can
-            place subtitles there (with <tt class="docutils literal"><span class="pre">--ass-use-margins</span></tt>).</dd>
+            place subtitles there (with <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;top-margin&gt;</span></tt></dt>
-            <dd>Black band on the top for toptitles  (with <tt class="docutils literal"><span class="pre">--ass-use-margins</span></tt>).</dd>
+            <dd>Black band on the top for toptitles  (with <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt>).</dd>
             </dl>
             <div class="admonition-examples admonition last">
             <p class="first admonition-title">Examples</p>
@@ -6388,6 +6420,8 @@
             the <tt class="docutils literal"><span class="pre">--fps</span></tt> command line option overrides this value.</p>
             <p class="last">Useful for some filters which insist on having a FPS.</p>
             </dd>
+            <dt><tt class="docutils literal">display_fps</tt></dt>
+            <dd>Refresh rate of the current display. Note that this value can be 0.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vapoursynth-lazy</span></tt></dt>
@@ -6982,6 +7016,20 @@
             <dd>Remove the given audio track. See <tt class="docutils literal">sub_remove</tt> command.</dd>
             <dt><tt class="docutils literal">audio_reload [&lt;id&gt;]</tt></dt>
             <dd>Reload the given audio tracks. See <tt class="docutils literal">sub_reload</tt> command.</dd>
+            <dt><tt class="docutils literal">rescan_external_files [&lt;mode&gt;]</tt></dt>
+            <dd><p class="first">Rescan external files according to the current <tt class="docutils literal"><span class="pre">--sub-auto</span></tt> and
+            <tt class="docutils literal"><span class="pre">--audio-file-auto</span></tt> settings. This can be used to auto-load external
+            files <em>after</em> the file was loaded.</p>
+            <p>The <tt class="docutils literal">mode</tt> argument is one of the following:</p>
+            <dl class="last docutils">
+            <dt>&lt;keep-selection&gt; (default)</dt>
+            <dd>Do not change current track selections.</dd>
+            <dt>&lt;reselect&gt;</dt>
+            <dd>Select the default audio and video streams, which typically selects
+            external files with highest preference. (The implementation is not
+            perfect, and could be improved on request.)</dd>
+            </dl>
+            </dd>
             </dl>
             </div>
             <div class="section" id="input-commands-that-are-possibly-subject-to-change">
@@ -7173,8 +7221,8 @@
             unseekable streams that are going out of sync.
             This command might be changed or removed in the future.</dd>
             </dl>
-            <p>Undocumented commands: <tt class="docutils literal">tv_last_channel</tt> (TV/DVB only), <tt class="docutils literal">get_property</tt> (?),
-            <tt class="docutils literal">ao_reload</tt> (experimental/internal).</p>
+            <p>Undocumented commands: <tt class="docutils literal">tv_last_channel</tt> (TV/DVB only),
+            <tt class="docutils literal">get_property</tt> (deprecated), <tt class="docutils literal">ao_reload</tt> (experimental/internal).</p>
             <div class="section" id="hooks">
             <h3>Hooks</h3>
             <p>Hooks are synchronous events between player core and a script or similar. This
@@ -7784,8 +7832,10 @@
             <dd>See <tt class="docutils literal"><span class="pre">--sub-forced-only</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">sub-scale</span></tt> (RW)</dt>
             <dd>Subtitle font size multiplier.</dd>
-            <dt><tt class="docutils literal"><span class="pre">ass-use-margins</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--ass-use-margins</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">ass-force-margins</span></tt> (RW)</dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--ass-force-margins</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">sub-use-margins</span></tt> (RW)</dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">ass-vsfilter-aspect-compat</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--ass-vsfilter-aspect-compat</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">ass-style-override</span></tt> (RW)</dt>
@@ -7993,10 +8043,15 @@
                     &quot;name&quot;          MPV_FORMAT_STRING
                     &quot;description&quot;   MPV_FORMAT_STRING
             </pre>
-            <p class="last">The <tt class="docutils literal">name</tt> is what is to be passed to the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option (and
+            <p>The <tt class="docutils literal">name</tt> is what is to be passed to the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option (and
             often a rather cryptic audio API-specific ID), while <tt class="docutils literal">description</tt> is
             human readable free form text. The description is an empty string if none
             was received.</p>
+            <p>The special entry with the name set to <tt class="docutils literal">auto</tt> selects the default audio
+            output driver and the default device.</p>
+            <p class="last">The property can be watched with the property observation mechanism in
+            the client API and in Lua scripts. (Technically, change notification is
+            enabled the first time this property is read.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">audio-device</span></tt> (RW)</dt>
             <dd><p class="first">Set the audio device. This directly reads/writes the <tt class="docutils literal"><span class="pre">--audio-device</span></tt>
