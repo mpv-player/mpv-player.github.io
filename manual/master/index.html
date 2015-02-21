@@ -1129,7 +1129,8 @@
             next method (might matter on some Linux systems).</p>
             <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> mode allows you to use vaapi with any VO. Because
             this copies the decoded video back to system RAM, it's likely less efficient
-            than the <tt class="docutils literal">vaapi</tt> mode.</p>
+            than the <tt class="docutils literal">vaapi</tt> mode. But there are reports that this is actually faster
+            as well, and avoids many issues with <tt class="docutils literal">vaapi</tt>.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">When using this switch, hardware decoding is still only done for some
@@ -4541,7 +4542,7 @@
             <dd><p class="first">Set radius for filters listed below, must be a float number between 1.0
             and 16.0. Defaults to be 3.0 if not specified.</p>
             <blockquote>
-            <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">ewa_lanczos</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt></blockquote>
+            <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">ewa_lanczos</tt>, <tt class="docutils literal">ginseng</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt></blockquote>
             <p class="last">Note that depending on filter implementation details and video scaling
             ratio, the radius that actually being used might be different
             (most likely being increased a bit).</p>
@@ -9282,9 +9283,7 @@
             <p>mpv can be controlled by external programs using the JSON-based IPC protocol. It
             can be enabled by specifying the path to a unix socket using the option
             <tt class="docutils literal"><span class="pre">--input-unix-socket</span></tt>. Clients can connect to this socket and send commands to
-            the player or receive events from it. You can use the <tt class="docutils literal">socat</tt> tool to send
-            commands (and receive reply) from the shell. See the <tt class="docutils literal"><span class="pre">--idle</span></tt> option how to
-            make mpv start without exiting immediately or playing a file.</p>
+            the player or receive events from it.</p>
             <div class="warning">
             <p class="first admonition-title">Warning</p>
             <p class="last">This is not intended to be a secure network protocol. It is explicitly
@@ -9292,6 +9291,29 @@
             themselves are insecure too. For example, the <tt class="docutils literal">run</tt> command is exposed,
             which can run arbitrary system commands. The use-case is controlling the
             player locally. This is not different from the MPlayer slave protocol.</p>
+            </div>
+            <div class="section" id="socat-example">
+            <h2>Socat example</h2>
+            <p>You can use the <tt class="docutils literal">socat</tt> tool to send commands (and receive reply) from the
+            shell. Assuming mpv was started with:</p>
+            <pre class="literal-block">
+            mpv file.mkv --input-unix-socket=/tmp/mpvsocket
+            </pre>
+            <p>Then you can control it using socat:</p>
+            <pre class="literal-block">
+            &gt; echo '{ &quot;command&quot;: [&quot;get_property&quot;, &quot;playback-time&quot;] }' | socat - /tmp/mpvsocket
+            {&quot;data&quot;:190.482000,&quot;error&quot;:&quot;success&quot;}
+            </pre>
+            <p>In this case, socat copies data between stdin/stdout and the mpv socket
+            connection.</p>
+            <p>See the <tt class="docutils literal"><span class="pre">--idle</span></tt> option how to make mpv start without exiting immediately or
+            playing a file.</p>
+            <p>It's also possible to send input.conf style text-only commands:</p>
+            <pre class="literal-block">
+            &gt; echo 'show_text ${playback-time}' | socat - /tmp/mpvsocket
+            </pre>
+            <p>But you won't get a reply over the socket. (This particular command shows the
+            playback time on the player's OSD.)</p>
             </div>
             <div class="section" id="protocol">
             <h2>Protocol</h2>
