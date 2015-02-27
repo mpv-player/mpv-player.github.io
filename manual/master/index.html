@@ -702,8 +702,9 @@
             See <tt class="docutils literal"><span class="pre">--start</span></tt> for valid option values and examples.</dd>
             <dt><tt class="docutils literal"><span class="pre">--speed=&lt;0.01-100&gt;</span></tt></dt>
             <dd><p class="first">Slow down or speed up playback by the factor given as parameter.</p>
-            <p class="last">If <tt class="docutils literal"><span class="pre">--audio-pitch-correction</span></tt> is used, playing with a speed higher than
-            normal automatically inserts the <tt class="docutils literal">scaletempo</tt> audio filter.</p>
+            <p class="last">If <tt class="docutils literal"><span class="pre">--audio-pitch-correction</span></tt> (on by default) is used, playing with a
+            speed higher than normal automatically inserts the <tt class="docutils literal">scaletempo</tt> audio
+            filter.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|force|no&gt;</span></tt></dt>
             <dd><p class="first">Loops playback <tt class="docutils literal">N</tt> times. A value of <tt class="docutils literal">1</tt> plays it one time (default),
@@ -1025,6 +1026,17 @@
             available aliases. To use experimental DASH support for youtube, use
             <tt class="docutils literal">bestvideo+bestaudio</tt>.
             (Default: <tt class="docutils literal">best</tt>)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--ytdl-raw-options=&lt;key&gt;=&lt;value&gt;[,&lt;key&gt;=&lt;value&gt;[,...]]</span></tt></dt>
+            <dd><p class="first">Pass arbitraty options to youtube-dl. Parameter and argument should be
+            passed as a key-value pair. Options without argument must include <tt class="docutils literal">=</tt>.</p>
+            <p>There is no sanity checking so it's possible to break things (i.e.
+            passing invalid parameters to youtube-dl).</p>
+            <div class="admonition-example admonition last">
+            <p class="first admonition-title">Example</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--ytdl-raw-options=username=user,password=pass</span></tt>
+            <tt class="docutils literal"><span class="pre">--ytdl-raw-options=force-ipv6=</span></tt></p>
+            </div>
+            </dd>
             </dl>
             </div>
             <div class="section" id="video">
@@ -1824,8 +1836,7 @@
             <tr class="field"><th class="field-name">no:</th><td class="field-body">Render subtitles as forced by subtitle scripts.</td>
             </tr>
             <tr class="field"><th class="field-name">force:</th><td class="field-body">Try to force the font style as defined by the <tt class="docutils literal"><span class="pre">--sub-text-*</span></tt>
-            options. Requires a modified libass, can break rendering easily.
-            Probably more reliable than <tt class="docutils literal">force</tt>.</td>
+            options. Can break rendering easily.</td>
             </tr>
             </tbody>
             </table>
@@ -2778,7 +2789,7 @@
             switching.</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-readahead-secs=&lt;seconds&gt;</span></tt></dt>
             <dd><p class="first">If <tt class="docutils literal"><span class="pre">--demuxer-thread</span></tt> is enabled, this controls how much the demuxer
-            should buffer ahead in seconds (default: 0.2). As long as no packet has
+            should buffer ahead in seconds (default: 1). As long as no packet has
             a timestamp difference higher than the readahead amount relative to the
             last packet returned to the decoder, the demuxer keeps reading.</p>
             <p>Note that the <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> option will override this value if a cache
@@ -2841,6 +2852,8 @@
             mpv 0.7.0 also understands JSON commands (see <a class="reference internal" href="#json-ipc">JSON IPC</a>), but you can't
             get replies or events. Use <tt class="docutils literal"><span class="pre">--input-unix-socket</span></tt> for something
             bi-directional. On MS Windows, JSON commands are not available.</p>
+            <p>This can also specify a direct file descriptor with <tt class="docutils literal"><span class="pre">fd://N</span></tt> (UNIX only).
+            In this case, JSON replies will be written if the FD is writable.</p>
             <p>See also <tt class="docutils literal"><span class="pre">--slave-broken</span></tt>.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
@@ -3615,7 +3628,7 @@
             <dt><tt class="docutils literal"><span class="pre">--cache-secs=&lt;seconds&gt;</span></tt></dt>
             <dd>How many seconds of audio/video to prefetch if the cache is active. This
             overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
-            is enabled and the value is larger. (Default: 2.)</dd>
+            is enabled and the value is larger. (Default: 10.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-pause</span></tt>, <tt class="docutils literal"><span class="pre">--no-cache-pause</span></tt></dt>
             <dd>Whether the player should automatically pause when the cache runs low,
             and unpause once more data is available (&quot;buffering&quot;).</dd>
@@ -4515,16 +4528,21 @@
             radius is used, while <tt class="docutils literal">lanczos2</tt> corresponds to a radius of 2.</p>
             </dd>
             <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
-            <dd><p class="first">Elliptic weighted average Lanczos scaling. Also known as Jinc.
-            Relatively slow, but very good quality. The number of taps can
-            be controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>. Adding extra taps makes the
-            filter sharper but adds more ringing.</p>
-            <p class="last">This filter supports antiringing (see <tt class="docutils literal"><span class="pre">scale-antiring</span></tt>).</p>
+            <dd>Elliptic weighted average Lanczos scaling. Also known as Jinc.
+            Relatively slow, but very good quality. The radius can be
+            controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>. Increasing the radius makes the
+            filter sharper but adds more ringing.</dd>
+            <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
+            <dd><p class="first">A slightly sharpened version of ewa_lanczos, preconfigured to use
+            an ideal radius and parameter. If your hardware can run it, this is
+            probably what you should use by default.</p>
+            <p class="last">Note: This filter has a fixed radius. Use <tt class="docutils literal">ewa_lanczos</tt> if you
+            want to adjust it.</p>
             </dd>
             <dt><tt class="docutils literal">mitchell</tt></dt>
-            <dd>Mitchell-Netravali. The <tt class="docutils literal">b</tt> and <tt class="docutils literal">c</tt> parameters can be set with
-            <tt class="docutils literal"><span class="pre">scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">scale-param2</span></tt>. Both are set to 1/3 by default.
-            This filter is very good at downscaling (see <tt class="docutils literal"><span class="pre">scale-down</span></tt>).</dd>
+            <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
+            <tt class="docutils literal"><span class="pre">scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">scale-param2</span></tt>. This filter is very good at
+            downscaling (see <tt class="docutils literal"><span class="pre">scale-down</span></tt>).</dd>
             </dl>
             <p>There are some more filters, but most are not as useful. For a complete
             list, pass <tt class="docutils literal">help</tt> as value, e.g.:</p>
@@ -4533,16 +4551,29 @@
             </pre>
             </blockquote>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">scale-param1=&lt;value&gt;</span></tt></dt>
-            <dd>Set filter parameters. Ignored if the filter is not tunable. These are
-            unset by default, and use the filter specific default if applicable.</dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-param2=&lt;value&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal"><span class="pre">scale-param1</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">scale-param2=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Set filter parameters. Ignored if the filter is not tunable.
+            Currently, this affects the following filter parameters:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">kaiser</tt></dt>
+            <dd>Window parameter (<tt class="docutils literal">alpha</tt>). Defaults to 6.33.</dd>
+            <dt><tt class="docutils literal">mitchell</tt></dt>
+            <dd>Spline parameters (<tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt>). Defaults to 1/3 for both.</dd>
+            <dt><tt class="docutils literal">gaussian</tt></dt>
+            <dd>Scale parameter (<tt class="docutils literal">t</tt>). Increasing this makes the result blurrier.
+            Defaults to 1.</dd>
+            <dt><tt class="docutils literal">ewa_lanczos</tt>, <tt class="docutils literal">ewa_ginseng</tt>, <tt class="docutils literal">ewa_hanning</tt></dt>
+            <dd>Jinc function scaling factor (also known as a blur factor).
+            Decreasing this makes the result sharper, increasing it makes it
+            blurrier. Defaults to 1. Note that setting this too low (eg. 0.5)
+            leads to bad results. It's recommended to stay between 0.9 and 1.1.</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">scale-radius=&lt;r&gt;</span></tt></dt>
             <dd><p class="first">Set radius for filters listed below, must be a float number between 1.0
             and 16.0. Defaults to be 3.0 if not specified.</p>
             <blockquote>
-            <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">ewa_lanczos</tt>, <tt class="docutils literal">ginseng</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt></blockquote>
+            <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt> and all EWA filters (eg. <tt class="docutils literal">ewa_lanczos</tt>)</blockquote>
             <p class="last">Note that depending on filter implementation details and video scaling
             ratio, the radius that actually being used might be different
             (most likely being increased a bit).</p>
@@ -4552,7 +4583,8 @@
             introduce other artifacts in the process. Must be a float number
             between 0.0 and 1.0. The default value of 0.0 disables antiringing
             entirely.</p>
-            <p class="last">Note that this currently only affects <tt class="docutils literal">ewa_lanczos</tt>.</p>
+            <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt>,
+            <tt class="docutils literal">bicubic_fast</tt> or <tt class="docutils literal">sharpen</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">scaler-resizes-only</span></tt></dt>
             <dd>Disable the scaler if the video image is not resized. In that case,
@@ -4766,14 +4798,24 @@
             <dd>Color used to draw parts of the mpv window not covered by video.
             See <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
             <dt><tt class="docutils literal">smoothmotion</tt></dt>
-            <dd><p class="first">Use frame interpolation to reduce stuttering caused by mismatches in
-            video fps and display refresh rate.</p>
-            <p>Instead of drawing each frame exactly once, smoothmotion redraws the
-            the OpenGL scene at the display refresh rate. If a vsync is detected
-            to be the one when a frame changes to the next, a linear interpolation
-            of the previous frame with next is shown instead.</p>
-            <p>This means that displaying a 1fps video on a 60hz monitor will blend
-            at most during 1 vsync for each second of playback.</p>
+            <dd><p class="first">Reduce stuttering caused by mismatches in video fps and display
+            refresh rate (also known as judder).</p>
+            <p>Instead of drawing source frames for variable durations, smoothmotion
+            will blend frames that overlap the transition between two frames in
+            the source material.</p>
+            <p>For example, a 24 Hz clip played back on a 60 Hz display would normally
+            result in a pattern like this:</p>
+            <pre class="literal-block">
+            A A A B B C C C D D E E E F F
+            </pre>
+            <p>which has different lengths, alternating between 3 and 2. This
+            difference in frame duration is what causes judder.</p>
+            <p>With smoothmotion enabled, the pattern changes to:</p>
+            <pre class="literal-block">
+            A A A+B B B C C C+D D D E E E+F F F
+            </pre>
+            <p>where A+B is a blend of A and B. In this pattern, each frame gets a
+            (consistent) duration of roughly 2.5 - resulting in smooth motion.</p>
             <p>GPU drivers or compositing window managers overriding vsync behavior
             can lead to bad results. If the framerate is close to or over the
             display refresh rate, results can be bad as well.</p>
@@ -4784,8 +4826,15 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">smoothmotion-threshold=&lt;0.0-0.5&gt;</span></tt></dt>
-            <dd>Mix threshold at which interpolation is skipped (default: 0.0 – never
-            skip).</dd>
+            <dd><p class="first">Mix threshold at which interpolation is skipped (default: 0.0 – never
+            skip).</p>
+            <p>For example, with a <tt class="docutils literal"><span class="pre">smoothmotion-threshold</span></tt> of 0.1, if the
+            smoothmotion algorithm would try to blend two frames by a ratio of
+            95% A + 5% B, it would simply display A instead. (Since the
+            distance, 0.05, is lower than the threshold)</p>
+            <p class="last">Setting this to 0.5 would be similar to disabling smoothmotion
+            completely, since it would always just display the nearest frame.</p>
+            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-hq</span></tt></dt>
