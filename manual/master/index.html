@@ -532,7 +532,7 @@
             <li>Cache state, e.g. <tt class="docutils literal">Cache:&nbsp; 2s+134KB</tt>. Visible if the stream cache is enabled.
             The first value shows the amount of video buffered in the demuxer in seconds,
             the second value shows <em>additional</em> data buffered in the stream cache in
-            kilobytes. (<tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> and <tt class="docutils literal"><span class="pre">cached-used</span></tt> properties.)</li>
+            kilobytes. (<tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> and <tt class="docutils literal"><span class="pre">cache-used</span></tt> properties.)</li>
             </ul>
             </div>
             <div class="section" id="protocols">
@@ -8956,9 +8956,9 @@
             <dt><tt class="docutils literal">mp.add_periodic_timer(seconds, fn)</tt></dt>
             <dd><p class="first">Call the given function periodically. This is like <tt class="docutils literal">mp.add_timeout</tt>, but
             the timer is re-added after the function fn is run.</p>
-            <p>Returns a timer object. The timer object provides the following methods:</p>
-            <blockquote class="last">
-            <dl class="docutils">
+            <dl class="last docutils">
+            <dt>Returns a timer object. The timer object provides the following methods:</dt>
+            <dd><dl class="first last docutils">
             <dt><tt class="docutils literal">stop()</tt></dt>
             <dd>Disable the timer. Does nothing if the timer is already disabled.
             This will remember the current elapsed time when stopping, so that
@@ -8985,7 +8985,8 @@
             (<tt class="docutils literal">true</tt>). This value is used when the timer expires (but before
             the timer callback function fn is run).</dd>
             </dl>
-            </blockquote>
+            </dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal">mp.get_opt(key)</tt></dt>
             <dd>Return a setting from the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> option. It's up to the user and
