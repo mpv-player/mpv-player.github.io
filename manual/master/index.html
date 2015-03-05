@@ -2497,6 +2497,9 @@
             May be negative.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cdda-skip=&lt;yes|no&gt;</span></tt></dt>
             <dd>(Never) accept imperfect data reconstruction.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cdda-cdtext=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Print CD text. This is disabled by default, because it ruins perfomance
+            with CD-ROM drives for unknown reasons.</dd>
             <dt><tt class="docutils literal"><span class="pre">--dvd-speed=&lt;speed&gt;</span></tt></dt>
             <dd><p class="first">Try to limit DVD speed (default: 0, no change). DVD base speed is 1385
             kB/s, so an 8x drive can read at speeds up to 11080 kB/s. Slower speeds
@@ -3053,7 +3056,8 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-fractions</span></tt></dt>
-            <dd>Show OSD times with fractions of seconds.</dd>
+            <dd>Show OSD times with fractions of seconds (in millisecond precision). Useful
+            to see the exact timestamp of a video frame.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-level=&lt;0-3&gt;</span></tt></dt>
             <dd><p class="first">Specifies which mode the OSD should start in.</p>
             <table class="last docutils field-list" frame="void" rules="none">
@@ -4741,6 +4745,13 @@
             <dt>0.8</dt>
             <dd>Pitch black room</dd>
             </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">gamma-auto</span></tt></dt>
+            <dd><p class="first">Automatically corrects the gamma value depending on ambient lighting
+            conditions (adding a gamma boost for dark rooms).</p>
+            <p>With ambient illuminance of 64lux, mpv will pick the 1.0 gamma value
+            (no boost), and slightly increase the boost up until 0.8 for 16lux.</p>
+            <p class="last">NOTE: Only implemented on OS X.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">icc-profile=&lt;file&gt;</span></tt></dt>
             <dd>Load an ICC profile and use it to transform linear RGB to screen output.
@@ -6796,10 +6807,10 @@
             <dd>Use this to &quot;block&quot; keys that should be unbound, and do nothing. Useful for
             disabling default bindings, without disabling all bindings with
             <tt class="docutils literal"><span class="pre">--no-input-default-bindings</span></tt>.</dd>
-            <dt><tt class="docutils literal">seek &lt;seconds&gt; <span class="pre">[relative|absolute|absolute-percent|-</span> <span class="pre">[default-precise|exact|keyframes]]</span></tt></dt>
+            <dt><tt class="docutils literal">seek &lt;seconds&gt; <span class="pre">[relative|absolute|absolute-percent|exact|keyframes]</span></tt></dt>
             <dd><p class="first">Change the playback position. By default, seeks by a relative amount of
             seconds.</p>
-            <p>The second argument sets the seek mode:</p>
+            <p>The second argument consists of flags controlling the seek mode:</p>
             <dl class="docutils">
             <dt>relative (default)</dt>
             <dd>Seek relative to current position (a negative value seeks backwards).</dd>
@@ -6807,17 +6818,17 @@
             <dd>Seek to a given time.</dd>
             <dt>absolute-percent</dt>
             <dd>Seek to a given percent position.</dd>
-            </dl>
-            <p>The third argument defines how exact the seek is:</p>
-            <dl class="last docutils">
-            <dt>default-precise (default)</dt>
-            <dd>Follow the default behavior as set by <tt class="docutils literal"><span class="pre">--hr-seek</span></tt>, which by default
-            does imprecise seeks (like <tt class="docutils literal">keyframes</tt>).</dd>
-            <dt>exact</dt>
-            <dd>Always do exact/hr/precise seeks (slow).</dd>
             <dt>keyframes</dt>
             <dd>Always restart playback at keyframe boundaries (fast).</dd>
+            <dt>exact</dt>
+            <dd>Always do exact/hr/precise seeks (slow).</dd>
             </dl>
+            <p>Multiple flags can be combined, e.g.: <tt class="docutils literal">absolute+keyframes</tt>.</p>
+            <p>By default, <tt class="docutils literal">keyframes</tt> is used for relative seeks, and <tt class="docutils literal">exact</tt> is used
+            for absolute seeks.</p>
+            <p class="last">Before mpv 0.9, the <tt class="docutils literal">keyframes</tt> and <tt class="docutils literal">exact</tt> flags had to be passed as
+            3rd parameter (essentially using a space instead of <tt class="docutils literal">+</tt>). The 3rd
+            parameter is still parsed, but is considered deprecated.</p>
             </dd>
             <dt><tt class="docutils literal">revert_seek [mode]</tt></dt>
             <dd><p class="first">Undoes the <tt class="docutils literal">seek</tt> command, and some other commands that seek (but not
@@ -6860,7 +6871,7 @@
             <dt><tt class="docutils literal">screenshot [subtitles|video|window|- <span class="pre">[single|each-frame]]</span></tt></dt>
             <dd><p class="first">Take a screenshot.</p>
             <p>First argument:</p>
-            <dl class="docutils">
+            <dl class="last docutils">
             <dt>&lt;subtitles&gt; (default)</dt>
             <dd>Save the video image, in its original resolution, and with subtitles.
             Some video outputs may still include the OSD in the output under certain
@@ -6872,16 +6883,12 @@
             <dd>Save the contents of the mpv window. Typically scaled, with OSD and
             subtitles. The exact behavior depends on the selected video output, and
             if no support is available, this will act like <tt class="docutils literal">video</tt>.</dd>
-            </dl>
-            <p>Second argument:</p>
-            <dl class="last docutils">
-            <dt>&lt;single&gt; (default)</dt>
-            <dd>Take a single screenshot.</dd>
             <dt>&lt;each-frame&gt;</dt>
             <dd>Take a screenshot each frame. Issue this command again to stop taking
             screenshots. Note that you should disable frame-dropping when using
             this mode - or you might receive duplicate images in cases when a
-            frame was dropped.</dd>
+            frame was dropped. This flag can be combined with the other flags,
+            e.g. <tt class="docutils literal"><span class="pre">video+each-frame</span></tt>.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">screenshot_to_file &quot;&lt;filename&gt;&quot; [subtitles|video|window]</tt></dt>
@@ -9112,7 +9119,7 @@
                 optionB = -0.5,
                 optionC = true,
             }
-            options.read_options(options, &quot;myscript&quot;)
+            read_options(options, &quot;myscript&quot;)
             print(option.optionA)
             </pre>
             <p>The config file will be stored in <tt class="docutils literal"><span class="pre">lua-settings/identifier.conf</span></tt> in mpv's user
