@@ -155,6 +155,10 @@
             <dd>Set/clear A-B loop points. See <tt class="docutils literal">ab_loop</tt> command for details.</dd>
             <dt>Ctrl + and Ctrl -</dt>
             <dd>Adjust audio delay by +/- 0.1 seconds.</dd>
+            <dt>u</dt>
+            <dd>Switch between applying no style overrides to SSA/ASS subtitles, and
+            overriding them almost completely with the normal subtitle style. See
+            <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt> for more info.</dd>
             <dt>V</dt>
             <dd>Toggle subtitle VSFilter aspect compatibility mode. See
             <tt class="docutils literal"><span class="pre">--ass-vsfilter-aspect-compat</span></tt> for more info.</dd>
@@ -4655,7 +4659,8 @@
             as of this writing).</dd>
             <dt><tt class="docutils literal"><span class="pre">swapinterval=&lt;n&gt;</span></tt></dt>
             <dd>Interval in displayed frames between two buffer swaps.
-            1 is equivalent to enable VSYNC, 0 to disable VSYNC.</dd>
+            1 is equivalent to enable VSYNC, 0 to disable VSYNC. Defaults to 1 if
+            not specified.</dd>
             <dt><tt class="docutils literal"><span class="pre">cscale=&lt;filter&gt;</span></tt></dt>
             <dd>As <tt class="docutils literal">scale</tt>, but for interpolating chroma information. If the image
             is not subsampled, this option is ignored entirely. Note that the
@@ -7856,6 +7861,12 @@
             <dt><tt class="docutils literal"><span class="pre">display-names</span></tt></dt>
             <dd>Names of the displays that the mpv window covers. On X11, these
             are the xrandr names (LVDS1, HDMI1, DP1, VGA1, etc.).</dd>
+            <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
+            <dd>The refresh rate of the current display. Currently, this is the lowest FPS
+            of any display covered by the video, as retrieved by the underlying system
+            APIs (e.g. xrandr on X11). It is not the measured FPS or the FPS set with
+            <tt class="docutils literal"><span class="pre">--display-fps</span></tt>. It's not necessarily available on all platforms. Note
+            that any of the listed facts may change any time without a warning.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt> (RW)</dt>
             <dd>Video aspect, see <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">osd-width</span></tt>, <tt class="docutils literal"><span class="pre">osd-height</span></tt></dt>
