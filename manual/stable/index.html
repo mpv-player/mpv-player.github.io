@@ -532,7 +532,7 @@
             <li>Cache state, e.g. <tt class="docutils literal">Cache:&nbsp; 2s+134KB</tt>. Visible if the stream cache is enabled.
             The first value shows the amount of video buffered in the demuxer in seconds,
             the second value shows <em>additional</em> data buffered in the stream cache in
-            kilobytes. (<tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> and <tt class="docutils literal"><span class="pre">cached-used</span></tt> properties.)</li>
+            kilobytes. (<tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> and <tt class="docutils literal"><span class="pre">cache-used</span></tt> properties.)</li>
             </ul>
             </div>
             <div class="section" id="protocols">
@@ -702,8 +702,9 @@
             See <tt class="docutils literal"><span class="pre">--start</span></tt> for valid option values and examples.</dd>
             <dt><tt class="docutils literal"><span class="pre">--speed=&lt;0.01-100&gt;</span></tt></dt>
             <dd><p class="first">Slow down or speed up playback by the factor given as parameter.</p>
-            <p class="last">If <tt class="docutils literal"><span class="pre">--audio-pitch-correction</span></tt> is used, playing with a speed higher than
-            normal automatically inserts the <tt class="docutils literal">scaletempo</tt> audio filter.</p>
+            <p class="last">If <tt class="docutils literal"><span class="pre">--audio-pitch-correction</span></tt> (on by default) is used, playing with a
+            speed higher than normal automatically inserts the <tt class="docutils literal">scaletempo</tt> audio
+            filter.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|force|no&gt;</span></tt></dt>
             <dd><p class="first">Loops playback <tt class="docutils literal">N</tt> times. A value of <tt class="docutils literal">1</tt> plays it one time (default),
@@ -4587,7 +4588,8 @@
             as of this writing).</dd>
             <dt><tt class="docutils literal"><span class="pre">swapinterval=&lt;n&gt;</span></tt></dt>
             <dd>Interval in displayed frames between two buffer swaps.
-            1 is equivalent to enable VSYNC, 0 to disable VSYNC.</dd>
+            1 is equivalent to enable VSYNC, 0 to disable VSYNC. Defaults to 1 if
+            not specified.</dd>
             <dt><tt class="docutils literal"><span class="pre">cscale=&lt;filter&gt;</span></tt></dt>
             <dd>As <tt class="docutils literal">scale</tt>, but for interpolating chroma information. If the image
             is not subsampled, this option is ignored entirely. Note that the
@@ -5598,9 +5600,11 @@
             <dd>Scale tempo in sync with speed (default).</dd>
             <dt>pitch</dt>
             <dd><p class="first">Reverses effect of filter. Scales pitch without altering tempo.
-            Add <tt class="docutils literal">[ multiply speed 0.9438743126816935</tt> and
-            <tt class="docutils literal">] multiply speed 1.059463094352953</tt> to your <tt class="docutils literal">input.conf</tt>
-            to step by musical semi-tones.</p>
+            Add this to your <tt class="docutils literal">input.conf</tt> to step by musical semi-tones:</p>
+            <pre class="literal-block">
+            [ multiply speed 0.9438743126816935
+            ] multiply speed 1.059463094352953
+            </pre>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">Loses sync with video.</p>
@@ -9013,7 +9017,7 @@
                 optionB = -0.5,
                 optionC = true,
             }
-            options.read_options(options, &quot;myscript&quot;)
+            read_options(options, &quot;myscript&quot;)
             print(option.optionA)
             </pre>
             <p>The config file will be stored in <tt class="docutils literal"><span class="pre">lua-settings/identifier.conf</span></tt> in mpv's user

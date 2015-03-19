@@ -1133,7 +1133,7 @@
             </tr>
             <tr class="field"><th class="field-name">vda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X only)</td>
             </tr>
-            <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only) (experimental)</td>
+            <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
             </tbody>
             </table>
@@ -3561,11 +3561,13 @@
             <div class="section" id="cache">
             <h2>Cache</h2>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--cache=&lt;kBytes|no|auto&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--cache=&lt;kBytes|yes|no|auto&gt;</span></tt></dt>
             <dd><p class="first">Set the size of the cache in kilobytes, disable it with <tt class="docutils literal">no</tt>, or
             automatically enable it if needed with <tt class="docutils literal">auto</tt> (default: <tt class="docutils literal">auto</tt>).
             With <tt class="docutils literal">auto</tt>, the cache will usually be enabled for network streams,
-            using the size set by <tt class="docutils literal"><span class="pre">--cache-default</span></tt>.</p>
+            using the size set by <tt class="docutils literal"><span class="pre">--cache-default</span></tt>. With <tt class="docutils literal">yes</tt>, the cache will
+            always be enabled with the size set by <tt class="docutils literal"><span class="pre">--cache-default</span></tt> (unless the
+            stream can not be cached, or <tt class="docutils literal"><span class="pre">--cache-default</span></tt> disables caching).</p>
             <p>May be useful when playing files from slow media, but can also have
             negative effects, especially with file formats that require a lot of
             seeking, such as MP4.</p>
@@ -3576,7 +3578,7 @@
             because no space is reserved for seeking back yet.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-default=&lt;kBytes|no&gt;</span></tt></dt>
-            <dd>Set the size of the cache in kilobytes (default: 25000 KB). Using <tt class="docutils literal">no</tt>
+            <dd>Set the size of the cache in kilobytes (default: 150000 KB). Using <tt class="docutils literal">no</tt>
             will not automatically enable the cache e.g. when playing from a network
             stream. Note that using <tt class="docutils literal"><span class="pre">--cache</span></tt> will always override this option.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-initial=&lt;kBytes&gt;</span></tt></dt>
@@ -4556,6 +4558,13 @@
             <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
             <tt class="docutils literal"><span class="pre">scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">scale-param2</span></tt>. This filter is very good at
             downscaling (see <tt class="docutils literal"><span class="pre">scale-down</span></tt>).</dd>
+            <dt><tt class="docutils literal">oversample</tt></dt>
+            <dd>A version of nearest neighbour that (naively) oversamples pixels,
+            so that pixels overlapping edges get linearly interpolated instead
+            of rounded. This essentially removes the small imperfections and
+            judder artifacts caused by nearest-neighbour interpolation, in
+            exchange for adding some blur. This filter is good at temporal
+            interpolation, and also known as &quot;smoothmotion&quot; (see <tt class="docutils literal">tscale</tt>).</dd>
             </dl>
             <p>There are some more filters, but most are not as useful. For a complete
             list, pass <tt class="docutils literal">help</tt> as value, e.g.:</p>
@@ -4580,6 +4589,14 @@
             Decreasing this makes the result sharper, increasing it makes it
             blurrier. Defaults to 1. Note that setting this too low (eg. 0.5)
             leads to bad results. It's recommended to stay between 0.9 and 1.1.</dd>
+            <dt><tt class="docutils literal">sharpen3</tt>, <tt class="docutils literal">sharpen5</tt></dt>
+            <dd>Sharpening strength. Increasing this makes the image sharper but
+            adds more ringing and aliasing. Defaults to 0.5.</dd>
+            <dt><tt class="docutils literal">oversample</tt></dt>
+            <dd>Minimum distance to an edge before interpolation is used. Setting
+            this to 0 will always interpolate edges, whereas setting it to 0.5
+            will never interpolate, thus behaving as if the regular nearest
+            neighbour algorithm was used. Defaults to 0.0.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">scale-radius=&lt;r&gt;</span></tt></dt>
@@ -4604,19 +4621,6 @@
             <tt class="docutils literal">bilinear</tt> is used instead whatever is set with <tt class="docutils literal">scale</tt>. Bilinear
             will reproduce the source image perfectly if no scaling is performed.
             Note that this option never affects <tt class="docutils literal">cscale</tt>.</dd>
-            <dt><tt class="docutils literal">srgb</tt></dt>
-            <dd><p class="first">Convert and color correct the output to sRGB before displaying it on
-            the screen. This option enables <tt class="docutils literal"><span class="pre">linear-scaling</span></tt>.</p>
-            <p>This option is equivalent to using <tt class="docutils literal"><span class="pre">icc-profile</span></tt> with an sRGB ICC
-            profile, but it is implemented without a 3DLUT and does not require
-            LittleCMS 2. If both <tt class="docutils literal">srgb</tt> and <tt class="docutils literal"><span class="pre">icc-profile</span></tt> are present, the
-            latter takes precedence, as they are somewhat redundant.</p>
-            <p class="last">Note: When playing back BT.2020 content with this option enabled, out
-            of gamut colors will be numerically clipped, which can potentially
-            change the hue and/or luminance. If this is not desired, it is
-            recommended to use <tt class="docutils literal"><span class="pre">icc-profile</span></tt> with an sRGB ICC profile instead,
-            when playing back wide-gamut BT.2020 content.</p>
-            </dd>
             <dt><tt class="docutils literal">pbo</tt></dt>
             <dd>Enable use of PBOs. This is slightly faster, but can sometimes lead to
             sporadic and temporary image corruption (in theory, because reupload
@@ -4657,16 +4661,29 @@
             <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also request a
             debug OpenGL context (which does nothing with current graphics drivers
             as of this writing).</dd>
+            <dt><tt class="docutils literal">interpolation</tt></dt>
+            <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display
+            refresh rate (also known as judder).</p>
+            <p>This essentially attempts to interpolate the missing frames by
+            convoluting the video along the temporal axis. The filter used can be
+            controlled using the <tt class="docutils literal">tscale</tt> setting.</p>
+            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal">swapinterval</tt> for more
+            information.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">swapinterval=&lt;n&gt;</span></tt></dt>
-            <dd>Interval in displayed frames between two buffer swaps.
+            <dd><p class="first">Interval in displayed frames between two buffer swaps.
             1 is equivalent to enable VSYNC, 0 to disable VSYNC. Defaults to 1 if
-            not specified.</dd>
+            not specified.</p>
+            <p class="last">Note that this depends on proper OpenGL vsync support. On some platforms
+            and drivers, this only works reliably when in fullscreen mode. It may
+            also require driver-specific hacks if using multiple monitors, to
+            ensure mpv syncs to the right one. Compositing window managers can
+            also lead to bad results, as can missing or incorrect display FPS
+            information (see <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">cscale=&lt;filter&gt;</span></tt></dt>
             <dd>As <tt class="docutils literal">scale</tt>, but for interpolating chroma information. If the image
-            is not subsampled, this option is ignored entirely. Note that the
-            implementation is currently always done as a single pass, so using
-            it with separable filters will result in slow performance for very
-            little visible benefit.</dd>
+            is not subsampled, this option is ignored entirely.</dd>
             <dt><tt class="docutils literal"><span class="pre">scale-down=&lt;filter&gt;</span></tt></dt>
             <dd>Like <tt class="docutils literal">scale</tt>, but apply these filters on downscaling instead. If this
             option is unset, the filter implied by <tt class="docutils literal">scale</tt> will be applied.</dd>
@@ -4675,10 +4692,22 @@
             <p class="last">See <tt class="docutils literal"><span class="pre">scale-param1</span></tt>, <tt class="docutils literal"><span class="pre">scale-param2</span></tt>, <tt class="docutils literal"><span class="pre">scale-radius</span></tt> and
             <tt class="docutils literal"><span class="pre">scale-antiring</span></tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">tscale=&lt;filter&gt;</span></tt>, <tt class="docutils literal"><span class="pre">tscale-param1</span></tt>, <tt class="docutils literal"><span class="pre">tscale-param2</span></tt>, <tt class="docutils literal"><span class="pre">tscale-antiring</span></tt></dt>
+            <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is
+            only used if <tt class="docutils literal">interpolation</tt> is enabled. The only valid choices
+            for <tt class="docutils literal">tscale</tt> are separable convolution filters (use <tt class="docutils literal">tscale=help</tt>
+            to get a list). The other options (<tt class="docutils literal"><span class="pre">tscale-param1</span></tt> etc.) are
+            analogous to their <tt class="docutils literal">scale</tt> counterparts. The default is <tt class="docutils literal">oversample</tt>.</p>
+            <p class="last">Note that the maximum supported filter radius is currently 3, and that
+            using filters with larger radius may introduce issues when pausing or
+            framestepping, proportional to the radius used. It is recommended to
+            stick to a radius of 1 or 2.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">linear-scaling</span></tt></dt>
-            <dd>Scale in linear light. This is automatically enabled if <tt class="docutils literal">srgb</tt>,
-            <tt class="docutils literal"><span class="pre">icc-profile</span></tt> or <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt> is set. It should only
-            be used with a <tt class="docutils literal"><span class="pre">fbo-format</span></tt> that has at least 16 bit precision.</dd>
+            <dd>Scale in linear light. This is automatically enabled if
+            <tt class="docutils literal"><span class="pre">target-prim</span></tt>, <tt class="docutils literal"><span class="pre">target-trc</span></tt>, <tt class="docutils literal"><span class="pre">icc-profile</span></tt> or
+            <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt> is set. It should only be used with a
+            <tt class="docutils literal"><span class="pre">fbo-format</span></tt> that has at least 16 bit precision.</dd>
             <dt><tt class="docutils literal"><span class="pre">fancy-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size
             when downscaling. Trades quality for reduced downscaling performance.</p>
@@ -4758,10 +4787,44 @@
             (no boost), and slightly increase the boost up until 0.8 for 16lux.</p>
             <p class="last">NOTE: Only implemented on OS X.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">target-prim=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted
+            to this colorspace if necessary. Valid values are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Disable any adaptation (default)</dd>
+            <dt>bt470m</dt>
+            <dd>ITU-R BT.470 M</dd>
+            <dt>bt601-525</dt>
+            <dd>ITU-R BT.601 (525-line SD systems, eg. NTSC), SMPTE 170M/240M</dd>
+            <dt>bt601-625</dt>
+            <dd>ITU-R BT.601 (625-line SD systems, eg. PAL/SECAM), ITU-R BT.470 B/G</dd>
+            <dt>bt709</dt>
+            <dd>ITU-R BT.709 (HD), IEC 61966-2-4 (sRGB), SMPTE RP177 Annex B</dd>
+            <dt>bt2020</dt>
+            <dd>ITU-R BT.2020 (UHD)</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">target-trc=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the transfer characteristics (gamma) of the display. Video
+            colors will be adjusted to this curve. Valid values are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Disable any adaptation (default)</dd>
+            <dt>bt1886</dt>
+            <dd>ITU-R BT.1886 curve, without the brightness drop (approx. 1.961)</dd>
+            <dt>srgb</dt>
+            <dd>IEC 61966-2-4 (sRGB)</dd>
+            <dt>linear</dt>
+            <dd>Linear light output</dd>
+            <dt>gamma22</dt>
+            <dd>Pure power curve (gamma 2.2)</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">icc-profile=&lt;file&gt;</span></tt></dt>
             <dd>Load an ICC profile and use it to transform linear RGB to screen output.
-            Needs LittleCMS 2 support compiled in. This option overrides the <tt class="docutils literal">srgb</tt>
-            property, as using both is somewhat redundant. It also enables
+            Needs LittleCMS 2 support compiled in. This option overrides the
+            <tt class="docutils literal"><span class="pre">target-prim</span></tt> and <tt class="docutils literal"><span class="pre">target-trc</span></tt> options. It also enables
             <tt class="docutils literal"><span class="pre">linear-scaling</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">icc-profile-auto</span></tt></dt>
             <dd><p class="first">Automatically select the ICC display profile currently specified by
@@ -4774,9 +4837,8 @@
             to create the 3D LUT. Note that this file contains an uncompressed LUT.
             Its size depends on the <tt class="docutils literal"><span class="pre">3dlut-size</span></tt>, and can be very big.</dd>
             <dt><tt class="docutils literal"><span class="pre">icc-intent=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Specifies the ICC Intent used for transformations between color spaces.
-            This affects the rendering when using <tt class="docutils literal"><span class="pre">icc-profile</span></tt> or <tt class="docutils literal">srgb</tt> and
-            also affects the way DCP XYZ content gets converted to RGB.</p>
+            <dd><p class="first">Specifies the ICC intent used for the color transformation (when using
+            <tt class="docutils literal"><span class="pre">icc-profile</span></tt>).</p>
             <dl class="last docutils">
             <dt>0</dt>
             <dd>perceptual</dd>
@@ -4818,44 +4880,6 @@
             <dt><tt class="docutils literal"><span class="pre">background=&lt;color&gt;</span></tt></dt>
             <dd>Color used to draw parts of the mpv window not covered by video.
             See <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
-            <dt><tt class="docutils literal">smoothmotion</tt></dt>
-            <dd><p class="first">Reduce stuttering caused by mismatches in video fps and display
-            refresh rate (also known as judder).</p>
-            <p>Instead of drawing source frames for variable durations, smoothmotion
-            will blend frames that overlap the transition between two frames in
-            the source material.</p>
-            <p>For example, a 24 Hz clip played back on a 60 Hz display would normally
-            result in a pattern like this:</p>
-            <pre class="literal-block">
-            A A A B B C C C D D E E E F F
-            </pre>
-            <p>which has different lengths, alternating between 3 and 2. This
-            difference in frame duration is what causes judder.</p>
-            <p>With smoothmotion enabled, the pattern changes to:</p>
-            <pre class="literal-block">
-            A A A+B B B C C C+D D D E E E+F F F
-            </pre>
-            <p>where A+B is a blend of A and B. In this pattern, each frame gets a
-            (consistent) duration of roughly 2.5 - resulting in smooth motion.</p>
-            <p>GPU drivers or compositing window managers overriding vsync behavior
-            can lead to bad results. If the framerate is close to or over the
-            display refresh rate, results can be bad as well.</p>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">On systems other than Linux or OS X, you currently must set
-            the <tt class="docutils literal"><span class="pre">--display-fps</span></tt> option, or the results will be bad.</p>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">smoothmotion-threshold=&lt;0.0-0.5&gt;</span></tt></dt>
-            <dd><p class="first">Mix threshold at which interpolation is skipped (default: 0.0 – never
-            skip).</p>
-            <p>For example, with a <tt class="docutils literal"><span class="pre">smoothmotion-threshold</span></tt> of 0.1, if the
-            smoothmotion algorithm would try to blend two frames by a ratio of
-            95% A + 5% B, it would simply display A instead. (Since the
-            distance, 0.05, is lower than the threshold)</p>
-            <p class="last">Setting this to 0.5 would be similar to disabling smoothmotion
-            completely, since it would always just display the nearest frame.</p>
-            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-hq</span></tt></dt>
@@ -5033,7 +5057,7 @@
             </dl>
             </dd>
             </dl>
-            <p>This also supports many of the suboptions the <tt class="docutils literal">opengl</tt> VO has. Runs
+            <p>This also supports many of the suboptions the <tt class="docutils literal">opengl</tt> VO has. Run
             <tt class="docutils literal">mpv <span class="pre">--vo=opengl-cb:help</span></tt> for a list.</p>
             <p class="last">This also supports the <tt class="docutils literal">vo_cmdline</tt> command.</p>
             </dd>
@@ -5678,9 +5702,11 @@
             <dd>Scale tempo in sync with speed (default).</dd>
             <dt>pitch</dt>
             <dd><p class="first">Reverses effect of filter. Scales pitch without altering tempo.
-            Add <tt class="docutils literal">[ multiply speed 0.9438743126816935</tt> and
-            <tt class="docutils literal">] multiply speed 1.059463094352953</tt> to your <tt class="docutils literal">input.conf</tt>
-            to step by musical semi-tones.</p>
+            Add this to your <tt class="docutils literal">input.conf</tt> to step by musical semi-tones:</p>
+            <pre class="literal-block">
+            [ multiply speed 0.9438743126816935
+            ] multiply speed 1.059463094352953
+            </pre>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">Loses sync with video.</p>
@@ -7864,9 +7890,9 @@
             <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
             <dd>The refresh rate of the current display. Currently, this is the lowest FPS
             of any display covered by the video, as retrieved by the underlying system
-            APIs (e.g. xrandr on X11). It is not the measured FPS or the FPS set with
-            <tt class="docutils literal"><span class="pre">--display-fps</span></tt>. It's not necessarily available on all platforms. Note
-            that any of the listed facts may change any time without a warning.</dd>
+            APIs (e.g. xrandr on X11). It is not the measured FPS. It's not necessarily
+            available on all platforms. Note that any of the listed facts may change
+            any time without a warning.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt> (RW)</dt>
             <dd>Video aspect, see <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">osd-width</span></tt>, <tt class="docutils literal"><span class="pre">osd-height</span></tt></dt>
@@ -9688,7 +9714,7 @@
             <dt><tt class="docutils literal">/usr/local/etc/mpv/mpv.conf</tt></dt>
             <dd>mpv system-wide settings (depends on <tt class="docutils literal"><span class="pre">--prefix</span></tt> passed to configure)</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt></dt>
-            <dd>mpv user settings</dd>
+            <dd>mpv user settings (see <a class="reference internal" href="#configuration-files">CONFIGURATION FILES</a> section)</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/input.conf</span></tt></dt>
             <dd>key bindings (see <a class="reference internal" href="#input-conf">INPUT.CONF</a> section)</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt></dt>
