@@ -81,8 +81,9 @@
             <div class="section" id="interactive-control">
             <h1>INTERACTIVE CONTROL</h1>
             <p>mpv has a fully configurable, command-driven control layer which allows you
-            to control mpv using keyboard, mouse, joystick or remote control (with
-            LIRC). See the <tt class="docutils literal"><span class="pre">--input-</span></tt> options for ways to customize it.</p>
+            to control mpv using keyboard, mouse, or remote control (there is no
+            LIRC support - configure remotes as input devices instead).</p>
+            <p>See the <tt class="docutils literal"><span class="pre">--input-</span></tt> options for ways to customize it.</p>
             <div class="section" id="keyboard-control">
             <h2>Keyboard Control</h2>
             <dl class="docutils">
@@ -1135,6 +1136,8 @@
             </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
+            <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=rpi</span></tt> (Raspberry Pi only - default if available)</td>
+            </tr>
             </tbody>
             </table>
             <p><tt class="docutils literal">auto</tt> tries to automatically enable hardware decoding using the first
@@ -1207,7 +1210,7 @@
             (making 128 pixels of the source video invisible).</p>
             <p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-rotate=&lt;0-359|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--video-rotate=&lt;0-360|no&gt;</span></tt></dt>
             <dd>Rotate the video clockwise, in degrees. Currently supports 90° steps only.
             If <tt class="docutils literal">no</tt> is given, the video is never rotated, even if the file has
             rotation metadata. (The rotation value is added to the rotation metadata,
@@ -1482,12 +1485,15 @@
             the name to force it; this will skip some checks. Give the demuxer name as
             printed by <tt class="docutils literal"><span class="pre">--audio-demuxer=help</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--ad-lavc-ac3drc=&lt;level&gt;</span></tt></dt>
-            <dd>Select the Dynamic Range Compression level for AC-3 audio streams.
+            <dd><p class="first">Select the Dynamic Range Compression level for AC-3 audio streams.
             <tt class="docutils literal">&lt;level&gt;</tt> is a float value ranging from 0 to 1, where 0 means no
-            compression and 1 (which is the default) means full compression (make loud
-            passages more silent and vice versa). Values up to 2 are also accepted, but
+            compression (which is the default) and 1 means full compression (make loud
+            passages more silent and vice versa). Values up to 6 are also accepted, but
             are purely experimental. This option only shows an effect if the AC-3 stream
-            contains the required range compression information.</dd>
+            contains the required range compression information.</p>
+            <p class="last">The standard mandates that DRC is enabled by default, but mpv (and some
+            other players) ignore this for the sake of better audio quality.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--ad-lavc-downmix=&lt;yes|no&gt;</span></tt></dt>
             <dd>Whether to request audio channel downmixing from the decoder (default: yes).
             Some decoders, like AC-3, AAC and DTS, can remix audio on decoding. The
@@ -2541,126 +2547,6 @@
             <dd>Adjust the hue of the video signal (default: 0). You can get a colored
             negative of the image with this option. Not supported by all video output
             drivers.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--colormatrix=&lt;colorspace&gt;</span></tt></dt>
-            <dd><p class="first">Controls the YUV to RGB color space conversion when playing video. There
-            are various standards. Normally, BT.601 should be used for SD video, and
-            BT.709 for HD video. (This is done by default.) Using incorrect color space
-            results in slightly under or over saturated and shifted colors.</p>
-            <p>The color space conversion is additionally influenced by the related
-            options --colormatrix-input-range and --colormatrix-output-range.</p>
-            <p>These options are not always supported. Different video outputs provide
-            varying degrees of support. The <tt class="docutils literal">opengl</tt> and <tt class="docutils literal">vdpau</tt> video output
-            drivers usually offer full support. The <tt class="docutils literal">xv</tt> output can set the color
-            space if the system video driver supports it, but not input and output
-            levels. The <tt class="docutils literal">scale</tt> video filter can configure color space and input
-            levels, but only if the output format is RGB (if the video output driver
-            supports RGB output, you can force this with <tt class="docutils literal"><span class="pre">-vf</span> scale,format=rgba</tt>).</p>
-            <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the video's
-            color space flag will be used. If that flag is unset, the color space
-            will be selected automatically. This is done using a simple heuristic that
-            attempts to distinguish SD and HD video. If the video is larger than
-            1279x576 pixels, BT.709 (HD) will be used; otherwise BT.601 (SD) is
-            selected.</p>
-            <p>Available color spaces are:</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (default)</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.601:</th><td class="field-body">ITU-R BT.601 (SD)</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.709:</th><td class="field-body">ITU-R BT.709 (HD)</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.2020-NCL:</th><td class="field-body">ITU-R BT.2020 non-constant luminance system</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.2020-CL:</th><td class="field-body">ITU-R BT.2020 constant luminance system</td>
-            </tr>
-            <tr class="field"><th class="field-name">SMPTE-240M:</th><td class="field-body">SMPTE-240M</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--colormatrix-input-range=&lt;color-range&gt;</span></tt></dt>
-            <dd><p class="first">YUV color levels used with YUV to RGB conversion. This option is only
-            necessary when playing broken files which do not follow standard color
-            levels or which are flagged wrong. If the video does not specify its
-            color range, it is assumed to be limited range.</p>
-            <p>The same limitations as with --colormatrix apply.</p>
-            <p>Available color ranges are:</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (normally limited range) (default)</td>
-            </tr>
-            <tr class="field"><th class="field-name">limited:</th><td class="field-body">limited range (16-235 for luma, 16-240 for chroma)</td>
-            </tr>
-            <tr class="field"><th class="field-name">full:</th><td class="field-body">full range (0-255 for both luma and chroma)</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--colormatrix-output-range=&lt;color-range&gt;</span></tt></dt>
-            <dd><p class="first">RGB color levels used with YUV to RGB conversion. Normally, output devices
-            such as PC monitors use full range color levels. However, some TVs and
-            video monitors expect studio RGB levels. Providing full range output to a
-            device expecting studio level input results in crushed blacks and whites,
-            the reverse in dim gray blacks and dim whites.</p>
-            <p>The same limitations as with <tt class="docutils literal"><span class="pre">--colormatrix</span></tt> apply.</p>
-            <p>Available color ranges are:</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (equals to full range) (default)</td>
-            </tr>
-            <tr class="field"><th class="field-name">limited:</th><td class="field-body">limited range (16-235 per component), studio levels</td>
-            </tr>
-            <tr class="field"><th class="field-name">full:</th><td class="field-body">full range (0-255 per component), PC levels</td>
-            </tr>
-            </tbody>
-            </table>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">It is advisable to use your graphics driver's color range option
-            instead, if available.</p>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--colormatrix-primaries=&lt;primaries&gt;</span></tt></dt>
-            <dd><p class="first">RGB primaries the source file was encoded with. Normally this should be set
-            in the file header, but when playing broken or mistagged files this can be
-            used to override the setting. By default, when unset, BT.709 is used for
-            all files except those tagged with a BT.2020 color matrix.</p>
-            <p>This option only affects video output drivers that perform color
-            management, for example <tt class="docutils literal">opengl</tt> with the <tt class="docutils literal">srgb</tt> or <tt class="docutils literal"><span class="pre">icc-profile</span></tt>
-            suboptions set.</p>
-            <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the video's
-            primaries flag will be used. If that flag is unset, the color space will
-            be selected automatically, using the following heuristics: If the
-            <tt class="docutils literal"><span class="pre">--colormatrix</span></tt> is set or determined as BT.2020 or BT.709, the
-            corresponding primaries are used. Otherwise, if the video height is
-            exactly 576 (PAL), BT.601-625 is used. If it's exactly 480 or 486 (NTSC),
-            BT.601-525 is used. If the video resolution is anything else, BT.709 is
-            used.</p>
-            <p>Available primaries are:</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (default)</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.601-525:</th><td class="field-body">ITU-R BT.601 (SD) 525-line systems (NTSC, SMPTE-C)</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.601-625:</th><td class="field-body">ITU-R BT.601 (SD) 625-line systems (PAL, SECAM)</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.709:</th><td class="field-body">ITU-R BT.709 (HD) (same primaries as sRGB)</td>
-            </tr>
-            <tr class="field"><th class="field-name">BT.2020:</th><td class="field-body">ITU-R BT.2020 (UHD)</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
             </dl>
             </div>
             <div class="section" id="demuxer">
@@ -2888,15 +2774,6 @@
             <dd>Permit mpv to receive pointer events reported by the video output
             driver. Necessary to use the OSC, or to select the buttons in DVD menus.
             Support depends on the VO in use.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--input-joystick</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-joystick</span></tt></dt>
-            <dd>Enable/disable joystick support. Disabled by default.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--input-js-dev</span></tt></dt>
-            <dd>Specifies the joystick device to use (default: <tt class="docutils literal">/dev/input/js0</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--input-lirc</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-lirc</span></tt></dt>
-            <dd>Enable/disable LIRC support. Enabled by default.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--input-lirc-conf=&lt;filename&gt;</span></tt></dt>
-            <dd>(LIRC only)
-            Specifies a configuration file for LIRC (default: <tt class="docutils literal"><span class="pre">~/.lircrc</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-media-keys=&lt;yes|no&gt;</span></tt></dt>
             <dd>(OS X only)
             Enable/disable media keys support. Enabled by default (except for libmpv).</dd>
@@ -3016,6 +2893,8 @@
             <dd>See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for OSD/sub text background.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-blur=&lt;0..20.0&gt;</span></tt></dt>
             <dd>Gaussian blur factor. 0 means no blur applied (default).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-bold=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-bold=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Format text on bold.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-border-color=&lt;color&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-border-color=&lt;color&gt;</span></tt></dt>
             <dd><p class="first">See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for the OSD/sub font border.</p>
             <div class="note last">
@@ -3444,7 +3323,7 @@
             Use _ for spaces in names (or play with quoting ;-) ). The channel
             names will then be written using OSD, and the slave commands
             <tt class="docutils literal">tv_step_channel</tt>, <tt class="docutils literal">tv_set_channel</tt> and <tt class="docutils literal">tv_last_channel</tt>
-            will be usable for a remote control (see LIRC). Not compatible with
+            will be usable for a remote control. Not compatible with
             the <tt class="docutils literal">frequency</tt> parameter.</p>
             </div>
             <div class="note">
@@ -3980,6 +3859,14 @@
             <dd>Allow output of non-interleaved formats (if the audio decoder uses
             this format). Currently disabled by default, because some popular
             ALSA plugins are utterly broken with non-interleaved formats.</dd>
+            <dt><tt class="docutils literal"><span class="pre">ingore-chmap</span></tt></dt>
+            <dd>Don't read or set the channel map of the ALSA device - only request the
+            required number of channels, and then pass the audio as-is to it. This
+            option most likely should not be used. It can be useful for debugging,
+            or for static setups with a specially engineered ALSA configuration (in
+            this case you should always force the same layout with <tt class="docutils literal"><span class="pre">--audio-channels</span></tt>,
+            or it will work only for files which use the layout implicit to your
+            ALSA device).</dd>
             </dl>
             <div class="note">
             <p class="first admonition-title">Note</p>
@@ -4220,21 +4107,21 @@
             <dt><tt class="docutils literal">wasapi</tt></dt>
             <dd><p class="first">Audio output to the Windows Audio Session API.</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">device=&lt;id&gt;</span></tt></dt>
-            <dd><p class="first">Uses the requested endpoint instead of the system's default audio
-            endpoint. Both the number and the ID String are valid; the ID String
-            is guaranteed to not change unless the driver is uninstalled.</p>
-            <p>Also supports searching active devices by name. If more than one
-            device matches the name, refuses loading it.</p>
-            <p class="last">To get a list of the valid devices, give <tt class="docutils literal">help</tt> as the id. The
-            list is the same as the <tt class="docutils literal">list</tt> suboption, but stops the player
-            initialization.</p>
-            </dd>
             <dt><tt class="docutils literal">exclusive</tt></dt>
             <dd>Requests exclusive, direct hardware access. By definition prevents
             sound playback of any other program until mpv exits.</dd>
-            <dt><tt class="docutils literal">list</tt></dt>
-            <dd>Lists all audio endpoints (output devices) present in the system.</dd>
+            <dt><tt class="docutils literal"><span class="pre">device=&lt;id&gt;</span></tt></dt>
+            <dd><p class="first">Uses the requested endpoint instead of the system's default audio
+            endpoint. Both an ordinal number (0,1,2,...) and the GUID
+            String are valid; the GUID string is guaranteed to not change
+            unless the driver is uninstalled.</p>
+            <p>Also supports searching active devices by human readable name. If more
+            than one device matches the name, refuses loading it.</p>
+            <p class="last">This option is mostly deprecated in favour of the more general
+            <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option. That said, <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt> will give
+            a list of valid device GUIDs (prefixed with <tt class="docutils literal">wasapi/</tt>), as well as
+            their human readable names, which should work here.</p>
+            </dd>
             </dl>
             </dd>
             </dl>
@@ -4854,6 +4741,25 @@
             <dd>Size of the 3D LUT generated from the ICC profile in each dimension.
             Default is 128x256x64.
             Sizes must be a power of two, and 512 at most.</dd>
+            <dt><tt class="docutils literal"><span class="pre">blend-subtitles</span></tt></dt>
+            <dd><p class="first">Blend subtitles directly onto upscaled video frames, before
+            interpolation and/or color management (default: no). Enabling this
+            causes subtitles to be affected by <tt class="docutils literal"><span class="pre">icc-profile</span></tt>, <tt class="docutils literal"><span class="pre">target-prim</span></tt>,
+            <tt class="docutils literal"><span class="pre">target-trc</span></tt>, <tt class="docutils literal">interpolation</tt>, <tt class="docutils literal">gamma</tt> and <tt class="docutils literal"><span class="pre">linear-scaling</span></tt>.
+            It also increases subtitle performance when using <tt class="docutils literal">interpolation</tt>.</p>
+            <p>The downside of enabling this is that it restricts subtitles to the
+            visible portion of the video, so you can't have subtitles exist in the
+            black margins below a video (for example).</p>
+            <div class="warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This changes the way subtitle colors are handled. Normally,
+            subtitle colors are assumed to be in sRGB and color managed
+            as such. Enabling this makes them treated as being in the
+            video's color space instead. This is good if you want
+            things like softsubbed ASS signs to match the video colors,
+            but may cause SRT subtitles or similar to look slightly off.</p>
+            </div>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">alpha=&lt;blend|yes|no&gt;</span></tt></dt>
             <dd><p class="first">Decides what to do if the input has an alpha component (default: blend).</p>
             <dl class="last docutils">
@@ -4870,9 +4776,6 @@
             <dd>Ignore alpha component.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">chroma-location=&lt;auto|center|left&gt;</span></tt></dt>
-            <dd>Set the YUV chroma sample location. auto means use the bitstream
-            flags (default: auto).</dd>
             <dt><tt class="docutils literal"><span class="pre">rectangle-textures</span></tt></dt>
             <dd>Force use of rectangle textures (default: no). Normally this shouldn't
             have any advantages over normal textures. Note that hardware decoding
@@ -4886,7 +4789,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:scale-down=mitchell:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
+            --vo=opengl:scale=spline36:cscale=spline36:scale-down=mitchell:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -5061,6 +4964,19 @@
             <tt class="docutils literal">mpv <span class="pre">--vo=opengl-cb:help</span></tt> for a list.</p>
             <p class="last">This also supports the <tt class="docutils literal">vo_cmdline</tt> command.</p>
             </dd>
+            <dt><tt class="docutils literal">rpi</tt> (Raspberry Pi)</dt>
+            <dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">display=&lt;number&gt;</span></tt></dt>
+            <dd>Select the display number on which the video overlay should be shown
+            (default: 0).</dd>
+            <dt><tt class="docutils literal"><span class="pre">layer=&lt;number&gt;</span></tt></dt>
+            <dd>Select the dispmanx layer on which the video overlay should be shown
+            (default: -10). Note that mpv will also use the 2 layers above the
+            selected layer, to handle the window background and OSD. Actual video
+            rendering will happen on the layer above the selected layer.</dd>
+            </dl>
+            </dd>
             </dl>
             </div>
             <div class="section" id="audio-filters">
@@ -5124,7 +5040,7 @@
             be documented by FFmpeg or Libav.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">lavcac3enc[=tospdif[:bitrate[:minchn]]]</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">lavcac3enc[=tospdif[:bitrate[:minch]]]</span></tt></dt>
             <dd><p class="first">Encode multi-channel audio to AC-3 at runtime using libavcodec. Supports
             16-bit native-endian input format, maximum 6 channels. The output is
             big-endian when outputting a raw AC-3 stream, native-endian when
@@ -5160,8 +5076,8 @@
             </tbody>
             </table>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">minchn=&lt;n&gt;</span></tt></dt>
-            <dd>If the input channel number is less than <tt class="docutils literal">&lt;minchn&gt;</tt>, the filter will
+            <dt><tt class="docutils literal"><span class="pre">minch=&lt;n&gt;</span></tt></dt>
+            <dd>If the input channel number is less than <tt class="docutils literal">&lt;minch&gt;</tt>, the filter will
             detach itself (default: 3).</dd>
             </dl>
             </dd>
@@ -6036,33 +5952,145 @@
             </div>
             <dl class="last docutils">
             <dt><tt class="docutils literal">&lt;fmt&gt;</tt></dt>
-            <dd>Format name, e.g. rgb15, bgr24, 420p, etc. (default: yuyv).</dd>
+            <dd>Format name, e.g. rgb15, bgr24, 420p, etc. (default: don't change).</dd>
             <dt><tt class="docutils literal">&lt;outfmt&gt;</tt></dt>
-            <dd><p class="first">Format name that should be substituted for the output. If this is not
-            100% compatible with the <tt class="docutils literal">&lt;fmt&gt;</tt> value, it will crash.</p>
-            <div class="admonition-examples admonition last">
-            <p class="first admonition-title">Examples</p>
-            <table border="1" class="last docutils">
-            <colgroup>
-            <col width="51%" />
-            <col width="49%" />
-            </colgroup>
-            <thead valign="bottom">
-            <tr><th class="head">Valid</th>
-            <th class="head">Invalid (will crash)</th>
-            </tr>
-            </thead>
+            <dd>Format name that should be substituted for the output. If they do not
+            have the same bytes per pixel and chroma subsamplimg, it will fail.</dd>
+            <dt><tt class="docutils literal">&lt;colormatrix&gt;</tt></dt>
+            <dd><p class="first">Controls the YUV to RGB color space conversion when playing video. There
+            are various standards. Normally, BT.601 should be used for SD video, and
+            BT.709 for HD video. (This is done by default.) Using incorrect color space
+            results in slightly under or over saturated and shifted colors.</p>
+            <p>These options are not always supported. Different video outputs provide
+            varying degrees of support. The <tt class="docutils literal">opengl</tt> and <tt class="docutils literal">vdpau</tt> video output
+            drivers usually offer full support. The <tt class="docutils literal">xv</tt> output can set the color
+            space if the system video driver supports it, but not input and output
+            levels. The <tt class="docutils literal">scale</tt> video filter can configure color space and input
+            levels, but only if the output format is RGB (if the video output driver
+            supports RGB output, you can force this with <tt class="docutils literal"><span class="pre">-vf</span> scale,format=rgba</tt>).</p>
+            <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the video's
+            color space flag will be used. If that flag is unset, the color space
+            will be selected automatically. This is done using a simple heuristic that
+            attempts to distinguish SD and HD video. If the video is larger than
+            1279x576 pixels, BT.709 (HD) will be used; otherwise BT.601 (SD) is
+            selected.</p>
+            <p>Available color spaces are:</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
             <tbody valign="top">
-            <tr><td><tt class="docutils literal">format=rgb24:bgr24</tt></td>
-            <td><tt class="docutils literal">format=rgb24:420p</tt></td>
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (default)</td>
             </tr>
-            <tr><td><tt class="docutils literal">format=yuyv:uyvy</tt></td>
-            <td>&nbsp;</td>
+            <tr class="field"><th class="field-name">bt.601:</th><td class="field-body">ITU-R BT.601 (SD)</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.709:</th><td class="field-body">ITU-R BT.709 (HD)</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.2020-ncl:</th><td class="field-body">ITU-R BT.2020 non-constant luminance system</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.2020-cl:</th><td class="field-body">ITU-R BT.2020 constant luminance system</td>
+            </tr>
+            <tr class="field"><th class="field-name">smpte-240m:</th><td class="field-body">SMPTE-240M</td>
             </tr>
             </tbody>
             </table>
+            </dd>
+            <dt><tt class="docutils literal">&lt;colorlevels&gt;</tt></dt>
+            <dd><p class="first">YUV color levels used with YUV to RGB conversion. This option is only
+            necessary when playing broken files which do not follow standard color
+            levels or which are flagged wrong. If the video does not specify its
+            color range, it is assumed to be limited range.</p>
+            <p>The same limitations as with <tt class="docutils literal">&lt;colormatrix&gt;</tt> apply.</p>
+            <p>Available color ranges are:</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (normally limited range) (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">limited:</th><td class="field-body">limited range (16-235 for luma, 16-240 for chroma)</td>
+            </tr>
+            <tr class="field"><th class="field-name">full:</th><td class="field-body">full range (0-255 for both luma and chroma)</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt><tt class="docutils literal">&lt;outputlevels&gt;</tt></dt>
+            <dd><p class="first">RGB color levels used with YUV to RGB conversion. Normally, output devices
+            such as PC monitors use full range color levels. However, some TVs and
+            video monitors expect studio RGB levels. Providing full range output to a
+            device expecting studio level input results in crushed blacks and whites,
+            the reverse in dim gray blacks and dim whites.</p>
+            <p>The same limitations as with <tt class="docutils literal">&lt;colormatrix&gt;</tt> apply.</p>
+            <p>Available color ranges are:</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (equals to full range) (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">limited:</th><td class="field-body">limited range (16-235 per component), studio levels</td>
+            </tr>
+            <tr class="field"><th class="field-name">full:</th><td class="field-body">full range (0-255 per component), PC levels</td>
+            </tr>
+            </tbody>
+            </table>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">It is advisable to use your graphics driver's color range option
+            instead, if available.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal">&lt;primaries&gt;</tt></dt>
+            <dd><p class="first">RGB primaries the source file was encoded with. Normally this should be set
+            in the file header, but when playing broken or mistagged files this can be
+            used to override the setting. By default, when unset, BT.709 is used for
+            all files except those tagged with a BT.2020 color matrix.</p>
+            <p>This option only affects video output drivers that perform color
+            management, for example <tt class="docutils literal">opengl</tt> with the <tt class="docutils literal">srgb</tt> or <tt class="docutils literal"><span class="pre">icc-profile</span></tt>
+            suboptions set.</p>
+            <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the video's
+            primaries flag will be used. If that flag is unset, the color space will
+            be selected automatically, using the following heuristics: If the
+            <tt class="docutils literal">&lt;colormatrix&gt;</tt> is set or determined as BT.2020 or BT.709, the
+            corresponding primaries are used. Otherwise, if the video height is
+            exactly 576 (PAL), BT.601-625 is used. If it's exactly 480 or 486 (NTSC),
+            BT.601-525 is used. If the video resolution is anything else, BT.709 is
+            used.</p>
+            <p>Available primaries are:</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.601-525:</th><td class="field-body">ITU-R BT.601 (SD) 525-line systems (NTSC, SMPTE-C)</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.601-625:</th><td class="field-body">ITU-R BT.601 (SD) 625-line systems (PAL, SECAM)</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.709:</th><td class="field-body">ITU-R BT.709 (HD) (same primaries as sRGB)</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.2020:</th><td class="field-body">ITU-R BT.2020 (UHD)</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">&lt;stereo-in&gt;</span></tt></dt>
+            <dd>Set the stereo mode the video is assumed to be encoded in. Takes the
+            same values as the <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.</dd>
+            <dt><tt class="docutils literal"><span class="pre">&lt;stereo-out&gt;</span></tt></dt>
+            <dd>Set the stereo mode the video should be displayed as. Takes the
+            same values as the <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.</dd>
+            <dt><tt class="docutils literal">&lt;rotate&gt;</tt></dt>
+            <dd>Set the rotation the video is assumed to be encoded with in degrees.
+            The special value <tt class="docutils literal"><span class="pre">-1</span></tt> uses the input format.</dd>
+            <dt><tt class="docutils literal">&lt;dw&gt;</tt>, <tt class="docutils literal">&lt;dh&gt;</tt></dt>
+            <dd>Set the display size. Note that setting the display size such that
+            the video is scaled in both directions instead of just changing the
+            aspect ratio is an implementation detail, and might change later.</dd>
+            <dt><tt class="docutils literal">&lt;dar&gt;</tt></dt>
+            <dd>Set the display aspect ratio of the video frame. This is a float,
+            but values such as <tt class="docutils literal">[16:9]</tt> can be passed too (<tt class="docutils literal"><span class="pre">[...]</span></tt> for quoting
+            to prevent the option parser from interpreting the <tt class="docutils literal">:</tt> character).</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">noformat[=fmt]</span></tt></dt>
@@ -8169,6 +8197,9 @@
             <dt><tt class="docutils literal"><span class="pre">audio-out-detected-device</span></tt></dt>
             <dd>Return the audio device selected by the AO driver (only implemented for
             some drivers: currently only <tt class="docutils literal">coreaudio</tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
+            <dd>Return the working directory of the mpv process. Can be useful for JSON IPC
+            users, because the command line player usually works with relative paths.</dd>
             <dt><tt class="docutils literal"><span class="pre">mpv-version</span></tt></dt>
             <dd>Return the mpv version/copyright string. Depending on how the binary was
             built, it might contain either a release version, or just a git hash.</dd>
@@ -9438,6 +9469,8 @@
             </pre>
             <p>where <tt class="docutils literal">event_name</tt> is the name of the event. Additional event-specific fields
             can also be present. See <a class="reference internal" href="#list-of-events">List of events</a> for a list of all supported events.</p>
+            <p>All commands, replies, and events are separated from each other with a line
+            break character (<tt class="docutils literal">\n</tt>).</p>
             <p>If the first character (after skipping whitespace) is not <tt class="docutils literal">{</tt>, the command
             will be interpreted as non-JSON text command, as they are used in input.conf
             (or <tt class="docutils literal">mpv_command_string()</tt> in the client API). Additionally, line starting
@@ -9712,7 +9745,9 @@
             <h1>FILES</h1>
             <dl class="docutils">
             <dt><tt class="docutils literal">/usr/local/etc/mpv/mpv.conf</tt></dt>
-            <dd>mpv system-wide settings (depends on <tt class="docutils literal"><span class="pre">--prefix</span></tt> passed to configure)</dd>
+            <dd>mpv system-wide settings (depends on <tt class="docutils literal"><span class="pre">--prefix</span></tt> passed to configure - mpv
+            in default configuration will use <tt class="docutils literal">/usr/local/etc/mpv/</tt> as config
+            directory, while most Linux distributions will set it to <tt class="docutils literal">/etc/mpv/</tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt></dt>
             <dd>mpv user settings (see <a class="reference internal" href="#configuration-files">CONFIGURATION FILES</a> section)</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/input.conf</span></tt></dt>
