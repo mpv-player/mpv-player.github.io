@@ -4426,25 +4426,25 @@
             than <tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image
             which is good for some content types. The number of taps can be
             controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>, but is best left unchanged.</p>
-            <p class="last">This filter corresponds to the old <tt class="docutils literal">lanczos3</tt> alias if the default
+            <p>This filter corresponds to the old <tt class="docutils literal">lanczos3</tt> alias if the default
             radius is used, while <tt class="docutils literal">lanczos2</tt> corresponds to a radius of 2.</p>
+            <p class="last">(This filter is an alias for <tt class="docutils literal">sinc</tt>-windowed <tt class="docutils literal">sinc</tt>)</p>
             </dd>
             <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
-            <dd>Elliptic weighted average Lanczos scaling. Also known as Jinc.
+            <dd><p class="first">Elliptic weighted average Lanczos scaling. Also known as Jinc.
             Relatively slow, but very good quality. The radius can be
             controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>. Increasing the radius makes the
-            filter sharper but adds more ringing.</dd>
-            <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
-            <dd><p class="first">A slightly sharpened version of ewa_lanczos, preconfigured to use
-            an ideal radius and parameter. If your hardware can run it, this is
-            probably what you should use by default.</p>
-            <p class="last">Note: This filter has a fixed radius. Use <tt class="docutils literal">ewa_lanczos</tt> if you
-            want to adjust it.</p>
+            filter sharper but adds more ringing.</p>
+            <p class="last">(This filter is an alias for <tt class="docutils literal">jinc</tt>-windowed <tt class="docutils literal">jinc</tt>)</p>
             </dd>
+            <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
+            <dd>A slightly sharpened version of ewa_lanczos, preconfigured to use
+            an ideal radius and parameter. If your hardware can run it, this is
+            probably what you should use by default.</dd>
             <dt><tt class="docutils literal">mitchell</tt></dt>
             <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
             <tt class="docutils literal"><span class="pre">scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">scale-param2</span></tt>. This filter is very good at
-            downscaling (see <tt class="docutils literal"><span class="pre">scale-down</span></tt>).</dd>
+            downscaling (see <tt class="docutils literal">dscale</tt>).</dd>
             <dt><tt class="docutils literal">oversample</tt></dt>
             <dd>A version of nearest neighbour that (naively) oversamples pixels,
             so that pixels overlapping edges get linearly interpolated instead
@@ -4464,33 +4464,32 @@
             <dd><p class="first">Set filter parameters. Ignored if the filter is not tunable.
             Currently, this affects the following filter parameters:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal">kaiser</tt></dt>
-            <dd>Window parameter (<tt class="docutils literal">alpha</tt>). Defaults to 6.33.</dd>
-            <dt><tt class="docutils literal">mitchell</tt></dt>
-            <dd>Spline parameters (<tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt>). Defaults to 1/3 for both.</dd>
-            <dt><tt class="docutils literal">gaussian</tt></dt>
+            <dt>bcspline</dt>
+            <dd>Spline parameters (<tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt>). Defaults to 0.5 for both.</dd>
+            <dt>gaussian</dt>
             <dd>Scale parameter (<tt class="docutils literal">t</tt>). Increasing this makes the result blurrier.
             Defaults to 1.</dd>
-            <dt><tt class="docutils literal">ewa_lanczos</tt>, <tt class="docutils literal">ewa_ginseng</tt>, <tt class="docutils literal">ewa_hanning</tt></dt>
-            <dd>Jinc function scaling factor (also known as a blur factor).
-            Decreasing this makes the result sharper, increasing it makes it
-            blurrier. Defaults to 1. Note that setting this too low (eg. 0.5)
-            leads to bad results. It's recommended to stay between 0.9 and 1.1.</dd>
-            <dt><tt class="docutils literal">sharpen3</tt>, <tt class="docutils literal">sharpen5</tt></dt>
+            <dt>sharpen3, sharpen5</dt>
             <dd>Sharpening strength. Increasing this makes the image sharper but
             adds more ringing and aliasing. Defaults to 0.5.</dd>
-            <dt><tt class="docutils literal">oversample</tt></dt>
+            <dt>oversample</dt>
             <dd>Minimum distance to an edge before interpolation is used. Setting
             this to 0 will always interpolate edges, whereas setting it to 0.5
             will never interpolate, thus behaving as if the regular nearest
             neighbour algorithm was used. Defaults to 0.0.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-radius=&lt;r&gt;</span></tt></dt>
-            <dd><p class="first">Set radius for filters listed below, must be a float number between 1.0
-            and 16.0. Defaults to be 3.0 if not specified.</p>
+            <dt><tt class="docutils literal"><span class="pre">scale-blur=&lt;value&gt;</span></tt></dt>
+            <dd>Kernel scaling factor (also known as a blur factor). Decreasing this
+            makes the result sharper, increasing it makes it blurrier (default 0).
+            If set to 0, the kernel's preferred blur factor is used. Note that
+            setting this too low (eg. 0.5) leads to bad results. It's generally
+            recommended to stick to values between 0.8 and 1.2.</dd>
+            <dt><tt class="docutils literal"><span class="pre">scale-radius=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Set radius for filters listed below, must be a float number between 0.5
+            and 16.0. Defaults to the filter's preferred radius if not specified.</p>
             <blockquote>
-            <tt class="docutils literal">sinc</tt>, <tt class="docutils literal">lanczos</tt>, <tt class="docutils literal">blackman</tt>, <tt class="docutils literal">gaussian</tt> and all EWA filters (eg. <tt class="docutils literal">ewa_lanczos</tt>)</blockquote>
+            <tt class="docutils literal">sinc</tt> and derivatives, <tt class="docutils literal">jinc</tt> and derivatives, <tt class="docutils literal">gaussian</tt>, <tt class="docutils literal">box</tt> and <tt class="docutils literal">triangle</tt></blockquote>
             <p class="last">Note that depending on filter implementation details and video scaling
             ratio, the radius that actually being used might be different
             (most likely being increased a bit).</p>
@@ -4502,6 +4501,24 @@
             entirely.</p>
             <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt>,
             <tt class="docutils literal">bicubic_fast</tt> or <tt class="docutils literal">sharpen</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">scale-window=&lt;window&gt;</span></tt></dt>
+            <dd>(Advanced users only) Choose a custom windowing function for the kernel.
+            Defaults to the filter's preferred window if unset. Use
+            <tt class="docutils literal"><span class="pre">scale-window=help</span></tt> to get a list of supported windowing functions.</dd>
+            <dt><tt class="docutils literal"><span class="pre">scale-wparam=&lt;window&gt;</span></tt></dt>
+            <dd><p class="first">(Advanced users only) Configure the parameter for the window function
+            given by <tt class="docutils literal"><span class="pre">scale-window</span></tt>. Ignored if the window is not tunable.
+            Currently, this affects the following window parameters:</p>
+            <dl class="last docutils">
+            <dt>kaiser</dt>
+            <dd>Window parameter (alpha). Defaults to 6.33.</dd>
+            <dt>blackman</dt>
+            <dd>Window parameter (alpha). Defaults to 0.16.</dd>
+            <dt>gaussian</dt>
+            <dd>Scale parameter (t). Increasing this makes the window wider.
+            Defaults to 1.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">scaler-resizes-only</span></tt></dt>
             <dd>Disable the scaler if the video image is not resized. In that case,
@@ -4568,27 +4585,26 @@
             also lead to bad results, as can missing or incorrect display FPS
             information (see <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">dscale=&lt;filter&gt;</span></tt></dt>
+            <dd>Like <tt class="docutils literal">scale</tt>, but apply these filters on downscaling instead. If this
+            option is unset, the filter implied by <tt class="docutils literal">scale</tt> will be applied.</dd>
             <dt><tt class="docutils literal"><span class="pre">cscale=&lt;filter&gt;</span></tt></dt>
             <dd>As <tt class="docutils literal">scale</tt>, but for interpolating chroma information. If the image
             is not subsampled, this option is ignored entirely.</dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-down=&lt;filter&gt;</span></tt></dt>
-            <dd>Like <tt class="docutils literal">scale</tt>, but apply these filters on downscaling instead. If this
-            option is unset, the filter implied by <tt class="docutils literal">scale</tt> will be applied.</dd>
-            <dt><tt class="docutils literal"><span class="pre">cscale-param1</span></tt>, <tt class="docutils literal"><span class="pre">cscale-param2</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-antiring</span></tt></dt>
-            <dd><p class="first">Set filter parameters and radius for <tt class="docutils literal">cscale</tt>.</p>
-            <p class="last">See <tt class="docutils literal"><span class="pre">scale-param1</span></tt>, <tt class="docutils literal"><span class="pre">scale-param2</span></tt>, <tt class="docutils literal"><span class="pre">scale-radius</span></tt> and
-            <tt class="docutils literal"><span class="pre">scale-antiring</span></tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">tscale=&lt;filter&gt;</span></tt>, <tt class="docutils literal"><span class="pre">tscale-param1</span></tt>, <tt class="docutils literal"><span class="pre">tscale-param2</span></tt>, <tt class="docutils literal"><span class="pre">tscale-antiring</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">tscale=&lt;filter&gt;</span></tt></dt>
             <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is
             only used if <tt class="docutils literal">interpolation</tt> is enabled. The only valid choices
             for <tt class="docutils literal">tscale</tt> are separable convolution filters (use <tt class="docutils literal">tscale=help</tt>
-            to get a list). The other options (<tt class="docutils literal"><span class="pre">tscale-param1</span></tt> etc.) are
-            analogous to their <tt class="docutils literal">scale</tt> counterparts. The default is <tt class="docutils literal">oversample</tt>.</p>
+            to get a list). The default is <tt class="docutils literal">oversample</tt>.</p>
             <p class="last">Note that the maximum supported filter radius is currently 3, and that
             using filters with larger radius may introduce issues when pausing or
             framestepping, proportional to the radius used. It is recommended to
             stick to a radius of 1 or 2.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">tscale-radius</span></tt>, etc.</dt>
+            <dd><p class="first">Set filter parameters for <tt class="docutils literal">dscale</tt>, <tt class="docutils literal">cscale</tt> and <tt class="docutils literal">tscale</tt>,
+            respectively.</p>
+            <p class="last">See the corresponding options for <tt class="docutils literal">scale</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">linear-scaling</span></tt></dt>
             <dd>Scale in linear light. This is automatically enabled if
@@ -4680,16 +4696,24 @@
             <dl class="last docutils">
             <dt>auto</dt>
             <dd>Disable any adaptation (default)</dd>
-            <dt>bt470m</dt>
+            <dt>bt.470m</dt>
             <dd>ITU-R BT.470 M</dd>
-            <dt>bt601-525</dt>
+            <dt>bt.601-525</dt>
             <dd>ITU-R BT.601 (525-line SD systems, eg. NTSC), SMPTE 170M/240M</dd>
-            <dt>bt601-625</dt>
+            <dt>bt.601-625</dt>
             <dd>ITU-R BT.601 (625-line SD systems, eg. PAL/SECAM), ITU-R BT.470 B/G</dd>
-            <dt>bt709</dt>
+            <dt>bt.709</dt>
             <dd>ITU-R BT.709 (HD), IEC 61966-2-4 (sRGB), SMPTE RP177 Annex B</dd>
-            <dt>bt2020</dt>
+            <dt>bt.2020</dt>
             <dd>ITU-R BT.2020 (UHD)</dd>
+            <dt>apple</dt>
+            <dd>Apple RGB</dd>
+            <dt>adobe</dt>
+            <dd>Adobe RGB (1998)</dd>
+            <dt>prophoto</dt>
+            <dd>ProPhoto RGB (ROMM)</dd>
+            <dt>cie1931</dt>
+            <dd>CIE 1931 RGB (not to be confused with CIE XYZ)</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">target-trc=&lt;value&gt;</span></tt></dt>
@@ -4698,14 +4722,20 @@
             <dl class="last docutils">
             <dt>auto</dt>
             <dd>Disable any adaptation (default)</dd>
-            <dt>bt1886</dt>
+            <dt>bt.1886</dt>
             <dd>ITU-R BT.1886 curve, without the brightness drop (approx. 1.961)</dd>
             <dt>srgb</dt>
             <dd>IEC 61966-2-4 (sRGB)</dd>
             <dt>linear</dt>
             <dd>Linear light output</dd>
-            <dt>gamma22</dt>
+            <dt>gamma1.8</dt>
+            <dd>Pure power curve (gamma 1.8), also used for Apple RGB</dd>
+            <dt>gamma2.2</dt>
             <dd>Pure power curve (gamma 2.2)</dd>
+            <dt>gamma2.8</dt>
+            <dd>Pure power curve (gamma 2.8), also used for BT.470-BG</dd>
+            <dt>prophoto</dt>
+            <dd>ProPhoto RGB (ROMM)</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">icc-profile=&lt;file&gt;</span></tt></dt>
@@ -4789,7 +4819,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:cscale=spline36:scale-down=mitchell:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
+            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -6041,13 +6071,13 @@
             </div>
             </dd>
             <dt><tt class="docutils literal">&lt;primaries&gt;</tt></dt>
-            <dd><p class="first">RGB primaries the source file was encoded with. Normally this should be set
+            <dd><blockquote class="first">
+            <p>RGB primaries the source file was encoded with. Normally this should be set
             in the file header, but when playing broken or mistagged files this can be
-            used to override the setting. By default, when unset, BT.709 is used for
-            all files except those tagged with a BT.2020 color matrix.</p>
+            used to override the setting.</p>
             <p>This option only affects video output drivers that perform color
-            management, for example <tt class="docutils literal">opengl</tt> with the <tt class="docutils literal">srgb</tt> or <tt class="docutils literal"><span class="pre">icc-profile</span></tt>
-            suboptions set.</p>
+            management, for example <tt class="docutils literal">opengl</tt> with the <tt class="docutils literal"><span class="pre">target-prim</span></tt> or
+            <tt class="docutils literal"><span class="pre">icc-profile</span></tt> suboptions set.</p>
             <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the video's
             primaries flag will be used. If that flag is unset, the color space will
             be selected automatically, using the following heuristics: If the
@@ -6057,7 +6087,7 @@
             BT.601-525 is used. If the video resolution is anything else, BT.709 is
             used.</p>
             <p>Available primaries are:</p>
-            <table class="last docutils field-list" frame="void" rules="none">
+            <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
@@ -6071,8 +6101,51 @@
             </tr>
             <tr class="field"><th class="field-name">bt.2020:</th><td class="field-body">ITU-R BT.2020 (UHD)</td>
             </tr>
+            <tr class="field"><th class="field-name">apple:</th><td class="field-body">Apple RGB</td>
+            </tr>
+            <tr class="field"><th class="field-name">adobe:</th><td class="field-body">Adobe RGB (1998)</td>
+            </tr>
+            <tr class="field"><th class="field-name">prophoto:</th><td class="field-body">ProPhoto RGB (ROMM)</td>
+            </tr>
+            <tr class="field"><th class="field-name">cie1931:</th><td class="field-body">CIE 1931 RGB</td>
+            </tr>
             </tbody>
             </table>
+            </blockquote>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">&lt;gamma&gt;</tt></dt>
+            <dd><p class="first">Gamma function the source file was encoded with. Normally this should be set
+            in the file header, but when playing broken or mistagged files this can be
+            used to override the setting.</p>
+            <p>This option only affects video output drivers that perform color management.</p>
+            <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the gamma will
+            be set to BT.1886 for YCbCr content, sRGB for RGB content and Linear for
+            XYZ content.</p>
+            <p>Available gamma functions are:</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">bt.1886:</th><td class="field-body">ITU-R BT.1886 (approximation of BT.601/BT.709/BT.2020 curve)</td>
+            </tr>
+            <tr class="field"><th class="field-name">srgb:</th><td class="field-body">IEC 61966-2-4 (sRGB)</td>
+            </tr>
+            <tr class="field"><th class="field-name">linear:</th><td class="field-body">Linear light</td>
+            </tr>
+            <tr class="field"><th class="field-name">gamma1.8:</th><td class="field-body">Pure power curve (gamma 1.8)</td>
+            </tr>
+            <tr class="field"><th class="field-name">gamma2.2:</th><td class="field-body">Pure power curve (gamma 2.2)</td>
+            </tr>
+            <tr class="field"><th class="field-name">gamma2.8:</th><td class="field-body">Pure power curve (gamma 2.8)</td>
+            </tr>
+            <tr class="field"><th class="field-name">prophoto:</th><td class="field-body">ProPhoto RGB (ROMM) curve</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;stereo-in&gt;</span></tt></dt>
             <dd>Set the stereo mode the video is assumed to be encoded in. Takes the
@@ -7854,6 +7927,8 @@
             <dd>The colorlevels as string. (Exact values subject to change.)</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/primaries</span></tt></dt>
             <dd>The primaries in use as string. (Exact values subject to change.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-params/gamma</span></tt></dt>
+            <dd>The gamma function in use as string. (Exact values subject to change.)</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/chroma-location</span></tt></dt>
             <dd>Chroma location as string. (Exact values subject to change.)</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/rotate</span></tt></dt>
