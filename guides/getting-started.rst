@@ -1,7 +1,7 @@
 Installation
 ============
 
-mpv is packaged on package managers in several GNU/Linux distributions and
+mpv is packaged on package managers in several Linux distributions and
 binaries are available on Windows and OS X. mpv can also be compiled from
 source on most UNIX systems: it is reported to work on BSDs (FreeBSD, OpenBSD
 and NetBSD) and Solaris.
