@@ -606,6 +606,27 @@
             <dd>Use the <tt class="docutils literal">data</tt> part as source data.</dd>
             </dl>
             </div>
+            <div class="section" id="pseudo-gui-mode">
+            <h1>PSEUDO GUI MODE</h1>
+            <p>mpv has no official GUI, other than the OSC (<a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a>), which
+            is not a full GUI and is not meant to be. However, to compensate for the lack
+            of expected GUI behavior, mpv will in some cases start with some settings
+            changed to behave slightly more like a GUI mode.</p>
+            <p>Currently this happens only if started using the <tt class="docutils literal">mpv.desktop</tt> file in Linux
+            (like started from menus or file associations provided by desktop environments).</p>
+            <p>This mode implicitly adds <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt> to the command line, with
+            the <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile being predefined with the following contents:</p>
+            <pre class="literal-block">
+            [pseudo-gui]
+            terminal=no
+            force-window=yes
+            idle=once
+            </pre>
+            <p>This follows the mpv config file format. To customize pseudo-GUI mode, you can
+            put your own <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile into your <tt class="docutils literal">mpv.conf</tt>. This profile will
+            enhance the default profile, rather than overwrite it.</p>
+            <p>The profile always overrides other settings in <tt class="docutils literal">mpv.conf</tt>.</p>
+            </div>
             <div class="section" id="options">
             <h1>OPTIONS</h1>
             <div class="section" id="track-selection">
@@ -1453,8 +1474,7 @@
             <dd>Audio delay in seconds (positive or negative float value). Positive values
             delay the audio, and negative values delay the video.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-audio</span></tt></dt>
-            <dd>Do not play sound. With some demuxers this may not work. In those cases
-            you can try <tt class="docutils literal"><span class="pre">--ao=null</span></tt> instead.</dd>
+            <dd>Do not play sound.</dd>
             <dt><tt class="docutils literal"><span class="pre">--mute=&lt;auto|yes|no&gt;</span></tt></dt>
             <dd>Set startup audio mute status. <tt class="docutils literal">auto</tt> (default) will not change the mute
             status. Also see <tt class="docutils literal"><span class="pre">--volume</span></tt>.</dd>
@@ -4640,6 +4660,15 @@
             This may or may not help with video timing accuracy and frame drop. It's
             possible that this makes video output slower, or has no effect at all.</p>
             <p class="last">X11/GLX only.</p>
+            </dd>
+            <dt><tt class="docutils literal">dwmflush</tt></dt>
+            <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: 0).
+            It also sets <tt class="docutils literal">SwapInterval(0)</tt> to ignore the OpenGL timing. Values
+            are: 0 (disabled), 1 (only in windowed mode), 2 (also in  full screen).
+            This may help getting more consistent frame intervals, especially with
+            high-fps clips - which might also reduce dropped frames. Typically a
+            value of 1 should be enough since full screen may bypass the DWM.</p>
+            <p class="last">Windows only.</p>
             </dd>
             <dt><tt class="docutils literal">sw</tt></dt>
             <dd>Continue even if a software renderer is detected.</dd>
@@ -9106,7 +9135,7 @@
             <dt><tt class="docutils literal">mp.add_periodic_timer(seconds, fn)</tt></dt>
             <dd><p class="first">Call the given function periodically. This is like <tt class="docutils literal">mp.add_timeout</tt>, but
             the timer is re-added after the function fn is run.</p>
-            <dl class="last docutils">
+            <dl class="docutils">
             <dt>Returns a timer object. The timer object provides the following methods:</dt>
             <dd><dl class="first last docutils">
             <dt><tt class="docutils literal">stop()</tt></dt>
@@ -9137,6 +9166,20 @@
             </dl>
             </dd>
             </dl>
+            <p>Note that these are method, and you have to call them using <tt class="docutils literal">:</tt> instead
+            of <tt class="docutils literal">.</tt> (Refer to <a class="reference external" href="http://www.lua.org/manual/5.2/manual.html#3.4.9">http://www.lua.org/manual/5.2/manual.html#3.4.9</a> .)</p>
+            <p>Example:</p>
+            <pre class="last literal-block">
+            seconds = 0
+            timer = mp.add_periodic_timer(1, function()
+                print(&quot;called every second&quot;)
+                # stop it after 10 seconds
+                seconds = seconds + 1
+                if seconds &gt;= 10 then
+                    timer:kill()
+                end
+            end)
+            </pre>
             </dd>
             <dt><tt class="docutils literal">mp.get_opt(key)</tt></dt>
             <dd>Return a setting from the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> option. It's up to the user and
