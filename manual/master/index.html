@@ -612,8 +612,14 @@
             is not a full GUI and is not meant to be. However, to compensate for the lack
             of expected GUI behavior, mpv will in some cases start with some settings
             changed to behave slightly more like a GUI mode.</p>
-            <p>Currently this happens only if started using the <tt class="docutils literal">mpv.desktop</tt> file in Linux
-            (like started from menus or file associations provided by desktop environments).</p>
+            <p>Currently this happens only in the following cases:</p>
+            <ul class="simple">
+            <li>if started using the <tt class="docutils literal">mpv.desktop</tt> file on Linux (e.g. started from menus
+            or file associations provided by desktop environments)</li>
+            <li>if started from explorer.exe on Windows (technically, if it was started on
+            Windows, and all of the stdout/stderr/stdin handles are unset)</li>
+            <li>manually adding <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt> to the command line</li>
+            </ul>
             <p>This mode implicitly adds <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt> to the command line, with
             the <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile being predefined with the following contents:</p>
             <pre class="literal-block">
@@ -4818,6 +4824,18 @@
             things like softsubbed ASS signs to match the video colors,
             but may cause SRT subtitles or similar to look slightly off.</p>
             </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">blend-subtitles-res=&lt;display|video&gt;</span></tt></dt>
+            <dd><p class="first">The resolution at which subtitles get drawn if <tt class="docutils literal"><span class="pre">blend-subtitles</span></tt> is
+            enabled (default: display). In the absence of <tt class="docutils literal"><span class="pre">blend-subtitles</span></tt>,
+            subtitles are always drawn at the window's size, together with the OSD.</p>
+            <dl class="last docutils">
+            <dt>display</dt>
+            <dd>Subs are drawn directly at the window's size.</dd>
+            <dt>video</dt>
+            <dd>Subs are drawn at the video's native resolution, and scaled along
+            with the video.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">alpha=&lt;blend|yes|no&gt;</span></tt></dt>
             <dd><p class="first">Decides what to do if the input has an alpha component (default: blend).</p>
