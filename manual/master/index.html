@@ -268,12 +268,14 @@
             <p>Shells may actually strip some quotes from the string passed to the commandline,
             so the example quotes the string twice, ensuring that mpv recieves the <tt class="docutils literal">&quot;</tt>
             quotes.</p>
-            <p>The <tt class="docutils literal"><span class="pre">[...]</span></tt> from of quotes wraps everything between <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt>. It's
+            <p>The <tt class="docutils literal"><span class="pre">[...]</span></tt> form of quotes wraps everything between <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt>. It's
             useful with shells that don't interpret these characters in the middle of
-            an argument (like bash).</p>
-            <p>A special kind of string-escaping intended for use with external scripts and
-            programs is started with <tt class="docutils literal">%</tt>.</p>
-            <p>It has the following format:</p>
+            an argument (like bash). These quotes are balanced (since mpv 0.9.0): the <tt class="docutils literal">[</tt>
+            and <tt class="docutils literal">]</tt> nest, and the quote terminates on the last <tt class="docutils literal">]</tt> that has no matching
+            <tt class="docutils literal">[</tt> within the string. (For example, <tt class="docutils literal">[a[b]c]</tt> results in <tt class="docutils literal">a[b]c</tt>.)</p>
+            <p>The fixed-length quoting syntax is intended for use with external
+            scripts and programs.</p>
+            <p>It is started with <tt class="docutils literal">%</tt> and has the following format:</p>
             <pre class="literal-block">
             %n%string_of_length_n
             </pre>
@@ -304,7 +306,8 @@
             console controls. (Which makes it suitable for playing data piped to stdin.)</p>
             <p>For paths passed to suboptions, the situation is further complicated by the
             need to escape special characters. To work this around, the path can be
-            additionally wrapped in the <tt class="docutils literal">%n%string_of_length_n</tt> syntax (see above).</p>
+            additionally wrapped in the fixed-length syntax, e.g. <tt class="docutils literal">%n%string_of_length_n</tt>
+            (see above).</p>
             <p>Some mpv options interpret paths starting with <tt class="docutils literal">~</tt>. Currently, the prefix
             <tt class="docutils literal">~~/</tt> expands to the mpv configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).
             <tt class="docutils literal">~/</tt> expands to the user's home directory. (The trailing <tt class="docutils literal">/</tt> is always
@@ -404,10 +407,10 @@
             <p>This is done like with command line options. The shell is not involved here,
             but option values still need to be quoted as a whole if it contains certain
             characters like spaces. A config entry can be quoted with <tt class="docutils literal">&quot;</tt> and <tt class="docutils literal">'</tt>,
-            as well as with the <tt class="docutils literal">%n%</tt> syntax mentioned before. This is like passing
-            the exact contents of the quoted string as command line option. C-style escapes
-            are currently _not_ interpreted on this level, although some options to this
-            manually. (This is a mess and should probably be changed at some point.)</p>
+            as well as with the fixed-length syntax (<tt class="docutils literal">%n%</tt>) mentioned before. This is like
+            passing the exact contents of the quoted string as command line option. C-style
+            escapes are currently _not_ interpreted on this level, although some options to
+            this manually. (This is a mess and should probably be changed at some point.)</p>
             </div>
             <div class="section" id="putting-command-line-options-into-the-configuration-file">
             <h2>Putting Command Line Options into the Configuration File</h2>
@@ -491,11 +494,8 @@
             <p>A screenshot will usually contain the unscaled video contents at the end of the
             video filter chain and subtitles. By default, <tt class="docutils literal">S</tt> takes screenshots without
             subtitles, while <tt class="docutils literal">s</tt> includes subtitles.</p>
-            <p>The <tt class="docutils literal">screenshot</tt> video filter is not required when using a recommended GUI
-            video output driver. It should normally not be added to the config file, as
-            taking screenshots is handled by the VOs, and adding the screenshot filter will
-            break hardware decoding. (The filter may still be useful for taking screenshots
-            at a certain point within the video chain when using multiple video filters.)</p>
+            <p>Unlike with MPlayer, the <tt class="docutils literal">screenshot</tt> video filter is not required. This
+            filter was never required in mpv, and has been removed.</p>
             </div>
             <div class="section" id="terminal-status-line">
             <h1>TERMINAL STATUS LINE</h1>
@@ -530,10 +530,9 @@
             rendering is too slow. Also can be incremented on &quot;hiccups&quot; and when the video
             frame couldn't be displayed on time. (<tt class="docutils literal"><span class="pre">vo-drop-frame-count</span></tt> property.)
             If the decoder drops frames, the number of decoder-dropped frames is appended
-            to the display as well, e.g.: <tt class="docutils literal">Dropped: 4/34</tt>. This should almost never
-            happen, unless decoder-framedropping is enabled with one of the
-            <tt class="docutils literal"><span class="pre">--framedrop</span></tt> options, the stream contains errors, or a weird codec is in
-            use. (<tt class="docutils literal"><span class="pre">drop-frame-count</span></tt> property.)</li>
+            to the display as well, e.g.: <tt class="docutils literal">Dropped: 4/34</tt>. This happens only if
+            decoder-framedropping is enabled with the <tt class="docutils literal"><span class="pre">--framedrop</span></tt> options.
+            (<tt class="docutils literal"><span class="pre">drop-frame-count</span></tt> property.)</li>
             <li>Cache state, e.g. <tt class="docutils literal">Cache:&nbsp; 2s+134KB</tt>. Visible if the stream cache is enabled.
             The first value shows the amount of video buffered in the demuxer in seconds,
             the second value shows <em>additional</em> data buffered in the stream cache in
@@ -808,6 +807,8 @@
             the default behavior of arrow keys (default).</td>
             </tr>
             <tr class="field"><th class="field-name">yes:</th><td class="field-body">Use precise seeks whenever possible.</td>
+            </tr>
+            <tr class="field"><th class="field-name">always:</th><td class="field-body">Same as <tt class="docutils literal">yes</tt> (for compatibility).</td>
             </tr>
             </tbody>
             </table>
@@ -1175,8 +1176,7 @@
             next method (might matter on some Linux systems).</p>
             <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> mode allows you to use vaapi with any VO. Because
             this copies the decoded video back to system RAM, it's likely less efficient
-            than the <tt class="docutils literal">vaapi</tt> mode. But there are reports that this is actually faster
-            as well, and avoids many issues with <tt class="docutils literal">vaapi</tt>.</p>
+            than the <tt class="docutils literal">vaapi</tt> mode.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">When using this switch, hardware decoding is still only done for some
@@ -1568,8 +1568,9 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-display=&lt;no|attachment&gt;</span></tt></dt>
             <dd><p class="first">Setting this option to <tt class="docutils literal">attachment</tt> (default) will display image
-            attachments when playing audio files. It will display the first image
-            found, and additional images are available as video tracks.</p>
+            attachments (e.g. album cover art) when playing audio files. It will
+            display the first image found, and additional images are available as
+            video tracks.</p>
             <p>Setting this option to <tt class="docutils literal">no</tt> disables display of video entirely when
             playing audio files.</p>
             <p class="last">This option has no influence on files with normal video tracks.</p>
@@ -2329,19 +2330,13 @@
             </dl>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--autosync=&lt;factor&gt;</span></tt></dt>
-            <dd>Gradually adjusts the A/V sync based on audio delay measurements.
-            Specifying <tt class="docutils literal"><span class="pre">--autosync=0</span></tt>, the default, will cause frame timing to be
-            based entirely on audio delay measurements. Specifying <tt class="docutils literal"><span class="pre">--autosync=1</span></tt>
-            will do the same, but will subtly change the A/V correction algorithm. An
-            uneven video framerate in a video which plays fine with <tt class="docutils literal"><span class="pre">--no-audio</span></tt> can
-            often be helped by setting this to an integer value greater than 1. The
-            higher the value, the closer the timing will be to <tt class="docutils literal"><span class="pre">--no-audio</span></tt>. Try
-            <tt class="docutils literal"><span class="pre">--autosync=30</span></tt> to smooth out problems with sound drivers which do not
-            implement a perfect audio delay measurement. With this value, if large A/V
-            sync offsets occur, they will only take about 1 or 2 seconds to settle
-            out. This delay in reaction time to sudden A/V offsets should be the only
-            side-effect of turning this option on, for all sound drivers.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--window-scale=&lt;factor&gt;</span></tt></dt>
+            <dd><p class="first">Resize the video window to a multiple (or fraction) of the video size. This
+            option is applied before <tt class="docutils literal"><span class="pre">--autofit</span></tt> and other options are applied (so
+            they override this option).</p>
+            <p class="last">For example, <tt class="docutils literal"><span class="pre">--window-scale=0.5</span></tt> would show the window at half the
+            video size.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--cursor-autohide=&lt;number|no|always&gt;</span></tt></dt>
             <dd>Make mouse cursor automatically hide after given number of milliseconds.
             <tt class="docutils literal">no</tt> will disable cursor autohide. <tt class="docutils literal">always</tt> means the cursor will stay
@@ -2597,6 +2592,11 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-format=&lt;name&gt;</span></tt></dt>
             <dd>Force a specific libavformat demuxer.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-hacks=&lt;yes|no&gt;</span></tt></dt>
+            <dd>By default, some formats will be handled differently from other formats
+            by explicitly checking for them. Most of these compensate for weird or
+            imperfect behavior from libavformat demuxers. Passing <tt class="docutils literal">no</tt> disables
+            these. For debugging and testing only.</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-genpts-mode=&lt;no|lavf&gt;</span></tt></dt>
             <dd>Mode for deriving missing packet PTS values from packet DTS. <tt class="docutils literal">lavf</tt>
             enables libavformat's <tt class="docutils literal">genpts</tt> option. <tt class="docutils literal">no</tt> disables it. This used
@@ -2668,6 +2668,17 @@
             for compatibility with Haali only. In this mode, it's possible that opening
             will be slower (especially when playing over http), or that behavior with
             broken files is much worse. So don't use this option.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-fix-timestamps=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Fix rounded Matroska timestamps (enabled by default). Matroska usually
+            stores timestamps rounded to milliseconds. This means timestamps jitter
+            by some amount around the intended timestamp. mpv can correct the timestamps
+            based on the framerate value stored in the file: the timestamp is rounded
+            to the next frame (according to the framerate), unless the new timestamp
+            would deviate more than 1ms from the old one. This should undo the rounding
+            done by the muxer.</p>
+            <p class="last">(The allowed deviation can be less than 1ms if the file uses a non-standard
+            timecode scale.)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-rawaudio-channels=&lt;value&gt;</span></tt></dt>
             <dd>Number of channels (or channel layout) if <tt class="docutils literal"><span class="pre">--demuxer=rawaudio</span></tt> is used
             (default: stereo).</dd>
@@ -3745,6 +3756,19 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--mc=&lt;seconds/frame&gt;</span></tt></dt>
             <dd>Maximum A-V sync correction per frame (in seconds)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--autosync=&lt;factor&gt;</span></tt></dt>
+            <dd>Gradually adjusts the A/V sync based on audio delay measurements.
+            Specifying <tt class="docutils literal"><span class="pre">--autosync=0</span></tt>, the default, will cause frame timing to be
+            based entirely on audio delay measurements. Specifying <tt class="docutils literal"><span class="pre">--autosync=1</span></tt>
+            will do the same, but will subtly change the A/V correction algorithm. An
+            uneven video framerate in a video which plays fine with <tt class="docutils literal"><span class="pre">--no-audio</span></tt> can
+            often be helped by setting this to an integer value greater than 1. The
+            higher the value, the closer the timing will be to <tt class="docutils literal"><span class="pre">--no-audio</span></tt>. Try
+            <tt class="docutils literal"><span class="pre">--autosync=30</span></tt> to smooth out problems with sound drivers which do not
+            implement a perfect audio delay measurement. With this value, if large A/V
+            sync offsets occur, they will only take about 1 or 2 seconds to settle
+            out. This delay in reaction time to sudden A/V offsets should be the only
+            side-effect of turning this option on, for all sound drivers.</dd>
             <dt><tt class="docutils literal"><span class="pre">--mf-fps=&lt;value&gt;</span></tt></dt>
             <dd>Framerate used when decoding from multiple PNG or JPEG files with <tt class="docutils literal"><span class="pre">mf://</span></tt>
             (default: 1).</dd>
@@ -3931,8 +3955,10 @@
             <p>The short story is: if you want multichannel audio with ALSA, use
             <tt class="docutils literal"><span class="pre">--audio-device</span></tt> to select the device (use <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt>
             to get a list of all devices and their mpv name).</p>
-            <p class="last">You can also try
-            <a class="reference external" href="https://github.com/mpv-player/mpv/wiki/ALSA:-Surround-Sound-and-Upmixing">Using the upmix plugin</a>.</p>
+            <p class="last">You can also try <a class="reference external" href="http://git.io/vfuAy">using the upmix plugin</a>.
+            This setup enables multichannel audio on the <tt class="docutils literal">default</tt> device
+            with automatic upmixing with shared access, so playing stereo
+            and multichannel audio at the same time will work as expected.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal">oss</tt></dt>
@@ -4667,10 +4693,11 @@
             possible that this makes video output slower, or has no effect at all.</p>
             <p class="last">X11/GLX only.</p>
             </dd>
-            <dt><tt class="docutils literal">dwmflush</tt></dt>
-            <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: 0).
+            <dt><tt class="docutils literal"><span class="pre">dwmflush=&lt;no|windowed|yes&gt;</span></tt></dt>
+            <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: no).
             It also sets <tt class="docutils literal">SwapInterval(0)</tt> to ignore the OpenGL timing. Values
-            are: 0 (disabled), 1 (only in windowed mode), 2 (also in  full screen).
+            are: no (disabled), windowed (only in windowed mode), yes (also in
+            full screen).
             This may help getting more consistent frame intervals, especially with
             high-fps clips - which might also reduce dropped frames. Typically a
             value of 1 should be enough since full screen may bypass the DWM.</p>
@@ -4806,7 +4833,7 @@
             <dd>Size of the 3D LUT generated from the ICC profile in each dimension.
             Default is 128x256x64.
             Sizes must be a power of two, and 512 at most.</dd>
-            <dt><tt class="docutils literal"><span class="pre">blend-subtitles</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">blend-subtitles=&lt;yes|video|no&gt;</span></tt></dt>
             <dd><p class="first">Blend subtitles directly onto upscaled video frames, before
             interpolation and/or color management (default: no). Enabling this
             causes subtitles to be affected by <tt class="docutils literal"><span class="pre">icc-profile</span></tt>, <tt class="docutils literal"><span class="pre">target-prim</span></tt>,
@@ -4815,6 +4842,9 @@
             <p>The downside of enabling this is that it restricts subtitles to the
             visible portion of the video, so you can't have subtitles exist in the
             black margins below a video (for example).</p>
+            <p>If <tt class="docutils literal">video</tt> is selected, the behavior is similar to <tt class="docutils literal">yes</tt>, but subs
+            are drawn at the video's native resolution, and scaled along with the
+            video.</p>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">This changes the way subtitle colors are handled. Normally,
@@ -4824,18 +4854,6 @@
             things like softsubbed ASS signs to match the video colors,
             but may cause SRT subtitles or similar to look slightly off.</p>
             </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">blend-subtitles-res=&lt;display|video&gt;</span></tt></dt>
-            <dd><p class="first">The resolution at which subtitles get drawn if <tt class="docutils literal"><span class="pre">blend-subtitles</span></tt> is
-            enabled (default: display). In the absence of <tt class="docutils literal"><span class="pre">blend-subtitles</span></tt>,
-            subtitles are always drawn at the window's size, together with the OSD.</p>
-            <dl class="last docutils">
-            <dt>display</dt>
-            <dd>Subs are drawn directly at the window's size.</dd>
-            <dt>video</dt>
-            <dd>Subs are drawn at the video's native resolution, and scaled along
-            with the video.</dd>
-            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">alpha=&lt;blend|yes|no&gt;</span></tt></dt>
             <dd><p class="first">Decides what to do if the input has an alpha component (default: blend).</p>
@@ -5052,6 +5070,19 @@
             (default: -10). Note that mpv will also use the 2 layers above the
             selected layer, to handle the window background and OSD. Actual video
             rendering will happen on the layer above the selected layer.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal">drm</tt> (Direct Rendering Manager)</dt>
+            <dd><p class="first">Video output driver using Kernel Mode Setting / Direct Rendering Manager.
+            Does not support hardware acceleration. Should be used when one doesn't
+            want to install full-blown graphical environment (e.g. no X).</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">connector=&lt;number&gt;</span></tt></dt>
+            <dd>Select the connector to use (usually this is a monitor.) If set to -1,
+            mpv renders the output on the first available connector. (default: -1)</dd>
+            <dt><tt class="docutils literal"><span class="pre">devpath=&lt;filename&gt;</span></tt></dt>
+            <dd>Path to graphic card device.
+            (default: /dev/dri/card0)</dd>
             </dl>
             </dd>
             </dl>
@@ -5344,13 +5375,20 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">format=format:srate:channels:out-format:out-srate:out-channels</span></tt></dt>
-            <dd><p class="first">Force a specific audio format/configuration without actually changing the
-            audio data. Keep in mind that the filter system might auto-insert actual
-            conversion filters before or after this filter if needed.</p>
+            <dd><p class="first">Does not do any format conversion itself. Rather, it may cause the
+            filter system to insert necessary conversion filters before or after this
+            filter if needed. It is primarily useful for controlling the audio format
+            going into other filters. To specify the format for audio output, see
+            <tt class="docutils literal"><span class="pre">--audio-format</span></tt>, <tt class="docutils literal"><span class="pre">--audio-samplerate</span></tt>, and <tt class="docutils literal"><span class="pre">--audio-channels</span></tt>. This
+            filter is able to force a particular format, whereas <tt class="docutils literal"><span class="pre">--audio-*</span></tt>
+            may be overridden by the ao based on output compatibility.</p>
             <p>All parameters are optional. The first 3 parameters restrict what the filter
-            accepts as input. The <tt class="docutils literal">out-</tt> parameters change the audio format, without
-            actually doing a conversion. The data will be 'reinterpreted' by the
-            filters or audio outputs following this filter.</p>
+            accepts as input. They will therefore cause conversion filters to be
+            inserted before this one.  The <tt class="docutils literal">out-</tt> parameters tell the filters or audio
+            outputs following this filter how to interpret the data without actually
+            doing a conversion. Setting these will probably just break things unless you
+            really know you want this for some reason, such as testing or dealing with
+            broken media.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">&lt;format&gt;</tt></dt>
             <dd>Force conversion to this format. Use <tt class="docutils literal"><span class="pre">--af=format=format=help</span></tt> to get
@@ -5365,13 +5403,9 @@
             <p><tt class="docutils literal"><span class="pre">&lt;out-format&gt;</span></tt></p>
             <p><tt class="docutils literal"><span class="pre">&lt;out-srate&gt;</span></tt></p>
             <p><tt class="docutils literal"><span class="pre">&lt;out-channels&gt;</span></tt></p>
-            <p>See also <tt class="docutils literal"><span class="pre">--audio-format</span></tt>, <tt class="docutils literal"><span class="pre">--audio-samplerate</span></tt>, and
-            <tt class="docutils literal"><span class="pre">--audio-channels</span></tt> for related options. Keep in mind that
-            <tt class="docutils literal"><span class="pre">--audio-channels</span></tt> does not actually force the number of
-            channels in most cases, while this filter can do this.</p>
-            <p class="last"><em>NOTE</em>: this filter used to be named <tt class="docutils literal">force</tt>. Also, unlike the old
-            <tt class="docutils literal">format</tt> filter, this does not do any actual conversion anymore.
-            Conversion is done by other, automatically inserted filters.</p>
+            <p class="last"><em>NOTE</em>: this filter used to be named <tt class="docutils literal">force</tt>. The old <tt class="docutils literal">format</tt> filter
+            used to do conversion itself, unlike this one which lets the filter system
+            handle the conversion.</p>
             </dd>
             <dt><tt class="docutils literal">convert24</tt></dt>
             <dd>Filter for internal use only. Converts between 24-bit and 32-bit sample
@@ -6454,11 +6488,6 @@
             <dd>Draw a rectangle showing the area defined by x/y/w/h.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">screenshot</tt></dt>
-            <dd>Optional filter for screenshot support. This is only needed if the video
-            output does not provide working direct screenshot support. Note that it is
-            not always safe to insert this filter by default. See <a class="reference internal" href="#taking-screenshots">TAKING SCREENSHOTS</a>
-            for details.</dd>
             <dt><tt class="docutils literal"><span class="pre">sub=[=bottom-margin:top-margin]</span></tt></dt>
             <dd><p class="first">Moves subtitle rendering to an arbitrary point in the filter chain, or force
             subtitle rendering in the video filter as opposed to using video output OSD
@@ -7075,8 +7104,7 @@
             be guessed by the extension (and <tt class="docutils literal"><span class="pre">--screenshot-format</span></tt> is ignored - the
             behavior when the extension is missing or unknown is arbitrary).</p>
             <p>The second argument is like the first argument to <tt class="docutils literal">screenshot</tt>.</p>
-            <p>This command tries to never overwrite files. If the file already exists,
-            it fails.</p>
+            <p>If the file already exists, it's overwritten.</p>
             <p class="last">Like all input command parameters, the filename is subject to property
             expansion as described in <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
             </dd>
@@ -7461,6 +7489,14 @@
             <dd>Drop audio/video/demuxer buffers, and restart from fresh. Might help with
             unseekable streams that are going out of sync.
             This command might be changed or removed in the future.</dd>
+            <dt><tt class="docutils literal">screenshot_raw [subtitles|video|window]</tt></dt>
+            <dd>Return a screenshot in memory. This can be used only through the client
+            API. The MPV_FORMAT_NODE_MAP returned by this command has the <tt class="docutils literal">w</tt>, <tt class="docutils literal">h</tt>,
+            <tt class="docutils literal">stride</tt> fields set to obvious contents. A <tt class="docutils literal">format</tt> field is set to
+            <tt class="docutils literal">bgr0</tt> by default. This format is organized as <tt class="docutils literal">B8G8R8X8</tt> (where <tt class="docutils literal">B</tt>
+            is the LSB). The contents of the padding <tt class="docutils literal">X</tt> is undefined. The <tt class="docutils literal">data</tt>
+            field is of type MPV_FORMAT_BYTE_ARRAY with the actual image data. The image
+            is freed as soon as the result node is freed.</dd>
             </dl>
             <p>Undocumented commands: <tt class="docutils literal">tv_last_channel</tt> (TV/DVB only),
             <tt class="docutils literal">get_property</tt> (deprecated), <tt class="docutils literal">ao_reload</tt> (experimental/internal).</p>
@@ -7709,6 +7745,9 @@
             playback. The property is unavailable when playing something that is not
             a BD or DVD. Use the <tt class="docutils literal">discnav menu</tt> command to actually enter or leave
             menu mode.</dd>
+            <dt><tt class="docutils literal"><span class="pre">disc-mouse-on-button</span></tt></dt>
+            <dd>Return <tt class="docutils literal">yes</tt> when the mouse cursor is located on a button, or <tt class="docutils literal">no</tt>
+            when cursor is outside of any button for disc navigation.</dd>
             <dt><tt class="docutils literal">chapters</tt></dt>
             <dd>Number of chapters.</dd>
             <dt><tt class="docutils literal">editions</tt></dt>
@@ -7834,6 +7873,10 @@
             <dd>Approximate duration of video buffered in the demuxer, in seconds. The
             guess is very unreliable, and often the property will not be available
             at all, even if data is buffered.</dd>
+            <dt><tt class="docutils literal"><span class="pre">demuxer-cache-time</span></tt></dt>
+            <dd>Approximate time of video buffered in the demuxer, in seconds. Same as
+            <tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> but returns the last timestamp of bufferred
+            data in demuxer.</dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-idle</span></tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the demuxer is idle, which means the demuxer cache is
             filled to the requested amount, and is currently not reading more data.</dd>
@@ -7867,8 +7910,6 @@
             <dd>Audio format as string.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-codec</span></tt></dt>
             <dd>Audio codec selected for decoding.</dd>
-            <dt><tt class="docutils literal"><span class="pre">audio-bitrate</span></tt></dt>
-            <dd>Audio bitrate. This is probably a very bad guess in most cases.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-samplerate</span></tt></dt>
             <dd>Audio samplerate.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-channels</span></tt></dt>
@@ -7939,8 +7980,6 @@
             <dd>Video format as string.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-codec</span></tt></dt>
             <dd>Video codec selected for decoding.</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-bitrate</span></tt></dt>
-            <dd>Video bitrate (a bad guess).</dd>
             <dt><tt class="docutils literal">width</tt>, <tt class="docutils literal">height</tt></dt>
             <dd>Video size. This uses the size of the video as decoded, or if no video
             frame has been decoded yet, the (possibly incorrect) container indicated
@@ -8164,6 +8203,12 @@
             otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/selected</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt> if the track is currently decoded, <tt class="docutils literal">no</tt> otherwise.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/ff-index</span></tt></dt>
+            <dd>The stream index as usually used by the FFmpeg utilities. Note that
+            this can be potentially wrong if a demuxer other than libavformat
+            (<tt class="docutils literal"><span class="pre">--demuxer=lavf</span></tt>) is used. For mkv files, the index will usually
+            match even if the default (builtin) demuxer is used, but there is
+            no hard guarantee.</dd>
             </dl>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -8269,7 +8314,7 @@
             <dd>Return whether the VO is configured right now. Usually this corresponds to
             whether the video window is visible. If the <tt class="docutils literal"><span class="pre">--force-window</span></tt> option is
             used, this is usually always returns <tt class="docutils literal">yes</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">packet-video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-audio-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-sub-bitrate</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">audio-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">sub-bitrate</span></tt></dt>
             <dd><p class="first">Bitrate values calculated on the packet level. This works by dividing the
             bit size of all packets between two keyframes by their presentation
             timestamp distance. (This uses the timestamps are stored in the file, so
@@ -8277,7 +8322,24 @@
             the video bitrate will update only per keyframe, and show the &quot;past&quot;
             bitrate. To make the property more UI friendly, updates to these properties
             are throttled in a certain way.</p>
-            <p class="last">How exactly these values are calculated might change in the future.</p>
+            <p>The unit is bits per second. OSD formatting turns these values in kilobits
+            (or megabits, if appropriate), which can be prevented by using the
+            raw property value, e.g. with <tt class="docutils literal"><span class="pre">${=video-bitrate}</span></tt>.</p>
+            <p>Note that the accuracy of these properties is influenced by a few factors.
+            If the underlying demuxer rewrites the packets on demuxing (done for some
+            file formats), the bitrate might be slightly off. If timestamps are bad
+            or jittery (like in Matroska), even constant bitrate streams might show
+            fluctuating bitrate.</p>
+            <p>How exactly these values are calculated might change in the future.</p>
+            <p class="last">In earlier versions of mpv, these properties returned a static (but bad)
+            guess using a completely different method.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">packet-video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-audio-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-sub-bitrate</span></tt></dt>
+            <dd><p class="first">Old and deprecated properties for <tt class="docutils literal"><span class="pre">video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">audio-bitrate</span></tt>,
+            <tt class="docutils literal"><span class="pre">sub-bitrate</span></tt>. They behave exactly the same, but return a value in
+            kilobits. Also, they don't have any OSD formatting, though the same can be
+            achieved with e.g. <tt class="docutils literal"><span class="pre">${=video-bitrate}</span></tt>.</p>
+            <p class="last">These properties shouldn't be used anymore.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">audio-device-list</span></tt></dt>
             <dd><p class="first">Return the list of discovered audio devices. This is mostly for use with
@@ -9436,6 +9498,13 @@
             then trailing non-whitespace text is tolerated by the function, and the
             trailing text is returned as 3rd return value. (The 3rd return value is
             always there, but with <tt class="docutils literal">trail</tt> set, no error is raised.)</p>
+            </dd>
+            <dt><tt class="docutils literal">utils.format_json(v)</tt></dt>
+            <dd><p class="first">Format the given Lua table (or value) as a JSON string and return it. On
+            error, returns <tt class="docutils literal">nil, error</tt>. (Errors usually only happen on value types
+            incompatible with JSON.)</p>
+            <p class="last">The argument value uses similar conventions as <tt class="docutils literal">mp.set_property_native()</tt>
+            to distinguish empty objects and arrays.</p>
             </dd>
             <dt><tt class="docutils literal">utils.to_string(v)</tt></dt>
             <dd>Turn the given value into a string. Formats tables and their contents. This
