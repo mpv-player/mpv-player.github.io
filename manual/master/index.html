@@ -154,6 +154,8 @@
             <dd>Adjust subtitle delay by +/- 0.1 seconds.</dd>
             <dt>l</dt>
             <dd>Set/clear A-B loop points. See <tt class="docutils literal">ab_loop</tt> command for details.</dd>
+            <dt>L</dt>
+            <dd>Toggle infinite looping.</dd>
             <dt>Ctrl + and Ctrl -</dt>
             <dd>Adjust audio delay by +/- 0.1 seconds.</dd>
             <dt>u</dt>
@@ -386,7 +388,8 @@
             <p>You can put all of the options in configuration files which will be read every
             time mpv is run. The system-wide configuration file 'mpv.conf' is in your
             configuration directory (e.g. <tt class="docutils literal">/etc/mpv</tt> or <tt class="docutils literal">/usr/local/etc/mpv</tt>), the
-            user-specific one is <tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt>.
+            user-specific one is <tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt>. For details and platform
+            specifics see the <a class="reference internal" href="#files">FILES</a> section.
             User-specific options override system-wide options and options given on the
             command line override either. The syntax of the configuration files is
             <tt class="docutils literal"><span class="pre">option=&lt;value&gt;</span></tt>; everything after a <em>#</em> is considered a comment. Options
@@ -4107,6 +4110,9 @@
             latency to the reported audio playback position.</dd>
             <dt><tt class="docutils literal"><span class="pre">broken-delay</span></tt></dt>
             <dd>Simulate broken audio drivers, which don't report latency correctly.</dd>
+            <dt><tt class="docutils literal"><span class="pre">channel-layouts</span></tt></dt>
+            <dd>If not empty, this is a <tt class="docutils literal">,</tt> separated list of channel layouts the
+            AO allows. This can be used to test channel layout selection.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">pcm</tt></dt>
@@ -7291,12 +7297,12 @@
             files <em>after</em> the file was loaded.</p>
             <p>The <tt class="docutils literal">mode</tt> argument is one of the following:</p>
             <dl class="last docutils">
-            <dt>&lt;keep-selection&gt; (default)</dt>
-            <dd>Do not change current track selections.</dd>
-            <dt>&lt;reselect&gt;</dt>
-            <dd>Select the default audio and video streams, which typically selects
+            <dt>&lt;reselect&gt; (default)</dt>
+            <dd>Select the default audio and subtitle streams, which typically selects
             external files with highest preference. (The implementation is not
             perfect, and could be improved on request.)</dd>
+            <dt>&lt;keep-selection&gt;</dt>
+            <dd>Do not change current track selections.</dd>
             </dl>
             </dd>
             </dl>
@@ -9949,6 +9955,7 @@
             </div>
             <div class="section" id="files">
             <h1>FILES</h1>
+            <p>For Windows-specifics, see <a class="reference internal" href="#files-on-windows">FILES ON WINDOWS</a> section.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">/usr/local/etc/mpv/mpv.conf</tt></dt>
             <dd>mpv system-wide settings (depends on <tt class="docutils literal"><span class="pre">--prefix</span></tt> passed to configure - mpv
