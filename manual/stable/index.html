@@ -386,7 +386,8 @@
             <p>You can put all of the options in configuration files which will be read every
             time mpv is run. The system-wide configuration file 'mpv.conf' is in your
             configuration directory (e.g. <tt class="docutils literal">/etc/mpv</tt> or <tt class="docutils literal">/usr/local/etc/mpv</tt>), the
-            user-specific one is <tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt>.
+            user-specific one is <tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt>. For details and platform
+            specifics see the <a class="reference internal" href="#files">FILES</a> section.
             User-specific options override system-wide options and options given on the
             command line override either. The syntax of the configuration files is
             <tt class="docutils literal"><span class="pre">option=&lt;value&gt;</span></tt>; everything after a <em>#</em> is considered a comment. Options
@@ -6054,7 +6055,7 @@
             <dd>Force an aspect ratio.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">format[=fmt[:outfmt]]</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">format=fmt=&lt;value&gt;:colormatrix=&lt;value&gt;:...</span></tt></dt>
             <dd><p class="first">Restricts the color space for the next filter without doing any conversion.
             Use together with the scale filter for a real conversion.</p>
             <div class="note">
@@ -7929,14 +7930,15 @@
             <dd>See <tt class="docutils literal"><span class="pre">--deinterlace</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">field-dominance</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--field-dominance</span></tt></dd>
-            <dt><tt class="docutils literal">colormatrix</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--colormatrix</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">colormatrix-input-range</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--colormatrix-input-range</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">colormatrix-output-range</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--colormatrix-output-range</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">colormatrix-primaries</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--colormatrix-primaries</span></tt>.</dd>
+            <dt><tt class="docutils literal">colormatrix</tt> (R)</dt>
+            <dd>Redirects to <tt class="docutils literal"><span class="pre">video-params/colormatrix</span></tt>. This parameter (as well as
+            similar ones) can be overridden with the <tt class="docutils literal">format</tt> video filter.</dd>
+            <dt><tt class="docutils literal"><span class="pre">colormatrix-input-range</span></tt> (R)</dt>
+            <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">colormatrix-output-range</span></tt> (R)</dt>
+            <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">colormatrix-primaries</span></tt> (R)</dt>
+            <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
             <dt><tt class="docutils literal">ontop</tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--ontop</span></tt>.</dd>
             <dt><tt class="docutils literal">border</tt> (RW)</dt>
@@ -9948,6 +9950,7 @@
             </div>
             <div class="section" id="files">
             <h1>FILES</h1>
+            <p>For Windows-specifics, see <a class="reference internal" href="#files-on-windows">FILES ON WINDOWS</a> section.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">/usr/local/etc/mpv/mpv.conf</tt></dt>
             <dd>mpv system-wide settings (depends on <tt class="docutils literal"><span class="pre">--prefix</span></tt> passed to configure - mpv
