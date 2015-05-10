@@ -1126,8 +1126,12 @@
             <tt class="docutils literal"><span class="pre">--vf-clr</span></tt> exist to modify a previously specified list, but you
             should not need these for typical use.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-video</span></tt></dt>
-            <dd>Do not play video. With some demuxers this may not work. In those cases
-            you can try <tt class="docutils literal"><span class="pre">--vo=null</span></tt> instead.</dd>
+            <dd><p class="first">Do not play video. With some demuxers this may not work. In those cases
+            you can try <tt class="docutils literal"><span class="pre">--vo=null</span></tt> instead.</p>
+            <p class="last">mpv will try to download the audio only if media is streamed with
+            youtube-dl, because it saves bandwidth. This is done by setting the ytdl_format
+            to &quot;bestaudio/best&quot; in the ytdl_hook.lua script.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--untimed</span></tt></dt>
             <dd>Do not sleep when outputting video frames. Useful for benchmarks when used
             with <tt class="docutils literal"><span class="pre">--no-audio.</span></tt></dd>
@@ -2225,7 +2229,7 @@
             file.mkv normally, then fail to open <tt class="docutils literal">/dev/null</tt>, then exit). (In
             mpv 0.8.0, <tt class="docutils literal">always</tt> was introduced, which restores the old behavior.)</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--force-window</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--force-window=&lt;yes|no|immediate&gt;</span></tt></dt>
             <dd><p class="first">Create a video output window even if there is no video. This can be useful
             when pretending that mpv is a GUI application. Currently, the window
             always has the size 640x480, and is subject to <tt class="docutils literal"><span class="pre">--geometry</span></tt>,
@@ -2236,7 +2240,9 @@
             window placement still works if the video size is different from the
             <tt class="docutils literal"><span class="pre">--force-window</span></tt> default window size). This can be a problem if
             initialization doesn't work perfectly, such as when opening URLs with
-            bad network connection, or opening broken video files.</p>
+            bad network connection, or opening broken video files. The <tt class="docutils literal">immediate</tt>
+            mode can be used to create the window always on program start, but this
+            may cause other issues.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ontop</span></tt></dt>
@@ -2725,7 +2731,7 @@
             <p>Play a raw YUV sample:</p>
             <pre class="last literal-block">
             mpv sample-720x576.yuv --demuxer=rawvideo \
-            --demuxer-rawvideo=w=720:h=576
+            --demuxer-rawvideo-w=720 --demuxer-rawvideo-h=576
             </pre>
             </div>
             </dd>
@@ -4056,8 +4062,17 @@
             <dt><tt class="docutils literal">coreaudio</tt> (Mac OS X only)</dt>
             <dd><p class="first">Native Mac OS X audio output driver using AudioUnits and the CoreAudio
             sound server.</p>
-            <p class="last">Automatically redirects to <tt class="docutils literal">coreaudio_exclusive</tt> when playing compressed
+            <p>Automatically redirects to <tt class="docutils literal">coreaudio_exclusive</tt> when playing compressed
             formats.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">change-physical-format=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Change the physical format to one similar to the requested audio format
+            (default: no). This has the advantage that multichannel audio output
+            will actually work. The disadvantage is that it will change the
+            system-wide audio settings. This is equivalent to changing the <tt class="docutils literal">Format</tt>
+            setting in the <tt class="docutils literal">Audio Devices</tt> dialog in the <tt class="docutils literal">Audio MIDI Setup</tt>
+            utility. Note that this does not effect the selected speaker setup.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal">coreaudio_exclusive</tt> (Mac OS X only)</dt>
             <dd><p class="first">Native Mac OS X audio output driver using direct device access and
@@ -4780,7 +4795,7 @@
             always used, and typically only when using extended scalers.)
             <tt class="docutils literal">fmt</tt> can be one of: rgb, rgba, rgb8, rgb10, rgb10_a2, rgb16, rgb16f,
             rgb32f, rgba12, rgba16, rgba16f, rgba32f.
-            Default: rgba.</dd>
+            Default: rgba16.</dd>
             <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.1..2.0&gt;</span></tt></dt>
             <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways
             (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt>
@@ -4937,7 +4952,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
+            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fancy-downscaling:sigmoid-upscaling
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
