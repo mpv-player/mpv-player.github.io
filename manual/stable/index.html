@@ -1098,8 +1098,12 @@
             <tt class="docutils literal"><span class="pre">--vf-clr</span></tt> exist to modify a previously specified list, but you
             should not need these for typical use.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-video</span></tt></dt>
-            <dd>Do not play video. With some demuxers this may not work. In those cases
-            you can try <tt class="docutils literal"><span class="pre">--vo=null</span></tt> instead.</dd>
+            <dd><p class="first">Do not play video. With some demuxers this may not work. In those cases
+            you can try <tt class="docutils literal"><span class="pre">--vo=null</span></tt> instead.</p>
+            <p class="last">mpv will try to download the audio only if media is streamed with
+            youtube-dl, because it saves bandwidth. This is done by setting the ytdl_format
+            to &quot;bestaudio/best&quot; in the ytdl_hook.lua script.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--untimed</span></tt></dt>
             <dd>Do not sleep when outputting video frames. Useful for benchmarks when used
             with <tt class="docutils literal"><span class="pre">--no-audio.</span></tt></dd>
@@ -2697,7 +2701,7 @@
             <p>Play a raw YUV sample:</p>
             <pre class="last literal-block">
             mpv sample-720x576.yuv --demuxer=rawvideo \
-            --demuxer-rawvideo=w=720:h=576
+            --demuxer-rawvideo-w=720 --demuxer-rawvideo-h=576
             </pre>
             </div>
             </dd>
@@ -4731,7 +4735,7 @@
             always used, and typically only when using extended scalers.)
             <tt class="docutils literal">fmt</tt> can be one of: rgb, rgba, rgb8, rgb10, rgb10_a2, rgb16, rgb16f,
             rgb32f, rgba12, rgba16, rgba16f, rgba32f.
-            Default: rgba.</dd>
+            Default: rgba16.</dd>
             <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.1..2.0&gt;</span></tt></dt>
             <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways
             (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt>
@@ -4885,7 +4889,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fbo-format=rgba16:fancy-downscaling:sigmoid-upscaling
+            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fancy-downscaling:sigmoid-upscaling
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -8411,19 +8415,16 @@
             <p>This has a number of sub-properties. Replace <tt class="docutils literal">&lt;name&gt;</tt> with the name of
             a top-level option. No guarantee of stability is given to any of these
             sub-properties - they may change radically in the feature.</p>
-            <dl class="docutils">
+            <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/name</span></tt></dt>
             <dd>Returns the name of the option.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/type</span></tt></dt>
             <dd>Return the name of the option type, like <tt class="docutils literal">String</tt> or <tt class="docutils literal">Integer</tt>.
             For many complex types, this isn't very accurate.</dd>
-            </dl>
-            <p><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/set-from-commandline</span></tt></p>
-            <blockquote>
-            Return <tt class="docutils literal">yes</tt> if the option was set from the mpv command line,
+            <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/set-from-commandline</span></tt></dt>
+            <dd>Return <tt class="docutils literal">yes</tt> if the option was set from the mpv command line,
             <tt class="docutils literal">no</tt> otherwise. What this is set to if the option is e.g. changed
-            at runtime is left undefined (meaning it could change in the future).</blockquote>
-            <dl class="last docutils">
+            at runtime is left undefined (meaning it could change in the future).</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/default-value</span></tt></dt>
             <dd>The default value of the option. May not always be available.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/min</span></tt>, <tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/max</span></tt></dt>
@@ -8445,7 +8446,10 @@
             <div class="section" id="property-expansion">
             <h2>Property Expansion</h2>
             <p>All string arguments to input commands as well as certain options (like
-            <tt class="docutils literal"><span class="pre">--term-playing-msg</span></tt>) are subject to property expansion.</p>
+            <tt class="docutils literal"><span class="pre">--term-playing-msg</span></tt>) are subject to property expansion. Note that property
+            expansion does not work in places where e.g. numeric parameters are expected.
+            (For example, the <tt class="docutils literal">add</tt> command does not do property expansion. The <tt class="docutils literal">set</tt>
+            command is an exception and not a general rule.)</p>
             <div class="admonition-example-for-input-conf admonition">
             <p class="first admonition-title">Example for input.conf</p>
             <dl class="last docutils">
@@ -8826,37 +8830,38 @@
             <dt><tt class="docutils literal">showwindowed</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: yes</div>
-            <div class="line">Show OSC when windowed?</div>
+            <div class="line">Enable the OSC when windowed</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">showfullscreen</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: yes</div>
-            <div class="line">Show OSC when fullscreen?</div>
+            <div class="line">Enable the OSC when fullscreen</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">scalewindowed</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 1</div>
-            <div class="line">Scaling of the controller when windowed</div>
+            <div class="line">Default: 1.0</div>
+            <div class="line">Scale factor of the OSC when windowed</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">scalefullscreen</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 1</div>
-            <div class="line">Scaling of the controller when fullscreen</div>
+            <div class="line">Default: 1.0</div>
+            <div class="line">Scale factor of the OSC when fullscreen</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">scaleforcedwindow</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 2</div>
-            <div class="line">Scaling of the controller when rendered on a forced (dummy) window</div>
+            <div class="line">Default: 2.0</div>
+            <div class="line">Scale factor of the OSC when rendered on a forced (dummy) window</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">vidscale</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: yes</div>
-            <div class="line">Scale the controller with the video?</div>
+            <div class="line">Scale the OSC with the video</div>
+            <div class="line"><tt class="docutils literal">no</tt> tries to keep the OSC size constant as much as the window size allows</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">valign</tt></dt>
@@ -8867,7 +8872,7 @@
             </dd>
             <dt><tt class="docutils literal">halign</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 0</div>
+            <div class="line">Default: 0.0</div>
             <div class="line">Horizontal alignment, -1 (left) to 1 (right)</div>
             </div>
             </dd>
@@ -9007,6 +9012,9 @@
             <dt><tt class="docutils literal">mp.command(string)</tt></dt>
             <dd><p class="first">Run the given command. This is similar to the commands used in input.conf.
             See <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>.</p>
+            <p>By default, this will show something on the OSD (depending on the command),
+            as if it was used in <tt class="docutils literal">input.conf</tt>. See <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> how
+            to influence OSD usage per command.</p>
             <p class="last">Returns <tt class="docutils literal">true</tt> on success, or <tt class="docutils literal">nil, error</tt> on error.</p>
             </dd>
             <dt><tt class="docutils literal">mp.commandv(arg1, arg2, <span class="pre">...)</span></tt></dt>
@@ -9020,9 +9028,11 @@
             </pre>
             <p>These two commands are equivalent, except that the first version breaks
             if the filename contains spaces or certain special characters.</p>
-            <p class="last">Note that properties are <em>not</em> expanded.  You can use either <tt class="docutils literal">mp.command</tt>,
+            <p>Note that properties are <em>not</em> expanded.  You can use either <tt class="docutils literal">mp.command</tt>,
             the <tt class="docutils literal"><span class="pre">expand-properties</span></tt> prefix, or the <tt class="docutils literal">mp.get_property</tt> family of
             functions.</p>
+            <p class="last">Unlike <tt class="docutils literal">mp.command</tt>, this will not use OSD by default either (except
+            for some OSd-specific commands).</p>
             </dd>
             <dt><tt class="docutils literal">mp.command_native(table [,def])</tt></dt>
             <dd><p class="first">Similar to <tt class="docutils literal">mp.commandv</tt>, but pass the argument list as table. This has

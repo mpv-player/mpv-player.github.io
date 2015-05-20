@@ -172,6 +172,9 @@
             <dt>S</dt>
             <dd>Take a screenshot, without subtitles. (Whether this works depends on VO
             driver support.)</dd>
+            <dt>Ctrl s</dt>
+            <dd>Take a screenshot, as the window shows it (with subtitles, OSD, and scaled
+            video).</dd>
             <dt>I</dt>
             <dd>Show filename on the OSD.</dd>
             <dt>PGUP and PGDWN</dt>
@@ -1364,7 +1367,7 @@
             <tt class="docutils literal">all</tt> always allows all codecs.</p>
             <p>You can get the list of allowed codecs with <tt class="docutils literal">mpv <span class="pre">--vd=help</span></tt>. Remove the
             prefix, e.g. instead of <tt class="docutils literal">lavc:h264</tt> use <tt class="docutils literal">h264</tt>.</p>
-            <p>By default this is set to <tt class="docutils literal">h264,vc1,wmv3</tt>. Note that the hardware
+            <p>By default this is set to <tt class="docutils literal">h264,vc1,wmv3,hevc</tt>. Note that the hardware
             acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not relevant anymore,
             and in fact have been removed from Libav in this form.</p>
             <p>This is usually only needed with broken GPUs, where a codec is reported
@@ -4781,14 +4784,16 @@
             <dd>Cocoa/OS X</dd>
             <dt>win</dt>
             <dd>Win32/WGL</dd>
-            <dt>x11, x11es</dt>
-            <dd>X11/GLX (the <tt class="docutils literal">es</tt> variant forces GLES)</dd>
+            <dt>x11</dt>
+            <dd>X11/GLX</dd>
             <dt>wayland</dt>
             <dd>Wayland/EGL</dd>
-            <dt>x11egl, x11egles</dt>
-            <dd>X11/EGL (the <tt class="docutils literal">es</tt> variant forces GLES)</dd>
+            <dt>x11egl</dt>
+            <dd>X11/EGL</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal">es</tt></dt>
+            <dd>Force or prefer GLES2/3 over desktop OpenGL, if supported.</dd>
             <dt><tt class="docutils literal"><span class="pre">fbo-format=&lt;fmt&gt;</span></tt></dt>
             <dd>Selects the internal format of textures used for FBOs. The format can
             influence performance and quality of the video output. (FBOs are not
@@ -5113,13 +5118,15 @@
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">frame-queue-size=&lt;1..100&gt;</span></tt></dt>
             <dd>The maximum count of frames which the frame queue can hold (default: 1)</dd>
-            <dt><tt class="docutils literal"><span class="pre">frame-drop-mode=&lt;pop|clear&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">frame-drop-mode=&lt;pop|clear|block&gt;</span></tt></dt>
             <dd><p class="first">Select the behavior when the frame queue is full.</p>
             <dl class="last docutils">
             <dt>pop</dt>
-            <dd>Drop the oldest frame in the frame queue. (default)</dd>
+            <dd>Drop the oldest frame in the frame queue.</dd>
             <dt>clear</dt>
             <dd>Drop all frames in the frame queue.</dd>
+            <dt>block</dt>
+            <dd>Wait for a short time, behave like <tt class="docutils literal">clear</tt> on timeout. (default)</dd>
             </dl>
             </dd>
             </dl>
@@ -5962,7 +5969,7 @@
             color space conversion (see also <tt class="docutils literal"><span class="pre">--sws</span></tt>).</p>
             <p>All parameters are optional.</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;w&gt;,&lt;h&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">&lt;w&gt;:&lt;h&gt;</span></tt></dt>
             <dd><p class="first">scaled width/height (default: original width/height)</p>
             <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -7083,7 +7090,7 @@
             <dd>Use this to &quot;block&quot; keys that should be unbound, and do nothing. Useful for
             disabling default bindings, without disabling all bindings with
             <tt class="docutils literal"><span class="pre">--no-input-default-bindings</span></tt>.</dd>
-            <dt><tt class="docutils literal">seek &lt;seconds&gt; <span class="pre">[relative|absolute|absolute-percent|exact|keyframes]</span></tt></dt>
+            <dt><tt class="docutils literal">seek &lt;seconds&gt; <span class="pre">[relative|absolute|absolute-percent|relative-percent|exact|keyframes]</span></tt></dt>
             <dd><p class="first">Change the playback position. By default, seeks by a relative amount of
             seconds.</p>
             <p>The second argument consists of flags controlling the seek mode:</p>
@@ -7094,6 +7101,8 @@
             <dd>Seek to a given time.</dd>
             <dt>absolute-percent</dt>
             <dd>Seek to a given percent position.</dd>
+            <dt>relative-percent</dt>
+            <dd>Seek relative to current position in percent.</dd>
             <dt>keyframes</dt>
             <dd>Always restart playback at keyframe boundaries (fast).</dd>
             <dt>exact</dt>
@@ -7227,6 +7236,9 @@
             the index value index2 after moving if index1 was lower than index2,
             because index2 refers to the target entry, not the index the entry
             will have after moving.)</dd>
+            <dt><tt class="docutils literal">playlist_shuffle</tt></dt>
+            <dd>Shuffle the playlist. This is similar to what is done on start if the
+            <tt class="docutils literal"><span class="pre">--shuffle</span></tt> option is used.</dd>
             <dt><tt class="docutils literal">run &quot;command&quot; &quot;arg1&quot; &quot;arg2&quot; ...</tt></dt>
             <dd><p class="first">Run the given command. Unlike in MPlayer/mplayer2 and earlier versions of
             mpv (0.2.x and older), this doesn't call the shell. Instead, the command
@@ -8478,19 +8490,16 @@
             <p>This has a number of sub-properties. Replace <tt class="docutils literal">&lt;name&gt;</tt> with the name of
             a top-level option. No guarantee of stability is given to any of these
             sub-properties - they may change radically in the feature.</p>
-            <dl class="docutils">
+            <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/name</span></tt></dt>
             <dd>Returns the name of the option.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/type</span></tt></dt>
             <dd>Return the name of the option type, like <tt class="docutils literal">String</tt> or <tt class="docutils literal">Integer</tt>.
             For many complex types, this isn't very accurate.</dd>
-            </dl>
-            <p><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/set-from-commandline</span></tt></p>
-            <blockquote>
-            Return <tt class="docutils literal">yes</tt> if the option was set from the mpv command line,
+            <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/set-from-commandline</span></tt></dt>
+            <dd>Return <tt class="docutils literal">yes</tt> if the option was set from the mpv command line,
             <tt class="docutils literal">no</tt> otherwise. What this is set to if the option is e.g. changed
-            at runtime is left undefined (meaning it could change in the future).</blockquote>
-            <dl class="last docutils">
+            at runtime is left undefined (meaning it could change in the future).</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/default-value</span></tt></dt>
             <dd>The default value of the option. May not always be available.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/min</span></tt>, <tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/max</span></tt></dt>
@@ -8512,7 +8521,10 @@
             <div class="section" id="property-expansion">
             <h2>Property Expansion</h2>
             <p>All string arguments to input commands as well as certain options (like
-            <tt class="docutils literal"><span class="pre">--term-playing-msg</span></tt>) are subject to property expansion.</p>
+            <tt class="docutils literal"><span class="pre">--term-playing-msg</span></tt>) are subject to property expansion. Note that property
+            expansion does not work in places where e.g. numeric parameters are expected.
+            (For example, the <tt class="docutils literal">add</tt> command does not do property expansion. The <tt class="docutils literal">set</tt>
+            command is an exception and not a general rule.)</p>
             <div class="admonition-example-for-input-conf admonition">
             <p class="first admonition-title">Example for input.conf</p>
             <dl class="last docutils">
@@ -8893,37 +8905,38 @@
             <dt><tt class="docutils literal">showwindowed</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: yes</div>
-            <div class="line">Show OSC when windowed?</div>
+            <div class="line">Enable the OSC when windowed</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">showfullscreen</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: yes</div>
-            <div class="line">Show OSC when fullscreen?</div>
+            <div class="line">Enable the OSC when fullscreen</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">scalewindowed</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 1</div>
-            <div class="line">Scaling of the controller when windowed</div>
+            <div class="line">Default: 1.0</div>
+            <div class="line">Scale factor of the OSC when windowed</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">scalefullscreen</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 1</div>
-            <div class="line">Scaling of the controller when fullscreen</div>
+            <div class="line">Default: 1.0</div>
+            <div class="line">Scale factor of the OSC when fullscreen</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">scaleforcedwindow</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 2</div>
-            <div class="line">Scaling of the controller when rendered on a forced (dummy) window</div>
+            <div class="line">Default: 2.0</div>
+            <div class="line">Scale factor of the OSC when rendered on a forced (dummy) window</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">vidscale</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: yes</div>
-            <div class="line">Scale the controller with the video?</div>
+            <div class="line">Scale the OSC with the video</div>
+            <div class="line"><tt class="docutils literal">no</tt> tries to keep the OSC size constant as much as the window size allows</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">valign</tt></dt>
@@ -8934,7 +8947,7 @@
             </dd>
             <dt><tt class="docutils literal">halign</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 0</div>
+            <div class="line">Default: 0.0</div>
             <div class="line">Horizontal alignment, -1 (left) to 1 (right)</div>
             </div>
             </dd>
@@ -9074,6 +9087,9 @@
             <dt><tt class="docutils literal">mp.command(string)</tt></dt>
             <dd><p class="first">Run the given command. This is similar to the commands used in input.conf.
             See <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>.</p>
+            <p>By default, this will show something on the OSD (depending on the command),
+            as if it was used in <tt class="docutils literal">input.conf</tt>. See <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> how
+            to influence OSD usage per command.</p>
             <p class="last">Returns <tt class="docutils literal">true</tt> on success, or <tt class="docutils literal">nil, error</tt> on error.</p>
             </dd>
             <dt><tt class="docutils literal">mp.commandv(arg1, arg2, <span class="pre">...)</span></tt></dt>
@@ -9087,9 +9103,11 @@
             </pre>
             <p>These two commands are equivalent, except that the first version breaks
             if the filename contains spaces or certain special characters.</p>
-            <p class="last">Note that properties are <em>not</em> expanded.  You can use either <tt class="docutils literal">mp.command</tt>,
+            <p>Note that properties are <em>not</em> expanded.  You can use either <tt class="docutils literal">mp.command</tt>,
             the <tt class="docutils literal"><span class="pre">expand-properties</span></tt> prefix, or the <tt class="docutils literal">mp.get_property</tt> family of
             functions.</p>
+            <p class="last">Unlike <tt class="docutils literal">mp.command</tt>, this will not use OSD by default either (except
+            for some OSd-specific commands).</p>
             </dd>
             <dt><tt class="docutils literal">mp.command_native(table [,def])</tt></dt>
             <dd><p class="first">Similar to <tt class="docutils literal">mp.commandv</tt>, but pass the argument list as table. This has
