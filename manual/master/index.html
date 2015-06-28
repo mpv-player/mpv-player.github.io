@@ -271,7 +271,7 @@
             <blockquote>
             <tt class="docutils literal">mpv <span class="pre">'--vo=opengl:icc-profile=&quot;file</span> with <span class="pre">spaces.icc&quot;,xv'</span></tt></blockquote>
             <p>Shells may actually strip some quotes from the string passed to the commandline,
-            so the example quotes the string twice, ensuring that mpv recieves the <tt class="docutils literal">&quot;</tt>
+            so the example quotes the string twice, ensuring that mpv receives the <tt class="docutils literal">&quot;</tt>
             quotes.</p>
             <p>The <tt class="docutils literal"><span class="pre">[...]</span></tt> form of quotes wraps everything between <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt>. It's
             useful with shells that don't interpret these characters in the middle of
@@ -589,12 +589,9 @@
             <dd>Play a Blu-Ray disc. Currently, this does not accept ISO files. Instead,
             you must mount the ISO file as filesystem, and point <tt class="docutils literal"><span class="pre">--bluray-device</span></tt>
             to the mounted directory directly.</dd>
-            <dt><tt class="docutils literal"><span class="pre">bdnav://[title][/device]</span></tt></dt>
-            <dd>Play a Blu-Ray disc, with navigation features enabled. This feature is
-            permanently experimental.</dd>
             <dt><tt class="docutils literal"><span class="pre">dvd://[title|[starttitle]-endtitle][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></dt>
-            <dd><p class="first">Play a DVD. If you want dvdnav menus, use <tt class="docutils literal"><span class="pre">dvd://menu</span></tt>. If no title
-            is given, the longest title is auto-selected.</p>
+            <dd><p class="first">Play a DVD. DVD menus are not supported. If no title is given, the longest
+            title is auto-selected.</p>
             <p class="last"><tt class="docutils literal"><span class="pre">dvdnav://</span></tt> is an old alias for <tt class="docutils literal"><span class="pre">dvd://</span></tt> and does exactly the same
             thing.</p>
             </dd>
@@ -1092,7 +1089,7 @@
             <tt class="docutils literal">bestvideo+bestaudio</tt>.
             (Default: <tt class="docutils literal">best</tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--ytdl-raw-options=&lt;key&gt;=&lt;value&gt;[,&lt;key&gt;=&lt;value&gt;[,...]]</span></tt></dt>
-            <dd><p class="first">Pass arbitraty options to youtube-dl. Parameter and argument should be
+            <dd><p class="first">Pass arbitrary options to youtube-dl. Parameter and argument should be
             passed as a key-value pair. Options without argument must include <tt class="docutils literal">=</tt>.</p>
             <p>There is no sanity checking so it's possible to break things (i.e.
             passing invalid parameters to youtube-dl).</p>
@@ -1159,7 +1156,7 @@
             <dd>Old, decoder-based framedrop mode. (This is the same as <tt class="docutils literal"><span class="pre">--framedrop=yes</span></tt>
             in mpv 0.5.x and before.) This tells the decoder to skip frames (unless
             they are needed to decode future frames). May help with slow systems,
-            but can produce unwatchably choppy output, or even freeze the display
+            but can produce unwatchable choppy output, or even freeze the display
             completely. Not recommended.
             The <tt class="docutils literal"><span class="pre">--vd-lavc-framedrop</span></tt> option controls what frames to drop.</dd>
             <dt>&lt;decoder+vo&gt;</dt>
@@ -1470,7 +1467,7 @@
             <p>Note that many AOs have a <tt class="docutils literal">device</tt> sub-option, which overrides the
             device selection of this option (but not the audio output selection).
             Likewise, forcing an AO with <tt class="docutils literal"><span class="pre">--ao</span></tt> will override the audio output
-            selection of <tt class="docutils literal"><span class="pre">--audio-device</span></tt> (but not the device selecton).</p>
+            selection of <tt class="docutils literal"><span class="pre">--audio-device</span></tt> (but not the device selection).</p>
             <p class="last">Currently not implemented for most AOs.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ao=&lt;driver1[:suboption1[=value]:...],driver2,...[,]&gt;</span></tt></dt>
@@ -1776,7 +1773,7 @@
             secondary subtitle is selected, it will be rendered as toptitle (i.e. on
             the top of the screen) alongside the normal subtitle, and provides a way
             to render two subtitles at once.</p>
-            <p>there are some caveats associated with this feature. For example, bitmap
+            <p>There are some caveats associated with this feature. For example, bitmap
             subtitles will always be rendered in their usual position, so selecting a
             bitmap subtitle as secondary subtitle will result in overlapping subtitles.
             Secondary subtitles are never shown on the terminal if video is disabled.</p>
@@ -2496,7 +2493,7 @@
             <p>On win32, the ID is interpreted as <tt class="docutils literal">HWND</tt>. Pass it as value cast to
             <tt class="docutils literal">intptr_t</tt>. mpv will create its own window, and set the wid window as
             parent, like with X11.</p>
-            <p class="last">On OSX/Cocoa. the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
+            <p class="last">On OSX/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
             to <tt class="docutils literal">intptr_t</tt>. mpv will creates its own sub-view. Because OSX does not
             support window embedding of foreign processes, this works only with libmpv,
             and will crash when used from the command line.</p>
@@ -2584,7 +2581,7 @@
             <dt><tt class="docutils literal"><span class="pre">--cdda-skip=&lt;yes|no&gt;</span></tt></dt>
             <dd>(Never) accept imperfect data reconstruction.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cdda-cdtext=&lt;yes|no&gt;</span></tt></dt>
-            <dd>Print CD text. This is disabled by default, because it ruins perfomance
+            <dd>Print CD text. This is disabled by default, because it ruins performance
             with CD-ROM drives for unknown reasons.</dd>
             <dt><tt class="docutils literal"><span class="pre">--dvd-speed=&lt;speed&gt;</span></tt></dt>
             <dd><p class="first">Try to limit DVD speed (default: 0, no change). DVD base speed is 1385
@@ -2696,7 +2693,7 @@
             and hr-seeks, and this option changes behavior with relative or imprecise
             seeks only.</p>
             <p>You can use the <tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll-secs</span></tt> option to specify
-            how mach data the demuxer should pre-read at most in order to find subtitle
+            how much data the demuxer should pre-read at most in order to find subtitle
             packets that may overlap. Setting this to 0 will effectively disable this
             preroll mechanism. Setting a very large value can make seeking very slow,
             and an extremely large value would completely reread the entire file from
@@ -3887,7 +3884,7 @@
             <col class="field-body" />
             <tbody valign="top">
             <tr class="field"><th class="field-name">decoder:</th><td class="field-body">Use decoder reordering functionality. Unlike in classic MPlayer
-            and mplayer2, this includes a dTS fallback. (Default.)</td>
+            and mplayer2, this includes a DTS fallback. (Default.)</td>
             </tr>
             <tr class="field"><th class="field-name">sort:</th><td class="field-body">Maintain a buffer of unused pts values and use the lowest value
             for the frame.</td>
@@ -4322,14 +4319,6 @@
             not responding quickly enough if video FPS is close to or higher than
             the display refresh rate.</dd>
             </dl>
-            </dd>
-            <dt><tt class="docutils literal">x11</tt> (X11 only)</dt>
-            <dd><p class="first">Shared memory video output driver without hardware acceleration that works
-            whenever X11 is present.</p>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This is a fallback only, and should not be normally used.</p>
-            </div>
             </dd>
             <dt><tt class="docutils literal">vdpau</tt> (X11 only)</dt>
             <dd><p class="first">Uses the VDPAU interface to display and optionally also decode video.
@@ -5556,11 +5545,6 @@
             used to do conversion itself, unlike this one which lets the filter system
             handle the conversion.</p>
             </dd>
-            <dt><tt class="docutils literal">convert24</tt></dt>
-            <dd>Filter for internal use only. Converts between 24-bit and 32-bit sample
-            formats.</dd>
-            <dt><tt class="docutils literal">convertsign</tt></dt>
-            <dd>Filter for internal use only. Converts between signed/unsigned formats.</dd>
             <dt><tt class="docutils literal"><span class="pre">volume[=&lt;volumedb&gt;[:...]]</span></tt></dt>
             <dd><p class="first">Implements software volume control. Use this filter with caution since it
             can reduce the signal to noise ratio of the sound. In most cases it is
@@ -5584,6 +5568,10 @@
             <dt><tt class="docutils literal"><span class="pre">replaygain-clip=yes|no</span></tt></dt>
             <dd>Prevent clipping caused by replaygain by automatically lowering the
             gain (default). Use <tt class="docutils literal"><span class="pre">replaygain-clip=no</span></tt> to disable this.</dd>
+            <dt><tt class="docutils literal"><span class="pre">replaygain-fallback</span></tt></dt>
+            <dd>Gain in dB to apply if the file has no replay gain tags. This option
+            is always applied if the replaygain logic is somehow inactive. If this
+            is applied, no other replaygain options are applied.</dd>
             <dt><tt class="docutils literal">softclip</tt></dt>
             <dd><p class="first">Turns soft clipping on. Soft-clipping can make the
             sound more smooth if very high volume levels are used. Enable this
@@ -6854,7 +6842,7 @@
             <dt><tt class="docutils literal"><span class="pre">vapoursynth-lazy</span></tt></dt>
             <dd><p class="first">The same as <tt class="docutils literal">vapoursynth</tt>, but doesn't load Python scripts. Instead, a
             custom backend using Lua and the raw VapourSynth API is used. The syntax
-            is completely different, and absolutely no conveniencve features are
+            is completely different, and absolutely no convenience features are
             provided. There's no type checking either, and you can trigger crashes.</p>
             <div class="admonition-example admonition">
             <p class="first admonition-title">Example:</p>
@@ -7055,7 +7043,7 @@
             <div class="admonition-examples admonition">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&quot;--ovc=mpeg4</span> <span class="pre">--oacopts=qscale=5&quot;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">&quot;--ovc=mpeg4</span> <span class="pre">--ovcopts=qscale=5&quot;</span></tt></dt>
             <dd>selects constant quantizer scale 5 for MPEG-4 encoding.</dd>
             <dt><tt class="docutils literal"><span class="pre">&quot;--ovc=libx264</span> <span class="pre">--ovcopts=crf=23&quot;</span></tt></dt>
             <dd>selects VBR quality factor 23 for H.264 encoding.</dd>
@@ -7437,6 +7425,20 @@
             <dd>The mouse event represents double-click.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal">keypress &lt;key_name&gt;</tt></dt>
+            <dd>Send a key event through mpv's input handler, triggering whatever
+            behavior is configured to that key. <tt class="docutils literal">key_name</tt> uses the <tt class="docutils literal">input.conf</tt>
+            naming scheme for keys and modifiers. Useful for the client API: key events
+            can be sent to libmpv to handle internally.</dd>
+            <dt><tt class="docutils literal">keydown &lt;key_name&gt;</tt></dt>
+            <dd>Similar to <tt class="docutils literal">keypress</tt>, but sets the <tt class="docutils literal">KEYDOWN</tt> flag so that if the key is
+            bound to a repeatable command, it will be run repeatedly with mpv's key
+            repeat timing until the <tt class="docutils literal">keyup</tt> command is called.</dd>
+            <dt><tt class="docutils literal">keyup [&lt;key_name&gt;]</tt></dt>
+            <dd>Set the <tt class="docutils literal">KEYUP</tt> flag, stopping any repeated behavior that had been
+            triggered. <tt class="docutils literal">key_name</tt> is optional. If <tt class="docutils literal">key_name</tt> is not given or is an
+            empty string, <tt class="docutils literal">KEYUP</tt> will be set on all keys. Otherwise, <tt class="docutils literal">KEYUP</tt> will
+            only be set on the key specified by <tt class="docutils literal">key_name</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-add</span> &quot;&lt;file&gt;&quot; [&lt;flags&gt; [&lt;title&gt; <span class="pre">[&lt;lang&gt;]]]</span></tt></dt>
             <dd>Load the given audio file. See <tt class="docutils literal"><span class="pre">sub-add</span></tt> command.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-remove</span> [&lt;id&gt;]</tt></dt>
@@ -7661,7 +7663,7 @@
             <div class="section" id="hooks">
             <h3>Hooks</h3>
             <p>Hooks are synchronous events between player core and a script or similar. This
-            applies to the Lua scripting interface and the client API and only. Normally,
+            applies to client API (including the Lua scripting interface). Normally,
             events are supposed to be asynchronous, and the hook API provides an awkward
             and obscure way to handle events that require stricter coordination. There are
             no API stability guarantees made. Not following the protocol exactly can make
@@ -7865,7 +7867,7 @@
             <dd>Remaining length of the file in seconds. Note that the file duration is not
             always exactly known, so this is an estimate.</dd>
             <dt><tt class="docutils literal"><span class="pre">playtime-remaining</span></tt></dt>
-            <dd><tt class="docutils literal"><span class="pre">time-remaining</span></tt> scaled by the the current <tt class="docutils literal">speed</tt>.</dd>
+            <dd><tt class="docutils literal"><span class="pre">time-remaining</span></tt> scaled by the current <tt class="docutils literal">speed</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">playback-time</span></tt></dt>
             <dd>Return the playback time, which is the time difference between start PTS and current PTS.</dd>
             <dt><tt class="docutils literal">chapter</tt> (RW)</dt>
@@ -8036,7 +8038,7 @@
             at all, even if data is buffered.</dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-time</span></tt></dt>
             <dd>Approximate time of video buffered in the demuxer, in seconds. Same as
-            <tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> but returns the last timestamp of bufferred
+            <tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> but returns the last timestamp of buffered
             data in demuxer.</dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-idle</span></tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the demuxer is idle, which means the demuxer cache is
@@ -8083,6 +8085,10 @@
             <dt><tt class="docutils literal"><span class="pre">audio-params/channels</span></tt></dt>
             <dd>The channel layout as a string. This is similar to what the
             <tt class="docutils literal"><span class="pre">--audio-channels</span></tt> accepts.</dd>
+            <dt><tt class="docutils literal"><span class="pre">audio-params/hr-channels</span></tt></dt>
+            <dd>As <tt class="docutils literal">channels</tt>, but instead of the possibly cryptic actual layout
+            sent to the audio device, return a hopefully more human readable form.
+            (Usually only <tt class="docutils literal"><span class="pre">audio-out-params/hr-channels</span></tt> makes sense.)</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-params/channel-count</span></tt></dt>
             <dd>Number of audio channels. This is redundant to the <tt class="docutils literal">channels</tt> field
             described above.</dd>
@@ -8097,6 +8103,7 @@
                     &quot;samplerate&quot;        MPV_FORMAT_INT64
                     &quot;channels&quot;          MPV_FORMAT_STRING
                     &quot;channel-count&quot;     MPV_FORMAT_INT64
+                    &quot;hr-channels&quot;       MPV_FORMAT_STRING
             </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">audio-out-params</span></tt></dt>
@@ -8109,7 +8116,7 @@
             <dt><tt class="docutils literal">balance</tt> (RW)</dt>
             <dd>Audio channel balance. (The implementation of this feature is rather odd.
             It doesn't change the volumes of each channel, but instead sets up a pan
-            matrix to mix the the left and right channels.)</dd>
+            matrix to mix the left and right channels.)</dd>
             <dt><tt class="docutils literal">fullscreen</tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--fullscreen</span></tt>.</dd>
             <dt><tt class="docutils literal">deinterlace</tt> (RW)</dt>
@@ -8209,6 +8216,8 @@
             <dd>Chroma location as string. (Exact values subject to change.)</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/rotate</span></tt></dt>
             <dd>Intended display rotation in degrees (clockwise).</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-params/stereo-in</span></tt></dt>
+            <dd>Source file stereo 3D mode. (See <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.)</dd>
             </dl>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -8228,6 +8237,7 @@
                     &quot;primaries&quot;         MPV_FORMAT_STRING
                     &quot;chroma-location&quot;   MPV_FORMAT_STRING
                     &quot;rotate&quot;            MPV_FORMAT_INT64
+                    &quot;stereo-in&quot;         MPV_FORMAT_STRING
             </pre>
             </dd>
             <dt><tt class="docutils literal">dwidth</tt>, <tt class="docutils literal">dheight</tt></dt>
@@ -8382,6 +8392,9 @@
             <dt><tt class="docutils literal"><span class="pre">track-list/N/default</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt> if the track has the default flag set in the file, <tt class="docutils literal">no</tt>
             otherwise.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/foced</span></tt></dt>
+            <dd><tt class="docutils literal">yes</tt> if the track has the forced flag set in the file, <tt class="docutils literal">no</tt>
+            otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/codec</span></tt></dt>
             <dd>The codec name used by this track, for example <tt class="docutils literal">h264</tt>. Unavailable
             in some rare cases.</dd>
@@ -8413,6 +8426,7 @@
                     &quot;lang&quot;              MPV_FORMAT_STRING
                     &quot;albumart&quot;          MPV_FORMAT_FLAG
                     &quot;default&quot;           MPV_FORMAT_FLAG
+                    &quot;forced&quot;            MPV_FORMAT_FLAG
                     &quot;external&quot;          MPV_FORMAT_FLAG
                     &quot;external-filename&quot; MPV_FORMAT_STRING
                     &quot;codec&quot;             MPV_FORMAT_STRING
@@ -8722,7 +8736,7 @@
             <p>The On Screen Controller (short: OSC) is a minimal GUI integrated with mpv to
             offer basic mouse-controllability. It is intended to make interaction easier
             for new users and to enable precise and direct seeking.</p>
-            <p>The OSC is enabled by default if mpv was compiled with lua support. It can be
+            <p>The OSC is enabled by default if mpv was compiled with Lua support. It can be
             disabled entirely using the <tt class="docutils literal"><span class="pre">--osc=no</span></tt> option.</p>
             <div class="section" id="using-the-osc">
             <h2>Using the OSC</h2>
@@ -9114,6 +9128,18 @@
             <div class="line">Sets the style of the seekbar, slider (diamond marker) or bar (fill)</div>
             </div>
             </dd>
+            <dt><tt class="docutils literal">timetotal</tt></dt>
+            <dd><div class="first last line-block">
+            <div class="line">Default: no</div>
+            <div class="line">Show total time instead of time remaining</div>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal">timems</tt></dt>
+            <dd><div class="first last line-block">
+            <div class="line">Default: no</div>
+            <div class="line">Display timecodes with milliseconds</div>
+            </div>
+            </dd>
             </dl>
             </div>
             <div class="section" id="script-commands">
@@ -9221,7 +9247,7 @@
             the <tt class="docutils literal"><span class="pre">expand-properties</span></tt> prefix, or the <tt class="docutils literal">mp.get_property</tt> family of
             functions.</p>
             <p class="last">Unlike <tt class="docutils literal">mp.command</tt>, this will not use OSD by default either (except
-            for some OSd-specific commands).</p>
+            for some OSD-specific commands).</p>
             </dd>
             <dt><tt class="docutils literal">mp.command_native(table [,def])</tt></dt>
             <dd><p class="first">Similar to <tt class="docutils literal">mp.commandv</tt>, but pass the argument list as table. This has
@@ -9684,6 +9710,9 @@
             <p class="last">On Windows, <tt class="docutils literal">killed</tt> is only returned when the process has been
             killed by mpv as a result of <tt class="docutils literal">cancellable</tt> being set to <tt class="docutils literal">true</tt>.</p>
             </dd>
+            <dt><tt class="docutils literal">killed_by_us</tt></dt>
+            <dd>Set to <tt class="docutils literal">true</tt> if the process has been killed by mpv as a result
+            of <tt class="docutils literal">cancellable</tt> being set to <tt class="docutils literal">true</tt>.</dd>
             </dl>
             </blockquote>
             <p class="last">In all cases, <tt class="docutils literal">mp.resume_all()</tt> is implicitly called.</p>
@@ -9734,8 +9763,31 @@
             <dd>Happens right before a new file is loaded. When you receive this, the
             player is loading the file (or possibly already done with it).</dd>
             <dt><tt class="docutils literal"><span class="pre">end-file</span></tt></dt>
-            <dd>Happens after a file was unloaded. Typically, the player will load the
-            next file right away, or quit if this was the last file.</dd>
+            <dd><p class="first">Happens after a file was unloaded. Typically, the player will load the
+            next file right away, or quit if this was the last file.</p>
+            <p>The event has the <tt class="docutils literal">reason</tt> field, which takes one of these values:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">eof</tt></dt>
+            <dd>The file has ended. This can (but doesn't have to) include
+            incomplete files or broken network connections under
+            circumstances.</dd>
+            <dt><tt class="docutils literal">stop</tt></dt>
+            <dd>Playback was ended by a command.</dd>
+            <dt><tt class="docutils literal">quit</tt></dt>
+            <dd>Playback was ended by sending the quit command.</dd>
+            <dt><tt class="docutils literal">error</tt></dt>
+            <dd>An error happened. In this case, an <tt class="docutils literal">error</tt> field is present with
+            the error string.</dd>
+            <dt><tt class="docutils literal">redirect</tt></dt>
+            <dd>Happens with playlists and similar. Details see
+            <tt class="docutils literal">MPV_END_FILE_REASON_REDIRECT</tt> in the C API.</dd>
+            <dt><tt class="docutils literal">unknown</tt></dt>
+            <dd>Unknown. Normally doesn't happen, unless the Lua API is out of sync
+            with the C API. (Likewise, it could happen that your script gets
+            reason strings that did not exist yet at the time your script was
+            written.)</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">file-loaded</span></tt></dt>
             <dd>Happens after a file was loaded and begins playback.</dd>
             <dt><tt class="docutils literal">seek</tt></dt>
@@ -10139,6 +10191,8 @@
             </tr>
             <tr class="field"><th class="field-name">3:</th><td class="field-body">There were some files that could be played, and some files which
             couldn't (using the definition of success from above).</td>
+            </tr>
+            <tr class="field"><th class="field-name">4:</th><td class="field-body">The <tt class="docutils literal">quit</tt> command was issued (default exit code).</td>
             </tr>
             </tbody>
             </table>
