@@ -295,7 +295,7 @@
             command line (but without shell processing of the string). Some options
             support passing values in a more structured way instead of flat strings, and
             can avoid the suboption parsing mess. For example, <tt class="docutils literal"><span class="pre">--vf</span></tt> supports
-            <tt class="docutils literal">MPV_FORMAT_NODE</tt>, which let's you pass suboptions as a nested data structure
+            <tt class="docutils literal">MPV_FORMAT_NODE</tt>, which lets you pass suboptions as a nested data structure
             of maps and arrays. (<tt class="docutils literal"><span class="pre">--vo</span></tt> supports this in the same way, although this
             fact is undocumented.)</p>
             </div>
@@ -562,7 +562,7 @@
             frame couldn't be displayed on time. (<tt class="docutils literal"><span class="pre">vo-drop-frame-count</span></tt> property.)
             If the decoder drops frames, the number of decoder-dropped frames is appended
             to the display as well, e.g.: <tt class="docutils literal">Dropped: 4/34</tt>. This happens only if
-            decoder-framedropping is enabled with the <tt class="docutils literal"><span class="pre">--framedrop</span></tt> options.
+            decoder frame dropping is enabled with the <tt class="docutils literal"><span class="pre">--framedrop</span></tt> options.
             (<tt class="docutils literal"><span class="pre">drop-frame-count</span></tt> property.)</li>
             <li>Cache state, e.g. <tt class="docutils literal">Cache:&nbsp; 2s+134KB</tt>. Visible if the stream cache is enabled.
             The first value shows the amount of video buffered in the demuxer in seconds,
@@ -625,6 +625,10 @@
             <dd>A local path as URL. Might be useful in some special use-cases. Note that
             <tt class="docutils literal">PATH</tt> itself should start with a third <tt class="docutils literal">/</tt> to make the path an
             absolute path.</dd>
+            <dt><tt class="docutils literal"><span class="pre">fd://123</span></tt></dt>
+            <dd>Read data from the given UNIX FD (for example 123). This is similar to
+            piping data to stdin via <tt class="docutils literal">-</tt>, but can use an arbitrary file descriptor.
+            Will not work correctly on MS Windows.</dd>
             <dt><tt class="docutils literal"><span class="pre">edl://[edl</span> specification as in <span class="pre">edl-mpv.rst]</span></tt></dt>
             <dd>Stitch together parts of multiple files and play them.</dd>
             <dt><tt class="docutils literal"><span class="pre">null://</span></tt></dt>
@@ -1217,6 +1221,19 @@
             codecs.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--hwdec-preload=&lt;api&gt;</span></tt></dt>
+            <dd><p class="first">This is useful for the <tt class="docutils literal">opengl</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for creating the
+            hardware decoding OpenGL interop context, but without actually enabling
+            hardware decoding itself (like <tt class="docutils literal"><span class="pre">--hwdec</span></tt> does).</p>
+            <p>If set to <tt class="docutils literal">no</tt> (default), the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option is used.</p>
+            <p>For <tt class="docutils literal">opengl</tt>, if set, do not create the interop context on demand, but
+            when the VO is created.</p>
+            <p class="last">For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, if set, load the interop context as soon as the OpenGL
+            context is created. Since <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> has no on-demand loading, this
+            allows enabling hardware decoding at runtime at all, without having to
+            to temporarily set the <tt class="docutils literal">hwdec</tt> option just during OpenGL context
+            initialization with <tt class="docutils literal">mpv_opengl_cb_init_gl()</tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
             <dd>Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
             video to make it fit a 4:3 display without black bands). The range
@@ -1276,14 +1293,14 @@
             rotation metadata. (The rotation value is added to the rotation metadata,
             which means the value <tt class="docutils literal">0</tt> would rotate the video according to the
             rotation metadata.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-stereo-mode=&lt;mode&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--video-stereo-mode=&lt;no|mode&gt;</span></tt></dt>
             <dd><p class="first">Set the stereo 3D output mode (default: <tt class="docutils literal">mono</tt>). This is done by inserting
             the <tt class="docutils literal">stereo3d</tt> conversion filter.</p>
+            <p>The pseudo-mode <tt class="docutils literal">no</tt> disables automatic conversion completely.</p>
             <p>The mode <tt class="docutils literal">mono</tt> is an alias to <tt class="docutils literal">ml</tt>, which refers to the left frame in
             2D. This is the default, which means mpv will try to show 3D movies in 2D,
             instead of the mangled 3D image not intended for consumption (such as
             showing the left and right frame side by side, etc.).</p>
-            <p>The pseudo-mode <tt class="docutils literal">none</tt> disables automatic conversion completely.</p>
             <p class="last">Use <tt class="docutils literal"><span class="pre">--video-stereo-mode=help</span></tt> to list all available modes. Check with
             the <tt class="docutils literal">stereo3d</tt> filter documentation to see what the names mean. Note that
             some names refer to modes not supported by <tt class="docutils literal">stereo3d</tt> - these modes can
@@ -2714,12 +2731,17 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll-secs=&lt;value&gt;</span></tt></dt>
             <dd>See <tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-probe-video-duration</span></tt></dt>
-            <dd>When opening the file, seek to the end of it, and check what timestamp the
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-probe-video-duration=&lt;yes|no|full&gt;</span></tt></dt>
+            <dd><p class="first">When opening the file, seek to the end of it, and check what timestamp the
             last video packet has, and report that as file duration. This is strictly
             for compatibility with Haali only. In this mode, it's possible that opening
             will be slower (especially when playing over http), or that behavior with
-            broken files is much worse. So don't use this option.</dd>
+            broken files is much worse. So don't use this option.</p>
+            <p class="last">The <tt class="docutils literal">yes</tt> mode merely uses the index and reads a small number of blocks
+            from the end of the file. The <tt class="docutils literal">full</tt> mode actually traverses the entire
+            file and can make a reliable estimate even without an index present (such
+            as partial files).</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-fix-timestamps=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Fix rounded Matroska timestamps (enabled by default). Matroska usually
             stores timestamps rounded to milliseconds. This means timestamps jitter
@@ -2791,6 +2813,11 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-readahead-bytes=&lt;bytes&gt;</span></tt></dt>
             <dd>See <tt class="docutils literal"><span class="pre">--demuxer-readahead-packets</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--force-seekable=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If the player thinks that the media is not seekable (e.g. playing from a
+            pipe, or it's a http stream with a server that doesn't support range
+            requests), seeking will be disabled. This option can forcibly enable it.
+            For seeks within the cache, there's a good chance of success.</dd>
             </dl>
             </div>
             <div class="section" id="input">
@@ -4070,13 +4097,15 @@
             system-wide audio settings. This is equivalent to changing the <tt class="docutils literal">Format</tt>
             setting in the <tt class="docutils literal">Audio Devices</tt> dialog in the <tt class="docutils literal">Audio MIDI Setup</tt>
             utility. Note that this does not effect the selected speaker setup.</dd>
+            <dt><tt class="docutils literal">exclusive</tt></dt>
+            <dd>Use exclusive mode access. This merely redirects to
+            <tt class="docutils literal">coreaudio_exclusive</tt>, but should be preferred over using that AO
+            directly.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">coreaudio_exclusive</tt> (Mac OS X only)</dt>
-            <dd><p class="first">Native Mac OS X audio output driver using direct device access and
-            exclusive mode (bypasses the sound server).</p>
-            <p class="last">Supports only compressed formats (AC3 and DTS).</p>
-            </dd>
+            <dd>Native Mac OS X audio output driver using direct device access and
+            exclusive mode (bypasses the sound server).</dd>
             <dt><tt class="docutils literal">openal</tt></dt>
             <dd><p class="first">Experimental OpenAL audio output driver</p>
             <div class="note last">
@@ -4710,10 +4739,9 @@
             only used if <tt class="docutils literal">interpolation</tt> is enabled. The only valid choices
             for <tt class="docutils literal">tscale</tt> are separable convolution filters (use <tt class="docutils literal">tscale=help</tt>
             to get a list). The default is <tt class="docutils literal">oversample</tt>.</p>
-            <p class="last">Note that the maximum supported filter radius is currently 3, and that
-            using filters with larger radius may introduce issues when pausing or
-            framestepping, proportional to the radius used. It is recommended to
-            stick to a radius of 1 or 2.</p>
+            <p class="last">Note that the maximum supported filter radius is currently 3, due to
+            limitations in the number of video textures that can be loaded
+            simultaneously.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">tscale-radius</span></tt>, etc.</dt>
             <dd><p class="first">Set filter parameters for <tt class="docutils literal">dscale</tt>, <tt class="docutils literal">cscale</tt> and <tt class="docutils literal">tscale</tt>,
@@ -4822,7 +4850,8 @@
             full screen).
             This may help getting more consistent frame intervals, especially with
             high-fps clips - which might also reduce dropped frames. Typically a
-            value of 1 should be enough since full screen may bypass the DWM.</p>
+            value of <tt class="docutils literal">windowed</tt> should be enough since full screen may bypass the
+            DWM.</p>
             <p class="last">Windows only.</p>
             </dd>
             <dt><tt class="docutils literal">sw</tt></dt>
@@ -6123,7 +6152,7 @@
             number (1.33). Alternatively, you may specify the exact display width and
             height desired. Note that this filter does <em>not</em> do any scaling itself; it
             just affects what later scalers (software or hardware) will do when
-            auto-scaling to correct aspect.</p>
+            auto-scaling to the correct aspect.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">&lt;w&gt;,&lt;h&gt;</span></tt></dt>
             <dd><p class="first">New display width and height.</p>
@@ -6562,7 +6591,7 @@
             CPU load and make pullup usable in realtime on slow machines.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">yadif=[mode[:enabled=yes|no]]</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">yadif=[mode:interlaced-only]</span></tt></dt>
             <dd><p class="first">Yet another deinterlacing filter</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">&lt;mode&gt;</tt></dt>
@@ -6583,15 +6612,15 @@
             </tbody>
             </table>
             </dd>
-            <dt><tt class="docutils literal">&lt;enabled&gt;</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">&lt;interlaced-only&gt;</span></tt></dt>
             <dd><table class="first last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Filter is active (default).</td>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Deinterlace all frames (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">Filter is not active, but can be activated with the <tt class="docutils literal">D</tt> key
-            (or any other key that toggles the <tt class="docutils literal">deinterlace</tt> property).</td>
+            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Only deinterlace frames marked as interlaced (default if this
+            filter is inserted via <tt class="docutils literal">deinterlace</tt> property).</td>
             </tr>
             </tbody>
             </table>
@@ -6883,6 +6912,18 @@
             mpv bugs.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">&lt;interlaced-only&gt;</span></tt></dt>
+            <dd><table class="first last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Deinterlace all frames.</td>
+            </tr>
+            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Only deinterlace frames marked as interlaced (default).</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">vdpaupp</tt></dt>
@@ -6930,6 +6971,8 @@
             <dt><tt class="docutils literal">pullup</tt></dt>
             <dd>Try to apply inverse telecine, needs motion adaptive temporal
             deinterlacing.</dd>
+            <dt><tt class="docutils literal"><span class="pre">interlaced-only=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If <tt class="docutils literal">yes</tt> (default), only deinterlace frames marked as interlaced.</dd>
             <dt><tt class="docutils literal"><span class="pre">hqscaling=&lt;0-9&gt;</span></tt></dt>
             <dd><dl class="first last docutils">
             <dt>0</dt>
@@ -6940,6 +6983,12 @@
             </dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal">vdpaurb</tt></dt>
+            <dd>VDPAU video read back. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> only.
+            This filter will read back frames decoded by VDPAU so that other filters,
+            which are not normally compatible with VDPAU, can be used like normal.
+            This filter must be specified before <tt class="docutils literal">vdpaupp</tt> in the filter chain if
+            <tt class="docutils literal">vdpaupp</tt> is used.</dd>
             <dt><tt class="docutils literal"><span class="pre">buffer=&lt;num&gt;</span></tt></dt>
             <dd>Buffer <tt class="docutils literal">&lt;num&gt;</tt> frames in the filter chain. This filter is probably pretty
             useless, except for debugging. (Note that this won't help smoothing out
@@ -7568,7 +7617,7 @@
             random points. Instead, call <tt class="docutils literal">overlay_add</tt> again (preferably with a
             different memory region to prevent tearing).</p>
             <p>It is also possible to pass a raw memory address for use as bitmap memory
-            by passing a memory address as integer prefixed with a <tt class="docutils literal">&amp;</tt> character.
+            by passing a memory address as integer prefixed with an <tt class="docutils literal">&amp;</tt> character.
             Passing the wrong thing here will crash the player. This mode might be
             useful for use with libmpv. The <tt class="docutils literal">offset</tt> parameter is simply added to the
             memory address (since mpv 0.8.0, ignored before).</p>
@@ -8097,13 +8146,12 @@
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
             <pre class="last literal-block">
-            MPV_FORMAT_NODE_ARRAY
-                MPV_FORMAT_NODE_MAP (for each track)
-                    &quot;format&quot;            MPV_FORMAT_STRING
-                    &quot;samplerate&quot;        MPV_FORMAT_INT64
-                    &quot;channels&quot;          MPV_FORMAT_STRING
-                    &quot;channel-count&quot;     MPV_FORMAT_INT64
-                    &quot;hr-channels&quot;       MPV_FORMAT_STRING
+            MPV_FORMAT_NODE_MAP
+                &quot;format&quot;            MPV_FORMAT_STRING
+                &quot;samplerate&quot;        MPV_FORMAT_INT64
+                &quot;channels&quot;          MPV_FORMAT_STRING
+                &quot;channel-count&quot;     MPV_FORMAT_INT64
+                &quot;hr-channels&quot;       MPV_FORMAT_STRING
             </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">audio-out-params</span></tt></dt>
@@ -8223,21 +8271,20 @@
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
             <pre class="last literal-block">
-            MPV_FORMAT_NODE_ARRAY
-                MPV_FORMAT_NODE_MAP (for each track)
-                    &quot;pixelformat&quot;       MPV_FORMAT_STRING
-                    &quot;w&quot;                 MPV_FORMAT_INT64
-                    &quot;h&quot;                 MPV_FORMAT_INT64
-                    &quot;dw&quot;                MPV_FORMAT_INT64
-                    &quot;dh&quot;                MPV_FORMAT_INT64
-                    &quot;aspect&quot;            MPV_FORMAT_DOUBLE
-                    &quot;par&quot;               MPV_FORMAT_DOUBLE
-                    &quot;colormatrix&quot;       MPV_FORMAT_STRING
-                    &quot;colorlevels&quot;       MPV_FORMAT_STRING
-                    &quot;primaries&quot;         MPV_FORMAT_STRING
-                    &quot;chroma-location&quot;   MPV_FORMAT_STRING
-                    &quot;rotate&quot;            MPV_FORMAT_INT64
-                    &quot;stereo-in&quot;         MPV_FORMAT_STRING
+            MPV_FORMAT_NODE_MAP
+                &quot;pixelformat&quot;       MPV_FORMAT_STRING
+                &quot;w&quot;                 MPV_FORMAT_INT64
+                &quot;h&quot;                 MPV_FORMAT_INT64
+                &quot;dw&quot;                MPV_FORMAT_INT64
+                &quot;dh&quot;                MPV_FORMAT_INT64
+                &quot;aspect&quot;            MPV_FORMAT_DOUBLE
+                &quot;par&quot;               MPV_FORMAT_DOUBLE
+                &quot;colormatrix&quot;       MPV_FORMAT_STRING
+                &quot;colorlevels&quot;       MPV_FORMAT_STRING
+                &quot;primaries&quot;         MPV_FORMAT_STRING
+                &quot;chroma-location&quot;   MPV_FORMAT_STRING
+                &quot;rotate&quot;            MPV_FORMAT_INT64
+                &quot;stereo-in&quot;         MPV_FORMAT_STRING
             </pre>
             </dd>
             <dt><tt class="docutils literal">dwidth</tt>, <tt class="docutils literal">dheight</tt></dt>
@@ -8354,6 +8401,10 @@
             <tt class="docutils literal">playing</tt> can be different, because the currently playing file hasn't
             been unloaded yet; in this case, <tt class="docutils literal">current</tt> refers to the new
             selection. (Since mpv 0.7.0.)</dd>
+            <dt><tt class="docutils literal">playlist/N/title</tt></dt>
+            <dd>Name of the Nth entry. Only available if the playlist file contains
+            such fields, and only if mpv's parser supports it for the given
+            playlist format.</dd>
             </dl>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -8364,6 +8415,7 @@
                     &quot;filename&quot;  MPV_FORMAT_STRING
                     &quot;current&quot;   MPV_FORMAT_FLAG (might be missing; since mpv 0.7.0)
                     &quot;playing&quot;   MPV_FORMAT_FLAG (same)
+                    &quot;title&quot;     MPV_FORMAT_STRING (optional)
             </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">track-list</span></tt></dt>
@@ -8392,7 +8444,7 @@
             <dt><tt class="docutils literal"><span class="pre">track-list/N/default</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt> if the track has the default flag set in the file, <tt class="docutils literal">no</tt>
             otherwise.</dd>
-            <dt><tt class="docutils literal"><span class="pre">track-list/N/foced</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/forced</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt> if the track has the forced flag set in the file, <tt class="docutils literal">no</tt>
             otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/codec</span></tt></dt>
@@ -9927,6 +9979,19 @@
             </pre>
             <p>where <tt class="docutils literal">event_name</tt> is the name of the event. Additional event-specific fields
             can also be present. See <a class="reference internal" href="#list-of-events">List of events</a> for a list of all supported events.</p>
+            <p>Because events can occur at any time, it may be difficult at times to determine
+            which response goes with which command. Commands may optionally include a
+            <tt class="docutils literal">request_id</tt> which, if provided in the command request, will be copied
+            verbatim into the response. mpv does not intrepret the <tt class="docutils literal">request_id</tt> in any
+            way; it is solely for the use of the requester.</p>
+            <p>For example, this request:</p>
+            <pre class="literal-block">
+            { &quot;command&quot;: [&quot;get_property&quot;, &quot;time-pos&quot;], &quot;request_id&quot;: 100 }
+            </pre>
+            <p>Would generate this response:</p>
+            <pre class="literal-block">
+            { &quot;error&quot;: &quot;success&quot;, &quot;data&quot;: 1.468135, &quot;request_id&quot;: 100 }
+            </pre>
             <p>All commands, replies, and events are separated from each other with a line
             break character (<tt class="docutils literal">\n</tt>).</p>
             <p>If the first character (after skipping whitespace) is not <tt class="docutils literal">{</tt>, the command
@@ -10192,7 +10257,8 @@
             <tr class="field"><th class="field-name">3:</th><td class="field-body">There were some files that could be played, and some files which
             couldn't (using the definition of success from above).</td>
             </tr>
-            <tr class="field"><th class="field-name">4:</th><td class="field-body">The <tt class="docutils literal">quit</tt> command was issued (default exit code).</td>
+            <tr class="field"><th class="field-name">4:</th><td class="field-body">Quit due to a signal, Ctrl+c in a VO window (by default), or from the
+            default quit key bindings in encoding mode.</td>
             </tr>
             </tbody>
             </table>
