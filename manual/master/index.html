@@ -2025,6 +2025,16 @@
             misaligning some subtitles (e.g. sign translations).</p>
             <p class="last">Disabled by default.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--stretch-image-subs-to-screen=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Stretch DVD and other image subtitles to the screen, ignoring the video
+            margins. This has a similar effect as <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt> for text
+            subtitles, except that the text itself will be stretched, not only just
+            repositioned. (At least in general it is unavoidable, as an image bitmap
+            can in theory consist of a single bitmap covering the whole screen, and
+            the player won't know where exactly the text parts are located.)</p>
+            <p>This option does not display subtitles correctly. Use with care.</p>
+            <p class="last">Disabled by default.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-ass</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt></dt>
             <dd><p class="first">Render ASS subtitles natively (enabled by default).</p>
             <p>If <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> is specified, all tags and style declarations are
@@ -3157,7 +3167,7 @@
             <dt><tt class="docutils literal"><span class="pre">--screenshot-tag-colorspace=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Tag screenshots with the appropriate colorspace.</p>
             <p>Note that not all formats are supported.</p>
-            <p class="last">Default: <tt class="docutils literal">yes</tt>.</p>
+            <p class="last">Default: <tt class="docutils literal">no</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--screenshot-high-bit-depth=&lt;yes|no&gt;</span></tt></dt>
             <dd>If possible, write screenshots with a bit depth similar to the source
@@ -3207,7 +3217,7 @@
             part of the playback time.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
-            <p class="last">This is a simple way for getting unique per-frame timestamps. Frame
+            <p class="last">This is a simple way for getting unique per-frame timestamps. (Frame
             numbers would be more intuitive, but are not easily implementable
             because container formats usually use time stamps for identifying
             frames.)</p>
@@ -3707,7 +3717,7 @@
             <dd>Select RTSP transport method (default: tcp). This selects the underlying
             network transport when playing <tt class="docutils literal"><span class="pre">rtsp://...</span></tt> URLs. The value <tt class="docutils literal">lavf</tt>
             leaves the decision to libavformat.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--hls-bitrate=&lt;no|min|max&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--hls-bitrate=&lt;no|min|max|&lt;rate&gt;&gt;</span></tt></dt>
             <dd><p class="first">If HLS streams are played, this option controls what streams are selected
             by default. The option allows the following parameters:</p>
             <table class="docutils field-list" frame="void" rules="none">
@@ -3723,6 +3733,8 @@
             </tr>
             </tbody>
             </table>
+            <p>Additionally, if the option is a number, the stream with the highest rate
+            equal or below the option value is selected.</p>
             <p class="last">The bitrate as used is sent by the server, and there's no guarantee it's
             actually meaningful.</p>
             </dd>
@@ -8437,6 +8449,9 @@
             <dd>Track title as it is stored in the file. Not always available.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt></dt>
             <dd>Track language as identified by the file. Not always available.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/audio-channels</span></tt></dt>
+            <dd>For audio tracks, the number of audio channels in the audio stream.
+            Not always accurate (depends on container hints). Not always available.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/albumart</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt> if this is a video track that consists of a single picture,
             <tt class="docutils literal">no</tt> or unavailable otherwise. This is used for video tracks that are
@@ -8476,6 +8491,7 @@
                     &quot;src-id&quot;            MPV_FORMAT_INT64
                     &quot;title&quot;             MPV_FORMAT_STRING
                     &quot;lang&quot;              MPV_FORMAT_STRING
+                    &quot;audio-channels&quot;    MPV_FORMAT_INT64
                     &quot;albumart&quot;          MPV_FORMAT_FLAG
                     &quot;default&quot;           MPV_FORMAT_FLAG
                     &quot;forced&quot;            MPV_FORMAT_FLAG
