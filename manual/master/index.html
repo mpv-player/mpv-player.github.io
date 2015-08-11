@@ -143,9 +143,6 @@
             <dd>Show progression bar, elapsed time and total duration on the OSD.</dd>
             <dt>O</dt>
             <dd>Toggle OSD states between normal and playback time/duration.</dd>
-            <dt>d</dt>
-            <dd>Toggle frame dropping states: none / skip display / skip decoding (see
-            <tt class="docutils literal"><span class="pre">--framedrop</span></tt>).</dd>
             <dt>v</dt>
             <dd>Toggle subtitle visibility.</dd>
             <dt>j and J</dt>
@@ -184,7 +181,7 @@
             <dt>Shift+PGUP and Shift+PGDWN</dt>
             <dd>Seek backward or forward by 10 minutes. (This used to be mapped to
             PGUP/PGDWN without Shift.)</dd>
-            <dt>D</dt>
+            <dt>d</dt>
             <dd>Activate/deactivate deinterlacer.</dd>
             <dt>A</dt>
             <dd>Cycle aspect ratio override.</dd>
@@ -556,6 +553,13 @@
             if there is audio &quot;missing&quot;, or not enough frames can be dropped. Usually
             this will indicate a problem. (<tt class="docutils literal"><span class="pre">total-avsync-change</span></tt> property.)</li>
             <li>Encoding state in <tt class="docutils literal"><span class="pre">{...}</span></tt>, only shown in encoding mode.</li>
+            <li>Display sync state. If display sync is active (<tt class="docutils literal"><span class="pre">display-sync-active</span></tt>
+            property), this shows <tt class="docutils literal">DS: 1.002</tt>, where the number is the speed change
+            factor applied to audio to achieve sync to display (<tt class="docutils literal"><span class="pre">audio-speed-correction</span></tt>
+            property). In sync modes which don't resample, this will always be <tt class="docutils literal">1.000</tt>.</li>
+            <li>Missed frames, e.g. <tt class="docutils literal">Missed: 4</tt>. (<tt class="docutils literal"><span class="pre">vo-missed-frame-count</span></tt> property.) Shows
+            up in display sync mode only. This is incremented each time a frame took
+            longer to display than intended.</li>
             <li>Dropped frames, e.g. <tt class="docutils literal">Dropped: 4</tt>. Shows up only if the count is not 0. Can
             grow if the video framerate is higher than that of the display, or if video
             rendering is too slow. Also can be incremented on &quot;hiccups&quot; and when the video
@@ -1199,6 +1203,8 @@
             </tr>
             <tr class="field"><th class="field-name">vda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X only)</td>
             </tr>
+            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (newer OS X only)</td>
+            </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
             <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=rpi</span></tt> (Raspberry Pi only - default if available)</td>
@@ -1459,10 +1465,11 @@
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-framedrop=&lt;skipvalue&gt;</span></tt></dt>
             <dd>Set framedropping mode used with <tt class="docutils literal"><span class="pre">--framedrop</span></tt> (see skiploopfilter for
             available skip values).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-threads=&lt;0-16&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-threads=&lt;N&gt;</span></tt></dt>
             <dd>Number of threads to use for decoding. Whether threading is actually
-            supported depends on codec. 0 means autodetect number of cores on the
-            machine and use that, up to the maximum of 16 (default: 0).</dd>
+            supported depends on codec (default: 0). 0 means autodetect number of cores
+            on the machine and use that, up to the maximum of 16. You can set more than
+            16 threads manually.</dd>
             </dl>
             </div>
             <div class="section" id="audio">
@@ -1641,8 +1648,16 @@
             (You can use <tt class="docutils literal"><span class="pre">--ad-lavc-downmix=no</span></tt> to make the decoder always output
             its native layout.) Note that only some decoders support remixing audio.
             Some that do include AC-3, AAC or DTS audio.</p>
-            <p class="last">If the channel layout of the media file (i.e. the decoder) and the AO's
+            <p>If the channel layout of the media file (i.e. the decoder) and the AO's
             channel layout don't match, mpv will attempt to insert a conversion filter.</p>
+            <div class="admonition-warning admonition last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">Using <tt class="docutils literal">auto</tt> can cause issues when using audio over HDMI. The OS will
+            typically report all channel layouts that _can_ go over HDMI, even if
+            the receiver does not support them. If a receiver gets an unsupported
+            channel layout, random things can happen, such as dropping the
+            additional channels, or adding noise.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-display=&lt;no|attachment&gt;</span></tt></dt>
             <dd><p class="first">Setting this option to <tt class="docutils literal">attachment</tt> (default) will display image
@@ -2072,10 +2087,11 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-codepage=&lt;codepage&gt;</span></tt></dt>
             <dd><p class="first">If your system supports <tt class="docutils literal">iconv(3)</tt>, you can use this option to specify
-            the subtitle codepage. By default, ENCA will be used to guess the charset.
-            If mpv is not compiled with ENCA, <tt class="docutils literal"><span class="pre">UTF-8:UTF-8-BROKEN</span></tt> is the default,
-            which means it will try to use UTF-8, otherwise the <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt>
-            pseudo codepage (see below).</p>
+            the subtitle codepage. By default, uchardet will be used to guess the
+            charset. If mpv is not compiled with uchardet, enca will be used.
+            If mpv is compiled with neither uchardet nor enca, <tt class="docutils literal"><span class="pre">UTF-8:UTF-8-BROKEN</span></tt>
+            is the default, which means it will try to use UTF-8, otherwise the
+            <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> pseudo codepage (see below).</p>
             <p>The default value for this option is <tt class="docutils literal">auto</tt>, whose actual effect depends
             on whether ENCA is compiled.</p>
             <div class="admonition-warning admonition">
@@ -2117,9 +2133,12 @@
             </div>
             <p>If the player was compiled with libguess support, you can use it with:</p>
             <p><tt class="docutils literal"><span class="pre">--sub-codepage=guess:&lt;language&gt;:&lt;fallback</span> codepage&gt;</tt></p>
-            <p class="last">libguess always needs a language. There is no universal detection
+            <p>libguess always needs a language. There is no universal detection
             mode. Use <tt class="docutils literal"><span class="pre">--sub-codepage=guess:help</span></tt> to get a list of
             languages subject to the same caveat as with ENCA above.</p>
+            <p>If the player was compiled with uchardet support you can use it with:</p>
+            <p><tt class="docutils literal"><span class="pre">--sub-codepage=uchardet</span></tt></p>
+            <p class="last">This mode doesn't take language or fallback codepage.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-fix-timing</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-fix-timing</span></tt></dt>
             <dd>By default, external text subtitles are preprocessed to remove minor gaps
@@ -2753,7 +2772,7 @@
             as partial files).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-fix-timestamps=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Fix rounded Matroska timestamps (enabled by default). Matroska usually
+            <dd><p class="first">Fix rounded Matroska timestamps (disabled by default). Matroska usually
             stores timestamps rounded to milliseconds. This means timestamps jitter
             by some amount around the intended timestamp. mpv can correct the timestamps
             based on the framerate value stored in the file: the timestamp is rounded
@@ -2796,6 +2815,18 @@
             <tt class="docutils literal"><span class="pre">--vd</span></tt> (but it does not accept decoder names).</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-rawvideo-size=&lt;value&gt;</span></tt></dt>
             <dd>Frame size in bytes when using <tt class="docutils literal"><span class="pre">--demuxer=rawvideo</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-max-packets=&lt;packets&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--demuxer-max-bytes=&lt;bytes&gt;</span></tt></dt>
+            <dd><p class="first">This controls how much the demuxer is allowed to buffer ahead. The demuxer
+            will normally try to read ahead as much as necessary, or as much is
+            requested with <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt>. The <tt class="docutils literal"><span class="pre">--demuxer-max-...</span></tt>
+            options can be used to restrict the maximum readahead. This limits excessive
+            readahead in case of broken files or desynced playback. The demuxer will
+            stop reading additional packets as soon as one of the limits is reached.
+            (The limits still can be slightly overstepped due to technical reasons.)</p>
+            <p>Set these limits highher if you get a packet queue overflow warning, and
+            you think normal playback would be possible with a larger packet queue.</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-thread=&lt;yes|no&gt;</span></tt></dt>
             <dd>Run the demuxer in a separate thread, and let it prefetch a certain amount
             of packets (default: yes). Having this enabled may lead to smoother
@@ -2811,18 +2842,6 @@
             <p class="last">(This value tends to be fuzzy, because many file formats don't store linear
             timestamps.)</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-readahead-packets=&lt;packets&gt;</span></tt></dt>
-            <dd><p class="first">If <tt class="docutils literal"><span class="pre">--demuxer-thread</span></tt> is enabled, this controls how much the demuxer
-            should buffer ahead. As long as the number of packets in the packet queue
-            doesn't exceed <tt class="docutils literal"><span class="pre">--demuxer-readahead-packets</span></tt>, and the total number of
-            bytes doesn't exceed <tt class="docutils literal"><span class="pre">--demuxer-readahead-bytes</span></tt>, the thread keeps
-            reading ahead.</p>
-            <p>Note that if you set these options near the maximum, you might get a
-            packet queue overflow warning.</p>
-            <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-readahead-bytes=&lt;bytes&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--demuxer-readahead-packets</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--force-seekable=&lt;yes|no&gt;</span></tt></dt>
             <dd>If the player thinks that the media is not seekable (e.g. playing from a
             pipe, or it's a http stream with a server that doesn't support range
@@ -3594,13 +3613,13 @@
             negative effects, especially with file formats that require a lot of
             seeking, such as MP4.</p>
             <p class="last">Note that half the cache size will be used to allow fast seeking back. This
-            is also the reason why a full cache is usually reported as 50% full. The
-            cache fill display does not include the part of the cache reserved for
-            seeking back. Likewise, when starting a file the cache will be at 100%,
-            because no space is reserved for seeking back yet.</p>
+            is also the reason why a full cache is usually not reported as 100% full.
+            The cache fill display does not include the part of the cache reserved for
+            seeking back. The actual maximum percentage will usually be the ratio
+            between readahead and backbuffer sizes.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-default=&lt;kBytes|no&gt;</span></tt></dt>
-            <dd>Set the size of the cache in kilobytes (default: 150000 KB). Using <tt class="docutils literal">no</tt>
+            <dd>Set the size of the cache in kilobytes (default: 75000 KB). Using <tt class="docutils literal">no</tt>
             will not automatically enable the cache e.g. when playing from a network
             stream. Note that using <tt class="docutils literal"><span class="pre">--cache</span></tt> will always override this option.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-initial=&lt;kBytes&gt;</span></tt></dt>
@@ -3617,6 +3636,11 @@
             on the situation, either of these might be slower than the other method.
             This option allows control over this.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--cache-backbuffer=&lt;kBytes&gt;</span></tt></dt>
+            <dd>Size of the cache back buffer (default: 75000 KB). This will add to the total
+            cache size, and reserved the amount for seeking back. The reserved amount
+            will not be used for readahead, and instead preserves already read data to
+            enable fast seeking back.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-file=&lt;TMP|path&gt;</span></tt></dt>
             <dd><p class="first">Create a cache file on the filesystem.</p>
             <p>There are two ways of using this:</p>
@@ -3877,6 +3901,82 @@
             sync offsets occur, they will only take about 1 or 2 seconds to settle
             out. This delay in reaction time to sudden A/V offsets should be the only
             side-effect of turning this option on, for all sound drivers.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-sync=&lt;audio|...&gt;</span></tt></dt>
+            <dd><p class="first">How the player synchronizes audio and video.</p>
+            <p>The modes starting with <tt class="docutils literal">display-</tt> try to output video frames completely
+            synchronously to the display, using the detected display vertical refresh
+            rate as a hint how fast frames will be displayed on average. These modes
+            change video speed slightly to match the display. See <tt class="docutils literal"><span class="pre">--video-sync-...</span></tt>
+            options for fine tuning. The robustness of this mode is further reduced by
+            making a some idealized assumptions, which may not always apply in reality.
+            Behavior can depend on the VO and the system's video and audio drivers.
+            Media files must use constant framerate. Section-wise VFR might work as well
+            with some container formats (but not e.g. mkv). If the sync code detects
+            severe A/V desync, or the framerate cannot be detected, the player
+            automatically reverts to <tt class="docutils literal">audio</tt> mode for some time or permanently.</p>
+            <p>The modes with <tt class="docutils literal">desync</tt> in their names do not attempt to keep audio/video
+            in sync. They will slowly (or quickly) desync, until e.g. the next seek
+            happens. These modes are meant for testing, not serious use.</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">audio:</th><td class="field-body">Time video frames to audio. This is the most robust
+            mode, because the player doesn't have to assume anything
+            about how the display behaves. The disadvantage is that
+            it can lead to occasional frame drops or repeats. If
+            audio is disabled, this uses the system clock. This is
+            the default mode.</td>
+            </tr>
+            <tr class="field"><th class="field-name" colspan="2">display-resample:</th></tr>
+            <tr class="field"><td>&nbsp;</td><td class="field-body">Resample audio to match the video. This mode will also
+            try to adjust audio speed to compensate for other drift.
+            (This means it will play the audio at a different speed
+            every once in a while to reduce the A/V difference.)</td>
+            </tr>
+            <tr class="field"><th class="field-name" colspan="2">display-resample-vdrop:</th></tr>
+            <tr class="field"><td>&nbsp;</td><td class="field-body">Resample audio to match the video. Drop video
+            frames to compensate for drift.</td>
+            </tr>
+            <tr class="field"><th class="field-name" colspan="2">display-resample-desync:</th></tr>
+            <tr class="field"><td>&nbsp;</td><td class="field-body">Like the previous mode, but no A/V compensation.</td>
+            </tr>
+            <tr class="field"><th class="field-name">display-vdrop:</th><td class="field-body">Drop or repeat video frames to compensate desyncing
+            video. (Although it should have the same effects as
+            <tt class="docutils literal">audio</tt>, the implementation is very different.)</td>
+            </tr>
+            <tr class="field"><th class="field-name">display-desync:</th><td class="field-body">Sync video to display, and let audio play on its own.</td>
+            </tr>
+            <tr class="field"><th class="field-name">desync:</th><td class="field-body">Sync video according to system clock, and let audio play
+            on its own.</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-sync-max-video-change=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Maximum speed difference in percent that is applied to video with
+            <tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt> (default: 1). Display sync mode will be
+            disabled if the monitor and video refresh way do not match within the
+            given range. It tries multiples as well: playing 30 fps video on a 60 Hz
+            screen will duplicate every second frame. Playing 24 fps video on a 60 Hz
+            screen will play video in a 2-3-2-3-... pattern.</p>
+            <p>The default settings are not loose enough to speed up 23.976 fps video to
+            25 fps. We consider the pitch change too extreme to allow this behavior
+            by default. Set this option to a value of <tt class="docutils literal">5</tt> to enable it.</p>
+            <p class="last">Note that in the <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> mode, audio speed will
+            additionally be changed by a small amount if necessary for A/V sync. See
+            <tt class="docutils literal"><span class="pre">--video-sync-max-audio-change</span></tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-sync-max-audio-change=&lt;value&gt;</span></tt></dt>
+            <dd>Maximum <em>additional</em> speed difference in percent that is applied to audio
+            with <tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt> (default: 0.125). Normally, the player
+            play the audio at the speed of the video. But if the difference between
+            audio and video position is too high, e.g. due to drift or other timing
+            errors, it will attempt to speed up or slow down audio by this additional
+            factor. Too low values could lead to video frame dropping or repeating if
+            the A/V desync cannot be compensated, too high values could lead to chaotic
+            frame dropping due to the audio &quot;overshooting&quot; and skipping multiple video
+            frames before the sync logic can react.</dd>
             <dt><tt class="docutils literal"><span class="pre">--mf-fps=&lt;value&gt;</span></tt></dt>
             <dd>Framerate used when decoding from multiple PNG or JPEG files with <tt class="docutils literal"><span class="pre">mf://</span></tt>
             (default: 1).</dd>
@@ -4716,6 +4816,10 @@
             frame by changing the orientation of the tiled dithering matrix.
             Unfortunately, this can lead to flicker on LCD displays, since these
             have a high reaction time.</dd>
+            <dt><tt class="docutils literal"><span class="pre">temporal-dither-period=&lt;1-128&gt;</span></tt></dt>
+            <dd>Determines how often the dithering pattern is updated when
+            <tt class="docutils literal"><span class="pre">temporal-dither</span></tt> is in use. 1 (the default) will update on every
+            video frame, 2 on every other frame, etc.</dd>
             <dt><tt class="docutils literal">debug</tt></dt>
             <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also request a
             debug OpenGL context (which does nothing with current graphics drivers
@@ -7453,16 +7557,6 @@
             <dt><tt class="docutils literal"><span class="pre">show-progress</span></tt></dt>
             <dd>Show the progress bar, the elapsed time and the total duration of the file
             on the OSD.</dd>
-            <dt><tt class="docutils literal">discnav &quot;&lt;command&gt;&quot;</tt></dt>
-            <dd><p class="first">Send a menu control command to the DVD/BD menu implementation. The following
-            commands are defined: <tt class="docutils literal">up</tt>, <tt class="docutils literal">down</tt>, <tt class="docutils literal">left</tt>, <tt class="docutils literal">right</tt>,
-            <tt class="docutils literal">menu</tt> (request to enter menu), <tt class="docutils literal">prev</tt> (previous screen),
-            <tt class="docutils literal">select</tt> (activate current button), <tt class="docutils literal">mouse</tt> (the mouse was clicked),
-            <tt class="docutils literal">mouse_move</tt> (the mouse cursor changed position).</p>
-            <p><tt class="docutils literal">mouse_move</tt> will use the current mouse position.</p>
-            <p class="last">Note that while the menu is active, the input section <tt class="docutils literal"><span class="pre">discnav-menu</span></tt> will
-            be enabled, so different key bindings can be mapped for menu mode.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">write-watch-later-config</span></tt></dt>
             <dd>Write the resume config file that the <tt class="docutils literal"><span class="pre">quit-watch-later</span></tt> command writes,
             but continue playback normally.</dd>
@@ -7572,7 +7666,7 @@
             </ul>
             </div>
             </dd>
-            <dt><tt class="docutils literal">cycle_values <span class="pre">[&quot;!reverse&quot;]</span> &lt;property&gt; &quot;&lt;value1&gt;&quot; &quot;&lt;value2&gt;&quot; ...</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">cycle-values</span> <span class="pre">[&quot;!reverse&quot;]</span> &lt;property&gt; &quot;&lt;value1&gt;&quot; &quot;&lt;value2&gt;&quot; ...</tt></dt>
             <dd><p class="first">Cycle through a list of values. Each invocation of the command will set the
             given property to the next value in the list. The command maintains an
             internal counter which value to pick next, and which is initially 0. It is
@@ -7587,20 +7681,49 @@
             <p class="last">Note that there is a static limit of (as of this writing) 10 arguments
             (this limit could be raised on demand).</p>
             </dd>
-            <dt><tt class="docutils literal">enable_section &quot;&lt;section&gt;&quot; [default|exclusive]</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">enable-section</span> &quot;&lt;section&gt;&quot; [flags]</tt></dt>
             <dd><p class="first">Enable all key bindings in the named input section.</p>
             <p>The enabled input sections form a stack. Bindings in sections on the top of
             the stack are preferred to lower sections. This command puts the section
             on top of the stack. If the section was already on the stack, it is
             implicitly removed beforehand. (A section cannot be on the stack more than
             once.)</p>
-            <p class="last">If <tt class="docutils literal">exclusive</tt> is specified as second argument, all sections below the
-            newly enabled section are disabled. They will be re-enabled as soon as
-            all exclusive sections above them are removed.</p>
+            <p>The <tt class="docutils literal">flags</tt> parameter can be a combination (separated by <tt class="docutils literal">+</tt>) of the
+            following flags:</p>
+            <dl class="last docutils">
+            <dt>&lt;exclusive&gt;</dt>
+            <dd>All sections enabled before the newly enabled section are disabled.
+            They will be re-enabled as soon as all exclusive sections above them
+            are removed. In other words, the new section shadows all previous
+            sections.</dd>
+            <dt>&lt;allow-hide-cursor&gt;</dt>
+            <dd>This feature can't be used through the public API.</dd>
+            <dt>&lt;allow-vo-dragging&gt;</dt>
+            <dd>Same.</dd>
+            </dl>
             </dd>
-            <dt><tt class="docutils literal">disable_section &quot;&lt;section&gt;&quot;</tt></dt>
-            <dd>Disable the named input section. Undoes <tt class="docutils literal">enable_section</tt>.</dd>
-            <dt><tt class="docutils literal">overlay_add &lt;id&gt; &lt;x&gt; &lt;y&gt; &quot;&lt;file&gt;&quot; &lt;offset&gt; &quot;&lt;fmt&gt;&quot; &lt;w&gt; &lt;h&gt; &lt;stride&gt;</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">disable-section</span> &quot;&lt;section&gt;&quot;</tt></dt>
+            <dd>Disable the named input section. Undoes <tt class="docutils literal"><span class="pre">enable-section</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">define-section</span> &quot;&lt;section&gt;&quot; &quot;&lt;contents&gt;&quot; [default|forced]</tt></dt>
+            <dd><p class="first">Create a named input section, or replace the contents of an already existing
+            input section. The <tt class="docutils literal">contents</tt> parameter uses the same syntax as the
+            <tt class="docutils literal">input.conf</tt> file (except that using the section syntax in it is not
+            allowed), including the need to separate bindings with a newline character.</p>
+            <p>If the <tt class="docutils literal">contents</tt> parameter is an empty string, the section is removed.</p>
+            <p>The section with the name <tt class="docutils literal">default</tt> is the normal input section.</p>
+            <p>In general, input sections have to be enabled with the <tt class="docutils literal"><span class="pre">enable-section</span></tt>
+            command, or they are ignored.</p>
+            <p>The last parameter has the following meaning:</p>
+            <dl class="last docutils">
+            <dt>&lt;default&gt; (also used if parameter omitted)</dt>
+            <dd>Use a key binding defined by this section only if the user hasn't
+            already bound this key to a command.</dd>
+            <dt>&lt;forced&gt;</dt>
+            <dd>Always bind a key. (The input section that was made active most recently
+            wins if there are ambiguities.)</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">overlay-add</span> &lt;id&gt; &lt;x&gt; &lt;y&gt; &quot;&lt;file&gt;&quot; &lt;offset&gt; &quot;&lt;fmt&gt;&quot; &lt;w&gt; &lt;h&gt; &lt;stride&gt;</tt></dt>
             <dd><p class="first">Add an OSD overlay sourced from raw data. This might be useful for scripts
             and applications controlling mpv, and which want to display things on top
             of the video window.</p>
@@ -7614,7 +7737,7 @@
             <p><tt class="docutils literal">id</tt> is an integer between 0 and 63 identifying the overlay element. The
             ID can be used to add multiple overlay parts, update a part by using this
             command with an already existing ID, or to remove a part with
-            <tt class="docutils literal">overlay_remove</tt>. Using a previously unused ID will add a new overlay,
+            <tt class="docutils literal"><span class="pre">overlay-remove</span></tt>. Using a previously unused ID will add a new overlay,
             while reusing an ID will update it. (Future directions: there should be
             something to ensure different programs wanting to create overlays don't
             conflict with each others, should that ever be needed.)</p>
@@ -7626,7 +7749,7 @@
             vdpau), so no actual copying is involved. Truncating the source file while
             the overlay is active will crash the player. You shouldn't change the data
             while the overlay is active, because the data is essentially accessed at
-            random points. Instead, call <tt class="docutils literal">overlay_add</tt> again (preferably with a
+            random points. Instead, call <tt class="docutils literal"><span class="pre">overlay-add</span></tt> again (preferably with a
             different memory region to prevent tearing).</p>
             <p>It is also possible to pass a raw memory address for use as bitmap memory
             by passing a memory address as integer prefixed with an <tt class="docutils literal">&amp;</tt> character.
@@ -7666,19 +7789,19 @@
             so, for example when redrawing the screen.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal">overlay_remove &lt;id&gt;</tt></dt>
-            <dd>Remove an overlay added with <tt class="docutils literal">overlay_add</tt> and the same ID. Does nothing
+            <dt><tt class="docutils literal"><span class="pre">overlay-remove</span> &lt;id&gt;</tt></dt>
+            <dd>Remove an overlay added with <tt class="docutils literal"><span class="pre">overlay-add</span></tt> and the same ID. Does nothing
             if no overlay with this ID exists.</dd>
-            <dt><tt class="docutils literal">script_message &quot;&lt;arg1&gt;&quot; &quot;&lt;arg2&gt;&quot; ...</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">script-message</span> &quot;&lt;arg1&gt;&quot; &quot;&lt;arg2&gt;&quot; ...</tt></dt>
             <dd>Send a message to all clients, and pass it the following list of arguments.
             What this message means, how many arguments it takes, and what the arguments
             mean is fully up to the receiver and the sender. Every client receives the
             message, so be careful about name clashes (or use <tt class="docutils literal">script_message_to</tt>).</dd>
-            <dt><tt class="docutils literal">script_message_to &quot;&lt;target&gt;&quot; &quot;&lt;arg1&gt;&quot; &quot;&lt;arg2&gt;&quot; ...</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">script-message-to</span> &quot;&lt;target&gt;&quot; &quot;&lt;arg1&gt;&quot; &quot;&lt;arg2&gt;&quot; ...</tt></dt>
             <dd>Same as <tt class="docutils literal">script_message</tt>, but send it only to the client named
             <tt class="docutils literal">&lt;target&gt;</tt>. Each client (scripts etc.) has a unique name. For example,
             Lua scripts can get their name via <tt class="docutils literal">mp.get_script_name()</tt>.</dd>
-            <dt><tt class="docutils literal">script_binding &quot;&lt;name&gt;&quot;</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">script-binding</span> &quot;&lt;name&gt;&quot;</tt></dt>
             <dd><p class="first">Invoke a script-provided key binding. This can be used to remap key
             bindings provided by external Lua scripts.</p>
             <p>The argument is the name of the binding.</p>
@@ -7696,21 +7819,21 @@
             tracked). The second letter whether the event originates from the mouse,
             either <tt class="docutils literal">m</tt> (mouse button) or <tt class="docutils literal">-</tt> (something else).</p>
             </dd>
-            <dt><tt class="docutils literal">ab_loop</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">ab-loop</span></tt></dt>
             <dd>Cycle through A-B loop states. The first command will set the <tt class="docutils literal">A</tt> point
             (the <tt class="docutils literal"><span class="pre">ab-loop-a</span></tt> property); the second the <tt class="docutils literal">B</tt> point, and the third
             will clear both points.</dd>
-            <dt><tt class="docutils literal">vo_cmdline &quot;&lt;args&gt;&quot;</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">vo-cmdline</span> &quot;&lt;args&gt;&quot;</tt></dt>
             <dd>Reset the sub-option of the current VO. Currently works with <tt class="docutils literal">opengl</tt>
             (including <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>). The argument is the sub-option string usually
             passed to the VO on the command line. Not all sub-options can be set, but
             those which can will be reset even if they don't appear in the argument.
             This command might be changed or removed in the future.</dd>
-            <dt><tt class="docutils literal">drop_buffers</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">drop-buffers</span></tt></dt>
             <dd>Drop audio/video/demuxer buffers, and restart from fresh. Might help with
             unseekable streams that are going out of sync.
             This command might be changed or removed in the future.</dd>
-            <dt><tt class="docutils literal">screenshot_raw [subtitles|video|window]</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">screenshot-raw</span> [subtitles|video|window]</tt></dt>
             <dd>Return a screenshot in memory. This can be used only through the client
             API. The MPV_FORMAT_NODE_MAP returned by this command has the <tt class="docutils literal">w</tt>, <tt class="docutils literal">h</tt>,
             <tt class="docutils literal">stride</tt> fields set to obvious contents. A <tt class="docutils literal">format</tt> field is set to
@@ -7719,8 +7842,8 @@
             field is of type MPV_FORMAT_BYTE_ARRAY with the actual image data. The image
             is freed as soon as the result node is freed.</dd>
             </dl>
-            <p>Undocumented commands: <tt class="docutils literal">tv_last_channel</tt> (TV/DVB only),
-            <tt class="docutils literal">ao_reload</tt> (experimental/internal).</p>
+            <p>Undocumented commands: <tt class="docutils literal"><span class="pre">tv-last-channel</span></tt> (TV/DVB only),
+            <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
             <div class="section" id="hooks">
             <h3>Hooks</h3>
             <p>Hooks are synchronous events between player core and a script or similar. This
@@ -7732,7 +7855,7 @@
             <p>There are two special commands involved. Also, the client must listen for
             client messages (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt> in the C API).</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal">hook_add <span class="pre">&lt;hook-name&gt;</span> &lt;id&gt; &lt;priority&gt;</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">hook-add</span> <span class="pre">&lt;hook-name&gt;</span> &lt;id&gt; &lt;priority&gt;</tt></dt>
             <dd><p class="first">Subscribe to the hook identified by the first argument (basically, the
             name of event). The <tt class="docutils literal">id</tt> argument is an arbitrary integer chosen by the
             user. <tt class="docutils literal">priority</tt> is used to sort all hook handlers globally across all
@@ -7744,7 +7867,7 @@
             the client which registered the hook. This message has the following
             arguments:</p>
             <ol class="arabic simple">
-            <li>the string <tt class="docutils literal">hook_run</tt></li>
+            <li>the string <tt class="docutils literal"><span class="pre">hook-run</span></tt></li>
             <li>the <tt class="docutils literal">id</tt> argument the hook was registered with as string (this can be
             used to correctly handle multiple hooks registered by the same client,
             as long as the <tt class="docutils literal">id</tt> argument is unique in the client)</li>
@@ -7755,9 +7878,9 @@
             this, the player core will still react to requests, but playback will
             typically be stopped.</p>
             <p class="last">When the client is done, it must continue the core's hook execution by
-            running the <tt class="docutils literal">hook_ack</tt> command.</p>
+            running the <tt class="docutils literal"><span class="pre">hook-ack</span></tt> command.</p>
             </dd>
-            <dt><tt class="docutils literal">hook_ack &lt;string&gt;</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">hook-ack</span> &lt;string&gt;</tt></dt>
             <dd>Run the next hook in the global chain of hooks. The argument is the 3rd
             argument of the client message that starts hook execution for the
             current client.</dd>
@@ -7848,6 +7971,14 @@
             <dd>See <tt class="docutils literal"><span class="pre">--loop-file</span></tt> (uses <tt class="docutils literal">yes</tt>/<tt class="docutils literal">no</tt>).</dd>
             <dt><tt class="docutils literal">speed</tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--speed</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">audio-speed-correction</span></tt>, <tt class="docutils literal"><span class="pre">video-speed-correction</span></tt></dt>
+            <dd><p class="first">Factor multiplied with <tt class="docutils literal">speed</tt> at which the player attempts to play the
+            file. Usually it's exactly 1. (Display sync mode will make this useful.)</p>
+            <p class="last">OSD formatting will display it in the form of <tt class="docutils literal">+1.23456%</tt>, with the number
+            being <tt class="docutils literal">(raw - 1) * 100</tt> for the given raw property value.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">display-sync-active</span></tt></dt>
+            <dd>Return whether <tt class="docutils literal"><span class="pre">--video-sync=display</span></tt> is actually active.</dd>
             <dt><tt class="docutils literal">filename</tt></dt>
             <dd>Currently played file, with path stripped. If this is an URL, try to undo
             percent encoding as well. (The result is not necessarily correct, but
@@ -7964,14 +8095,6 @@
             <dt><tt class="docutils literal"><span class="pre">disc-title</span></tt> (RW)</dt>
             <dd>Current BD/DVD title number. Writing works only for <tt class="docutils literal"><span class="pre">dvdnav://</span></tt> and
             <tt class="docutils literal"><span class="pre">bd://</span></tt> (and aliases for these).</dd>
-            <dt><tt class="docutils literal"><span class="pre">disc-menu-active</span></tt></dt>
-            <dd>Return <tt class="docutils literal">yes</tt> if the BD/DVD menu is active, or <tt class="docutils literal">no</tt> on normal video
-            playback. The property is unavailable when playing something that is not
-            a BD or DVD. Use the <tt class="docutils literal">discnav menu</tt> command to actually enter or leave
-            menu mode.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disc-mouse-on-button</span></tt></dt>
-            <dd>Return <tt class="docutils literal">yes</tt> when the mouse cursor is located on a button, or <tt class="docutils literal">no</tt>
-            when cursor is outside of any button for disc navigation.</dd>
             <dt><tt class="docutils literal">chapters</tt></dt>
             <dd>Number of chapters.</dd>
             <dt><tt class="docutils literal">editions</tt></dt>
@@ -8696,6 +8819,11 @@
             <dd>Return <tt class="docutils literal">yes</tt> if the option was set from the mpv command line,
             <tt class="docutils literal">no</tt> otherwise. What this is set to if the option is e.g. changed
             at runtime is left undefined (meaning it could change in the future).</dd>
+            <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/set-locally</span></tt></dt>
+            <dd>Return <tt class="docutils literal">yes</tt> if the option was set per-file. This is the case with
+            automatically loaded profiles, file-dir configs, and other cases. It
+            means the option value will be restored to the value before playback
+            start when playback ends.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/default-value</span></tt></dt>
             <dd>The default value of the option. May not always be available.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/min</span></tt>, <tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/max</span></tt></dt>
@@ -10337,6 +10465,13 @@
             <a class="reference internal" href="#files">FILES</a> section above.</p>
             <p>The environment variable <tt class="docutils literal">$MPV_HOME</tt> completely overrides these, like on
             UNIX.</p>
+            <p>If a directory named <tt class="docutils literal">portable_config</tt> next to the mpv.exe exists, all
+            config will be loaded from this directory only. Watch later config files are
+            written to this directory as well. (This exists on Windows only and is redundant
+            with <tt class="docutils literal">$MPV_HOME</tt>. However, since Windows is very scripting unfriendly, a
+            wrapper script just setting <tt class="docutils literal">$MPV_HOME</tt>, like you could do it on other
+            systems, won't work. <tt class="docutils literal">portable_config</tt> is provided for convenience to get
+            around this restriction.)</p>
             <p>Config files located in the same directory as <tt class="docutils literal">mpv.exe</tt> are loaded with
             lower priority. Some config files are loaded only once, which means that
             e.g. of 2 <tt class="docutils literal">input.conf</tt> files located in two config directories, only the
