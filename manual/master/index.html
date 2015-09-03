@@ -437,7 +437,7 @@
             characters like spaces. A config entry can be quoted with <tt class="docutils literal">&quot;</tt> and <tt class="docutils literal">'</tt>,
             as well as with the fixed-length syntax (<tt class="docutils literal">%n%</tt>) mentioned before. This is like
             passing the exact contents of the quoted string as command line option. C-style
-            escapes are currently _not_ interpreted on this level, although some options to
+            escapes are currently _not_ interpreted on this level, although some options do
             this manually. (This is a mess and should probably be changed at some point.)</p>
             </div>
             <div class="section" id="putting-command-line-options-into-the-configuration-file">
@@ -554,9 +554,10 @@
             this will indicate a problem. (<tt class="docutils literal"><span class="pre">total-avsync-change</span></tt> property.)</li>
             <li>Encoding state in <tt class="docutils literal"><span class="pre">{...}</span></tt>, only shown in encoding mode.</li>
             <li>Display sync state. If display sync is active (<tt class="docutils literal"><span class="pre">display-sync-active</span></tt>
-            property), this shows <tt class="docutils literal">DS: 1.002</tt>, where the number is the speed change
-            factor applied to audio to achieve sync to display (<tt class="docutils literal"><span class="pre">audio-speed-correction</span></tt>
-            property). In sync modes which don't resample, this will always be <tt class="docutils literal">1.000</tt>.</li>
+            property), this shows <tt class="docutils literal">DS: +0.02598%</tt>, where the number is the speed change
+            factor applied to audio to achieve sync to display, expressed in percent
+            deviation from 1.0 (<tt class="docutils literal"><span class="pre">audio-speed-correction</span></tt> property). In sync modes which
+            don't resample, this will always be <tt class="docutils literal">+0.00000%</tt>.</li>
             <li>Missed frames, e.g. <tt class="docutils literal">Missed: 4</tt>. (<tt class="docutils literal"><span class="pre">vo-missed-frame-count</span></tt> property.) Shows
             up in display sync mode only. This is incremented each time a frame took
             longer to display than intended.</li>
@@ -791,6 +792,16 @@
             <dt><tt class="docutils literal"><span class="pre">--chapter=&lt;start[-end]&gt;</span></tt></dt>
             <dd>Specify which chapter to start playing at. Optionally specify which
             chapter to end playing at. Also see <tt class="docutils literal"><span class="pre">--start</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--playlist-pos=&lt;no|index&gt;</span></tt></dt>
+            <dd>Set which file on the internal playlist to start playback with. The index
+            is an integer, with 0 meaning the first file. The value <tt class="docutils literal">no</tt> means that
+            the selection of the entry to play is left to the playback resume mechanism
+            (default). If an entry with the given index doesn't exist, the behavior is
+            unspecified and might change in future mpv versions. The same applies if
+            the playlist contains further playlists (don't expect any reasonable
+            behavior). Passing a playlist file to mpv should work with this option,
+            though. E.g. <tt class="docutils literal">mpv playlist.m3u <span class="pre">--playlist-pos=123</span></tt> will work as expected,
+            as long as <tt class="docutils literal">playlist.m3u</tt> does not link to further playlists.</dd>
             <dt><tt class="docutils literal"><span class="pre">--playlist=&lt;filename&gt;</span></tt></dt>
             <dd><p class="first">Play files according to a playlist file (Supports some common formats. If
             no format is detected, it will be treated as list of files, separated by
@@ -1271,6 +1282,30 @@
             <dt><tt class="docutils literal"><span class="pre">--no-video-aspect</span></tt></dt>
             <dd>Ignore aspect ratio information from video file and assume the video has
             square pixels. See also <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;hybrid|bitstream|container&gt;</span></tt></dt>
+            <dd><p class="first">This sets the default video aspect determination method (if the aspect is
+            _not_ overridden by the user with <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> or others).</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">hybrid:</th><td class="field-body">Prefer the container aspect ratio. If the bitstream aspect
+            switches mid-stream, switch to preferring the bitstream aspect.
+            This is the default behavior in mpv and mplayer2.</td>
+            </tr>
+            <tr class="field"><th class="field-name">container:</th><td class="field-body">Strictly prefer the container aspect ratio. This is apparently
+            the default behavior with VLC, at least with Matroska.</td>
+            </tr>
+            <tr class="field"><th class="field-name">bitstream:</th><td class="field-body">Strictly prefer the bitstream aspect ratio, unless the bitstream
+            aspect ratio is not set. This is apparently the default behavior
+            with XBMC/kodi, at least with Matroska.</td>
+            </tr>
+            </tbody>
+            </table>
+            <p class="last">Normally you should not set this. Try the <tt class="docutils literal">container</tt> and <tt class="docutils literal">bitstream</tt>
+            choices if you encounter video that has the wrong aspect ratio in mpv,
+            but seems to be correct in other players.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-unscaled</span></tt></dt>
             <dd><p class="first">Disable scaling of the video. If the window is larger than the video,
             black bars are added. Otherwise, the video is cropped. The video still
@@ -4099,7 +4134,7 @@
             <dd>Allow output of non-interleaved formats (if the audio decoder uses
             this format). Currently disabled by default, because some popular
             ALSA plugins are utterly broken with non-interleaved formats.</dd>
-            <dt><tt class="docutils literal"><span class="pre">ingore-chmap</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">ignore-chmap</span></tt></dt>
             <dd>Don't read or set the channel map of the ALSA device - only request the
             required number of channels, and then pass the audio as-is to it. This
             option most likely should not be used. It can be useful for debugging,
@@ -4859,6 +4894,11 @@
             limitations in the number of video textures that can be loaded
             simultaneously.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">tscale-clamp</span></tt></dt>
+            <dd>Clamp the <tt class="docutils literal">tscale</tt> filter kernel's value range to [0-1]. This reduces
+            excessive ringing artifacts in the temporal domain (which typically
+            manifest themselves as short flashes or fringes of black, mostly
+            around moving edges) in exchange for potentially adding more blur.</dd>
             <dt><tt class="docutils literal"><span class="pre">dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">tscale-radius</span></tt>, etc.</dt>
             <dd><p class="first">Set filter parameters for <tt class="docutils literal">dscale</tt>, <tt class="docutils literal">cscale</tt> and <tt class="docutils literal">tscale</tt>,
             respectively.</p>
@@ -5155,7 +5195,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fancy-downscaling:sigmoid-upscaling
+            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fancy-downscaling:sigmoid-upscaling:pbo
             </pre>
             <p>Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -5350,6 +5390,10 @@
             (default: -10). Note that mpv will also use the 2 layers above the
             selected layer, to handle the window background and OSD. Actual video
             rendering will happen on the layer above the selected layer.</dd>
+            <dt><tt class="docutils literal"><span class="pre">background=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Whether to render a black background behind the video (default: no).
+            Normally it's better to kill the console framebuffer instead, which
+            gives better performance.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">drm</tt> (Direct Rendering Manager)</dt>
@@ -7867,7 +7911,7 @@
             the client which registered the hook. This message has the following
             arguments:</p>
             <ol class="arabic simple">
-            <li>the string <tt class="docutils literal"><span class="pre">hook-run</span></tt></li>
+            <li>the string <tt class="docutils literal">hook_run</tt></li>
             <li>the <tt class="docutils literal">id</tt> argument the hook was registered with as string (this can be
             used to correctly handle multiple hooks registered by the same client,
             as long as the <tt class="docutils literal">id</tt> argument is unique in the client)</li>
@@ -8060,8 +8104,10 @@
             always exactly known, so this is an estimate.</dd>
             <dt><tt class="docutils literal"><span class="pre">playtime-remaining</span></tt></dt>
             <dd><tt class="docutils literal"><span class="pre">time-remaining</span></tt> scaled by the current <tt class="docutils literal">speed</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">playback-time</span></tt></dt>
-            <dd>Return the playback time, which is the time difference between start PTS and current PTS.</dd>
+            <dt><tt class="docutils literal"><span class="pre">playback-time</span></tt> (RW)</dt>
+            <dd>The playback time, which is the time relative to playback start. (This can
+            be different from the <tt class="docutils literal"><span class="pre">time-pos</span></tt> property if the file does not start at
+            position <tt class="docutils literal">0</tt>, in which case <tt class="docutils literal"><span class="pre">time-pos</span></tt> is the source timestamp.)</dd>
             <dt><tt class="docutils literal">chapter</tt> (RW)</dt>
             <dd>Current chapter number. The number of the first chapter is 0.</dd>
             <dt><tt class="docutils literal">edition</tt> (RW)</dt>
