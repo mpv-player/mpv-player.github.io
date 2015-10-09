@@ -1208,13 +1208,11 @@
             </tr>
             <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Linux only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux with Intel GPUs only)</td>
+            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with Intel GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X only)</td>
-            </tr>
-            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (newer OS X only)</td>
+            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X 10.8 and up only)</td>
             </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
@@ -1228,6 +1226,11 @@
             never be enabled. Also note that if the first found method doesn't actually
             work, it will always fall back to software decoding, instead of trying the
             next method (might matter on some Linux systems).</p>
+            <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, requires Mesa 11 and most
+            likely works with Intel GPUs only. It also requires the opengl EGL backend
+            (automatically used if available). You can also try the old GLX backend by
+            forcing it with <tt class="docutils literal"><span class="pre">--vo=opengl:backend=x11</span></tt>, but the vaapi/GLX interop is
+            said to be slower than <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>.</p>
             <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> mode allows you to use vaapi with any VO. Because
             this copies the decoded video back to system RAM, it's likely less efficient
             than the <tt class="docutils literal">vaapi</tt> mode.</p>
@@ -1421,6 +1424,32 @@
             <p class="last">For audio-only playback, any value greater than 0 will quit playback
             immediately after initialization. The value 0 works as with video.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-output-levels=&lt;outputlevels&gt;</span></tt></dt>
+            <dd><p class="first">RGB color levels used with YUV to RGB conversion. Normally, output devices
+            such as PC monitors use full range color levels. However, some TVs and
+            video monitors expect studio RGB levels. Providing full range output to a
+            device expecting studio level input results in crushed blacks and whites,
+            the reverse in dim gray blacks and dim whites.</p>
+            <p>Not all VOs support this option. Some will silently ignore it.</p>
+            <p>Available color ranges are:</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (equals to full range) (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">limited:</th><td class="field-body">limited range (16-235 per component), studio levels</td>
+            </tr>
+            <tr class="field"><th class="field-name">full:</th><td class="field-body">full range (0-255 per component), PC levels</td>
+            </tr>
+            </tbody>
+            </table>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">It is advisable to use your graphics driver's color range option
+            instead, if available.</p>
+            </div>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--hwdec-codecs=&lt;codec1,codec2,...|all&gt;</span></tt></dt>
             <dd><p class="first">Allow hardware decoding for a given list of codecs only. The special value
             <tt class="docutils literal">all</tt> always allows all codecs.</p>
@@ -1533,6 +1562,13 @@
             selection of <tt class="docutils literal"><span class="pre">--audio-device</span></tt> (but not the device selection).</p>
             <p class="last">Currently not implemented for most AOs.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-fallback-to-null=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If no audio device can be opened, behave as if <tt class="docutils literal"><span class="pre">--ao=null</span></tt> was given. This
+            is useful in combination with <tt class="docutils literal"><span class="pre">--audio-device</span></tt>: instead of causing an
+            error if the selected device does not exist, the client API user (or a
+            Lua script) could let playback continue normally, and check the
+            <tt class="docutils literal"><span class="pre">current-ao</span></tt> and <tt class="docutils literal"><span class="pre">audio-device-list</span></tt> properties to make high-level
+            decisions about how to continue.</dd>
             <dt><tt class="docutils literal"><span class="pre">--ao=&lt;driver1[:suboption1[=value]:...],driver2,...[,]&gt;</span></tt></dt>
             <dd>Specify a priority list of audio output drivers to be used. For
             interactive use one would normally specify a single one to use, but in
@@ -3005,21 +3041,23 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-duration=&lt;time&gt;</span></tt></dt>
             <dd>Set the duration of the OSD messages in ms (default: 1000).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-font=&lt;pattern&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-font=&lt;pattern&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--osd-font=&lt;name&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-font=&lt;name&gt;</span></tt></dt>
             <dd><p class="first">Specify font to use for OSD and for subtitles that do not themselves
             specify a particular font. The default is <tt class="docutils literal"><span class="pre">sans-serif</span></tt>.</p>
             <div class="admonition-examples admonition">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
             <li><tt class="docutils literal"><span class="pre">--osd-font='Bitstream</span> Vera Sans'</tt></li>
-            <li><tt class="docutils literal"><span class="pre">--osd-font='Bitstream</span> Vera Sans:style=Bold'</tt> (fontconfig pattern)</li>
+            <li><tt class="docutils literal"><span class="pre">--osd-font='MS</span> Comic Sans'</tt></li>
             </ul>
             </div>
             <div class="note last">
             <p class="first admonition-title">Note</p>
-            <p class="last">The <tt class="docutils literal"><span class="pre">--sub-text-font</span></tt> option (and most other <tt class="docutils literal"><span class="pre">--sub-text-</span></tt>
+            <p>The <tt class="docutils literal"><span class="pre">--sub-text-font</span></tt> option (and most other <tt class="docutils literal"><span class="pre">--sub-text-</span></tt>
             options) are ignored when ASS-subtitles are rendered, unless the
             <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> option is specified.</p>
+            <p class="last">This used to support fontconfig patterns. Starting with libass 0.13.0,
+            this stopped working.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-font-size=&lt;size&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-font-size=&lt;size&gt;</span></tt></dt>
@@ -4053,27 +4091,6 @@
             <p class="last">Using realtime priority can cause system lockup.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--pts-association-mode=&lt;decode|sort|auto&gt;</span></tt></dt>
-            <dd><p class="first">Select the method used to determine which container packet timestamp
-            corresponds to a particular output frame from the video decoder. Normally
-            you should not need to change this option.</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">decoder:</th><td class="field-body">Use decoder reordering functionality. Unlike in classic MPlayer
-            and mplayer2, this includes a DTS fallback. (Default.)</td>
-            </tr>
-            <tr class="field"><th class="field-name">sort:</th><td class="field-body">Maintain a buffer of unused pts values and use the lowest value
-            for the frame.</td>
-            </tr>
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">Try to pick a working mode from the ones above automatically.</td>
-            </tr>
-            </tbody>
-            </table>
-            <p class="last">You can also try to use <tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt> for files with completely
-            broken timestamps.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--force-media-title=&lt;string&gt;</span></tt></dt>
             <dd>Force the contents of the <tt class="docutils literal"><span class="pre">media-title</span></tt> property to this value. Useful
             for scripts which want to set a title, without overriding the user's
@@ -4440,15 +4457,10 @@
             <div class="note">
             <p class="first admonition-title">Note</p>
             <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
-            <p class="last">The recommended output drivers are <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl-hq</span></tt>.
-            All other drivers are just for compatibility or special purposes.</p>
-            </div>
-            <div class="admonition-example admonition">
-            <p class="first admonition-title">Example</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--vo=opengl,xv,</span></tt></dt>
-            <dd>Try the <tt class="docutils literal">opengl</tt> driver, then the <tt class="docutils literal">xv</tt> driver, then others.</dd>
-            </dl>
+            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=opengl-hq</span></tt>. All other drivers are
+            for compatibility or special purposes. By default, <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> is used,
+            but if that appears not to work, it fallback to other drivers (in the same
+            order as listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).</p>
             </div>
             <p>Available video output drivers are:</p>
             <dl class="docutils">
@@ -4499,6 +4511,14 @@
             not responding quickly enough if video FPS is close to or higher than
             the display refresh rate.</dd>
             </dl>
+            </dd>
+            <dt><tt class="docutils literal">x11</tt> (X11 only)</dt>
+            <dd><p class="first">Shared memory video output driver without hardware acceleration that works
+            whenever X11 is present.</p>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">This is a fallback only, and should not be normally used.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal">vdpau</tt> (X11 only)</dt>
             <dd><p class="first">Uses the VDPAU interface to display and optionally also decode video.
@@ -4782,9 +4802,6 @@
             <dt>gaussian</dt>
             <dd>Scale parameter (<tt class="docutils literal">t</tt>). Increasing this makes the result blurrier.
             Defaults to 1.</dd>
-            <dt>sharpen3, sharpen5</dt>
-            <dd>Sharpening strength. Increasing this makes the image sharper but
-            adds more ringing and aliasing. Defaults to 0.5.</dd>
             <dt>oversample</dt>
             <dd>Minimum distance to an edge before interpolation is used. Setting
             this to 0 will always interpolate edges, whereas setting it to 0.5
@@ -4812,8 +4829,8 @@
             introduce other artifacts in the process. Must be a float number
             between 0.0 and 1.0. The default value of 0.0 disables antiringing
             entirely.</p>
-            <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt>,
-            <tt class="docutils literal">bicubic_fast</tt> or <tt class="docutils literal">sharpen</tt>.</p>
+            <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt> and
+            <tt class="docutils literal">bicubic_fast</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">scale-window=&lt;window&gt;</span></tt></dt>
             <dd>(Advanced users only) Choose a custom windowing function for the kernel.
@@ -5025,6 +5042,15 @@
             <dt><tt class="docutils literal"><span class="pre">sigmoid-slope</span></tt></dt>
             <dd>The slope of the sigmoid curve used for <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt>, must
             be a float between 1.0 and 20.0. Defaults to 6.5 if not specified.</dd>
+            <dt><tt class="docutils literal"><span class="pre">sharpen=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">If set to a value other than 0, enable an unsharp masking filter.
+            Positive values will sharpen the image (but add more ringing and
+            aliasing). Negative values will blur the image. If your GPU is powerful
+            enough, consider alternatives like the <tt class="docutils literal">ewa_lanczossharp</tt> scale
+            filter, or the <tt class="docutils literal"><span class="pre">scale-blur</span></tt> sub-option.</p>
+            <p class="last">(This feature is the replacement for the old <tt class="docutils literal">sharpen3</tt> and
+            <tt class="docutils literal">sharpen5</tt> scalers.)</p>
+            </dd>
             <dt><tt class="docutils literal">glfinish</tt></dt>
             <dd>Call <tt class="docutils literal">glFinish()</tt> before and after swapping buffers (default: disabled).
             Slower, but might help getting better results when doing framedropping.
@@ -5644,7 +5670,7 @@
             <div class="admonition-examples admonition">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal">mpv <span class="pre">--af=channels=4:[0-1,1-0,0-2,1-3]</span> media.avi</tt></dt>
+            <dt><tt class="docutils literal">mpv <span class="pre">--af=channels=4:[0-1,1-0,2-2,3-3]</span> media.avi</tt></dt>
             <dd>Would change the number of channels to 4 and set up 4 routes that
             swap channel 0 and channel 1 and leave channel 2 and 3 intact.
             Observe that if media containing two channels were played back,
@@ -6274,32 +6300,6 @@
             </tr>
             </tbody>
             </table>
-            </dd>
-            <dt><tt class="docutils literal">&lt;outputlevels&gt;</tt></dt>
-            <dd><p class="first">RGB color levels used with YUV to RGB conversion. Normally, output devices
-            such as PC monitors use full range color levels. However, some TVs and
-            video monitors expect studio RGB levels. Providing full range output to a
-            device expecting studio level input results in crushed blacks and whites,
-            the reverse in dim gray blacks and dim whites.</p>
-            <p>The same limitations as with <tt class="docutils literal">&lt;colormatrix&gt;</tt> apply.</p>
-            <p>Available color ranges are:</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">automatic selection (equals to full range) (default)</td>
-            </tr>
-            <tr class="field"><th class="field-name">limited:</th><td class="field-body">limited range (16-235 per component), studio levels</td>
-            </tr>
-            <tr class="field"><th class="field-name">full:</th><td class="field-body">full range (0-255 per component), PC levels</td>
-            </tr>
-            </tbody>
-            </table>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">It is advisable to use your graphics driver's color range option
-            instead, if available.</p>
-            </div>
             </dd>
             <dt><tt class="docutils literal">&lt;primaries&gt;</tt></dt>
             <dd><blockquote class="first">
@@ -8042,8 +8042,6 @@
             to restart playback. (It's possible that it returns <tt class="docutils literal">yes</tt> while a file
             is loaded, or when switching ordered chapter segments. This is because
             the same underlying code is used for seeking and resyncing.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">pts-association-mode</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--pts-association-mode</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">hr-seek</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--hr-seek</span></tt>.</dd>
             <dt><tt class="docutils literal">volume</tt> (RW)</dt>
@@ -8110,8 +8108,8 @@
             similar ones) can be overridden with the <tt class="docutils literal">format</tt> video filter.</dd>
             <dt><tt class="docutils literal"><span class="pre">colormatrix-input-range</span></tt> (R)</dt>
             <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">colormatrix-output-range</span></tt> (R)</dt>
-            <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-output-levels</span></tt> (RW)</dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--video-output-levels</span></tt>,</dd>
             <dt><tt class="docutils literal"><span class="pre">colormatrix-primaries</span></tt> (R)</dt>
             <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
             <dt><tt class="docutils literal">ontop</tt> (RW)</dt>
