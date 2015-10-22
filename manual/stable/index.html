@@ -1096,17 +1096,15 @@
             not just the one that the script is named after. This requires a recent
             version of youtube-dl to be installed on the system. (Enabled by default,
             except when the client API / libmpv is used.)</p>
-            <p>If the script can't do anything with an URL, it will do nothing.</p>
-            <p class="last">(Note: this is the replacement for the now removed libquvi support.)</p>
+            <p class="last">If the script can't do anything with an URL, it will do nothing.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ytdl-format=&lt;best|worst|mp4|webm|...&gt;</span></tt></dt>
             <dd>Video format/quality that is directly passed to youtube-dl. The possible
             values are specific to the website and the video, for a given url the
             available formats can be found with the command
             <tt class="docutils literal"><span class="pre">youtube-dl</span> <span class="pre">--list-formats</span> URL</tt>. See youtube-dl's documentation for
-            available aliases. To use experimental DASH support for youtube, use
-            <tt class="docutils literal">bestvideo+bestaudio</tt>.
-            (Default: <tt class="docutils literal">best</tt>)</dd>
+            available aliases.
+            (Default: youtube-dl's default, currently <tt class="docutils literal">bestvideo+bestaudio/best</tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--ytdl-raw-options=&lt;key&gt;=&lt;value&gt;[,&lt;key&gt;=&lt;value&gt;[,...]]</span></tt></dt>
             <dd><p class="first">Pass arbitrary options to youtube-dl. Parameter and argument should be
             passed as a key-value pair. Options without argument must include <tt class="docutils literal">=</tt>.</p>
@@ -3808,6 +3806,11 @@
             <dt><tt class="docutils literal"><span class="pre">--tls-verify</span></tt></dt>
             <dd>Verify peer certificates when using TLS (e.g. with <tt class="docutils literal"><span class="pre">https://...</span></tt>).
             (Silently fails with older FFmpeg or Libav versions.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--tls-cert-file</span></tt></dt>
+            <dd>A file containing a certificate to use in the handshake with the
+            peer.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--tls-key-file</span></tt></dt>
+            <dd>A file containing the private key for the certificate.</dd>
             <dt><tt class="docutils literal"><span class="pre">--referrer=&lt;string&gt;</span></tt></dt>
             <dd>Specify a referrer path or URL for HTTP requests.</dd>
             <dt><tt class="docutils literal"><span class="pre">--network-timeout=&lt;seconds&gt;</span></tt></dt>
@@ -5014,21 +5017,21 @@
             practice, it's virtually always an improvement - the only reason to
             disable it would be for performance.</dd>
             <dt><tt class="docutils literal"><span class="pre">deband-iterations=&lt;1..16&gt;</span></tt></dt>
-            <dd><p class="first">The number of debanding steps to perform per sample. Each step reduces
+            <dd>The number of debanding steps to perform per sample. Each step reduces
             a bit more banding, but takes time to compute. Note that the strength
-            of each step falls off very quickly, so high numbers are practically
-            useless. (Default 4)</p>
-            <p class="last">If the performance hit of debanding is too great, you can reduce this
-            to 2 or 1 with marginal visual quality loss.</p>
-            </dd>
+            of each step falls off very quickly, so high numbers (&gt;4) are
+            practically useless. (Default 1)</dd>
             <dt><tt class="docutils literal"><span class="pre">deband-threshold=&lt;0..4096&gt;</span></tt></dt>
             <dd>The debanding filter's cut-off threshold. Higher numbers increase the
             debanding strength dramatically but progressively diminish image
             details. (Default 64)</dd>
             <dt><tt class="docutils literal"><span class="pre">deband-range=&lt;1..64&gt;</span></tt></dt>
-            <dd>The debanding filter's initial radius. The radius increases linearly
+            <dd><p class="first">The debanding filter's initial radius. The radius increases linearly
             for each iteration. A higher radius will find more gradients, but
-            a lower radius will smooth more aggressively. (Default 8)</dd>
+            a lower radius will smooth more aggressively. (Default 16)</p>
+            <p class="last">If you increase the <tt class="docutils literal"><span class="pre">deband-iterations</span></tt>, you should probably
+            decrease this to compensate.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">deband-grain=&lt;0..4096&gt;</span></tt></dt>
             <dd>Add some extra noise to the image. This significantly helps cover up
             remaining quantization artifacts. Higher numbers add more noise.
