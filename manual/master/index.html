@@ -1472,6 +1472,9 @@
             decoding is forced even if the profile of the video is higher than that.
             The result is most likely broken decoding, but may also help if the
             detected or reported profiles are somehow incorrect.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-software-fallback=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Fallback to software decoding if the hardware-accelerated decoder fails
+            (default: yes).</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-bitexact</span></tt></dt>
             <dd>Only use bit-exact algorithms in all decoding steps (for codec testing).</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-fast</span></tt> (MPEG-2, MPEG-4, and H.264 only)</dt>
@@ -3221,14 +3224,6 @@
             values are allowed.</p>
             <p class="last">Default: 0.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--use-text-osd=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Disable text OSD rendering completely. (This includes the complete OSC as
-            well.) This is mostly useful for avoiding loading fontconfig in situations
-            where fontconfig does not behave well, and OSD is unused - this could for
-            example allow GUI programs using libmpv to workaround fontconfig issues.</p>
-            <p>Note that selecting subtitles of any kind still initializes fontconfig.</p>
-            <p class="last">Default: <tt class="docutils literal">no</tt>.</p>
-            </dd>
             </dl>
             </div>
             <div class="section" id="screenshot">
@@ -4025,6 +4020,12 @@
             video. (Although it should have the same effects as
             <tt class="docutils literal">audio</tt>, the implementation is very different.)</td>
             </tr>
+            <tr class="field"><th class="field-name">display-adrop:</th><td class="field-body">Drop or repeat audio data to compensate desyncing
+            video. See <tt class="docutils literal"><span class="pre">--video-sync-adrop-size</span></tt>. This mode will
+            cause severe audio artifacts if the real monitor
+            refresh rate is too different from the reported or
+            forced rate.</td>
+            </tr>
             <tr class="field"><th class="field-name">display-desync:</th><td class="field-body">Sync video to display, and let audio play on its own.</td>
             </tr>
             <tr class="field"><th class="field-name">desync:</th><td class="field-body">Sync video according to system clock, and let audio play
@@ -4057,6 +4058,12 @@
             the A/V desync cannot be compensated, too high values could lead to chaotic
             frame dropping due to the audio &quot;overshooting&quot; and skipping multiple video
             frames before the sync logic can react.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-sync-adrop-size=&lt;value</span></tt></dt>
+            <dd>For the <tt class="docutils literal"><span class="pre">--video-sync=display-adrop</span></tt> mode. This mode duplicates/drops
+            audio data to keep audio in sync with video. To avoid audio artifacts on
+            jitter (which would add/remove samples all the time), this is done in
+            relatively large, fixed units, controlled by this option. The unit is
+            seconds.</dd>
             <dt><tt class="docutils literal"><span class="pre">--mf-fps=&lt;value&gt;</span></tt></dt>
             <dd>Framerate used when decoding from multiple PNG or JPEG files with <tt class="docutils literal"><span class="pre">mf://</span></tt>
             (default: 1).</dd>
