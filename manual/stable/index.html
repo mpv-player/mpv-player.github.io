@@ -414,10 +414,10 @@
             time mpv is run. The system-wide configuration file 'mpv.conf' is in your
             configuration directory (e.g. <tt class="docutils literal">/etc/mpv</tt> or <tt class="docutils literal">/usr/local/etc/mpv</tt>), the
             user-specific one is <tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt>. For details and platform
-            specifics see the <a class="reference internal" href="#files">FILES</a> section.
-            User-specific options override system-wide options and options given on the
+            specifics (in particular Windows paths) see the <a class="reference internal" href="#files">FILES</a> section.</p>
+            <p>User-specific options override system-wide options and options given on the
             command line override either. The syntax of the configuration files is
-            <tt class="docutils literal"><span class="pre">option=&lt;value&gt;</span></tt>; everything after a <em>#</em> is considered a comment. Options
+            <tt class="docutils literal">option=value</tt>. Everything after a <em>#</em> is considered a comment. Options
             that work without values can be enabled by setting them to <em>yes</em> and disabled by
             setting them to <em>no</em>. Even suboptions can be specified in this way.</p>
             <div class="admonition-example-configuration-file admonition">
@@ -492,8 +492,37 @@
             description (shown by <tt class="docutils literal"><span class="pre">--profile=help</span></tt>) can be defined with the
             <tt class="docutils literal"><span class="pre">profile-desc</span></tt> option. To end the profile, start another one or use the
             profile name <tt class="docutils literal">default</tt> to continue with normal options.</p>
-            <div class="admonition-example-mpv-profile admonition">
-            <p class="first admonition-title">Example mpv profile</p>
+            <div class="admonition-example-mpv-config-file-with-profiles admonition">
+            <p class="first admonition-title">Example mpv config file with profiles</p>
+            <pre class="last literal-block">
+            # normal top-level option
+            fullscreen=yes
+            
+            # a profile that can be enabled with --profile=big-cache
+            [big-cache]
+            cache=123400
+            demuxer-readahead-secs=20
+            
+            [slow]
+            profile-desc=&quot;some profile name&quot;
+            vo=opengl:scale=ewa_lanczos:scale-radius=16
+            
+            [fast]
+            vo=vdpau
+            
+            # using a profile again extends it
+            [slow]
+            framedrop=no
+            # you can also include other profiles
+            profile=big-cache
+            </pre>
+            </div>
+            </div>
+            <div class="section" id="auto-profiles">
+            <h2>Auto profiles</h2>
+            <p>Some profiles are loaded automatically. The following example demonstrates this:</p>
+            <div class="admonition-auto-profile-loading admonition">
+            <p class="first admonition-title">Auto profile loading</p>
             <pre class="last literal-block">
             [vo.vdpau]
             # Use hardware decoding
@@ -511,6 +540,12 @@
             device=spdif
             </pre>
             </div>
+            <p>The profile name follows the schema <tt class="docutils literal">type.name</tt>, where type can be <tt class="docutils literal">vo</tt>
+            to match the value the <tt class="docutils literal"><span class="pre">--vo</span></tt> option is set to, <tt class="docutils literal">ao</tt> for <tt class="docutils literal"><span class="pre">--ao</span></tt>,
+            <tt class="docutils literal">protocol</tt> for the input/output protocol in use (see <tt class="docutils literal"><span class="pre">--list-protocols</span></tt>),
+            and <tt class="docutils literal">extension</tt> for the extension of the path of the currently played file
+            (<em>not</em> the file format).</p>
+            <p>This feature is very limited, and there are no other auto profiles.</p>
             </div>
             </div>
             <div class="section" id="taking-screenshots">
@@ -554,13 +589,11 @@
             this will indicate a problem. (<tt class="docutils literal"><span class="pre">total-avsync-change</span></tt> property.)</li>
             <li>Encoding state in <tt class="docutils literal"><span class="pre">{...}</span></tt>, only shown in encoding mode.</li>
             <li>Display sync state. If display sync is active (<tt class="docutils literal"><span class="pre">display-sync-active</span></tt>
-            property), this shows <tt class="docutils literal">DS: +0.02598%</tt>, where the number is the speed change
-            factor applied to audio to achieve sync to display, expressed in percent
-            deviation from 1.0 (<tt class="docutils literal"><span class="pre">audio-speed-correction</span></tt> property). In sync modes which
-            don't resample, this will always be <tt class="docutils literal">+0.00000%</tt>.</li>
-            <li>Missed frames, e.g. <tt class="docutils literal">Missed: 4</tt>. (<tt class="docutils literal"><span class="pre">vo-missed-frame-count</span></tt> property.) Shows
-            up in display sync mode only. This is incremented each time a frame took
-            longer to display than intended.</li>
+            property), this shows <tt class="docutils literal">DS: 12/13</tt>, where the first number is the number of
+            frames where a vsync was intentionally added or removed
+            (<tt class="docutils literal"><span class="pre">mistimed-frame-count</span></tt>), and the second number of estimated number of vsyncs
+            which took too long (<tt class="docutils literal"><span class="pre">vo-delayed-frame-count</span></tt> property). The latter is a
+            heuristic, as it's generally not possible to determine this with certainty.</li>
             <li>Dropped frames, e.g. <tt class="docutils literal">Dropped: 4</tt>. Shows up only if the count is not 0. Can
             grow if the video framerate is higher than that of the display, or if video
             rendering is too slow. Also can be incremented on &quot;hiccups&quot; and when the video
@@ -739,7 +772,8 @@
             <dd><p class="first">Seek to given time position.</p>
             <p>The general format for absolute times is <tt class="docutils literal"><span class="pre">[[hh:]mm:]ss[.ms]</span></tt>. If the time
             is given with a prefix of <tt class="docutils literal">+</tt> or <tt class="docutils literal">-</tt>, the seek is relative from the start
-            or end of the file.</p>
+            or end of the file. (Since mpv 0.14, the start of the file is always
+            considered 0.)</p>
             <p><tt class="docutils literal">pp%</tt> seeks to percent position pp (0-100).</p>
             <p><tt class="docutils literal">#c</tt> seeks to chapter number c. (Chapters start from 1.)</p>
             <div class="admonition-examples admonition last">
@@ -769,6 +803,13 @@
             <dt><tt class="docutils literal"><span class="pre">--length=&lt;relative</span> time&gt;</tt></dt>
             <dd>Stop after a given time relative to the start time.
             See <tt class="docutils literal"><span class="pre">--start</span></tt> for valid option values and examples.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--rebase-start-time=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Whether to move the file start time to <tt class="docutils literal">00:00:00</tt> (default: yes). This
+            is less awkward for files which start at a random timestamp, such as
+            transport streams. On the other hand, if there are timestamp resets, the
+            resulting behavior can be rather weird. For this reason, and in case you
+            are actually interested in the real timestamps, this behavior can be
+            disabled with <tt class="docutils literal">no</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--speed=&lt;0.01-100&gt;</span></tt></dt>
             <dd><p class="first">Slow down or speed up playback by the factor given as parameter.</p>
             <p class="last">If <tt class="docutils literal"><span class="pre">--audio-pitch-correction</span></tt> (on by default) is used, playing with a
@@ -1453,9 +1494,9 @@
             <tt class="docutils literal">all</tt> always allows all codecs.</p>
             <p>You can get the list of allowed codecs with <tt class="docutils literal">mpv <span class="pre">--vd=help</span></tt>. Remove the
             prefix, e.g. instead of <tt class="docutils literal">lavc:h264</tt> use <tt class="docutils literal">h264</tt>.</p>
-            <p>By default this is set to <tt class="docutils literal">h264,vc1,wmv3,hevc</tt>. Note that the hardware
-            acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not relevant anymore,
-            and in fact have been removed from Libav in this form.</p>
+            <p>By default this is set to <tt class="docutils literal">h264,vc1,wmv3,hevc,mpeg2video</tt>. Note that the
+            hardware acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not relevant
+            anymore, and in fact have been removed from Libav in this form.</p>
             <p>This is usually only needed with broken GPUs, where a codec is reported
             as supported, but decoding causes more problems than it solves.</p>
             <div class="admonition-example admonition last">
@@ -1472,9 +1513,10 @@
             decoding is forced even if the profile of the video is higher than that.
             The result is most likely broken decoding, but may also help if the
             detected or reported profiles are somehow incorrect.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-software-fallback=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-software-fallback=&lt;yes|no|N&gt;</span></tt></dt>
             <dd>Fallback to software decoding if the hardware-accelerated decoder fails
-            (default: yes).</dd>
+            (default: 3). If this is a number, then fallback will be triggered if
+            N frames fail to decode in a row. 1 is equivalent to <tt class="docutils literal">yes</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-bitexact</span></tt></dt>
             <dd>Only use bit-exact algorithms in all decoding steps (for codec testing).</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-fast</span></tt> (MPEG-2, MPEG-4, and H.264 only)</dt>
@@ -2385,7 +2427,11 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ontop</span></tt></dt>
-            <dd>Makes the player window stay on top of other windows.</dd>
+            <dd><p class="first">Makes the player window stay on top of other windows.</p>
+            <p class="last">On Windows, if combined with fullscreen mode, this causes mpv to be
+            treated as exclusive fullscreen window that bypasses the Desktop Window
+            Manager.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--border</span></tt>, <tt class="docutils literal"><span class="pre">--no-border</span></tt></dt>
             <dd>Play video with window border and decorations. Since this is on by
             default, use <tt class="docutils literal"><span class="pre">--no-border</span></tt> to disable the standard window decorations.</dd>
@@ -2846,17 +2892,6 @@
             from the end of the file. The <tt class="docutils literal">full</tt> mode actually traverses the entire
             file and can make a reliable estimate even without an index present (such
             as partial files).</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-fix-timestamps=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Fix rounded Matroska timestamps (disabled by default). Matroska usually
-            stores timestamps rounded to milliseconds. This means timestamps jitter
-            by some amount around the intended timestamp. mpv can correct the timestamps
-            based on the framerate value stored in the file: the timestamp is rounded
-            to the next frame (according to the framerate), unless the new timestamp
-            would deviate more than 1ms from the old one. This should undo the rounding
-            done by the muxer.</p>
-            <p class="last">(The allowed deviation can be less than 1ms if the file uses a non-standard
-            timecode scale.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-rawaudio-channels=&lt;value&gt;</span></tt></dt>
             <dd>Number of channels (or channel layout) if <tt class="docutils literal"><span class="pre">--demuxer=rawaudio</span></tt> is used
@@ -4245,16 +4280,13 @@
             <dd>Automatically create connections to output ports (default: enabled).
             When enabled, the maximum number of output channels will be limited to
             the number of available output ports.</dd>
-            <dt><tt class="docutils literal"><span class="pre">std-channel-layout=alsa|waveext|any</span></tt></dt>
-            <dd>Select the standard channel layout (default: alsa). JACK itself has no
+            <dt><tt class="docutils literal"><span class="pre">std-channel-layout=waveext|any</span></tt></dt>
+            <dd>Select the standard channel layout (default: waveext). JACK itself has no
             notion of channel layouts (i.e. assigning which speaker a given
             channel is supposed to map to) - it just takes whatever the application
             outputs, and reroutes it to whatever the user defines. This means the
             user and the application are in charge of dealing with the channel
-            layout. <tt class="docutils literal">alsa</tt> uses the old MPlayer layout, which is inspired by
-            ALSA's standard layouts. In this mode, ao_jack will refuse to play 3
-            or 7 channels (because these do not really have a defined meaning in
-            MPlayer). <tt class="docutils literal">waveext</tt> uses WAVE_FORMAT_EXTENSIBLE order, which, even
+            layout. <tt class="docutils literal">waveext</tt> uses WAVE_FORMAT_EXTENSIBLE order, which, even
             though it was defined by Microsoft, is the standard on many systems.
             The value <tt class="docutils literal">any</tt> makes JACK accept whatever comes from the audio
             filter chain, regardless of channel layout and without reordering. This
@@ -4957,12 +4989,72 @@
             <dt><tt class="docutils literal"><span class="pre">linear-scaling</span></tt></dt>
             <dd>Scale in linear light. It should only be used with a <tt class="docutils literal"><span class="pre">fbo-format</span></tt>
             that has at least 16 bit precision.</dd>
-            <dt><tt class="docutils literal"><span class="pre">fancy-downscaling</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">correct-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size
             when downscaling. Trades quality for reduced downscaling performance.</p>
-            <p class="last">This is automatically disabled for anamorphic video, because this
-            feature doesn't work correctly with different scale factors in
-            different directions.</p>
+            <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
+            better than without it) since it will extend the size to match only the
+            milder of the scale factors between the axes.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">prescale=&lt;filter&gt;</span></tt></dt>
+            <dd><p class="first">This option provides non-convolution-based filters for upscaling. These
+            filters resize the video to multiple of the original size (all currently
+            supported prescalers can only perform image doubling in a single pass).
+            Generally another convolution based filter (the main scaler) will be
+            applied after prescaler to match the target display size.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">none</tt></dt>
+            <dd>Disable all prescalers. This is the default.</dd>
+            <dt><tt class="docutils literal">superxbr</tt></dt>
+            <dd><p class="first">A relatively fast prescaler originally developed for pixel art.</p>
+            <p class="last">Some parameters can be tuned with <tt class="docutils literal"><span class="pre">superxbr-sharpness</span></tt> and
+            <tt class="docutils literal"><span class="pre">superxbr-edge-strength</span></tt> options.</p>
+            </dd>
+            <dt><tt class="docutils literal">nnedi3</tt></dt>
+            <dd><p class="first">An artificial neural network based deinterlacer, which can be used
+            to upscale images.</p>
+            <p class="last">Extremely slow and requires a recent mid or high end graphics card
+            to work smoothly (as of 2015).</p>
+            </dd>
+            </dl>
+            <p class="last">Note that all the filters above are designed (or implemented) to process
+            luma plane only and probably won't work as intended for video in RGB
+            format.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">prescale-passes=&lt;1..5&gt;</span></tt></dt>
+            <dd>The number of passes to apply the prescaler (defaults to be 1). Setting
+            it to 2 will perform a 4x upscaling.</dd>
+            <dt><tt class="docutils literal"><span class="pre">prescale-downscaling-threshold=&lt;0..32&gt;</span></tt></dt>
+            <dd><p class="first">This option prevents &quot;overkill&quot; use of prescalers, which can be caused
+            by misconfiguration, or user trying to play a video with much larger
+            size. With this option, user can specify the maximal allowed downscaling
+            ratio in both dimension. To satisfy it, the number of passes for
+            prescaler will be reduced, and if necessary prescaler could also be
+            disabled.</p>
+            <p>The default value is 2.0, and should be able to prevent most seemingly
+            unreasonable use of prescalers. Most user would probably want to set it
+            to a smaller value between 1.0 and 1.5 for better performance.</p>
+            <p class="last">A value less than 1.0 will disable the check.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">nnedi3-neurons=&lt;16|32|64|128&gt;</span></tt></dt>
+            <dd>Specify the neurons for nnedi3 prescaling (defaults to be 32). The
+            rendering time is expected to be linear to the number of neurons.</dd>
+            <dt><tt class="docutils literal"><span class="pre">nnedi3-window=&lt;8x4|8x6&gt;</span></tt></dt>
+            <dd>Specify the size of local window for sampling in nnedi3 prescaling
+            (defaults to be <tt class="docutils literal">8x4</tt>). The <tt class="docutils literal">8x6</tt> window produces sharper images,
+            but is also slower.</dd>
+            <dt><tt class="docutils literal"><span class="pre">nnedi3-upload=&lt;ubo|shader&gt;</span></tt></dt>
+            <dd><p class="first">Specify how to upload the NN weights to GPU. Depending on the graphics
+            card, driver, shader compiler and nnedi3 settings, both method can be
+            faster or slower.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">ubo</tt></dt>
+            <dd>Upload these weights via uniform buffer objects. This is the
+            default. (requires OpenGL 3.1)</dd>
+            <dt><tt class="docutils literal">shader</tt></dt>
+            <dd>Hard code all the weights into the shader source code. (requires
+            OpenGL 3.3)</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">pre-shaders=&lt;files&gt;</span></tt>, <tt class="docutils literal"><span class="pre">post-shaders=&lt;files&gt;</span></tt>, <tt class="docutils literal"><span class="pre">scale-shader=&lt;file&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL fragment shaders.</p>
@@ -5072,12 +5164,22 @@
             possible that this makes video output slower, or has no effect at all.</p>
             <p class="last">X11/GLX only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">dwmflush=&lt;no|windowed|yes&gt;</span></tt></dt>
-            <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: no).
+            <dt><tt class="docutils literal"><span class="pre">vsync-fences=&lt;N&gt;</span></tt></dt>
+            <dd>Synchronize the CPU to the Nth past frame using the <tt class="docutils literal">GL_ARB_sync</tt>
+            extension. A value of 0 disables this behavior (default). A value of
+            1 means it will synchronize to the current frame after rendering it.
+            Like <tt class="docutils literal">glfinish</tt> and <tt class="docutils literal">waitvsync</tt>, this can lower or ruin performance.
+            Its advantage is that it can span multiple frames, and effectively limit
+            the number of frames the GPU queues ahead (which also has an influence
+            on vsync).</dd>
+            <dt><tt class="docutils literal"><span class="pre">dwmflush=&lt;no|windowed|yes|auto&gt;</span></tt></dt>
+            <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: auto).
             It also sets <tt class="docutils literal">SwapInterval(0)</tt> to ignore the OpenGL timing. Values
             are: no (disabled), windowed (only in windowed mode), yes (also in
-            full screen).
-            This may help getting more consistent frame intervals, especially with
+            full screen).</p>
+            <p>The value <tt class="docutils literal">auto</tt> will try to determine whether the compositor is
+            active, and calls <tt class="docutils literal">DwmFlush</tt> only if it seems to be.</p>
+            <p>This may help getting more consistent frame intervals, especially with
             high-fps clips - which might also reduce dropped frames. Typically a
             value of <tt class="docutils literal">windowed</tt> should be enough since full screen may bypass the
             DWM.</p>
@@ -5100,6 +5202,8 @@
             <dd>X11/GLX</dd>
             <dt>wayland</dt>
             <dd>Wayland/EGL</dd>
+            <dt>drm-egl</dt>
+            <dd>DRM/EGL</dd>
             <dt>x11egl</dt>
             <dd>X11/EGL</dd>
             </dl>
@@ -5267,7 +5371,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:fancy-downscaling:sigmoid-upscaling:pbo:deband
+            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:correct-downscaling:sigmoid-upscaling:pbo:deband
             </pre>
             <p class="last">Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -5418,29 +5522,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
             <dd><p class="first">For use with libmpv direct OpenGL embedding; useless in any other contexts.
-            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)
-            Usually, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> renders frames asynchronously by client and this
-            can cause some frame drops. In order to provide a way to handle this
-            situation, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> has its own frame queue and calls update callback
-            more frequently if the queue is not empty regardless of existence of new frame.
-            Once the queue is filled, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> drops frames automatically.</p>
-            <p>With default options, <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> renders only the latest frame and drops
-            all frames handed over while waiting render function after update callback.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">frame-queue-size=&lt;1..100&gt;</span></tt></dt>
-            <dd>The maximum count of frames which the frame queue can hold (default: 1)</dd>
-            <dt><tt class="docutils literal"><span class="pre">frame-drop-mode=&lt;pop|clear|block&gt;</span></tt></dt>
-            <dd><p class="first">Select the behavior when the frame queue is full.</p>
-            <dl class="last docutils">
-            <dt>pop</dt>
-            <dd>Drop the oldest frame in the frame queue.</dd>
-            <dt>clear</dt>
-            <dd>Drop all frames in the frame queue.</dd>
-            <dt>block</dt>
-            <dd>Wait for a short time, behave like <tt class="docutils literal">clear</tt> on timeout. (default)</dd>
-            </dl>
-            </dd>
-            </dl>
+            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
             <p>This also supports many of the suboptions the <tt class="docutils literal">opengl</tt> VO has. Run
             <tt class="docutils literal">mpv <span class="pre">--vo=opengl-cb:help</span></tt> for a list.</p>
             <p class="last">This also supports the <tt class="docutils literal">vo_cmdline</tt> command.</p>
@@ -5464,8 +5546,9 @@
             </dd>
             <dt><tt class="docutils literal">drm</tt> (Direct Rendering Manager)</dt>
             <dd><p class="first">Video output driver using Kernel Mode Setting / Direct Rendering Manager.
-            Does not support hardware acceleration. Should be used when one doesn't
-            want to install full-blown graphical environment (e.g. no X).</p>
+            Should be used when one doesn't want to install full-blown graphical
+            environment (e.g. no X). Does not support hardware acceleration (if you
+            need this, check the <tt class="docutils literal"><span class="pre">drm-egl</span></tt> backend for <tt class="docutils literal">opengl</tt> VO).</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">connector=&lt;number&gt;</span></tt></dt>
             <dd>Select the connector to use (usually this is a monitor.) If set to -1,
@@ -7849,6 +7932,23 @@
             follow the usual rules. Unavailable if video is disabled.</dd>
             <dt><tt class="docutils literal"><span class="pre">vo-drop-frame-count</span></tt></dt>
             <dd>Frames dropped by VO (when using <tt class="docutils literal"><span class="pre">--framedrop=vo</span></tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">mistimed-frame-count</span></tt></dt>
+            <dd>Number of video frames that were not timed correctly in display-sync mode
+            for the sake of keeping A/V sync. This does not include external
+            circumstances, such as video rendering being too slow or the graphics
+            driver somehow skipping a vsync. It does not include rounding errors either
+            (which can happen especially with bad source timestamps). For example,
+            using the <tt class="docutils literal"><span class="pre">display-desync</span></tt> mode should never change this value from 0.</dd>
+            <dt><tt class="docutils literal"><span class="pre">vsync-ratio</span></tt></dt>
+            <dd>For how many vsyncs a frame is displayed on average. This is available if
+            display-sync is active only. For 30 FPS video on a 60 Hz screen, this will
+            be 2. This is the moving average of what actually has been scheduled, so
+            24 FPS on 60 Hz will never remain exactly on 2.5, but jitter depending on
+            the last frame displayed.</dd>
+            <dt><tt class="docutils literal"><span class="pre">vo-delayed-frame-count</span></tt></dt>
+            <dd>Estimated number of frames delayed due to external circumstances in
+            display-sync mode. Note that in general, mpv has to guess that this is
+            happening, and the guess can be inaccurate.</dd>
             <dt><tt class="docutils literal"><span class="pre">percent-pos</span></tt> (RW)</dt>
             <dd>Position in current file (0-100). The advantage over using this instead of
             calculating it out of other properties is that it properly falls back to
@@ -7857,17 +7957,20 @@
             <dt><tt class="docutils literal"><span class="pre">time-pos</span></tt> (RW)</dt>
             <dd>Position in current file in seconds.</dd>
             <dt><tt class="docutils literal"><span class="pre">time-start</span></tt></dt>
-            <dd>Return the start time of the file. (Usually 0, but some kind of files,
-            especially transport streams, can have a different start time.)</dd>
+            <dd>Deprecated. Always returns 0. Before mpv 0.14, this used to return the start
+            time of the file (could affect e.g. transport streams). See
+            <tt class="docutils literal"><span class="pre">--rebase-start-time</span></tt> option.</dd>
             <dt><tt class="docutils literal"><span class="pre">time-remaining</span></tt></dt>
             <dd>Remaining length of the file in seconds. Note that the file duration is not
             always exactly known, so this is an estimate.</dd>
             <dt><tt class="docutils literal"><span class="pre">playtime-remaining</span></tt></dt>
             <dd><tt class="docutils literal"><span class="pre">time-remaining</span></tt> scaled by the current <tt class="docutils literal">speed</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">playback-time</span></tt> (RW)</dt>
-            <dd>The playback time, which is the time relative to playback start. (This can
-            be different from the <tt class="docutils literal"><span class="pre">time-pos</span></tt> property if the file does not start at
-            position <tt class="docutils literal">0</tt>, in which case <tt class="docutils literal"><span class="pre">time-pos</span></tt> is the source timestamp.)</dd>
+            <dd>Position in current file in seconds. Unlike <tt class="docutils literal"><span class="pre">time-pos</span></tt>, the time is
+            clamped to the range of the file. (Inaccurate file durations etc. could
+            make it go out of range. Also helpful when the user attempts to seek
+            outside of the file, as the seek target time is considered the current
+            position during seeking.)</dd>
             <dt><tt class="docutils literal">chapter</tt> (RW)</dt>
             <dd>Current chapter number. The number of the first chapter is 0.</dd>
             <dt><tt class="docutils literal">edition</tt> (RW)</dt>
@@ -8265,7 +8368,7 @@
             <dt><tt class="docutils literal"><span class="pre">display-names</span></tt></dt>
             <dd>Names of the displays that the mpv window covers. On X11, these
             are the xrandr names (LVDS1, HDMI1, DP1, VGA1, etc.).</dd>
-            <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt> (RW)</dt>
             <dd>The refresh rate of the current display. Currently, this is the lowest FPS
             of any display covered by the video, as retrieved by the underlying system
             APIs (e.g. xrandr on X11). It is not the measured FPS. It's not necessarily
@@ -10081,6 +10184,13 @@
             </li>
             </ul>
             </div>
+            <div class="section" id="embedding-into-other-programs-libmpv">
+            <h1>EMBEDDING INTO OTHER PROGRAMS (LIBMPV)</h1>
+            <p>mpv can be embedded into other programs as video/audio playback backend. The
+            recommended way to to so is using libmpv. See <tt class="docutils literal">libmpv/client.h</tt> in the mpv
+            source code repository. This provides a C API. Bindings for other languages
+            might be available (see wiki).</p>
+            </div>
             <div class="section" id="environment-variables">
             <h1>ENVIRONMENT VARIABLES</h1>
             <p>There are a number of environment variables that can be used to control the
@@ -10289,43 +10399,6 @@
             future.</p>
             <p>Note that mpv likes to mix <tt class="docutils literal">/</tt> and <tt class="docutils literal">\</tt> path separators for simplicity.
             kernel32.dll accepts this, but cmd.exe does not.</p>
-            </div>
-            <div class="section" id="examples-of-mpv-usage">
-            <h1>EXAMPLES OF MPV USAGE</h1>
-            <dl class="docutils">
-            <dt>Blu-ray playback:</dt>
-            <dd><ul class="first last simple">
-            <li><tt class="docutils literal">mpv <span class="pre">bd:////path/to/disc</span></tt></li>
-            <li><tt class="docutils literal">mpv <span class="pre">bd://</span> <span class="pre">--bluray-device=/path/to/disc</span></tt></li>
-            </ul>
-            </dd>
-            <dt>Play in Japanese with English subtitles:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">dvd://1</span> <span class="pre">--alang=ja</span> <span class="pre">--slang=en</span></tt></dd>
-            <dt>Play only chapters 5, 6, 7:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">dvd://1</span> <span class="pre">--chapter=5-7</span></tt></dd>
-            <dt>Play only titles 5, 6, 7:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">dvd://5-7</span></tt></dd>
-            <dt>Play a multi-angle DVD:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">dvd://1</span> <span class="pre">--dvd-angle=2</span></tt></dd>
-            <dt>Play from a different DVD device:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">dvd://1</span> <span class="pre">--dvd-device=/dev/dvd2</span></tt></dd>
-            <dt>Play DVD video from a directory with VOB files:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">dvd://1</span> <span class="pre">--dvd-device=/path/to/directory/</span></tt></dd>
-            <dt>Stream from HTTP:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">http://example.com/example.avi</span></tt></dd>
-            <dt>Stream using RTSP:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">rtsp://server.example.com/streamName</span></tt></dd>
-            <dt>Play a libavfilter graph:</dt>
-            <dd><tt class="docutils literal">mpv <span class="pre">avdevice://lavfi:mandelbrot</span></tt></dd>
-            </dl>
-            </div>
-            <div class="section" id="authors">
-            <h1>AUTHORS</h1>
-            <p>mpv is a MPlayer fork based on mplayer2, which in turn is a fork of MPlayer.</p>
-            <p>MPlayer was initially written by Arpad Gereoffy. See the <tt class="docutils literal">AUTHORS</tt> file for
-            a list of some of the many other contributors.</p>
-            <p>MPlayer is (C) 2000-2013 The MPlayer Team</p>
-            <p>This man page was written mainly by Gabucino, Jonas Jermann and Diego Biurrun.</p>
             </div>
           </div>
         </div>
