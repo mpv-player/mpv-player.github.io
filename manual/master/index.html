@@ -197,20 +197,15 @@
             <dd>Adjust gamma.</dd>
             <dt>7 and 8</dt>
             <dd>Adjust saturation.</dd>
-            </dl>
-            <p>(The following keys are valid only on OS X.)</p>
-            <dl class="docutils">
-            <dt>command + 0</dt>
-            <dd>Resize video window to half its original size.
-            (On other platforms, you can bind keys to change the <tt class="docutils literal"><span class="pre">window-scale</span></tt>
-            property.)</dd>
-            <dt>command + 1</dt>
+            <dt>Alt+0 (and command+0 on OSX)</dt>
+            <dd>Resize video window to half its original size.</dd>
+            <dt>Alt+1 (and command+1 on OSX)</dt>
             <dd>Resize video window to its original size.</dd>
-            <dt>command + 2</dt>
+            <dt>Alt+2 (and command+2 on OSX)</dt>
             <dd>Resize video window to double its original size.</dd>
-            <dt>command + f</dt>
+            <dt>command + f (OSX only)</dt>
             <dd>Toggle fullscreen (see also <tt class="docutils literal"><span class="pre">--fs</span></tt>).</dd>
-            <dt>command + [ and command + ]</dt>
+            <dt>command + [ and command + ] (OSX only)</dt>
             <dd>Set video window alpha.</dd>
             </dl>
             <p>(The following keys are valid if you have a keyboard with multimedia keys.)</p>
@@ -1293,6 +1288,13 @@
             to temporarily set the <tt class="docutils literal">hwdec</tt> option just during OpenGL context
             initialization with <tt class="docutils literal">mpv_opengl_cb_init_gl()</tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--videotoolbox-format=&lt;name&gt;</span></tt></dt>
+            <dd>Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
+            choice of the format can influence performance considerably. On the other
+            hand, there doesn't appear to be a good way to detect the best format for
+            the given hardware. <tt class="docutils literal">nv12</tt>, the default works better on modern hardware,
+            while <tt class="docutils literal">uyvy422</tt> appears to be better for old hardware. <tt class="docutils literal">rgb0</tt> also
+            works.</dd>
             <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
             <dd>Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
             video to make it fit a 4:3 display without black bands). The range
