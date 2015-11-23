@@ -584,11 +584,13 @@
             this will indicate a problem. (<tt class="docutils literal"><span class="pre">total-avsync-change</span></tt> property.)</li>
             <li>Encoding state in <tt class="docutils literal"><span class="pre">{...}</span></tt>, only shown in encoding mode.</li>
             <li>Display sync state. If display sync is active (<tt class="docutils literal"><span class="pre">display-sync-active</span></tt>
-            property), this shows <tt class="docutils literal">DS: 12/13</tt>, where the first number is the number of
-            frames where a vsync was intentionally added or removed
-            (<tt class="docutils literal"><span class="pre">mistimed-frame-count</span></tt>), and the second number of estimated number of vsyncs
-            which took too long (<tt class="docutils literal"><span class="pre">vo-delayed-frame-count</span></tt> property). The latter is a
-            heuristic, as it's generally not possible to determine this with certainty.</li>
+            property), this shows <tt class="docutils literal">DS: 2.500/13</tt>, where the first number is average
+            number of vsyncs per video frame (e.g. 2.5 when playing 24Hz videos on 60Hz
+            screens), which might jitter if the ratio doesn't round off, or there are
+            mistimed frames (<tt class="docutils literal"><span class="pre">vsync-ratio</span></tt>), and the second number of estimated number
+            of vsyncs which took too long (<tt class="docutils literal"><span class="pre">vo-delayed-frame-count</span></tt> property). The
+            latter is a heuristic, as it's generally not possible to determine this with
+            certainty.</li>
             <li>Dropped frames, e.g. <tt class="docutils literal">Dropped: 4</tt>. Shows up only if the count is not 0. Can
             grow if the video framerate is higher than that of the display, or if video
             rendering is too slow. Also can be incremented on &quot;hiccups&quot; and when the video
@@ -1292,7 +1294,7 @@
             <dd>Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
             choice of the format can influence performance considerably. On the other
             hand, there doesn't appear to be a good way to detect the best format for
-            the given hardware. <tt class="docutils literal">nv12</tt>, the default works better on modern hardware,
+            the given hardware. <tt class="docutils literal">nv12</tt>, the default, works better on modern hardware,
             while <tt class="docutils literal">uyvy422</tt> appears to be better for old hardware. <tt class="docutils literal">rgb0</tt> also
             works.</dd>
             <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
@@ -1535,7 +1537,7 @@
             <tt class="docutils literal">skip_top</tt> (was <tt class="docutils literal">st</tt>), <tt class="docutils literal">skip_bottom</tt> (was <tt class="docutils literal">sb</tt>), <tt class="docutils literal">debug</tt>.</p>
             <div class="admonition-example admonition last">
             <p class="first admonition-title">Example</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">--vd--lavc-o=debug=pict</span></tt></p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--vd-lavc-o=debug=pict</span></tt></p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-show-all=&lt;yes|no&gt;</span></tt></dt>
@@ -2689,6 +2691,9 @@
             <p>By default, NetWM support is autodetected (<tt class="docutils literal">auto</tt>).</p>
             <p class="last">This option might be removed in the future.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--x11-bypass-compositor=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If set to <tt class="docutils literal">yes</tt> (default), then ask the compositor to unredirect the
+            mpv window. This uses the <tt class="docutils literal">_NET_WM_BYPASS_COMPOSITOR</tt> hint.</dd>
             </dl>
             </div>
             <div class="section" id="disc-devices">
@@ -4784,8 +4789,10 @@
             <p>It is intended for hardware that does not support FBOs (including GLES,
             which supports it insufficiently), or to get some more performance out
             of bad or old hardware.</p>
-            <p class="last">This mode is forced automatically if needed, and this option is mostly
-            useful for debugging.</p>
+            <p>This mode is forced automatically if needed, and this option is mostly
+            useful for debugging. It's also enabled automatically if nothing uses
+            features which require FBOs.</p>
+            <p class="last">This option might be silently removed in the future.</p>
             </dd>
             </dl>
             <p><tt class="docutils literal"><span class="pre">scale=&lt;filter&gt;</span></tt></p>
@@ -4993,7 +5000,8 @@
             that has at least 16 bit precision.</dd>
             <dt><tt class="docutils literal"><span class="pre">correct-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size
-            when downscaling. Trades quality for reduced downscaling performance.</p>
+            when downscaling. Increases quality, but reduces performance while
+            downscaling.</p>
             <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
             better than without it) since it will extend the size to match only the
             milder of the scale factors between the axes.</p>
@@ -5200,6 +5208,10 @@
             <dd>Cocoa/OS X</dd>
             <dt>win</dt>
             <dd>Win32/WGL</dd>
+            <dt>angle</dt>
+            <dd>Direct3D11 through the OpenGL ES translation layer ANGLE. This
+            supports almost everything the <tt class="docutils literal">win</tt> backend does, except ICC
+            profiles, high bit depth video input, and the <tt class="docutils literal">nnedi3</tt> prescaler.</dd>
             <dt>x11</dt>
             <dd>X11/GLX</dd>
             <dt>wayland</dt>
@@ -5210,14 +5222,24 @@
             <dd>X11/EGL</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">es</tt></dt>
-            <dd>Force or prefer GLES2/3 over desktop OpenGL, if supported.</dd>
+            <dt><tt class="docutils literal"><span class="pre">es=&lt;mode&gt;</span></tt></dt>
+            <dd><p class="first">Select whether to use GLES:</p>
+            <dl class="last docutils">
+            <dt>yes</dt>
+            <dd>Try to prefer ES over Desktop GL</dd>
+            <dt>no</dt>
+            <dd>Try to prefer desktop GL over ES</dd>
+            <dt>auto</dt>
+            <dd>Use the default for each backend (default)</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">fbo-format=&lt;fmt&gt;</span></tt></dt>
             <dd>Selects the internal format of textures used for FBOs. The format can
             influence performance and quality of the video output.
             <tt class="docutils literal">fmt</tt> can be one of: rgb, rgba, rgb8, rgb10, rgb10_a2, rgb16, rgb16f,
             rgb32f, rgba12, rgba16, rgba16f, rgba32f.
-            Default: rgba16.</dd>
+            Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL, and rgb10_a2 on
+            GLES (e.g. ANGLE).</dd>
             <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.1..2.0&gt;</span></tt></dt>
             <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways
             (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt>
@@ -5373,7 +5395,7 @@
             <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
             <p>This is equivalent to:</p>
             <pre class="literal-block">
-            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:correct-downscaling:sigmoid-upscaling:pbo:deband
+            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:correct-downscaling:sigmoid-upscaling:pbo:deband:es=no
             </pre>
             <p class="last">Note that some cheaper LCDs do dithering that gravely interferes with
             <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
@@ -8348,6 +8370,17 @@
             window uses, since the user can change the window size, and all real VOs
             do their own scaling independently from the filter chain.</p>
             <p class="last">Has the same sub-properties as <tt class="docutils literal"><span class="pre">video-params</span></tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">video-frame-info</span></tt></dt>
+            <dd><p class="first">Approximate information of the current frame. Note that if any of these
+            are used on OSD, the information might be off by a few frames due to OSD
+            redrawing and frame display being somewhat disconnected, and you might
+            have to pause and force a redraw.</p>
+            <p>Sub-properties:</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">video-frame-info/picture-type</span></tt>
+            <tt class="docutils literal"><span class="pre">video-frame-info/interlaced</span></tt>
+            <tt class="docutils literal"><span class="pre">video-frame-info/tff</span></tt>
+            <tt class="docutils literal"><span class="pre">video-frame-info/repeat</span></tt></p>
             </dd>
             <dt><tt class="docutils literal">fps</tt></dt>
             <dd>Container FPS. This can easily contain bogus values. For videos that use
