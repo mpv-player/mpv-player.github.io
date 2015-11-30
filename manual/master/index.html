@@ -1224,11 +1224,10 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--display-fps=&lt;fps&gt;</span></tt></dt>
-            <dd>Set the maximum assumed display FPS used with <tt class="docutils literal"><span class="pre">--framedrop</span></tt>. By default
-            a detected value is used (X11 only, not correct on multi-monitor systems),
-            or infinite display FPS if that fails. Infinite FPS means only frames too
-            late are dropped. If a correct FPS is provided, frames that are predicted
-            to be too late are dropped too.</dd>
+            <dd>Set the display FPS used with the <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> modes. By
+            default a detected value is used (X11 only, not correct on multi-monitor
+            systems). Keep in mind that setting an incorrect value (even if slightly
+            incorrect) can ruin video playback.</dd>
             <dt><tt class="docutils literal"><span class="pre">--hwdec=&lt;api&gt;</span></tt></dt>
             <dd><p class="first">Specify the hardware video decoding API that should be used if possible.
             Whether hardware decoding is actually done depends on the video codec. If
@@ -1432,7 +1431,7 @@
             order to deinterlace the video, or lets the video output apply deinterlacing
             if supported.</p>
             <p>This behaves exactly like the <tt class="docutils literal">deinterlace</tt> input property (usually
-            mapped to <tt class="docutils literal">Shift+D</tt>).</p>
+            mapped to <tt class="docutils literal">d</tt>).</p>
             <p class="last"><tt class="docutils literal">auto</tt> is a technicality. Strictly speaking, the default for this option
             is deinterlacing disabled, but the <tt class="docutils literal">auto</tt> case is needed if <tt class="docutils literal">yadif</tt> was
             added to the filter chain manually with <tt class="docutils literal"><span class="pre">--vf</span></tt>. Then the core shouldn't
@@ -4595,7 +4594,7 @@
             <p>Select deinterlacing mode (default: 0). In older versions (as well as
             MPlayer/mplayer2) you could use this option to enable deinterlacing.
             This doesn't work anymore, and deinterlacing is enabled with either
-            the <tt class="docutils literal">D</tt> key (by default mapped to the command <tt class="docutils literal">cycle deinterlace</tt>),
+            the <tt class="docutils literal">d</tt> key (by default mapped to the command <tt class="docutils literal">cycle deinterlace</tt>),
             or the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> option. Also, to select the default deint mode,
             you should use something like <tt class="docutils literal"><span class="pre">--vf-defaults=vdpaupp:deint-mode=temporal</span></tt>
             instead of this sub-option.</p>
@@ -4953,6 +4952,12 @@
             <dt><tt class="docutils literal">interpolation</tt></dt>
             <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display
             refresh rate (also known as judder).</p>
+            <div class="warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
+            of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
+            This was not required before mpv 0.14.0.</p>
+            </div>
             <p>This essentially attempts to interpolate the missing frames by
             convoluting the video along the temporal axis. The filter used can be
             controlled using the <tt class="docutils literal">tscale</tt> setting.</p>
@@ -4980,7 +4985,7 @@
             <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is
             only used if <tt class="docutils literal">interpolation</tt> is enabled. The only valid choices
             for <tt class="docutils literal">tscale</tt> are separable convolution filters (use <tt class="docutils literal">tscale=help</tt>
-            to get a list). The default is <tt class="docutils literal">oversample</tt>.</p>
+            to get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
             <p class="last">Note that the maximum supported filter radius is currently 3, due to
             limitations in the number of video textures that can be loaded
             simultaneously.</p>
@@ -5316,7 +5321,8 @@
             <dt><tt class="docutils literal"><span class="pre">icc-profile-auto</span></tt></dt>
             <dd><p class="first">Automatically select the ICC display profile currently specified by
             the display settings of the operating system.</p>
-            <p class="last">NOTE: Only implemented on OS X and X11</p>
+            <p class="last">NOTE: On Windows, the default profile must be an ICC profile. WCS
+            profiles are not supported.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">icc-cache-dir=&lt;dirname&gt;</span></tt></dt>
             <dd><p class="first">Store and load the 3D LUTs created from the ICC profile in this directory.
@@ -5441,7 +5447,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">deint-mode=&lt;mode&gt;</span></tt></dt>
             <dd><p class="first">Select deinterlacing algorithm. Note that by default deinterlacing is
-            initially always off, and needs to be enabled with the <tt class="docutils literal">D</tt> key
+            initially always off, and needs to be enabled with the <tt class="docutils literal">d</tt> key
             (default key binding for <tt class="docutils literal">cycle deinterlace</tt>).</p>
             <p>This option doesn't apply if libva supports video post processing (vpp).
             In this case, the default for <tt class="docutils literal"><span class="pre">deint-mode</span></tt> is <tt class="docutils literal">no</tt>, and enabling
@@ -5566,6 +5572,9 @@
             <dd>Whether to render a black background behind the video (default: no).
             Normally it's better to kill the console framebuffer instead, which
             gives better performance.</dd>
+            <dt><tt class="docutils literal"><span class="pre">osd=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Enabled by default. If disabled with <tt class="docutils literal">no</tt>, no OSD layer is created.
+            This also means there will be no subtitles rendered.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">drm</tt> (Direct Rendering Manager)</dt>
@@ -6670,14 +6679,14 @@
             </table>
             </dd>
             </dl>
-            <p>This filter, is automatically inserted when using the <tt class="docutils literal">D</tt> key (or any
+            <p>This filter, is automatically inserted when using the <tt class="docutils literal">d</tt> key (or any
             other key that toggles the <tt class="docutils literal">deinterlace</tt> property or when using the
             <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> switch), assuming the video output does not have native
             deinterlacing support.</p>
             <p>If you just want to set the default mode, put this filter and its options
-            into <tt class="docutils literal"><span class="pre">--vf-defaults</span></tt> instead, and enable deinterlacing with <tt class="docutils literal">D</tt> or
+            into <tt class="docutils literal"><span class="pre">--vf-defaults</span></tt> instead, and enable deinterlacing with <tt class="docutils literal">d</tt> or
             <tt class="docutils literal"><span class="pre">--deinterlace</span></tt>.</p>
-            <p class="last">Also note that the <tt class="docutils literal">D</tt> key is stupid enough to insert an interlacer twice
+            <p class="last">Also note that the <tt class="docutils literal">d</tt> key is stupid enough to insert a deinterlacer twice
             when inserting yadif with <tt class="docutils literal"><span class="pre">--vf</span></tt>, so using the above methods is
             recommended.</p>
             </dd>
@@ -6921,7 +6930,7 @@
             <dt><tt class="docutils literal">vavpp</tt></dt>
             <dd><p class="first">VA-AP-API video post processing. Works with <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>
             only. Currently deinterlaces. This filter is automatically inserted if
-            deinterlacing is requested (either using the <tt class="docutils literal">D</tt> key, by default mapped to
+            deinterlacing is requested (either using the <tt class="docutils literal">d</tt> key, by default mapped to
             the command <tt class="docutils literal">cycle deinterlace</tt>, or the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> option).</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">deint=&lt;method&gt;</span></tt></dt>
@@ -6956,7 +6965,7 @@
             <dt><tt class="docutils literal">vdpaupp</tt></dt>
             <dd><p class="first">VDPAU video post processing. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>
             only. This filter is automatically inserted if deinterlacing is requested
-            (either using the <tt class="docutils literal">D</tt> key, by default mapped to the command
+            (either using the <tt class="docutils literal">d</tt> key, by default mapped to the command
             <tt class="docutils literal">cycle deinterlace</tt>, or the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> option). When enabling
             deinterlacing, it is always preferred over software deinterlacer filters
             if the <tt class="docutils literal">vdpau</tt> VO is used, and also if <tt class="docutils literal">opengl</tt> is used and hardware
@@ -7916,7 +7925,11 @@
             </div>
             </dd>
             <dt><tt class="docutils literal">path</tt></dt>
-            <dd>Full path of the currently played file.</dd>
+            <dd>Full path of the currently played file. Usually this is exactly the same
+            string you pass on the mpv command line or the <tt class="docutils literal">loadfile</tt> command, even
+            if it's a relative path. If you expect an absolute path, you will have to
+            determine it yourself, for example by using the <tt class="docutils literal"><span class="pre">working-directory</span></tt>
+            property.</dd>
             <dt><tt class="docutils literal"><span class="pre">media-title</span></tt></dt>
             <dd><p class="first">If the currently played file has a <tt class="docutils literal">title</tt> tag, use that.</p>
             <p>Otherwise, if the media type is DVD, return the volume ID of DVD.</p>
@@ -8409,6 +8422,12 @@
             APIs (e.g. xrandr on X11). It is not the measured FPS. It's not necessarily
             available on all platforms. Note that any of the listed facts may change
             any time without a warning.</dd>
+            <dt><tt class="docutils literal"><span class="pre">estimated-display-fps</span></tt></dt>
+            <dd>Only available if display-sync mode (as selected by <tt class="docutils literal"><span class="pre">--video-sync</span></tt>) is
+            active. Returns the actual rate at which display refreshes seem to occur,
+            measured by system time.</dd>
+            <dt><tt class="docutils literal"><span class="pre">vsync-jitter</span></tt></dt>
+            <dd>Estimated deviation factor of the vsync duration.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt> (RW)</dt>
             <dd>Video aspect, see <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">osd-width</span></tt>, <tt class="docutils literal"><span class="pre">osd-height</span></tt></dt>
