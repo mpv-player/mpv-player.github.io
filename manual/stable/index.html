@@ -1375,7 +1375,7 @@
             (making 128 pixels of the source video invisible).</p>
             <p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-rotate=&lt;0-360|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--video-rotate=&lt;0-359|no&gt;</span></tt></dt>
             <dd>Rotate the video clockwise, in degrees. Currently supports 90° steps only.
             If <tt class="docutils literal">no</tt> is given, the video is never rotated, even if the file has
             rotation metadata. (The rotation value is added to the rotation metadata,
@@ -2858,7 +2858,7 @@
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-cryptokey=&lt;hexstring&gt;</span></tt></dt>
             <dd>Encryption key the demuxer should use. This is the raw binary data of
             the key converted to a hexadecimal string.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll</span></tt>, <tt class="docutils literal"><span class="pre">--mkv-subtitle-preroll</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll=&lt;yes|index|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--mkv-subtitle-preroll</span></tt></dt>
             <dd><p class="first">Try harder to show embedded soft subtitles when seeking somewhere. Normally,
             it can happen that the subtitle at the seek target is not shown due to how
             some container file formats are designed. The subtitles appear only if
@@ -2886,7 +2886,11 @@
             overlap with a seek target. In these cases, mpv will reduce the amount
             of data read to a minimum. (Although it will still read <em>all</em> data between
             the cluster that contains the first wanted subtitle packet, and the seek
-            target.)</p>
+            target.) If the <tt class="docutils literal">index</tt> choice (which is the default) is specified, then
+            prerolling will be done only if this information is actually available. If
+            this method is used, the maximum amount of data to skip can be additionally
+            controlled by <tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll-secs-index</span></tt> (it still uses
+            the value of the option without <tt class="docutils literal"><span class="pre">-index</span></tt> if that is higher).</p>
             <p>See also <tt class="docutils literal"><span class="pre">--hr-seek-demuxer-offset</span></tt> option. This option can achieve a
             similar effect, but only if hr-seek is active. It works with any demuxer,
             but makes seeking much slower, as it has to decode audio and video data
@@ -2894,6 +2898,8 @@
             <p class="last"><tt class="docutils literal"><span class="pre">--mkv-subtitle-preroll</span></tt> is a deprecated alias.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll-secs=&lt;value&gt;</span></tt></dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll-secs-index=&lt;value&gt;</span></tt></dt>
             <dd>See <tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-probe-video-duration=&lt;yes|no|full&gt;</span></tt></dt>
             <dd><p class="first">When opening the file, seek to the end of it, and check what timestamp the
@@ -9449,7 +9455,7 @@
             <p>After calling this function, key presses will cause the function <tt class="docutils literal">fn</tt> to
             be called (unless the user remapped the key with another binding).</p>
             <p>The <tt class="docutils literal">name</tt> argument should be a short symbolic string. It allows the user
-            to remap the key binding via input.conf using the <tt class="docutils literal">script_message</tt>
+            to remap the key binding via input.conf using the <tt class="docutils literal"><span class="pre">script-message</span></tt>
             command, and the name of the key binding (see below for
             an example). The name should be unique across other bindings in the same
             script - if not, the previous binding with the same name will be
@@ -9471,8 +9477,8 @@
             by a mouse button.</dd>
             </dl>
             </blockquote>
-            <p>Internally, key bindings are dispatched via the <tt class="docutils literal">script_message_to</tt> or
-            <tt class="docutils literal">script_binding</tt> input commands and <tt class="docutils literal">mp.register_script_message</tt>.</p>
+            <p>Internally, key bindings are dispatched via the <tt class="docutils literal"><span class="pre">script-message-to</span></tt> or
+            <tt class="docutils literal"><span class="pre">script-binding</span></tt> input commands and <tt class="docutils literal">mp.register_script_message</tt>.</p>
             <p>Trying to map multiple commands to a key will essentially prefer a random
             binding, while the other bindings are not called. It is guaranteed that
             user defined bindings in the central input.conf are preferred over bindings
@@ -9488,14 +9494,14 @@
             <p>The user can remap these key bindings. Then the user has to put the
             following into his input.conf to remap the command to the <tt class="docutils literal">y</tt> key:</p>
             <pre class="literal-block">
-            y script_binding something
+            y script-binding something
             </pre>
             <p>This will print the message when the key <tt class="docutils literal">y</tt> is pressed. (<tt class="docutils literal">x</tt> will
             still work, unless the user remaps it.)</p>
             <p>You can also explicitly send a message to a named script only. Assume the
             above script was using the filename <tt class="docutils literal">fooscript.lua</tt>:</p>
             <pre class="last literal-block">
-            y script_binding fooscript.something
+            y script-binding fooscript.something
             </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">mp.add_forced_key_binding(...)</span></tt></dt>
@@ -10420,7 +10426,7 @@
     <footer>
       <div class='container'>
         <small class='pull-left text-muted copyright'>
-          &copy; 2012-2015 mpv.io
+          &copy; 2012-2016 mpv.io
         </small>
         <div class='social-icons pull-right'>
                     <a target="_blank" href="https://github.com/mpv-player/mpv"><i class='fa fa-github-alt'></i>
