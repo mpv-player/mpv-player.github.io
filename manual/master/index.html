@@ -661,9 +661,8 @@
             <tt class="docutils literal">PATH</tt> itself should start with a third <tt class="docutils literal">/</tt> to make the path an
             absolute path.</dd>
             <dt><tt class="docutils literal"><span class="pre">fd://123</span></tt></dt>
-            <dd>Read data from the given UNIX FD (for example 123). This is similar to
-            piping data to stdin via <tt class="docutils literal">-</tt>, but can use an arbitrary file descriptor.
-            Will not work correctly on MS Windows.</dd>
+            <dd>Read data from the given file descriptor (for example 123). This is similar
+            to piping data to stdin via <tt class="docutils literal">-</tt>, but can use an arbitrary file descriptor.</dd>
             <dt><tt class="docutils literal"><span class="pre">edl://[edl</span> specification as in <span class="pre">edl-mpv.rst]</span></tt></dt>
             <dd>Stitch together parts of multiple files and play them.</dd>
             <dt><tt class="docutils literal"><span class="pre">null://</span></tt></dt>
@@ -4107,10 +4106,8 @@
             <p class="first admonition-title">Note</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">--ao=help</span></tt> for a list of compiled-in audio output drivers. The
             driver <tt class="docutils literal"><span class="pre">--ao=alsa</span></tt> is preferred. <tt class="docutils literal"><span class="pre">--ao=pulse</span></tt> is preferred on systems
-            where PulseAudio is used. On Windows, <tt class="docutils literal"><span class="pre">--ao=wasapi</span></tt> is preferred,
-            though it might cause trouble sometimes, in which case <tt class="docutils literal"><span class="pre">--ao=dsound</span></tt>
-            should be used. On BSD systems, <tt class="docutils literal"><span class="pre">--ao=oss</span></tt> or <cite>--ao=sndio`</cite> may work
-            (the latter being experimental). On OS X systems, use <tt class="docutils literal"><span class="pre">--ao=coreaudio</span></tt>.</p>
+            where PulseAudio is used. On BSD systems, <tt class="docutils literal"><span class="pre">--ao=oss</span></tt> or <tt class="docutils literal"><span class="pre">--ao=sndio</span></tt>
+            may work (the latter being experimental).</p>
             </div>
             <div class="admonition-examples admonition">
             <p class="first admonition-title">Examples</p>
@@ -4290,20 +4287,6 @@
             <p class="last">If you have stuttering video when using pulse, try to enable this
             option. (Or try to update PulseAudio.)</p>
             </dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal">dsound</tt> (Windows only)</dt>
-            <dd><p class="first">DirectX DirectSound audio output driver</p>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This driver is for compatibility with old systems.</p>
-            </div>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">device=&lt;devicenum&gt;</span></tt></dt>
-            <dd>Sets the device number to use. Playing a file with <tt class="docutils literal"><span class="pre">-v</span></tt> will show a
-            list of available devices.</dd>
-            <dt><tt class="docutils literal"><span class="pre">buffersize=&lt;ms&gt;</span></tt></dt>
-            <dd>DirectSound buffer size in milliseconds (default: 200).</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">sdl</tt></dt>
