@@ -221,7 +221,9 @@
             support.)</p>
             <dl class="docutils">
             <dt>h and k</dt>
-            <dd>Select previous/next channel.</dd>
+            <dd>Select previous/next tv-channel.</dd>
+            <dt>H and K</dt>
+            <dd>Select previous/next dvb-channel.</dd>
             </dl>
             </div>
             <div class="section" id="mouse-control">
@@ -3925,8 +3927,13 @@
             giving up (default: 30).</dd>
             <dt><tt class="docutils literal"><span class="pre">--dvbin-full-transponder=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Apply no filters on program PIDs, only tune to frequency and pass full
-            transponder to demuxer. This is useful to record multiple programs
-            on a single transponder, or to work around issues in the <tt class="docutils literal">channels.conf</tt>.
+            transponder to demuxer.
+            The player frontend selects the streams from the full TS in this case,
+            so the program which is shown initially may not match the chosen channel.
+            Switching between the programs is possible by cycling the <tt class="docutils literal">program</tt>
+            property.
+            This is useful to record multiple programs on a single transponder,
+            or to work around issues in the <tt class="docutils literal">channels.conf</tt>.
             It is also recommended to use this for channels which switch PIDs
             on-the-fly, e.g. for regional news.</p>
             <p class="last">Default: <tt class="docutils literal">no</tt></p>
@@ -8404,6 +8411,13 @@
             <dd>See <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt>.</dd>
             <dt><tt class="docutils literal">program</tt> (W)</dt>
             <dd>Switch TS program (write-only).</dd>
+            <dt><tt class="docutils literal"><span class="pre">dvb-channel</span></tt> (W)</dt>
+            <dd>Pair of integers: card,channel of current DVB stream.
+            Can be switched to switch to another channel on the same card.</dd>
+            <dt><tt class="docutils literal"><span class="pre">dvb-channel-name</span></tt> (RW)</dt>
+            <dd>Name of current DVB program.
+            On write, a channel-switch to the named channel on the same
+            card is performed. Can also be used for channel switching.</dd>
             <dt><tt class="docutils literal">sid</tt> (RW)</dt>
             <dd>Current subtitle track (similar to <tt class="docutils literal"><span class="pre">--sid</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">secondary-sid</span></tt> (RW)</dt>
@@ -10386,7 +10400,7 @@
             For example, the path to mpv.conf is <tt class="docutils literal"><span class="pre">%APPDATA%/mpv/mpv.conf</span></tt>, which maps to
             a system and user-specific path, for example</p>
             <blockquote>
-            <tt class="docutils literal"><span class="pre">C:\users\USERNAME\Application</span> Data\mpv\mpv.conf</tt></blockquote>
+            <tt class="docutils literal"><span class="pre">C:\users\USERNAME\AppData\Roaming\mpv\mpv.conf</span></tt></blockquote>
             <p>You can find the exact path by running <tt class="docutils literal">echo <span class="pre">%APPDATA%\mpv\mpv.conf</span></tt> in cmd.exe.</p>
             <p>Other config files (such as <tt class="docutils literal">input.conf</tt>) are in the same directory. See the
             <a class="reference internal" href="#files">FILES</a> section above.</p>
