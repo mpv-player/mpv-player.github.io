@@ -84,6 +84,9 @@
             to control mpv using keyboard, mouse, or remote control (there is no
             LIRC support - configure remotes as input devices instead).</p>
             <p>See the <tt class="docutils literal"><span class="pre">--input-</span></tt> options for ways to customize it.</p>
+            <p>The following listings are not necessarily complete. See <tt class="docutils literal">etc/input.conf</tt> for
+            a list of default bindings. User <tt class="docutils literal">input.conf</tt> files and Lua scripts can
+            define additional key bindings.</p>
             <div class="section" id="keyboard-control">
             <h2>Keyboard Control</h2>
             <dl class="docutils">
@@ -401,6 +404,40 @@
             file stops playing. If option <tt class="docutils literal"><span class="pre">--c</span></tt> is changed during playback of
             <tt class="docutils literal">file2.mkv</tt>, it is reset when advancing to <tt class="docutils literal">file3.mkv</tt>. This only affects
             file-local options. The option <tt class="docutils literal"><span class="pre">--a</span></tt> is never reset here.</p>
+            </div>
+            <div class="section" id="playing-dvds">
+            <h2>Playing DVDs</h2>
+            <p>DVDs can be played with the <tt class="docutils literal"><span class="pre">dvd://[title]</span></tt> syntax. The optional
+            title specifier is a number which selects between separate video
+            streams on the DVD. If no title is given (<tt class="docutils literal"><span class="pre">dvd://</span></tt>) then the longest
+            title is selected automatically by the library. This is usually what
+            you want. mpv does not support DVD menus.</p>
+            <p>DVDs which have been copied on to a hard drive or other mounted
+            filesystem (by e.g. the <tt class="docutils literal">dvdbackup</tt> tool) are accommodated by
+            specifying the path to the local copy: <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt>.
+            Alternatively, running <tt class="docutils literal">mpv PATH</tt> should auto-detect a DVD directory
+            tree and play the longest title.</p>
+            <div class="note">
+            <p class="first admonition-title">Note</p>
+            <p>mpv uses a different default DVD library than MPlayer. MPlayer
+            uses libdvdread by default, and mpv uses libdvdnav by default.
+            Both libraries are developed in parallel, but libdvdnav is
+            intended to support more sophisticated DVD features such as menus
+            and multi-angle playback. mpv uses libdvdnav for files specified
+            as either <tt class="docutils literal"><span class="pre">dvd://...</span></tt> or <tt class="docutils literal"><span class="pre">dvdnav://...</span></tt>. To use libdvdread,
+            which will produce behavior more like MPlayer, specify
+            <tt class="docutils literal"><span class="pre">dvdread://...</span></tt> instead. Some users have experienced problems
+            when using libdvdnav, in which playback gets stuck in a DVD menu
+            stream. These problems are reported to go away when auto-selecting
+            the title (<tt class="docutils literal"><span class="pre">dvd://</span></tt> rather than <tt class="docutils literal"><span class="pre">dvd://1</span></tt>) or when using
+            libdvdread (e.g. <tt class="docutils literal"><span class="pre">dvdread://0</span></tt>).</p>
+            <p class="last">DVDs use image-based subtitles. Image subtitles are implemented as
+            a bitmap video stream which can be superimposed over the main
+            movie. mpv's subtitle styling and positioning options and keyboard
+            shortcuts generally do not work with image-based subtitles.
+            Exceptions include options like <tt class="docutils literal"><span class="pre">--stretch-dvd-subs</span></tt> and
+            <tt class="docutils literal"><span class="pre">--stretch-image-subs-to-screen</span></tt>.</p>
+            </div>
             </div>
             </div>
             <div class="section" id="configuration-files">
@@ -1075,8 +1112,7 @@
             the loaded scripts. Values not claimed by any scripts are ignored.</dd>
             <dt><tt class="docutils literal"><span class="pre">--merge-files</span></tt></dt>
             <dd>Pretend that all files passed to mpv are concatenated into a single, big
-            file. This uses timeline/EDL support internally. Note that this won't work
-            for ordered chapter files.</dd>
+            file. This uses timeline/EDL support internally.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-resume-playback</span></tt></dt>
             <dd>Do not restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
             subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>).
@@ -1207,7 +1243,7 @@
             filters all frames, but doesn't render them on the VO. It tries to query
             the display FPS (X11 only, not correct on multi-monitor systems), or
             assumes infinite display FPS if that fails. Drops are indicated in
-            the terminal status line as <tt class="docutils literal">D:</tt> field. If the decoder is too slow,
+            the terminal status line as <tt class="docutils literal">Dropped:</tt> field. If the decoder is too slow,
             in theory all frames would have to be dropped (because all frames are
             too late) - to avoid this, frame dropping stops if the effective
             framerate is below 10 FPS.</dd>
@@ -1228,10 +1264,14 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--display-fps=&lt;fps&gt;</span></tt></dt>
-            <dd>Set the display FPS used with the <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> modes. By
-            default, a detected value is used (X11 only, not correct on multi-monitor
-            systems). Keep in mind that setting an incorrect value (even if slightly
-            incorrect) can ruin video playback.</dd>
+            <dd><p class="first">Set the display FPS used with the <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> modes. By
+            default, a detected value is used. Keep in mind that setting an incorrect
+            value (even if slightly incorrect) can ruin video playback. On multi-monitor
+            systems, there is a chance that the detected value is from the wrong
+            monitor.</p>
+            <p class="last">Set this option only if you have reason to believe the automatically
+            determined value is wrong.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--hwdec=&lt;api&gt;</span></tt></dt>
             <dd><p class="first">Specify the hardware video decoding API that should be used if possible.
             Whether hardware decoding is actually done depends on the video codec. If
@@ -1644,7 +1684,7 @@
             <p class="first admonition-title">Warning</p>
             <p class="last">There is not much reason to use this. HDMI supports uncompressed
             multichannel PCM, and mpv supports lossless DTS-HD decoding via
-            FFmpeg's libdcadec wrapper.</p>
+            FFmpeg's new DCA decoder (based on libdcadec).</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ad=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
@@ -1756,8 +1796,8 @@
             using <tt class="docutils literal"><span class="pre">--audio-spdif=dts-hd</span></tt>.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--audio-channels=&lt;number|layout&gt;</span></tt></dt>
-            <dd><p class="first">Request a channel layout for audio output (default: auto). This  will ask
+            <dt><tt class="docutils literal"><span class="pre">--audio-channels=&lt;auto|number|layout&gt;</span></tt></dt>
+            <dd><p class="first">Request a channel layout for audio output (default: stereo). This  will ask
             the AO to open a device with the given channel layout. It's up to the AO
             to accept this layout, or to pick a fallback or to error out if the
             requested layout is not supported.</p>
@@ -1767,9 +1807,10 @@
             <p>See <tt class="docutils literal"><span class="pre">--audio-channels=help</span></tt> output for defined default layouts. This also
             lists speaker names, which can be used to express arbitrary channel
             layouts (e.g. <tt class="docutils literal"><span class="pre">fl-fr-lfe</span></tt> is 2.1).</p>
-            <p>The default is <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt>, which tries to play audio using
-            the input file's channel layout. (Or more precisely, the output of the
-            audio filter chain.) (<tt class="docutils literal">empty</tt> is an accepted obsolete alias for <tt class="docutils literal">auto</tt>.)</p>
+            <p><tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt> tries to play audio using the input file's
+            channel layout. There is no guarantee that the audio API handles this
+            correctly. See the HDMI warning below.
+            (<tt class="docutils literal">empty</tt> is an accepted obsolete alias for <tt class="docutils literal">auto</tt>.)</p>
             <p>This will also request the channel layout from the decoder. If the decoder
             does not support the layout, it will fall back to its native channel layout.
             (You can use <tt class="docutils literal"><span class="pre">--ad-lavc-downmix=no</span></tt> to make the decoder always output
@@ -1785,6 +1826,14 @@
             channel layout, random things can happen, such as dropping the
             additional channels, or adding noise.</p>
             </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-normalize-downmix=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable/disable normalization if surround audio is downmixed to stereo
+            (default: no). If this is disabled, downmix can cause clipping. If it's
+            enabled, the output might be too silent. It depends on the source audio.</p>
+            <p>Technically, this changes the <tt class="docutils literal">normalize</tt> suboption of the
+            <tt class="docutils literal">lavrresample</tt> audio filter, which performs the downmixing.</p>
+            <p class="last">If downmix happens outside of mpv for some reason, this has no effect.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-display=&lt;no|attachment&gt;</span></tt></dt>
             <dd><p class="first">Setting this option to <tt class="docutils literal">attachment</tt> (default) will display image
@@ -2046,7 +2095,7 @@
             <div class="admonition-warning admonition last">
             <p class="first admonition-title">Warning</p>
             <p class="last">Enabling hinting can lead to mispositioned text (in situations it's
-            supposed to match up with video background), or reduce the smoothness
+            supposed to match up video background), or reduce the smoothness
             of animations with some badly authored ASS scripts. It is recommended
             to not use this option, unless really needed.</p>
             </div>
@@ -4098,6 +4147,56 @@
             <dd>Force the contents of the <tt class="docutils literal"><span class="pre">media-title</span></tt> property to this value. Useful
             for scripts which want to set a title, without overriding the user's
             setting in <tt class="docutils literal"><span class="pre">--title</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--external-file=&lt;filename&gt;</span></tt></dt>
+            <dd>Add all tracks from the given file. Unlike <tt class="docutils literal"><span class="pre">--sub-file</span></tt> and
+            <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, this includes all tracks, and does not cause default
+            stream selection over the &quot;proper&quot; file.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--lavfi-complex=&lt;string&gt;</span></tt></dt>
+            <dd><p class="first">Set a &quot;complex&quot; libavfilter filter, which means a single filter graph can
+            take input from multiple source audio and video tracks. The graph can result
+            in a single audio or video output (or both).</p>
+            <p>Currently, the filter graph labels are used to select the participating
+            input tracks and audio/video output. The following rules apply:</p>
+            <ul class="simple">
+            <li>A label of the form <tt class="docutils literal">aidN</tt> selects audio track N as input (e.g.
+            <tt class="docutils literal">aid1</tt>).</li>
+            <li>A label of the form <tt class="docutils literal">vidN</tt> selects video track N as input.</li>
+            <li>A label named <tt class="docutils literal">ao</tt> will be connected to the audio input.</li>
+            <li>A label named <tt class="docutils literal">vo</tt> will be connected to the video output.</li>
+            </ul>
+            <p>Each label can be used only once. If you want to use e.g. an audio stream
+            for multiple filters, you need to use the <tt class="docutils literal">asplit</tt> filter. Multiple
+            video or audio outputs are not possible, but you can use filters to merge
+            them into one.</p>
+            <p>The complex filter can not be changed yet during playback. It's also not
+            possible to change the tracks connected to the filter at runtime. Other
+            tracks, as long as they're not connected to the filter, and the
+            corresponding output is not connected to the filter, can still be freely
+            changed.</p>
+            <p>Note that the normal filter chains (<tt class="docutils literal"><span class="pre">--af</span></tt>, <tt class="docutils literal"><span class="pre">--vf</span></tt>) are applied between
+            the complex graphs (e.g. <tt class="docutils literal">ao</tt> label) and the actual output.</p>
+            <div class="admonition-examples admonition">
+            <p class="first admonition-title">Examples</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [ao] [t] ; [t] aphasemeter [vo]'</tt>
+            Play audio track 1, and visualize it as video using the <tt class="docutils literal">aphasemeter</tt>
+            filter.</li>
+            <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> [aid2] amix [ao]'</tt>
+            Play audio track 1 and 2 at the same time.</li>
+            <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[vid1]</span> [vid2] vstack [vo]'</tt>
+            Stack video track 1 and 2 and play them at the same time. Note that
+            both tracks need to have the same width, or filter initialization
+            will fail (you can add <tt class="docutils literal">scale</tt> filters before the <tt class="docutils literal">vstack</tt> filter
+            to fix the size).</li>
+            <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [ao] [t] ; [t] aphasemeter [t2] ; [vid1] [t2] overlay [vo]'</tt>
+            Play audio track 1, and overlay its visualization over video track 1.</li>
+            <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [t1] [ao] ; [t1] showvolume [t2] ; [vid1] [t2] overlay [vo]'</tt>
+            Play audio track 1, and overlay the measured volume for each speaker
+            over video track 1.</li>
+            </ul>
+            </div>
+            <p class="last">See the FFmpeg libavfilter documentation for details on the filter.</p>
+            </dd>
             </dl>
             </div>
             </div>
@@ -4848,7 +4947,7 @@
             <dd>Disable the scaler if the video image is not resized. In that case,
             <tt class="docutils literal">bilinear</tt> is used instead whatever is set with <tt class="docutils literal">scale</tt>. Bilinear
             will reproduce the source image perfectly if no scaling is performed.
-            Note that this option never affects <tt class="docutils literal">cscale</tt>.</dd>
+            Enabled by default. Note that this option never affects <tt class="docutils literal">cscale</tt>.</dd>
             <dt><tt class="docutils literal">pbo</tt></dt>
             <dd><p class="first">Enable use of PBOs. On some drivers this can be faster, especially if
             the source video size is huge (e.g. so called &quot;4K&quot; video). On other
@@ -4941,6 +5040,18 @@
             excessive ringing artifacts in the temporal domain (which typically
             manifest themselves as short flashes or fringes of black, mostly
             around moving edges) in exchange for potentially adding more blur.</dd>
+            <dt><tt class="docutils literal"><span class="pre">interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
+            <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
+            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
+            where <tt class="docutils literal">vfps</tt> is the speed-adjusted display FPS, and <tt class="docutils literal">disphz</tt> the
+            display refresh rate.</p>
+            <p>The default is intended to almost always enable interpolation if the
+            playback rate is even slightly different from the display refresh rate.
+            But note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small
+            deviations in the rate can disable interpolation and introduce a
+            discontinuity every other minute.</p>
+            <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">tscale-radius</span></tt>, etc.</dt>
             <dd><p class="first">Set filter parameters for <tt class="docutils literal">dscale</tt>, <tt class="docutils literal">cscale</tt> and <tt class="docutils literal">tscale</tt>,
             respectively.</p>
@@ -5038,8 +5149,11 @@
             </dl>
             <p>These files must define a function with the following signature:</p>
             <pre class="literal-block">
-            vec4 sample(sampler2D tex, vec2 pos, vec2 tex_size)
+            vec4 sample_pixel(sampler2D tex, vec2 pos, vec2 tex_size)
             </pre>
+            <p>(If there is no string <tt class="docutils literal">sample_pixel</tt> in the shader script, it will
+            use <tt class="docutils literal">sample</tt> instead. This is a compatibility hack for older shader
+            scripts, and is deprecated.)</p>
             <p>The meanings of the parameters are as follows:</p>
             <dl class="docutils">
             <dt>sampler2D tex</dt>
@@ -5162,7 +5276,7 @@
             <dt>angle</dt>
             <dd>Direct3D11 through the OpenGL ES translation layer ANGLE. This
             supports almost everything the <tt class="docutils literal">win</tt> backend does, except ICC
-            profiles, high bit depth video input, and the <tt class="docutils literal">nnedi3</tt> prescaler.</dd>
+            profiles, and the <tt class="docutils literal">nnedi3</tt> prescaler.</dd>
             <dt>dxinterop (experimental)</dt>
             <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation.
             Works on Nvidia and AMD only.</dd>
@@ -5192,8 +5306,8 @@
             influence performance and quality of the video output.
             <tt class="docutils literal">fmt</tt> can be one of: rgb, rgba, rgb8, rgb10, rgb10_a2, rgb16, rgb16f,
             rgb32f, rgba12, rgba16, rgba16f, rgba32f.
-            Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL, and rgb10_a2 on
-            GLES (e.g. ANGLE).</dd>
+            Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL, and rgba16f or
+            rgb10_a2 on GLES (e.g. ANGLE).</dd>
             <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.1..2.0&gt;</span></tt></dt>
             <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways
             (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt>
@@ -5606,13 +5720,9 @@
             (If you just want to set defaults for this filter that will be used
             even by automatically inserted lavrresample instances, you should
             prefer setting them with <tt class="docutils literal"><span class="pre">--af-defaults=lavrresample:...</span></tt>.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">normalize=&lt;yes|no&gt;</span></tt></dt>
-            <dd>Whether to normalize when remixing channel layouts (default: yes). This
-            is e.g. applied when downmixing surround audio to stereo. The advantage
-            is that this guarantees that no clipping can happen. Unfortunately,
-            this can also lead to too low volume levels. Whether you enable or
-            disable this is essentially a matter of taste, but the default uses
-            the safer choice.</dd>
+            <dt><tt class="docutils literal"><span class="pre">normalize=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd>Whether to normalize when remixing channel layouts (default: auto).
+            <tt class="docutils literal">auto</tt> uses the value set by <tt class="docutils literal"><span class="pre">--audio-normalize-downmix</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">o=&lt;string&gt;</span></tt></dt>
             <dd>Set AVOptions on the SwrContext or AVAudioResampleContext. These should
             be documented by FFmpeg or Libav.</dd>
@@ -6379,8 +6489,7 @@
             </table>
             </dd>
             <dt><tt class="docutils literal">&lt;primaries&gt;</tt></dt>
-            <dd><blockquote class="first">
-            <p>RGB primaries the source file was encoded with. Normally this should be set
+            <dd><p class="first">RGB primaries the source file was encoded with. Normally this should be set
             in the file header, but when playing broken or mistagged files this can be
             used to override the setting.</p>
             <p>This option only affects video output drivers that perform color
@@ -6395,7 +6504,7 @@
             BT.601-525 is used. If the video resolution is anything else, BT.709 is
             used.</p>
             <p>Available primaries are:</p>
-            <table class="docutils field-list" frame="void" rules="none">
+            <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
@@ -6419,8 +6528,7 @@
             </tr>
             </tbody>
             </table>
-            </blockquote>
-            <dl class="last docutils">
+            </dd>
             <dt><tt class="docutils literal">&lt;gamma&gt;</tt></dt>
             <dd><p class="first">Gamma function the source file was encoded with. Normally this should be set
             in the file header, but when playing broken or mistagged files this can be
@@ -6452,8 +6560,6 @@
             </tr>
             </tbody>
             </table>
-            </dd>
-            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;stereo-in&gt;</span></tt></dt>
             <dd>Set the stereo mode the video is assumed to be encoded in. Takes the
@@ -7723,6 +7829,16 @@
             is the LSB). The contents of the padding <tt class="docutils literal">X</tt> is undefined. The <tt class="docutils literal">data</tt>
             field is of type MPV_FORMAT_BYTE_ARRAY with the actual image data. The image
             is freed as soon as the result node is freed.</dd>
+            <dt><tt class="docutils literal"><span class="pre">vf-command</span> &quot;&lt;label&gt;&quot; &quot;&lt;cmd&gt;&quot; &quot;&lt;args&gt;&quot;</tt></dt>
+            <dd><p class="first">Send a command to the filter with the given <tt class="docutils literal">&lt;label&gt;</tt>. Use <tt class="docutils literal">all</tt> to send
+            it to all filters at once. The command and argument string is filter
+            specific. Currently, this only works with the <tt class="docutils literal">lavfi</tt> filter - see
+            the libavfilter documentation for which commands a filter supports.</p>
+            <p class="last">Note that the <tt class="docutils literal">&lt;label&gt;</tt> is a mpv filter label, not a libavfilter filter
+            name.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">af-command</span> &quot;&lt;label&gt;&quot; &quot;&lt;cmd&gt;&quot; &quot;&lt;args&gt;&quot;</tt></dt>
+            <dd>Same as <tt class="docutils literal"><span class="pre">vf-command</span></tt>, but for audio filters.</dd>
             </dl>
             <p>Undocumented commands: <tt class="docutils literal"><span class="pre">tv-last-channel</span></tt> (TV/DVB only),
             <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
@@ -7777,6 +7893,16 @@
             you could set per-file options with by setting the property
             <tt class="docutils literal"><span class="pre">file-local-options/&lt;option</span> name&gt;</tt>. The player will wait until all
             hooks are run.</dd>
+            <dt><tt class="docutils literal">on_preloaded</tt></dt>
+            <dd><p class="first">Called after a file has been opened, and before tracks are selected and
+            decoders are created. This has some usefulness if an API users wants
+            to select tracks manually, based on the set of available tracks. It's
+            also useful to initialize <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> in a specific way by API,
+            without having to &quot;probe&quot; the available streams at first.</p>
+            <p class="last">Note that this does not yet apply default track selection. Which operations
+            exactly can be done and not be done, and what information is available and
+            what is not yet available yet, is all subject to change.</p>
+            </dd>
             <dt><tt class="docutils literal">on_unload</tt></dt>
             <dd>Run before closing a file, and before actually uninitializing
             everything. It's not possible to resume playback in this state.</dd>
@@ -8155,10 +8281,26 @@
             the same underlying code is used for seeking and resyncing.)</dd>
             <dt><tt class="docutils literal"><span class="pre">hr-seek</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--hr-seek</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
+            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise. This has
+            implications for <tt class="docutils literal"><span class="pre">--softvol=no</span></tt> mode: if the mixer is active, changing
+            <tt class="docutils literal">volume</tt> doesn't actually change anything on the system mixer. If the
+            <tt class="docutils literal"><span class="pre">--volume</span></tt> or <tt class="docutils literal"><span class="pre">--mute</span></tt> option are used, these might not be applied
+            property until the mixer becomes active either. (The options, if set, will
+            just overwrite the mixer state at audio initialization.)</p>
+            <p>While the behavior with <tt class="docutils literal"><span class="pre">mixer-active==yes</span></tt> is relatively well-defined,
+            the <tt class="docutils literal">no</tt> case will provide possibly wrong or insignificant values.</p>
+            <p class="last">Note that an active mixer does not necessarily imply active audio output,
+            although this is implied in the current implementation.</p>
+            </dd>
             <dt><tt class="docutils literal">volume</tt> (RW)</dt>
-            <dd>Current volume (see <tt class="docutils literal"><span class="pre">--volume</span></tt> for details).</dd>
+            <dd>Current volume (see <tt class="docutils literal"><span class="pre">--volume</span></tt> for details). Also see <tt class="docutils literal"><span class="pre">mixer-active</span></tt>
+            property.</dd>
+            <dt><tt class="docutils literal"><span class="pre">volume-max</span></tt></dt>
+            <dd>Current maximum value the volume property can be set to. (This may depend
+            on the <tt class="docutils literal"><span class="pre">--softvol-max</span></tt> option.)</dd>
             <dt><tt class="docutils literal">mute</tt> (RW)</dt>
-            <dd>Current mute status (<tt class="docutils literal">yes</tt>/<tt class="docutils literal">no</tt>).</dd>
+            <dd>Current mute status (<tt class="docutils literal">yes</tt>/<tt class="docutils literal">no</tt>). Also see <tt class="docutils literal"><span class="pre">mixer-active</span></tt> property.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-delay</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--audio-delay</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-codec</span></tt></dt>
@@ -8504,9 +8646,6 @@
             <dd>Track title as it is stored in the file. Not always available.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt></dt>
             <dd>Track language as identified by the file. Not always available.</dd>
-            <dt><tt class="docutils literal"><span class="pre">track-list/N/audio-channels</span></tt></dt>
-            <dd>For audio tracks, the number of audio channels in the audio stream.
-            Not always accurate (depends on container hints). Not always available.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/albumart</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt> if this is a video track that consists of a single picture,
             <tt class="docutils literal">no</tt> or unavailable otherwise. This is used for video tracks that are
@@ -8534,6 +8673,22 @@
             (<tt class="docutils literal"><span class="pre">--demuxer=lavf</span></tt>) is used. For mkv files, the index will usually
             match even if the default (builtin) demuxer is used, but there is
             no hard guarantee.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/decoder-desc</span></tt></dt>
+            <dd>If this track is being decoded, the human-readable decoder name,</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-w</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/demux-h</span></tt></dt>
+            <dd>Video size hint as indicated by the container. (Not always accurate.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-channel-count</span></tt></dt>
+            <dd>Number of audio channels as indicated by the container. (Not always
+            accurate - in particular, the track could be decoded as a different
+            number of channels.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-channels</span></tt></dt>
+            <dd>Channel layout as indicated by the container. (Not always accurate.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-samplerate</span></tt></dt>
+            <dd>Audio sample rate as indicated by the container. (Not always accurate.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-fps</span></tt></dt>
+            <dd>Video FPS as indicated by the container. (Not always accurate.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/audio-channels</span></tt> (deprecated)</dt>
+            <dd>Deprecated alias for <tt class="docutils literal"><span class="pre">track-list/N/demux-channel-count</span></tt>.</dd>
             </dl>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -8546,13 +8701,20 @@
                     &quot;src-id&quot;            MPV_FORMAT_INT64
                     &quot;title&quot;             MPV_FORMAT_STRING
                     &quot;lang&quot;              MPV_FORMAT_STRING
-                    &quot;audio-channels&quot;    MPV_FORMAT_INT64
                     &quot;albumart&quot;          MPV_FORMAT_FLAG
                     &quot;default&quot;           MPV_FORMAT_FLAG
                     &quot;forced&quot;            MPV_FORMAT_FLAG
                     &quot;external&quot;          MPV_FORMAT_FLAG
                     &quot;external-filename&quot; MPV_FORMAT_STRING
                     &quot;codec&quot;             MPV_FORMAT_STRING
+                    &quot;decoder-desc&quot;      MPV_FORMAT_STRING
+                    &quot;demux-w&quot;           MPV_FORMAT_INT64
+                    &quot;demux-h&quot;           MPV_FORMAT_INT64
+                    &quot;demux-channel-count&quot; MPV_FORMAT_INT64
+                    &quot;demux-channels&quot;    MPV_FORMAT_STRING
+                    &quot;demux-samplerate&quot;  MPV_FORMAT_INT64
+                    &quot;demux-fps&quot;         MPV_FORMAT_DOUBLE
+                    &quot;audio-channels&quot;    MPV_FORMAT_INT64
             </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">chapter-list</span></tt></dt>
@@ -8716,12 +8878,46 @@
             returned without trailing <tt class="docutils literal">://</tt> suffix (which is still always required).
             In some cases, the protocol will not actually be supported (consider
             <tt class="docutils literal">https</tt> if ffmpeg is not compiled with TLS support).</dd>
+            <dt><tt class="docutils literal"><span class="pre">decoder-list</span></tt></dt>
+            <dd><p class="first">List of decoders supported. This lists decoders which can be passed to
+            <tt class="docutils literal"><span class="pre">--vd</span></tt> and <tt class="docutils literal"><span class="pre">--ad</span></tt>.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">family</tt></dt>
+            <dd>Decoder driver. Usually <tt class="docutils literal">lavc</tt> for libavcodec.</dd>
+            <dt><tt class="docutils literal">codec</tt></dt>
+            <dd>Canonical codec name, which identifies the format the decoder can
+            handle.</dd>
+            <dt><tt class="docutils literal">decoder</tt></dt>
+            <dd>The name of the decoder itself. Often, this is the same as <tt class="docutils literal">codec</tt>.
+            Sometimes it can be different. It is used to distinguish multiple
+            decoders for the same codec.</dd>
+            <dt><tt class="docutils literal">description</tt></dt>
+            <dd>Human readable description of the decoder and codec.</dd>
+            </dl>
+            <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+            or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+            the following contents:</p>
+            <pre class="last literal-block">
+            MPV_FORMAT_NODE_ARRAY
+                MPV_FORMAT_NODE_MAP (for each decoder entry)
+                    &quot;family&quot;        MPV_FORMAT_STRING
+                    &quot;codec&quot;         MPV_FORMAT_STRING
+                    &quot;decoder&quot;       MPV_FORMAT_STRING
+                    &quot;description&quot;   MPV_FORMAT_STRING
+            </pre>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">mpv-version</span></tt></dt>
             <dd>Return the mpv version/copyright string. Depending on how the binary was
             built, it might contain either a release version, or just a git hash.</dd>
             <dt><tt class="docutils literal"><span class="pre">mpv-configuration</span></tt></dt>
             <dd>Return the configuration arguments which were passed to the build system
             (typically the way <tt class="docutils literal">./waf configure ...</tt> was invoked).</dd>
+            <dt><tt class="docutils literal"><span class="pre">ffmpeg-version</span></tt></dt>
+            <dd>Return the contents of the <tt class="docutils literal">av_version_info()</tt> API call. This is a string
+            which identifies the build in some way, either through a release version
+            number, or a git hash. This applies to Libav as well (the property is
+            still named the same.) This property is unavailable if mpv is linked against
+            older FFmpeg and Libav versions.</dd>
             <dt><tt class="docutils literal"><span class="pre">options/&lt;name&gt;</span></tt> (RW)</dt>
             <dd>Read-only access to value of option <tt class="docutils literal"><span class="pre">--&lt;name&gt;</span></tt>. Most options can be
             changed at runtime by writing to this property. Note that many options
@@ -9118,12 +9314,12 @@
             different key. See the <a class="reference internal" href="#script-commands">Script Commands</a> section.</p>
             <table border="1" class="docutils">
             <colgroup>
-            <col width="21%" />
-            <col width="79%" />
+            <col width="18%" />
+            <col width="82%" />
             </colgroup>
             <tbody valign="top">
             <tr><td>del</td>
-            <td>Hide the OSC permanently until mpv is restarted.</td>
+            <td>Cycles visibility between never / auto (mouse-move) / always</td>
             </tr>
             </tbody>
             </table>
@@ -9216,8 +9412,8 @@
             <dt><tt class="docutils literal">hidetimeout</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: 500</div>
-            <div class="line">Duration in ms until the OSC hides if no mouse movement, negative value
-            disables auto-hide</div>
+            <div class="line">Duration in ms until the OSC hides if no mouse movement, must not be
+            negative</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">fadeduration</tt></dt>
@@ -9268,6 +9464,12 @@
             <div class="line">Display timecodes with milliseconds</div>
             </div>
             </dd>
+            <dt><tt class="docutils literal">visibility</tt></dt>
+            <dd><div class="first last line-block">
+            <div class="line">Default: auto (auto hide/show on mouse move)</div>
+            <div class="line">Also supports <tt class="docutils literal">never</tt> and <tt class="docutils literal">always</tt></div>
+            </div>
+            </dd>
             </dl>
             </div>
             <div class="section" id="script-commands">
@@ -9275,20 +9477,19 @@
             <p>The OSC script listens to certain script commands. These commands can bound
             in <tt class="docutils literal">input.conf</tt>, or sent by other scripts.</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">enable-osc</span></tt></dt>
-            <dd>Undoes <tt class="docutils literal"><span class="pre">disable-osc</span></tt> or the effect of the <tt class="docutils literal">del</tt> key.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disable-osc</span></tt></dt>
-            <dd>Hide the OSC permanently. This is also what the <tt class="docutils literal">del</tt> key does.</dd>
             <dt><tt class="docutils literal"><span class="pre">osc-message</span></tt></dt>
             <dd>Show a message on screen using the OSC. First argument is the message,
             second the duration in seconds.</dd>
+            <dt><tt class="docutils literal"><span class="pre">osc-visibility</span></tt></dt>
+            <dd>Controls visibility mode <tt class="docutils literal">never</tt> / <tt class="docutils literal">auto</tt> (on mouse move) / <tt class="docutils literal">always</tt>
+            and also <tt class="docutils literal">cycle</tt> to cycle between the modes</dd>
             </dl>
             <p>Example</p>
             <p>You could put this into <tt class="docutils literal">input.conf</tt> to hide the OSC with the <tt class="docutils literal">a</tt> key and
-            to unhide it with <tt class="docutils literal">b</tt>:</p>
+            to set auto mode (the default) with <tt class="docutils literal">b</tt>:</p>
             <pre class="literal-block">
-            a script_message disable-osc
-            b script_message enable-osc
+            a script_message osc-visibility never
+            b script_message osc-visibility auto
             </pre>
             </div>
             </div>
