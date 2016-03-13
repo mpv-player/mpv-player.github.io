@@ -706,7 +706,9 @@
             <dt><tt class="docutils literal"><span class="pre">edl://[edl</span> specification as in <span class="pre">edl-mpv.rst]</span></tt></dt>
             <dd>Stitch together parts of multiple files and play them.</dd>
             <dt><tt class="docutils literal"><span class="pre">null://</span></tt></dt>
-            <dd>Simulate an empty file.</dd>
+            <dd>Simulate an empty file. If opened for writing, it will discard all data.
+            The <tt class="docutils literal">null</tt> demuxer will specifically pass autoprobing if this protocol
+            is used (while it's not automatically invoked for empty files).</dd>
             <dt><tt class="docutils literal"><span class="pre">memory://data</span></tt></dt>
             <dd>Use the <tt class="docutils literal">data</tt> part as source data.</dd>
             </dl>
@@ -1293,6 +1295,9 @@
             </tr>
             <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X 10.8 and up only)</td>
             </tr>
+            <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl:backend=angle</span></tt> or
+            <tt class="docutils literal"><span class="pre">--vo=opengl:backend=dxinterop</span></tt> (Windows only)</td>
+            </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
             <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=rpi</span></tt> (Raspberry Pi only - default if available)</td>
@@ -1310,9 +1315,13 @@
             (automatically used if available). You can also try the old GLX backend by
             forcing it with <tt class="docutils literal"><span class="pre">--vo=opengl:backend=x11</span></tt>, but the vaapi/GLX interop is
             said to be slower than <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>.</p>
-            <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> mode allows you to use vaapi with any VO. Because
-            this copies the decoded video back to system RAM, it's likely less efficient
-            than the <tt class="docutils literal">vaapi</tt> mode.</p>
+            <p>Most video filters will not work with hardware decoding as they are
+            primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
+            <tt class="docutils literal">vdpaurb</tt> and <tt class="docutils literal">vavpp</tt>. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for more details.</p>
+            <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> and <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> modes allow you to use hardware
+            decoding with any VO, backend or filter. Because these copy the decoded
+            video back to system RAM, they're likely less efficient than the <tt class="docutils literal">vaapi</tt>
+            or <tt class="docutils literal">dxva2</tt> modes respectivley.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">When using this switch, hardware decoding is still only done for some
@@ -4193,6 +4202,8 @@
             <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [t1] [ao] ; [t1] showvolume [t2] ; [vid1] [t2] overlay [vo]'</tt>
             Play audio track 1, and overlay the measured volume for each speaker
             over video track 1.</li>
+            <li><tt class="docutils literal"><span class="pre">null://</span> <span class="pre">--lavfi-complex='life</span> [vo]'</tt>
+            Conways' Life Game.</li>
             </ul>
             </div>
             <p class="last">See the FFmpeg libavfilter documentation for details on the filter.</p>
@@ -5068,13 +5079,11 @@
             better than without it) since it will extend the size to match only the
             milder of the scale factors between the axes.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">prescale=&lt;filter&gt;</span></tt></dt>
-            <dd><p class="first">This option provides non-convolution-based filters for upscaling. These
-            filters resize the video to multiple of the original size (all currently
-            supported prescalers can only perform image doubling in a single pass).
-            Generally another convolution based filter (the main scaler) will be
-            applied after prescaler to match the target display size.</p>
-            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">prescale-luma=&lt;filter&gt;</span></tt></dt>
+            <dd><p class="first">Apply additional pre-scaling (image doubling) on the luma plane
+            (if present). As the name implies, these will run before the main
+            upscaling pass.</p>
+            <dl class="last docutils">
             <dt><tt class="docutils literal">none</tt></dt>
             <dd>Disable all prescalers. This is the default.</dd>
             <dt><tt class="docutils literal">superxbr</tt></dt>
@@ -5089,9 +5098,6 @@
             to work smoothly (as of 2015).</p>
             </dd>
             </dl>
-            <p class="last">Note that all the filters above are designed (or implemented) to process
-            luma plane only and probably won't work as intended for video in RGB
-            format.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">prescale-passes=&lt;1..5&gt;</span></tt></dt>
             <dd>The number of passes to apply the prescaler (defaults to be 1). Setting
@@ -5279,7 +5285,8 @@
             profiles, and the <tt class="docutils literal">nnedi3</tt> prescaler.</dd>
             <dt>dxinterop (experimental)</dt>
             <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation.
-            Works on Nvidia and AMD only.</dd>
+            Works on Nvidia and AMD. Newer Intel chips with the latest drivers
+            may also work.</dd>
             <dt>x11</dt>
             <dd>X11/GLX</dd>
             <dt>wayland</dt>
@@ -8033,8 +8040,9 @@
             <dd>Filename (full path) of the stream layer filename. (This is probably
             useless. It looks like this can be different from <tt class="docutils literal">path</tt> only when
             using e.g. ordered chapters.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">stream-pos</span></tt> (RW)</dt>
-            <dd>Raw byte position in source stream.</dd>
+            <dt><tt class="docutils literal"><span class="pre">stream-pos</span></tt></dt>
+            <dd>Raw byte position in source stream. Technically, this returns the position
+            of the most recent packet passed to a decoder.</dd>
             <dt><tt class="docutils literal"><span class="pre">stream-end</span></tt></dt>
             <dd>Raw end position in bytes in source stream.</dd>
             <dt><tt class="docutils literal">duration</tt></dt>
@@ -8283,10 +8291,10 @@
             <dd>See <tt class="docutils literal"><span class="pre">--hr-seek</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
             <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise. This has
-            implications for <tt class="docutils literal"><span class="pre">--softvol=no</span></tt> mode: if the mixer is active, changing
+            implications for <tt class="docutils literal"><span class="pre">--softvol=no</span></tt> mode: if the mixer is inactive, changing
             <tt class="docutils literal">volume</tt> doesn't actually change anything on the system mixer. If the
             <tt class="docutils literal"><span class="pre">--volume</span></tt> or <tt class="docutils literal"><span class="pre">--mute</span></tt> option are used, these might not be applied
-            property until the mixer becomes active either. (The options, if set, will
+            properly until the mixer becomes active either. (The options, if set, will
             just overwrite the mixer state at audio initialization.)</p>
             <p>While the behavior with <tt class="docutils literal"><span class="pre">mixer-active==yes</span></tt> is relatively well-defined,
             the <tt class="docutils literal">no</tt> case will provide possibly wrong or insignificant values.</p>
@@ -8887,7 +8895,7 @@
             <dt><tt class="docutils literal">codec</tt></dt>
             <dd>Canonical codec name, which identifies the format the decoder can
             handle.</dd>
-            <dt><tt class="docutils literal">decoder</tt></dt>
+            <dt><tt class="docutils literal">driver</tt></dt>
             <dd>The name of the decoder itself. Often, this is the same as <tt class="docutils literal">codec</tt>.
             Sometimes it can be different. It is used to distinguish multiple
             decoders for the same codec.</dd>
@@ -8902,10 +8910,14 @@
                 MPV_FORMAT_NODE_MAP (for each decoder entry)
                     &quot;family&quot;        MPV_FORMAT_STRING
                     &quot;codec&quot;         MPV_FORMAT_STRING
-                    &quot;decoder&quot;       MPV_FORMAT_STRING
+                    &quot;driver&quot;        MPV_FORMAT_STRING
                     &quot;description&quot;   MPV_FORMAT_STRING
             </pre>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">encoder-list</span></tt></dt>
+            <dd>List of libavcodec encoders. This has the same format as <tt class="docutils literal"><span class="pre">decoder-list</span></tt>.
+            The encoder names (<tt class="docutils literal">driver</tt> entries) can be passed to <tt class="docutils literal"><span class="pre">--ovc</span></tt> and
+            <tt class="docutils literal"><span class="pre">--oac</span></tt> (without the <tt class="docutils literal">lavc:</tt> prefix required by <tt class="docutils literal"><span class="pre">--vd</span></tt> and <tt class="docutils literal"><span class="pre">--ad</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">mpv-version</span></tt></dt>
             <dd>Return the mpv version/copyright string. Depending on how the binary was
             built, it might contain either a release version, or just a git hash.</dd>
@@ -10430,8 +10442,6 @@
             <dt><tt class="docutils literal">XDG_CONFIG_DIRS</tt></dt>
             <dd>If set, XDG-style system configuration directories are used. Otherwise,
             the UNIX convention (<tt class="docutils literal">PREFIX/etc/mpv/</tt>) is used.</dd>
-            <dt><tt class="docutils literal">TERM</tt></dt>
-            <dd>Used to determine terminal type.</dd>
             <dt><tt class="docutils literal">MPV_HOME</tt></dt>
             <dd>Directory where mpv looks for user settings. Overrides <tt class="docutils literal">HOME</tt>, and mpv
             will try to load the config file as <tt class="docutils literal">$MPV_HOME/mpv.conf</tt>.</dd>
@@ -10440,8 +10450,7 @@
             This is an integer, and the resulting verbosity corresponds to the number
             of <tt class="docutils literal"><span class="pre">--v</span></tt> options passed to the command line.</dd>
             <dt><tt class="docutils literal">MPV_LEAK_REPORT</tt></dt>
-            <dd>If set to <tt class="docutils literal">1</tt>, enable internal talloc leak reporting. Note that this can
-            cause trouble with multithreading, so only developers should use this.</dd>
+            <dd>If set to <tt class="docutils literal">1</tt>, enable internal talloc leak reporting.</dd>
             <dt><tt class="docutils literal">LADSPA_PATH</tt></dt>
             <dd>Specifies the search path for LADSPA plugins. If it is unset, fully
             qualified path names must be used.</dd>
