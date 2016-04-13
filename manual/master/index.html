@@ -98,7 +98,7 @@
             <tt class="docutils literal"><span class="pre">--hr-seek</span></tt>).</dd>
             <dt>Ctrl+LEFT and Ctrl+RIGHT</dt>
             <dd>Seek to the previous/next subtitle. Subject to some restrictions and
-            might not always work; see <tt class="docutils literal">sub_seek</tt> command.</dd>
+            might not always work; see <tt class="docutils literal"><span class="pre">sub-seek</span></tt> command.</dd>
             <dt>[ and ]</dt>
             <dd>Decrease/increase current playback speed by 10%.</dd>
             <dt>{ and }</dt>
@@ -1300,6 +1300,8 @@
             </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
+            <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">experimental (Windows only)</td>
+            </tr>
             <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=rpi</span></tt> (Raspberry Pi only - default if available)</td>
             </tr>
             </tbody>
@@ -1321,7 +1323,7 @@
             <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> and <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> modes allow you to use hardware
             decoding with any VO, backend or filter. Because these copy the decoded
             video back to system RAM, they're likely less efficient than the <tt class="docutils literal">vaapi</tt>
-            or <tt class="docutils literal">dxva2</tt> modes respectivley.</p>
+            or <tt class="docutils literal">dxva2</tt> modes respectively.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">When using this switch, hardware decoding is still only done for some
@@ -1407,13 +1409,11 @@
             <dt><tt class="docutils literal"><span class="pre">--video-unscaled</span></tt></dt>
             <dd><p class="first">Disable scaling of the video. If the window is larger than the video,
             black bars are added. Otherwise, the video is cropped. The video still
-            can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. (But not all; for
-            example <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> does nothing if this option is enabled.)</p>
-            <p>The video and monitor aspects aspect will be ignored. Aspect correction
-            would require scaling the video in the X or Y direction, but this option
-            disables scaling, disabling all aspect correction.</p>
+            can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options.</p>
             <p>Note that the scaler algorithm may still be used, even if the video isn't
-            scaled. For example, this can influence chroma conversion.</p>
+            scaled. For example, this can influence chroma conversion. The video will
+            also still be scaled in one dimension if the source uses non-square pixels
+            (e.g. anamorphic widescreen DVDs).</p>
             <p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-pan-x=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-pan-y=&lt;value&gt;</span></tt></dt>
@@ -1446,11 +1446,10 @@
             appear in files, but can't be handled properly by mpv.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-zoom=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Adjust the video display scale factor by the given value. The unit is in
-            fractions of the (scaled) window video size.</p>
-            <p>For example, given a 1280x720 video shown in a 1280x720 window,
-            <tt class="docutils literal"><span class="pre">--video-zoom=-0.1</span></tt> would make the video by 128 pixels smaller in
-            X direction, and 72 pixels in Y direction.</p>
+            <dd><p class="first">Adjust the video display scale factor by the given value. The parameter is
+            given log 2. For example, <tt class="docutils literal"><span class="pre">--video-zoom=0</span></tt> is unscaled,
+            <tt class="docutils literal"><span class="pre">--video-zoom=1</span></tt> is twice the size, <tt class="docutils literal"><span class="pre">--video-zoom=-2</span></tt> is one fourth of
+            the size, and so on.</p>
             <p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-align-x=&lt;-1-1&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-align-y=&lt;-1-1&gt;</span></tt></dt>
@@ -2765,8 +2764,8 @@
             <p class="last">This option might be removed in the future.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--x11-bypass-compositor=&lt;yes|no&gt;</span></tt></dt>
-            <dd>If set to <tt class="docutils literal">yes</tt> (default), then ask the compositor to unredirect the
-            mpv window. This uses the <tt class="docutils literal">_NET_WM_BYPASS_COMPOSITOR</tt> hint.</dd>
+            <dd>If set to <tt class="docutils literal">yes</tt>, then ask the compositor to unredirect the mpv window
+            (default: no). This uses the <tt class="docutils literal">_NET_WM_BYPASS_COMPOSITOR</tt> hint.</dd>
             </dl>
             </div>
             <div class="section" id="disc-devices">
@@ -3085,7 +3084,7 @@
             <dt><tt class="docutils literal"><span class="pre">--input-file=&lt;filename&gt;</span></tt></dt>
             <dd><p class="first">Read commands from the given file. Mostly useful with a FIFO. Since
             mpv 0.7.0 also understands JSON commands (see <a class="reference internal" href="#json-ipc">JSON IPC</a>), but you can't
-            get replies or events. Use <tt class="docutils literal"><span class="pre">--input-unix-socket</span></tt> for something
+            get replies or events. Use <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> for something
             bi-directional. On MS Windows, JSON commands are not available.</p>
             <p>This can also specify a direct file descriptor with <tt class="docutils literal"><span class="pre">fd://N</span></tt> (UNIX only).
             In this case, JSON replies will be written if the FD is writable.</p>
@@ -3103,10 +3102,16 @@
             <tt class="docutils literal">/dev/stdin</tt> (or the equivalent on your system), use stdin in a playlist
             or intend to read from stdin later on via the loadfile or loadlist slave
             commands.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--input-unix-socket=&lt;filename&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--input-ipc-server=&lt;filename&gt;</span></tt></dt>
             <dd><p class="first">Enable the IPC support and create the listening socket at the given path.</p>
-            <p>See <a class="reference internal" href="#json-ipc">JSON IPC</a> for details.</p>
-            <p class="last">Not available on MS Windows.</p>
+            <p>On Linux and Unix, the given path is a regular filesystem path. On Windows,
+            named pipes are used, so the path refers to the pipe namespace
+            (<tt class="docutils literal"><span class="pre">\\.\pipe\&lt;name&gt;</span></tt>). If the <tt class="docutils literal"><span class="pre">\\.\pipe\</span></tt> prefix is missing, mpv will add
+            it automatically before creating the pipe, so
+            <tt class="docutils literal"><span class="pre">--input-ipc-server=/tmp/mpv-socket</span></tt> and
+            <tt class="docutils literal"><span class="pre">--input-ipc-server=\\.\pipe\tmp\mpv-socket</span></tt> are equivalent for IPC on
+            Windows.</p>
+            <p class="last">See <a class="reference internal" href="#json-ipc">JSON IPC</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--input-appleremote=&lt;yes|no&gt;</span></tt></dt>
             <dd>(OS X only)
@@ -3238,6 +3243,8 @@
             <dd>Gaussian blur factor. 0 means no blur applied (default).</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-bold=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-bold=&lt;yes|no&gt;</span></tt></dt>
             <dd>Format text on bold.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-italic=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-italic=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Format text on italic.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-border-color=&lt;color&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-border-color=&lt;color&gt;</span></tt></dt>
             <dd><p class="first">See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for the OSD/sub font border.</p>
             <div class="note last">
@@ -3559,7 +3566,7 @@
             <a class="reference internal" href="#environment-variables">ENVIRONMENT VARIABLES</a> for details.</p>
             </div>
             <p>Available levels:</p>
-            <blockquote class="last">
+            <blockquote>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
@@ -3585,6 +3592,19 @@
             </tbody>
             </table>
             </blockquote>
+            <div class="admonition-example admonition last">
+            <p class="first admonition-title">Example</p>
+            <pre class="literal-block">
+            mpv --msg-level=ao/sndio=no
+            </pre>
+            <p>Completely silences the output of ao_sndio, which uses the log
+            prefix <tt class="docutils literal">[ao/sndio]</tt>.</p>
+            <pre class="literal-block">
+            mpv --msg-level=all=warn,ao/alsa=error
+            </pre>
+            <p class="last">Only show warnings or worse, and let the ao_alsa output show errors
+            only.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--term-osd,</span> <span class="pre">--no-term-osd</span></tt>, <tt class="docutils literal"><span class="pre">--term-osd=force</span></tt></dt>
             <dd><p class="first">Display OSD messages on the console when no video output is available.
@@ -5360,6 +5380,8 @@
             <dd>ProPhoto RGB (ROMM)</dd>
             <dt>cie1931</dt>
             <dd>CIE 1931 RGB (not to be confused with CIE XYZ)</dd>
+            <dt>dci-p3</dt>
+            <dd>DCI-P3 (Digital Cinema Colorspace), SMPTE RP431-2</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">target-trc=&lt;value&gt;</span></tt></dt>
@@ -8257,6 +8279,10 @@
             <dd>Total free cache size in KB.</dd>
             <dt><tt class="docutils literal"><span class="pre">cache-used</span></tt> (R)</dt>
             <dd>Total used cache size in KB.</dd>
+            <dt><tt class="docutils literal"><span class="pre">cache-speed</span></tt> (R)</dt>
+            <dd>Current I/O read speed between the cache and the lower layer (like network).
+            This gives the number bytes per seconds over a 1 second window (using
+            the type <tt class="docutils literal">MPV_FORMAT_INT64</tt> for the client API).</dd>
             <dt><tt class="docutils literal"><span class="pre">cache-idle</span></tt> (R)</dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the cache is idle, which means the cache is filled as
             much as possible, and is currently not reading more data.</dd>
@@ -8768,6 +8794,8 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">video-rotate</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--video-rotate</span></tt> option.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-stereo-mode</span></tt> (RW)</dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.</dd>
             <dt><tt class="docutils literal">seekable</tt></dt>
             <dd>Return whether it's generally possible to seek in the current file.</dd>
             <dt><tt class="docutils literal"><span class="pre">partially-seekable</span></tt></dt>
@@ -9669,7 +9697,8 @@
             <dd><p class="first">Register callback to be run on a key binding. The binding will be mapped to
             the given <tt class="docutils literal">key</tt>, which is a string describing the physical key. This uses
             the same key names as in input.conf, and also allows combinations
-            (e.g. <tt class="docutils literal">ctrl+a</tt>).</p>
+            (e.g. <tt class="docutils literal">ctrl+a</tt>). If the key is empty or <tt class="docutils literal">nil</tt>, no physical key is
+            registered, but the user still can create own bindings (see below).</p>
             <p>After calling this function, key presses will cause the function <tt class="docutils literal">fn</tt> to
             be called (unless the user remapped the key with another binding).</p>
             <p>The <tt class="docutils literal">name</tt> argument should be a short symbolic string. It allows the user
@@ -9719,7 +9748,7 @@
             <p>You can also explicitly send a message to a named script only. Assume the
             above script was using the filename <tt class="docutils literal">fooscript.lua</tt>:</p>
             <pre class="last literal-block">
-            y script-binding fooscript.something
+            y script-binding fooscript/something
             </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">mp.add_forced_key_binding(...)</span></tt></dt>
@@ -9858,19 +9887,15 @@
             the C API function <tt class="docutils literal">mpv_suspend()</tt>. In short, this prevents the player
             from displaying the next video frame, so that you don't get blocked when
             trying to access the player.</p>
-            <p class="last">This is automatically called by the event handler.</p>
+            <p class="last">Before mpv 0.17.0, this was automatically called by the event handler.</p>
             </dd>
             <dt><tt class="docutils literal">mp.resume()</tt></dt>
             <dd>Undo one <tt class="docutils literal">mp.suspend()</tt> call. <tt class="docutils literal">mp.suspend()</tt> increments an internal
             counter, and <tt class="docutils literal">mp.resume()</tt> decrements it. When 0 is reached, the player
             is actually resumed.</dd>
             <dt><tt class="docutils literal">mp.resume_all()</tt></dt>
-            <dd><p class="first">This resets the internal suspend counter and resumes the player. (It's
-            like calling <tt class="docutils literal">mp.resume()</tt> until the player is actually resumed.)</p>
-            <p class="last">You might want to call this if you're about to do something that takes a
-            long time, but doesn't really need access to the player (like a network
-            operation). Note that you still can access the player at any time.</p>
-            </dd>
+            <dd>This resets the internal suspend counter and resumes the player. (It's
+            like calling <tt class="docutils literal">mp.resume()</tt> until the player is actually resumed.)</dd>
             <dt><tt class="docutils literal">mp.get_wakeup_pipe()</tt></dt>
             <dd>Calls <tt class="docutils literal">mpv_get_wakeup_pipe()</tt> and returns the read end of the wakeup
             pipe. (See <tt class="docutils literal">client.h</tt> for details.)</dd>
@@ -9883,13 +9908,12 @@
             event loop), you can set the global variable <tt class="docutils literal">mp_event_loop</tt> to your
             own function running the event loop. From your event loop, you should call
             <tt class="docutils literal">mp.dispatch_events()</tt> to dequeue and dispatch mpv events.</p>
-            <p>If the <tt class="docutils literal">allow_wait</tt> parameter is set to <tt class="docutils literal">true</tt>, the function will block
+            <p class="last">If the <tt class="docutils literal">allow_wait</tt> parameter is set to <tt class="docutils literal">true</tt>, the function will block
             until the next event is received or the next timer expires. Otherwise (and
             this is the default behavior), it returns as soon as the event loop is
             emptied. It's strongly recommended to use <tt class="docutils literal">mp.get_next_timeout()</tt> and
             <tt class="docutils literal">mp.get_wakeup_pipe()</tt> if you're interested in properly working
             notification of new events and working timers.</p>
-            <p class="last">This function calls <tt class="docutils literal">mp.suspend()</tt> and <tt class="docutils literal">mp.resume_all()</tt> on its own.</p>
             </dd>
             <dt><tt class="docutils literal">mp.enable_messages(level)</tt></dt>
             <dd>Set the minimum log level of which mpv message output to receive. These
@@ -10209,10 +10233,10 @@
             </div>
             <div class="section" id="json-ipc">
             <h1>JSON IPC</h1>
-            <p>mpv can be controlled by external programs using the JSON-based IPC protocol. It
-            can be enabled by specifying the path to a unix socket using the option
-            <tt class="docutils literal"><span class="pre">--input-unix-socket</span></tt>. Clients can connect to this socket and send commands to
-            the player or receive events from it.</p>
+            <p>mpv can be controlled by external programs using the JSON-based IPC protocol.
+            It can be enabled by specifying the path to a unix socket or a named pipe using
+            the option <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>. Clients can connect to this socket and send
+            commands to the player or receive events from it.</p>
             <div class="warning">
             <p class="first admonition-title">Warning</p>
             <p class="last">This is not intended to be a secure network protocol. It is explicitly
@@ -10223,10 +10247,10 @@
             </div>
             <div class="section" id="socat-example">
             <h2>Socat example</h2>
-            <p>You can use the <tt class="docutils literal">socat</tt> tool to send commands (and receive reply) from the
+            <p>You can use the <tt class="docutils literal">socat</tt> tool to send commands (and receive replies) from the
             shell. Assuming mpv was started with:</p>
             <pre class="literal-block">
-            mpv file.mkv --input-unix-socket=/tmp/mpvsocket
+            mpv file.mkv --input-ipc-server=/tmp/mpvsocket
             </pre>
             <p>Then you can control it using socat:</p>
             <pre class="literal-block">
@@ -10243,6 +10267,25 @@
             </pre>
             <p>But you won't get a reply over the socket. (This particular command shows the
             playback time on the player's OSD.)</p>
+            </div>
+            <div class="section" id="command-prompt-example">
+            <h2>Command Prompt example</h2>
+            <p>Unfortunately, it's not as easy to test the IPC protocol on Windows, since
+            Windows ports of socat (in Cygwin and MSYS2) don't understand named pipes. In
+            the absence of a simple tool to send and receive from bidirectional pipes, the
+            <tt class="docutils literal">echo</tt> command can be used to send commands, but not receive replies from the
+            command prompt.</p>
+            <p>Assuming mpv was started with:</p>
+            <pre class="literal-block">
+            mpv file.mkv --input-ipc-server=\\.\pipe\mpvsocket
+            </pre>
+            <p>You can send commands from a command prompt:</p>
+            <pre class="literal-block">
+            echo show_text ${playback-time} &gt;\\.\pipe\mpvsocket
+            </pre>
+            <p>To be able to simultaneously read and write from the IPC pipe, like on Linux,
+            it's necessary to write an external program that uses overlapped file I/O (or
+            some wrapper like .NET's NamedPipeClientStream.)</p>
             </div>
             <div class="section" id="protocol">
             <h2>Protocol</h2>
@@ -10285,7 +10328,7 @@
             break character (<tt class="docutils literal">\n</tt>).</p>
             <p>If the first character (after skipping whitespace) is not <tt class="docutils literal">{</tt>, the command
             will be interpreted as non-JSON text command, as they are used in input.conf
-            (or <tt class="docutils literal">mpv_command_string()</tt> in the client API). Additionally, line starting
+            (or <tt class="docutils literal">mpv_command_string()</tt> in the client API). Additionally, lines starting
             with <tt class="docutils literal">#</tt> and empty lines are ignored.</p>
             <p>Currently, embedded 0 bytes terminate the current line, but you should not
             rely on this.</p>
