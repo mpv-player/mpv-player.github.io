@@ -5505,8 +5505,8 @@
             <dd>Win32/WGL</dd>
             <dt>angle</dt>
             <dd>Direct3D11 through the OpenGL ES translation layer ANGLE. This
-            supports almost everything the <tt class="docutils literal">win</tt> backend does, except ICC
-            profiles, and the <tt class="docutils literal">nnedi3</tt> prescaler.</dd>
+            supports almost everything the <tt class="docutils literal">win</tt> backend does (if the ANGLE
+            build is new enough), except the <tt class="docutils literal">nnedi3</tt> prescaler.</dd>
             <dt>dxinterop (experimental)</dt>
             <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation.
             Works on Nvidia and AMD. Newer Intel chips with the latest drivers
@@ -5620,18 +5620,23 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">target-brightness=&lt;1..100000&gt;</span></tt></dt>
             <dd>Specifies the display's approximate brightness in cd/m^2. When playing
-            HDR content, video colors will be tone mapped to this target brightness
-            using the algorithm specified by <tt class="docutils literal"><span class="pre">hdr-tone-mapping</span></tt>. The default of
-            250 cd/m^2 corresponds to a typical consumer display.</dd>
+            HDR content on a SDR display (or SDR content on an HDR display), video
+            colors will be tone mapped to this target brightness using the
+            algorithm specified by <tt class="docutils literal"><span class="pre">hdr-tone-mapping</span></tt>. The default of 250 cd/m^2
+            corresponds to a typical consumer display.</dd>
             <dt><tt class="docutils literal"><span class="pre">hdr-tone-mapping=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Specifies the algorithm used for tone-mapping HDR images onto the
             target display. Valid values are:</p>
             <dl class="last docutils">
             <dt>clip</dt>
-            <dd>Hard-clip any out-of-range values (default)</dd>
-            <dt>simple</dt>
-            <dd>Very simple continuous curve. Preserves dynamic range and peak but
-            uses nonlinear contrast.</dd>
+            <dd>Hard-clip any out-of-range values.</dd>
+            <dt>reinhard</dt>
+            <dd>Reinhard tone mapping algorithm. Very simple continuous curve.
+            Preserves dynamic range and peak but uses nonlinear contrast.</dd>
+            <dt>hable</dt>
+            <dd>Similar to <tt class="docutils literal">reinhard</tt> but preserves dark contrast better
+            (slightly sigmoidal). Developed by John Hable for use in video
+            games. (default)</dd>
             <dt>gamma</dt>
             <dd>Fits a logarithmic transfer between the tone curves.</dd>
             <dt>linear</dt>
@@ -5643,7 +5648,7 @@
             <dd><p class="first">Set tone mapping parameters. Ignored if the tone mapping algorithm is
             not tunable. This affects the following tone mapping algorithms:</p>
             <dl class="last docutils">
-            <dt>simple</dt>
+            <dt>reinhard</dt>
             <dd>Specifies the local contrast coefficient at the display peak.
             Defaults to 0.5, which means that in-gamut values will be about
             half as bright as when clipping.</dd>
@@ -6846,6 +6851,13 @@
             </tbody>
             </table>
             </dd>
+            <dt><tt class="docutils literal">&lt;peak&gt;</tt></dt>
+            <dd><p class="first">Reference peak illumination for the video file. This is mostly
+            interesting for HDR, but it can also be used tone map SDR content
+            to a darker or brighter exposure.</p>
+            <p class="last">The default of 0.0 will default to the display's reference brightness
+            for SDR and the source's reference brightness for HDR.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;stereo-in&gt;</span></tt></dt>
             <dd>Set the stereo mode the video is assumed to be encoded in. Takes the
             same values as the <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.</dd>
@@ -7366,6 +7378,16 @@
             which are not normally compatible with VDPAU, can be used like normal.
             This filter must be specified before <tt class="docutils literal">vdpaupp</tt> in the filter chain if
             <tt class="docutils literal">vdpaupp</tt> is used.</dd>
+            <dt><tt class="docutils literal">d3d11vpp</tt></dt>
+            <dd><p class="first">Direct3D 11 video post processing. Currently requires D3D11 hardware
+            decoding for use.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">deint=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Whether deinterlacing is enabled (default: no).</dd>
+            <dt><tt class="docutils literal"><span class="pre">interlaced-only=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If <tt class="docutils literal">yes</tt> (default), only deinterlace frames marked as interlaced.</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">buffer=&lt;num&gt;</span></tt></dt>
             <dd>Buffer <tt class="docutils literal">&lt;num&gt;</tt> frames in the filter chain. This filter is probably pretty
             useless, except for debugging. (Note that this won't help to smooth out
@@ -8906,6 +8928,8 @@
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
             <dd>Current position on playlist. The first entry is on position 0. Writing
             to the property will restart playback at the written entry.</dd>
+            <dt><tt class="docutils literal"><span class="pre">playlist-pos-1</span></tt> (RW)</dt>
+            <dd>Same as <tt class="docutils literal"><span class="pre">playlist-pos</span></tt>, but 1-based.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-count</span></tt></dt>
             <dd>Number of total playlist entries.</dd>
             <dt><tt class="docutils literal">playlist</tt></dt>
