@@ -1373,11 +1373,9 @@
             If <tt class="docutils literal"><span class="pre">vaapi-glx</span></tt> is indicated, and the video colorspace is either BT.601
             or BT.709, a forced but correct RGB conversion is performed. Otherwise,
             the result will be incorrect.</p>
-            <p><tt class="docutils literal">d3d11va</tt> is usually safe. If the <tt class="docutils literal">EGL_KHR_stream path</tt> is indicated
-            in the logs, it is lossless and full OpenGL filtering is done. If
-            <tt class="docutils literal">ID3D11VideoProcessor path</tt> is indicated, and the video colorspace is
-            either BT.601 or BT.709, a forced but correct RGB conversion is
-            performed. Otherwise, the result will be incorrect.</p>
+            <p><tt class="docutils literal">d3d11va</tt> is usually safe (if used with ANGLE builds that support
+            <tt class="docutils literal">EGL_KHR_stream path</tt> - otherwise, it converts to RGB), except that
+            10 bit input (HEVC main 10 profiles) will be rounded down to 8 bits.</p>
             <p><tt class="docutils literal">dxva2</tt> is not safe. It appears to always use BT.601 for forced RGB
             conversion, but actual behavior depends on the GPU drivers. Some drivers
             appear to convert to limited range RGB, which gives a faded appearance.
@@ -5334,10 +5332,16 @@
             <dt>WIDTH &lt;szexpr&gt;, HEIGHT &lt;szexpr&gt;</dt>
             <dd>Specifies the size of the resulting texture for this pass.
             <tt class="docutils literal">szexpr</tt> refers to an expression in RPN (reverse polish
-            notation), using the operators + - * /, floating point literals,
-            and references to existing texture sizes such as MAIN.width or
-            CHROMA.height. By default, these are set to HOOKED.w and HOOKED.h,
-            respectively.</dd>
+            notation), using the operators + - * / &gt; &lt; !, floating point
+            literals, and references to existing texture sizes such as
+            MAIN.width or CHROMA.height. By default, these are set to HOOKED.w
+            and HOOKED.h, respectively.</dd>
+            <dt>WHEN &lt;szexpr&gt;</dt>
+            <dd>Specifies a condition that needs to be true (non-zero) for the
+            shader stage to be evaluated. If it fails, it will silently be
+            omitted. (Note that a shader stage like this which has a dependency
+            on an optional hook point can still cause that hook point to be
+            saved, which has some minor overhead)</dd>
             <dt>OFFSET ox oy</dt>
             <dd>Indicates a pixel shift (offset) introduced by this pass. These
             pixel offsets will be accumulated and corrected during the
@@ -9145,6 +9149,40 @@
             <dd>Return whether the VO is configured right now. Usually this corresponds to
             whether the video window is visible. If the <tt class="docutils literal"><span class="pre">--force-window</span></tt> option is
             used, this is usually always returns <tt class="docutils literal">yes</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">vo-performance</span></tt></dt>
+            <dd><p class="first">Some video output performance metrics. Not implemented by all VOs. This has
+            a number of sup-properties, of the form <tt class="docutils literal"><span class="pre">vo-performance/&lt;metric&gt;-&lt;value&gt;</span></tt>,
+            all of them in milliseconds.</p>
+            <p><tt class="docutils literal">&lt;metric&gt;</tt> refers to one of:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">upload</tt></dt>
+            <dd>Time needed to make the frame available to the GPU (if necessary).</dd>
+            <dt><tt class="docutils literal">render</tt></dt>
+            <dd>Time needed to perform all necessary video postprocessing and rendering
+            passes (if necessary).</dd>
+            <dt><tt class="docutils literal">present</tt></dt>
+            <dd>Time needed to present a rendered frame on-screen.</dd>
+            </dl>
+            <p>When a step is unnecessary or skipped, it will have the value 0.</p>
+            <p><tt class="docutils literal">&lt;value&gt;</tt> refers to one of:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">last</tt></dt>
+            <dd>Last measured value.</dd>
+            <dt><tt class="docutils literal">avg</tt></dt>
+            <dd>Average over a fixed number of past samples. (The exact timeframe
+            varies, but it should generally be a handful of seconds)</dd>
+            <dt><tt class="docutils literal">peak</tt></dt>
+            <dd>The peak (highest value) within this averaging range.</dd>
+            </dl>
+            <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+            or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+            the following contents:</p>
+            <pre class="literal-block">
+            MPV_FORMAT_NODE_MAP
+                &quot;&lt;metric&gt;-&lt;value&gt;&quot;  MPV_FORMAT_INT64
+            </pre>
+            <p class="last">(One entry for each <tt class="docutils literal">&lt;metric&gt;</tt> and <tt class="docutils literal">&lt;value&gt;</tt> combination)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">audio-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">sub-bitrate</span></tt></dt>
             <dd><p class="first">Bitrate values calculated on the packet level. This works by dividing the
             bit size of all packets between two keyframes by their presentation
