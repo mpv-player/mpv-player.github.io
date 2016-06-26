@@ -1364,11 +1364,14 @@
             <p>In some cases, RGB conversion is forced, which means the RGB conversion
             is performed by the hardware decoding API, instead of the OpenGL code
             used by <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. This means certain obscure colorspaces may
-            not display correctly, and not certain filtering (such as debanding)
+            not display correctly, not certain filtering (such as debanding)
             can not be applied in an ideal way.</p>
-            <p><tt class="docutils literal">vdpau</tt> forces RGB conversion. Currently, it does not treat certain
-            colorspaces like BT.2020 correctly. This is mostly a mpv-specific
-            restriction. This does not apply if the <tt class="docutils literal">vdpauprb</tt> filter is used.</p>
+            <p><tt class="docutils literal">vdpau</tt> is usually safe. If deinterlacing enabled (or the <tt class="docutils literal">vdpaupp</tt>
+            video filter is active in general), it forces RGB conversion. The latter
+            currently does not treat certain colorspaces like BT.2020 correctly
+            (which is mostly a mpv-specific restriction). If the <tt class="docutils literal">vdpauprb</tt>
+            retrieves image data without RGB conversion, but does not work with
+            postprocessing.</p>
             <p><tt class="docutils literal">vaapi</tt> is safe if the <tt class="docutils literal"><span class="pre">vaapi-egl</span></tt> backend is indicated in the logs.
             If <tt class="docutils literal"><span class="pre">vaapi-glx</span></tt> is indicated, and the video colorspace is either BT.601
             or BT.709, a forced but correct RGB conversion is performed. Otherwise,
@@ -5179,61 +5182,6 @@
             better than without it) since it will extend the size to match only the
             milder of the scale factors between the axes.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">prescale-luma=&lt;filter&gt;</span></tt></dt>
-            <dd><p class="first">Apply additional pre-scaling (image doubling) on the luma plane
-            (if present). As the name implies, these will run before the main
-            upscaling pass.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">none</tt></dt>
-            <dd>Disable all prescalers. This is the default.</dd>
-            <dt><tt class="docutils literal">superxbr</tt></dt>
-            <dd><p class="first">A relatively fast prescaler originally developed for pixel art.</p>
-            <p class="last">Some parameters can be tuned with <tt class="docutils literal"><span class="pre">superxbr-sharpness</span></tt> and
-            <tt class="docutils literal"><span class="pre">superxbr-edge-strength</span></tt> options.</p>
-            </dd>
-            <dt><tt class="docutils literal">nnedi3</tt></dt>
-            <dd><p class="first">An artificial neural network based deinterlacer, which can be used
-            to upscale images.</p>
-            <p class="last">Extremely slow and requires a recent mid or high end graphics card
-            to work smoothly (as of 2015).</p>
-            </dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">prescale-passes=&lt;1..5&gt;</span></tt></dt>
-            <dd>The number of passes to apply the prescaler (defaults to be 1). Setting
-            it to 2 will perform a 4x upscaling.</dd>
-            <dt><tt class="docutils literal"><span class="pre">prescale-downscaling-threshold=&lt;0..32&gt;</span></tt></dt>
-            <dd><p class="first">This option prevents &quot;overkill&quot; use of prescalers, which can be caused
-            by misconfiguration, or user trying to play a video with much larger
-            size. With this option, user can specify the maximal allowed downscaling
-            ratio in both dimension. To satisfy it, the number of passes for
-            prescaler will be reduced, and if necessary prescaler could also be
-            disabled.</p>
-            <p>The default value is 2.0, and should be able to prevent most seemingly
-            unreasonable use of prescalers. Most user would probably want to set it
-            to a smaller value between 1.0 and 1.5 for better performance.</p>
-            <p class="last">A value less than 1.0 will disable the check.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">nnedi3-neurons=&lt;16|32|64|128&gt;</span></tt></dt>
-            <dd>Specify the neurons for nnedi3 prescaling (defaults to be 32). The
-            rendering time is expected to be linear to the number of neurons.</dd>
-            <dt><tt class="docutils literal"><span class="pre">nnedi3-window=&lt;8x4|8x6&gt;</span></tt></dt>
-            <dd>Specify the size of local window for sampling in nnedi3 prescaling
-            (defaults to be <tt class="docutils literal">8x4</tt>). The <tt class="docutils literal">8x6</tt> window produces sharper images,
-            but is also slower.</dd>
-            <dt><tt class="docutils literal"><span class="pre">nnedi3-upload=&lt;ubo|shader&gt;</span></tt></dt>
-            <dd><p class="first">Specify how to upload the NN weights to GPU. Depending on the graphics
-            card, driver, shader compiler and nnedi3 settings, both method can be
-            faster or slower.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">ubo</tt></dt>
-            <dd>Upload these weights via uniform buffer objects. This is the
-            default. (requires OpenGL 3.1 / GLES 3.0)</dd>
-            <dt><tt class="docutils literal">shader</tt></dt>
-            <dd>Hard code all the weights into the shader source code. (requires
-            OpenGL 3.3 / GLES 3.0)</dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">pre-shaders=&lt;files&gt;</span></tt>, <tt class="docutils literal"><span class="pre">post-shaders=&lt;files&gt;</span></tt>, <tt class="docutils literal"><span class="pre">scale-shader=&lt;file&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL fragment shaders.</p>
             <dl class="docutils">
@@ -5510,7 +5458,7 @@
             <dt>angle</dt>
             <dd>Direct3D11 through the OpenGL ES translation layer ANGLE. This
             supports almost everything the <tt class="docutils literal">win</tt> backend does (if the ANGLE
-            build is new enough), except the <tt class="docutils literal">nnedi3</tt> prescaler.</dd>
+            build is new enough).</dd>
             <dt>dxinterop (experimental)</dt>
             <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation.
             Works on Nvidia and AMD. Newer Intel chips with the latest drivers
@@ -6020,7 +5968,7 @@
             be documented by FFmpeg or Libav.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">lavcac3enc[=tospdif[:bitrate[:minch]]]</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">lavcac3enc[=options]</span></tt></dt>
             <dd><p class="first">Encode multi-channel audio to AC-3 at runtime using libavcodec. Supports
             16-bit native-endian input format, maximum 6 channels. The output is
             big-endian when outputting a raw AC-3 stream, native-endian when
@@ -6059,6 +6007,9 @@
             <dt><tt class="docutils literal"><span class="pre">minch=&lt;n&gt;</span></tt></dt>
             <dd>If the input channel number is less than <tt class="docutils literal">&lt;minch&gt;</tt>, the filter will
             detach itself (default: 3).</dd>
+            <dt><tt class="docutils literal"><span class="pre">encoder=&lt;name&gt;</span></tt></dt>
+            <dd>Select the libavcodec encoder used. Currently, this should be an AC-3
+            encoder, and using another codec will fail horribly.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">equalizer=g1:g2:g3:...:g10</span></tt></dt>
@@ -8708,7 +8659,7 @@
             seek to refresh the video properly.) You can watch the other hwdec
             properties to see whether this was successful.</p>
             <p class="last">Unlike in mpv 0.9.x and before, this does not return the currently active
-            hardware decoder. Since mpv 0.17.1, <tt class="docutils literal"><span class="pre">hwdec-current</span></tt> is available for
+            hardware decoder. Since mpv 0.18.0, <tt class="docutils literal"><span class="pre">hwdec-current</span></tt> is available for
             this purpose.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">hwdec-current</span></tt></dt>
@@ -8729,12 +8680,12 @@
             platform and VO.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">hwdec-active</span></tt></dt>
-            <dd><p class="first">Deprecated. To be removed in mpv 0.19.0. Use <tt class="docutils literal"><span class="pre">hwdec-current</span></tt> instead.</p>
+            <dd><p class="first">Deprecated. To be removed in mpv 0.20.0. Use <tt class="docutils literal"><span class="pre">hwdec-current</span></tt> instead.</p>
             <p class="last">Return <tt class="docutils literal">yes</tt> or <tt class="docutils literal">no</tt>, depending on whether any type of hardware decoding
             is actually in use.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">hwdec-detected</span></tt></dt>
-            <dd><p class="first">Deprecated. To be removed in mpv 0.19.0.</p>
+            <dd><p class="first">Deprecated. To be removed in mpv 0.20.0.</p>
             <p class="last">If hardware decoding is active, this returns the hardware decoder in use.
             Otherwise, it returns either <tt class="docutils literal">no</tt>, or if applicable, the currently loaded
             hardware decoding API. This is known only once the VO has opened (and
