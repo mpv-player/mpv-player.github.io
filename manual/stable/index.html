@@ -1365,13 +1365,13 @@
             is performed by the hardware decoding API, instead of the OpenGL code
             used by <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. This means certain obscure colorspaces may
             not display correctly, not certain filtering (such as debanding)
-            can not be applied in an ideal way.</p>
+            cannot be applied in an ideal way.</p>
             <p><tt class="docutils literal">vdpau</tt> is usually safe. If deinterlacing enabled (or the <tt class="docutils literal">vdpaupp</tt>
             video filter is active in general), it forces RGB conversion. The latter
             currently does not treat certain colorspaces like BT.2020 correctly
-            (which is mostly a mpv-specific restriction). If the <tt class="docutils literal">vdpauprb</tt>
-            retrieves image data without RGB conversion, but does not work with
-            postprocessing.</p>
+            (which is mostly a mpv-specific restriction). The <tt class="docutils literal">vdpauprb</tt> video
+            filter retrieves image data without RGB conversion and is safe (but
+            precludes use of vdpau postprocessing).</p>
             <p><tt class="docutils literal">vaapi</tt> is safe if the <tt class="docutils literal"><span class="pre">vaapi-egl</span></tt> backend is indicated in the logs.
             If <tt class="docutils literal"><span class="pre">vaapi-glx</span></tt> is indicated, and the video colorspace is either BT.601
             or BT.709, a forced but correct RGB conversion is performed. Otherwise,
@@ -1787,14 +1787,9 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--volume=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set the startup volume. 0 means silence, 100 means no volume reduction or
-            amplification. A value of -1 (the default) will not change the volume. See
-            also <tt class="docutils literal"><span class="pre">--softvol</span></tt>.</p>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This was changed after the mpv 0.9 release. Before that, 100 actually
-            meant maximum volume. At the same time, the volume scale was made cubic,
-            so the old values won't match up with the new ones anyway.</p>
-            </div>
+            amplification. Negative values can be passed for compatibility, but are
+            treated as 0.</p>
+            <p class="last">Since mpv 0.18.1, this always controls the internal mixer (aka &quot;softvol&quot;).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-delay=&lt;sec&gt;</span></tt></dt>
             <dd>Audio delay in seconds (positive or negative float value). Positive values
@@ -1806,27 +1801,15 @@
             status.</p>
             <p class="last">See also: <tt class="docutils literal"><span class="pre">--volume</span></tt>.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--softvol=&lt;mode&gt;</span></tt></dt>
-            <dd><p class="first">Control whether to use the volume controls of the audio output driver or
-            the internal mpv volume filter.</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">prefer audio driver controls, use the volume filter only if
-            absolutely needed</td>
-            </tr>
-            <tr class="field"><th class="field-name">yes:</th><td class="field-body">always use the volume filter</td>
-            </tr>
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">prefer the volume filter if the audio driver uses the system mixer
-            (default)</td>
-            </tr>
-            </tbody>
-            </table>
-            <p class="last">The intention of <tt class="docutils literal">auto</tt> is to avoid changing system mixer settings from
-            within mpv with default settings. mpv is a video player, not a mixer panel.
-            On the other hand, mixer controls are enabled for sound servers like
-            PulseAudio, which provide per-application volume.</p>
+            <dt><tt class="docutils literal"><span class="pre">--softvol=&lt;no|yes|auto&gt;</span></tt></dt>
+            <dd><p class="first">Deprecated/unfunctional. Before mpv 0.18.1, this used to control whether
+            to use the volume controls of the audio output driver or the internal mpv
+            volume filter.</p>
+            <p>The current behavior is as if this option was set to <tt class="docutils literal">yes</tt>. The other
+            behaviors are not available anymore, although <tt class="docutils literal">auto</tt> almost matches
+            current behavior in most cases.</p>
+            <p class="last">The <tt class="docutils literal">no</tt> behavior is still partially available through the <tt class="docutils literal"><span class="pre">ao-volume</span></tt>
+            and <tt class="docutils literal"><span class="pre">ao-mute</span></tt> properties. But there are no options to reset these.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-demuxer=&lt;[+]name&gt;</span></tt></dt>
             <dd>Use this audio demuxer type when using <tt class="docutils literal"><span class="pre">--audio-file</span></tt>. Use a '+' before
@@ -1973,9 +1956,11 @@
             mpv versions did: video and audio are both started immediately even if
             their start timestamps differ, and then video timing is gradually adjusted
             if necessary to reach correct synchronization later.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--softvol-max=&lt;100.0-1000.0&gt;</span></tt></dt>
-            <dd>Set the maximum amplification level in percent (default: 130). A value of
-            130 will allow you to adjust the volume up to about double the normal level.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--volume-max=&lt;100.0-1000.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--softvol-max=&lt;...&gt;</span></tt></dt>
+            <dd><p class="first">Set the maximum amplification level in percent (default: 130). A value of
+            130 will allow you to adjust the volume up to about double the normal level.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--softvol-max</span></tt> is a deprecated alias and should not be used.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-file-auto=&lt;no|exact|fuzzy|all&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--no-audio-file-auto</span></tt></dt>
             <dd><p class="first">Load additional audio files matching the video filename. The parameter
             specifies how external audio files are matched. <tt class="docutils literal">exact</tt> is enabled by
@@ -1990,7 +1975,7 @@
             </tr>
             <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all audio files containing media filename.</td>
             </tr>
-            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all aufio files in the current and <tt class="docutils literal"><span class="pre">--audio-file-paths</span></tt>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all audio files in the current and <tt class="docutils literal"><span class="pre">--audio-file-paths</span></tt>
             directories.</td>
             </tr>
             </tbody>
@@ -2032,7 +2017,7 @@
             <div class="note">
             <p class="first admonition-title">Note</p>
             <p class="last">Changing styling and position does not work with all subtitles. Image-based
-            subtitles (DVD, Bluray/PGS, DVB) can not changed for fundamental reasons.
+            subtitles (DVD, Bluray/PGS, DVB) cannot changed for fundamental reasons.
             Subtitles in ASS format are normally not changed intentionally, but
             overriding them can be controlled with <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt>.</p>
             </div>
@@ -2731,8 +2716,17 @@
             <dd>Forcefully move mpv's video output window to default location whenever
             there is a change in video parameters, video stream or file. This used to
             be the default behavior. Currently only affects X11 VOs.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--heartbeat-cmd=&lt;command&gt;</span></tt></dt>
-            <dd><p class="first">Command that is executed every 30 seconds during playback via <em>system()</em> -
+            </dl>
+            <p><tt class="docutils literal"><span class="pre">--heartbeat-cmd=&lt;command&gt;</span></tt></p>
+            <blockquote>
+            <div class="warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This option is redundant with Lua scripting. Further, it shouldn't be
+            needed for disabling screensaver anyway, since mpv will call
+            <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> when using X11 backend. As a consequence this
+            option has been deprecated with no direct replacement.</p>
+            </div>
+            <p>Command that is executed every 30 seconds during playback via <em>system()</em> -
             i.e. using the shell. The time between the commands can be customized with
             the <tt class="docutils literal"><span class="pre">--heartbeat-interval</span></tt> option. The command is not run while playback
             is paused.</p>
@@ -2753,11 +2747,12 @@
             <p class="first admonition-title">Example for xscreensaver</p>
             <p class="last"><tt class="docutils literal">mpv <span class="pre">--heartbeat-cmd=&quot;xscreensaver-command</span> <span class="pre">-deactivate&quot;</span> file</tt></p>
             </div>
-            <div class="admonition-example-for-gnome-screensaver admonition last">
+            <div class="admonition-example-for-gnome-screensaver admonition">
             <p class="first admonition-title">Example for GNOME screensaver</p>
             <p class="last"><tt class="docutils literal">mpv <span class="pre">--heartbeat-cmd=&quot;gnome-screensaver-command</span> <span class="pre">--deactivate&quot;</span> file</tt></p>
             </div>
-            </dd>
+            </blockquote>
+            <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--heartbeat-interval=&lt;sec&gt;</span></tt></dt>
             <dd><p class="first">Time between <tt class="docutils literal"><span class="pre">--heartbeat-cmd</span></tt> invocations in seconds (default: 30).</p>
             <div class="note last">
@@ -3101,7 +3096,7 @@
             readahead in case of broken files or desynced playback. The demuxer will
             stop reading additional packets as soon as one of the limits is reached.
             (The limits still can be slightly overstepped due to technical reasons.)</p>
-            <p>Set these limits highher if you get a packet queue overflow warning, and
+            <p>Set these limits higher if you get a packet queue overflow warning, and
             you think normal playback would be possible with a larger packet queue.</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range.</p>
             </dd>
@@ -3122,7 +3117,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--force-seekable=&lt;yes|no&gt;</span></tt></dt>
             <dd>If the player thinks that the media is not seekable (e.g. playing from a
-            pipe, or it's a http stream with a server that doesn't support range
+            pipe, or it's an http stream with a server that doesn't support range
             requests), seeking will be disabled. This option can forcibly enable it.
             For seeks within the cache, there's a good chance of success.</dd>
             </dl>
@@ -3902,7 +3897,7 @@
             With <tt class="docutils literal">auto</tt>, the cache will usually be enabled for network streams,
             using the size set by <tt class="docutils literal"><span class="pre">--cache-default</span></tt>. With <tt class="docutils literal">yes</tt>, the cache will
             always be enabled with the size set by <tt class="docutils literal"><span class="pre">--cache-default</span></tt> (unless the
-            stream can not be cached, or <tt class="docutils literal"><span class="pre">--cache-default</span></tt> disables caching).</p>
+            stream cannot be cached, or <tt class="docutils literal"><span class="pre">--cache-default</span></tt> disables caching).</p>
             <p>May be useful when playing files from slow media, but can also have
             negative effects, especially with file formats that require a lot of
             seeking, such as MP4.</p>
@@ -4279,7 +4274,7 @@
             for multiple filters, you need to use the <tt class="docutils literal">asplit</tt> filter. Multiple
             video or audio outputs are not possible, but you can use filters to merge
             them into one.</p>
-            <p>The complex filter can not be changed yet during playback. It's also not
+            <p>The complex filter cannot be changed yet during playback. It's also not
             possible to change the tracks connected to the filter at runtime. Other
             tracks, as long as they're not connected to the filter, and the
             corresponding output is not connected to the filter, can still be freely
@@ -5080,7 +5075,7 @@
             <dt>8</dt>
             <dd>Dither to 8 bit output.</dd>
             </dl>
-            <p class="last">Note that the depth of the connected video display device can not be
+            <p class="last">Note that the depth of the connected video display device cannot be
             detected. Often, LCD panels will do dithering on their own, which
             conflicts with <tt class="docutils literal">opengl</tt>'s dithering and leads to ugly output.</p>
             </dd>
@@ -5228,6 +5223,9 @@
             never resets (regardless of seeks).</dd>
             <dt>vec2 image_size</dt>
             <dd>The size in pixels of the input image.</dd>
+            <dt>vec2 target_size</dt>
+            <dd>The size in pixels of the visible part of the scaled (and possibly
+            cropped) image.</dd>
             </dl>
             <p>For example, a shader that inverts the colors could look like this:</p>
             <pre class="last literal-block">
@@ -5543,6 +5541,8 @@
             <dd>CIE 1931 RGB (not to be confused with CIE XYZ)</dd>
             <dt>dci-p3</dt>
             <dd>DCI-P3 (Digital Cinema Colorspace), SMPTE RP431-2</dd>
+            <dt>v-gamut</dt>
+            <dd>Panasonic V-Gamut (VARICAM) primaries</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">target-trc=&lt;value&gt;</span></tt></dt>
@@ -5568,6 +5568,15 @@
             <dd>ProPhoto RGB (ROMM)</dd>
             <dt>st2084</dt>
             <dd>SMPTE ST2084 (HDR) curve, PQ OETF</dd>
+            <dt>std-b67</dt>
+            <dd>ARIB STD-B67 (Hybrid Log-gamma) curve, also known as BBC/NHK HDR</dd>
+            <dt>v-log</dt>
+            <dd>Panasonic V-Log (VARICAM) curve</dd>
+            <dt>NOTE: When using HDR output formats, mpv will encode to the specified</dt>
+            <dd>curve but it will not set any HDMI flags or other signalling that
+            might be required for the target device to correctly display the
+            HDR signal. The user should independently guarantee this before
+            using these signal formats for display.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">target-brightness=&lt;1..100000&gt;</span></tt></dt>
@@ -6672,7 +6681,7 @@
             <dd>Format name, e.g. rgb15, bgr24, 420p, etc. (default: don't change).</dd>
             <dt><tt class="docutils literal">&lt;outfmt&gt;</tt></dt>
             <dd>Format name that should be substituted for the output. If they do not
-            have the same bytes per pixel and chroma subsamplimg, it will fail.</dd>
+            have the same bytes per pixel and chroma subsampling, it will fail.</dd>
             <dt><tt class="docutils literal">&lt;colormatrix&gt;</tt></dt>
             <dd><p class="first">Controls the YUV to RGB color space conversion when playing video. There
             are various standards. Normally, BT.601 should be used for SD video, and
@@ -6769,6 +6778,10 @@
             </tr>
             <tr class="field"><th class="field-name">cie1931:</th><td class="field-body">CIE 1931 RGB</td>
             </tr>
+            <tr class="field"><th class="field-name">dci-p3:</th><td class="field-body">DCI-P3 (Digital Cinema)</td>
+            </tr>
+            <tr class="field"><th class="field-name">v-gamut:</th><td class="field-body">Panasonic V-Gamut primaries</td>
+            </tr>
             </tbody>
             </table>
             </dd>
@@ -6802,6 +6815,10 @@
             <tr class="field"><th class="field-name">prophoto:</th><td class="field-body">ProPhoto RGB (ROMM) curve</td>
             </tr>
             <tr class="field"><th class="field-name">st2084:</th><td class="field-body">SMPTE ST2084 (HDR) curve</td>
+            </tr>
+            <tr class="field"><th class="field-name">std-b67:</th><td class="field-body">ARIB STD-B67 (Hybrid Log-gamma) curve</td>
+            </tr>
+            <tr class="field"><th class="field-name">v-log:</th><td class="field-body">Panasonic V-Log transfer curve</td>
             </tr>
             </tbody>
             </table>
@@ -7882,6 +7899,7 @@
             <dd>Remove all filters. Note that like the other sub-commands, this does
             not control automatically inserted filters.</dd>
             </dl>
+            <p>The argument is always needed. E.g. in case of <tt class="docutils literal">clr</tt> use <tt class="docutils literal">vf clr &quot;&quot;</tt>.</p>
             <p>You can assign labels to filter by prefixing them with <tt class="docutils literal">&#64;name:</tt> (where
             <tt class="docutils literal">name</tt> is a user-chosen arbitrary identifier). Labels can be used to
             refer to filters by name in all of the filter chain modification commands.
@@ -7974,26 +7992,17 @@
             the resolution is reduced to that of the video's. You can read the
             <tt class="docutils literal"><span class="pre">osd-width</span></tt> and <tt class="docutils literal"><span class="pre">osd-height</span></tt> properties. At least with <tt class="docutils literal"><span class="pre">--vo-xv</span></tt> and
             anamorphic video (such as DVD), <tt class="docutils literal"><span class="pre">osd-par</span></tt> should be read as well, and the
-            overlay should be aspect-compensated. (Future directions: maybe mpv should
-            take care of some of these things automatically, but it's hard to tell
-            where to draw the line.)</p>
+            overlay should be aspect-compensated.</p>
             <p><tt class="docutils literal">id</tt> is an integer between 0 and 63 identifying the overlay element. The
             ID can be used to add multiple overlay parts, update a part by using this
             command with an already existing ID, or to remove a part with
             <tt class="docutils literal"><span class="pre">overlay-remove</span></tt>. Using a previously unused ID will add a new overlay,
-            while reusing an ID will update it. (Future directions: there should be
-            something to ensure different programs wanting to create overlays don't
-            conflict with each others, should that ever be needed.)</p>
+            while reusing an ID will update it.</p>
             <p><tt class="docutils literal">x</tt> and <tt class="docutils literal">y</tt> specify the position where the OSD should be displayed.</p>
             <p><tt class="docutils literal">file</tt> specifies the file the raw image data is read from. It can be
             either a numeric UNIX file descriptor prefixed with <tt class="docutils literal">&#64;</tt> (e.g. <tt class="docutils literal">&#64;4</tt>),
-            or a filename. The file will be mapped into memory with <tt class="docutils literal">mmap()</tt>. Some VOs
-            will pass the mapped pointer directly to display APIs (e.g. opengl or
-            vdpau), so no actual copying is involved. Truncating the source file while
-            the overlay is active will crash the player. You shouldn't change the data
-            while the overlay is active, because the data is essentially accessed at
-            random points. Instead, call <tt class="docutils literal"><span class="pre">overlay-add</span></tt> again (preferably with a
-            different memory region to prevent tearing).</p>
+            or a filename. The file will be mapped into memory with <tt class="docutils literal">mmap()</tt>,
+            copied, and unmapped before the command returns (changed in mpv 0.18.1).</p>
             <p>It is also possible to pass a raw memory address for use as bitmap memory
             by passing a memory address as integer prefixed with an <tt class="docutils literal">&amp;</tt> character.
             Passing the wrong thing here will crash the player. This mode might be
@@ -8021,15 +8030,14 @@
             In general, the total amount of memory accessed is <tt class="docutils literal">stride * h</tt>.
             (Technically, the minimum size would be <tt class="docutils literal">stride * (h - 1) + w * 4</tt>, but
             for simplicity, the player will access all <tt class="docutils literal">stride * h</tt> bytes.)</p>
-            <div class="admonition-warning admonition last">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">When updating the overlay, you should prepare a second shared memory
-            region (e.g. make use of the offset parameter) and add this as overlay,
-            instead of reusing the same memory every time. Otherwise, you might
-            get the equivalent of tearing, when your application and mpv write/read
-            the buffer at the same time. Also, keep in mind that mpv might access
-            an overlay's memory at random times whenever it feels the need to do
-            so, for example when redrawing the screen.</p>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Before mpv 0.18.1, you had to do manual &quot;double buffering&quot; when updating
+            an overlay by replacing it with a different memory buffer. Since mpv
+            0.18.1, the memory is simply copied and doesn't reference any of the
+            memory indicated by the command's arguments after the commend returns.
+            If you want to use this command before mpv 0.18.1, reads the old docs
+            to see how to handle this correctly.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">overlay-remove</span> &lt;id&gt;</tt></dt>
@@ -8549,25 +8557,26 @@
             <dt><tt class="docutils literal"><span class="pre">hr-seek</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--hr-seek</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
-            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise. This has
-            implications for <tt class="docutils literal"><span class="pre">--softvol=no</span></tt> mode: if the mixer is inactive, changing
-            <tt class="docutils literal">volume</tt> doesn't actually change anything on the system mixer. If the
-            <tt class="docutils literal"><span class="pre">--volume</span></tt> or <tt class="docutils literal"><span class="pre">--mute</span></tt> option are used, these might not be applied
-            properly until the mixer becomes active either. (The options, if set, will
-            just overwrite the mixer state at audio initialization.)</p>
-            <p>While the behavior with <tt class="docutils literal"><span class="pre">mixer-active==yes</span></tt> is relatively well-defined,
-            the <tt class="docutils literal">no</tt> case will provide possibly wrong or insignificant values.</p>
-            <p class="last">Note that an active mixer does not necessarily imply active audio output,
-            although this is implied in the current implementation.</p>
+            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise.</p>
+            <p class="last">This option is relatively useless. Before mpv 0.18.1, it could be used to
+            infer behavior of the <tt class="docutils literal">volume</tt> property.</p>
             </dd>
             <dt><tt class="docutils literal">volume</tt> (RW)</dt>
-            <dd>Current volume (see <tt class="docutils literal"><span class="pre">--volume</span></tt> for details). Also see <tt class="docutils literal"><span class="pre">mixer-active</span></tt>
-            property.</dd>
-            <dt><tt class="docutils literal"><span class="pre">volume-max</span></tt></dt>
-            <dd>Current maximum value the volume property can be set to. (This may depend
-            on the <tt class="docutils literal"><span class="pre">--softvol-max</span></tt> option.)</dd>
+            <dd>Current volume (see <tt class="docutils literal"><span class="pre">--volume</span></tt> for details).</dd>
+            <dt><tt class="docutils literal"><span class="pre">volume-max</span></tt> (RW)</dt>
+            <dd>Current maximum value the volume property can be set to. (Equivalent to the
+            <tt class="docutils literal"><span class="pre">--volume-max</span></tt> option.)</dd>
             <dt><tt class="docutils literal">mute</tt> (RW)</dt>
-            <dd>Current mute status (<tt class="docutils literal">yes</tt>/<tt class="docutils literal">no</tt>). Also see <tt class="docutils literal"><span class="pre">mixer-active</span></tt> property.</dd>
+            <dd>Current mute status (<tt class="docutils literal">yes</tt>/<tt class="docutils literal">no</tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">ao-volume</span></tt> (RW)</dt>
+            <dd>System volume. This property is available only if mpv audio output is
+            currently active, and only if the underlying implementation supports volume
+            control. What this option does depends on the API. For example, on ALSA
+            this usually changes system-wide audio, while with PulseAudio this controls
+            per-application volume.</dd>
+            <dt><tt class="docutils literal"><span class="pre">ao-mute</span></tt> (RW)</dt>
+            <dd>Similar to <tt class="docutils literal"><span class="pre">ao-volume</span></tt>, but controls the mute state. May be unimplemented
+            even if <tt class="docutils literal"><span class="pre">ao-volume</span></tt> works.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-delay</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--audio-delay</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-codec</span></tt></dt>
@@ -9265,7 +9274,7 @@
             is being loaded) results in an error.</p>
             <p class="last">(Note that if an option is marked as file-local, even <tt class="docutils literal">options/</tt> will
             access the local value, and the <tt class="docutils literal">old</tt> value, which will be restored on
-            end of playback, can not be read or written until end of playback.)</p>
+            end of playback, cannot be read or written until end of playback.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;</span></tt></dt>
             <dd><p class="first">Additional per-option information.</p>
@@ -9976,7 +9985,7 @@
             <dt><tt class="docutils literal">mp.set_property_native(name, value)</tt></dt>
             <dd><p class="first">Similar to <tt class="docutils literal">mp.set_property</tt>, but set the given property using its native
             type.</p>
-            <p class="last">Since there are several data types which can not represented natively in
+            <p class="last">Since there are several data types which cannot represented natively in
             Lua, this might not always work as expected. For example, while the Lua
             wrapper can do some guesswork to decide whether a Lua table is an array
             or a map, this would fail with empty tables. Also, there are not many
