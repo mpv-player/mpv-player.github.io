@@ -788,16 +788,29 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--aid=&lt;ID|auto|no&gt;</span></tt></dt>
-            <dd>Select audio track. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables audio.
+            <dd><p class="first">Select audio track. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables audio.
             See also <tt class="docutils literal"><span class="pre">--alang</span></tt>. mpv normally prints available audio tracks on the
-            terminal when starting playback of a file.</dd>
+            terminal when starting playback of a file.</p>
+            <p><tt class="docutils literal"><span class="pre">--audio</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--aid=no</span></tt> or <tt class="docutils literal"><span class="pre">--audio=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-audio</span></tt> disables audio playback.
+            (The latter variant does not work with the client API.)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--sid=&lt;ID|auto|no&gt;</span></tt></dt>
             <dd><p class="first">Display the subtitle stream specified by <tt class="docutils literal">&lt;ID&gt;</tt>. <tt class="docutils literal">auto</tt> selects
             the default, <tt class="docutils literal">no</tt> disables subtitles.</p>
-            <p class="last">See also <tt class="docutils literal"><span class="pre">--slang</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub</span></tt>.</p>
+            <p><tt class="docutils literal"><span class="pre">--sub</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sid</span></tt>.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--sid=no</span></tt> or <tt class="docutils literal"><span class="pre">--sub=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-sub</span></tt> disables subtitle decoding.
+            (The latter variant does not work with the client API.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vid=&lt;ID|auto|no&gt;</span></tt></dt>
-            <dd>Select video channel. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables video.</dd>
+            <dd><p class="first">Select video channel. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables video.</p>
+            <p><tt class="docutils literal"><span class="pre">--video</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--vid</span></tt>.</p>
+            <p><tt class="docutils literal"><span class="pre">--vid=no</span></tt> or <tt class="docutils literal"><span class="pre">--video=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-video</span></tt> disables video playback.
+            (The latter variant does not work with the client API.)</p>
+            <p class="last">If vudeo is disabled, mpv will try to download the audio only if media is
+            streamed with youtube-dl, because it saves bandwidth. This is done by
+            setting the ytdl_format to &quot;bestaudio/best&quot; in the ytdl_hook.lua script.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--ff-aid=&lt;ID|auto|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--ff-sid=&lt;ID|auto|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--ff-vid=&lt;ID|auto|no&gt;</span></tt></dt>
             <dd><p class="first">Select audio/subtitle/video streams by the FFmpeg stream index. The FFmpeg
             stream index is relatively arbitrary, but useful when interacting with
@@ -1236,13 +1249,6 @@
             The option variants <tt class="docutils literal"><span class="pre">--vf-add</span></tt>, <tt class="docutils literal"><span class="pre">--vf-pre</span></tt>, <tt class="docutils literal"><span class="pre">--vf-del</span></tt> and
             <tt class="docutils literal"><span class="pre">--vf-clr</span></tt> exist to modify a previously specified list, but you
             should not need these for typical use.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--no-video</span></tt></dt>
-            <dd><p class="first">Do not play video. With some demuxers this may not work. In those cases
-            you can try <tt class="docutils literal"><span class="pre">--vo=null</span></tt> instead.</p>
-            <p class="last">mpv will try to download the audio only if media is streamed with
-            youtube-dl, because it saves bandwidth. This is done by setting the ytdl_format
-            to &quot;bestaudio/best&quot; in the ytdl_hook.lua script.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--untimed</span></tt></dt>
             <dd>Do not sleep when outputting video frames. Useful for benchmarks when used
             with <tt class="docutils literal"><span class="pre">--no-audio.</span></tt></dd>
@@ -1429,19 +1435,23 @@
             while <tt class="docutils literal">uyvy422</tt> appears to be better for old hardware. <tt class="docutils literal">rgb0</tt> and
             <tt class="docutils literal">yuv420p</tt> also work.</dd>
             <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
-            <dd>Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
+            <dd><p class="first">Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
             video to make it fit a 4:3 display without black bands). The range
             controls how much of the image is cropped. May not work with all video
-            output drivers.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-aspect=&lt;ratio&gt;</span></tt></dt>
+            output drivers.</p>
+            <p class="last">This option has no effect if <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt> option is used.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-aspect=&lt;ratio|no&gt;</span></tt></dt>
             <dd><p class="first">Override video aspect ratio, in case aspect information is incorrect or
             missing in the file being played. See also <tt class="docutils literal"><span class="pre">--no-video-aspect</span></tt>.</p>
-            <p>Two values have special meaning:</p>
+            <p>These values have special meaning:</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
             <tr class="field"><th class="field-name">0:</th><td class="field-body">disable aspect ratio handling, pretend the video has square pixels</td>
+            </tr>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">same as <tt class="docutils literal">0</tt></td>
             </tr>
             <tr class="field"><th class="field-name">-1:</th><td class="field-body">use the video stream or container aspect (default)</td>
             </tr>
@@ -1453,12 +1463,10 @@
             <ul class="last simple">
             <li><tt class="docutils literal"><span class="pre">--video-aspect=4:3</span></tt>  or <tt class="docutils literal"><span class="pre">--video-aspect=1.3333</span></tt></li>
             <li><tt class="docutils literal"><span class="pre">--video-aspect=16:9</span></tt> or <tt class="docutils literal"><span class="pre">--video-aspect=1.7777</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--no-video-aspect</span></tt> or <tt class="docutils literal"><span class="pre">--video-aspect=no</span></tt></li>
             </ul>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--no-video-aspect</span></tt></dt>
-            <dd>Ignore aspect ratio information from video file and assume the video has
-            square pixels. See also <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;hybrid|bitstream|container&gt;</span></tt></dt>
             <dd><p class="first">This sets the default video aspect determination method (if the aspect is
             _not_ overridden by the user with <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> or others).</p>
@@ -1483,10 +1491,12 @@
             choices if you encounter video that has the wrong aspect ratio in mpv,
             but seems to be correct in other players.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-unscaled</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--video-unscaled=&lt;no|yes|downscale-big&gt;</span></tt></dt>
             <dd><p class="first">Disable scaling of the video. If the window is larger than the video,
-            black bars are added. Otherwise, the video is cropped. The video still
-            can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options.</p>
+            black bars are added. Otherwise, the video is cropped, unless the option
+            is set to <tt class="docutils literal"><span class="pre">downscale-big</span></tt>, in which case the video is fit to window. The
+            video still can be influenced by the other <tt class="docutils literal"><span class="pre">--video-...</span></tt> options. This
+            option disables the effect of <tt class="docutils literal"><span class="pre">--panscan</span></tt>.</p>
             <p>Note that the scaler algorithm may still be used, even if the video isn't
             scaled. For example, this can influence chroma conversion. The video will
             also still be scaled in one dimension if the source uses non-square pixels
@@ -1809,14 +1819,15 @@
             <p class="last">Since mpv 0.18.1, this always controls the internal mixer (aka &quot;softvol&quot;).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--balance=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">How much left/right channels contribute to the audio.</p>
+            <dd><p class="first">How much left/right channels contribute to the audio. (The implementation
+            of this feature is rather odd. It doesn't change the volumes of each
+            channel, but instead sets up a pan matrix to mix the left and right
+            channels.)</p>
             <p class="last">Deprecated.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-delay=&lt;sec&gt;</span></tt></dt>
             <dd>Audio delay in seconds (positive or negative float value). Positive values
             delay the audio, and negative values delay the video.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--no-audio</span></tt></dt>
-            <dd>Do not play sound.</dd>
             <dt><tt class="docutils literal"><span class="pre">--mute=&lt;auto|yes|no&gt;</span></tt></dt>
             <dd><p class="first">Set startup audio mute status. <tt class="docutils literal">auto</tt> (default) will not change the mute
             status.</p>
@@ -2100,8 +2111,6 @@
             overriding them can be controlled with <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt>.</p>
             </div>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--no-sub</span></tt></dt>
-            <dd>Do not select any subtitle when the file is loaded.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-demuxer=&lt;[+]name&gt;</span></tt></dt>
             <dd>Force subtitle demuxer type for <tt class="docutils literal"><span class="pre">--sub-file</span></tt>. Give the demuxer name as
             printed by <tt class="docutils literal"><span class="pre">--sub-demuxer=help</span></tt>.</dd>
@@ -2526,6 +2535,9 @@
             uses it for fast elimination of duplicates. This option disables caching
             of subtitles across seeks, so after a seek libass can't eliminate subtitle
             packets with the same ReadOrder as earlier packets.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--teletext-page=&lt;1-999&gt;</span></tt></dt>
+            <dd>This works for <tt class="docutils literal">dvb_teletext</tt> subtitle streams, and if FFmpeg has been
+            compiled with support for it.</dd>
             </dl>
             </div>
             <div class="section" id="window">
@@ -2614,6 +2626,20 @@
             is not the case (e.g. <tt class="docutils literal">mpv <span class="pre">--keep-open</span> file.mkv /dev/null</tt> will play
             file.mkv normally, then fail to open <tt class="docutils literal">/dev/null</tt>, then exit). (In
             mpv 0.8.0, <tt class="docutils literal">always</tt> was introduced, which restores the old behavior.)</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--image-display-duration=&lt;seconds|inf&gt;</span></tt></dt>
+            <dd><p class="first">If the current file is an image, play the image for the given amount of
+            seconds (default: 1). <tt class="docutils literal">inf</tt> means the file is kept open forever (until
+            the user stops playback manually).</p>
+            <p>Unlike <tt class="docutils literal"><span class="pre">--keep-open</span></tt>, the player is not paused, but simply continues
+            playback until the time has elapsed. (It should not use any resources
+            during &quot;playback&quot;.)</p>
+            <p>This affects image files, which are defined as having only 1 video frame
+            and no audio. The player may recognize certain non-images as images, for
+            example if <tt class="docutils literal"><span class="pre">--length</span></tt> is used to reduce the length to 1 frame, or if
+            you seek to the last frame.</p>
+            <p class="last">This option does not affect the framerate used for <tt class="docutils literal"><span class="pre">mf://</span></tt> or
+            <tt class="docutils literal"><span class="pre">--merge-files</span></tt>. For that, use <tt class="docutils literal"><span class="pre">--mf-fps</span></tt> instead.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--force-window=&lt;yes|no|immediate&gt;</span></tt></dt>
             <dd><p class="first">Create a video output window even if there is no video. This can be useful
@@ -3507,6 +3533,15 @@
             values are allowed.</p>
             <p class="last">Default: 0.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-osd=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enabled OSD rendering on the video window (default: yes). This can be used
+            in situations where terminal OSD is preferred. If you just want to disable
+            all OSD rendering, use <tt class="docutils literal"><span class="pre">--osd-level=0</span></tt>.</p>
+            <p>It does not affect subtitles or overlays created by scripts (in particular,
+            the OSC needs to be disabled with <tt class="docutils literal"><span class="pre">--no-osc</span></tt>).</p>
+            <p class="last">This option is somewhat experimental and could be replaced by another
+            mechanism in the future.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="screenshot">
@@ -3761,10 +3796,22 @@
             only.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--term-osd,</span> <span class="pre">--no-term-osd</span></tt>, <tt class="docutils literal"><span class="pre">--term-osd=force</span></tt></dt>
-            <dd><p class="first">Display OSD messages on the console when no video output is available.
-            Enabled by default.</p>
-            <p class="last"><tt class="docutils literal">force</tt> enables terminal OSD even if a video window is created.</p>
+            <dt><tt class="docutils literal"><span class="pre">--term-osd=&lt;auto|no|force&gt;</span></tt></dt>
+            <dd><p class="first">Control whether OSD messages are shown on the console when no video output
+            is available (default: auto).</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">use terminal OSD if no video output active</td>
+            </tr>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">disable terminal OSD</td>
+            </tr>
+            <tr class="field"><th class="field-name">force:</th><td class="field-body">use terminal OSD even if video output active</td>
+            </tr>
+            </tbody>
+            </table>
+            <p class="last">The <tt class="docutils literal">auto</tt> mode also enables terminal OSD if <tt class="docutils literal"><span class="pre">--video-osd=no</span></tt> was set.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--term-osd-bar</span></tt>, <tt class="docutils literal"><span class="pre">--no-term-osd-bar</span></tt></dt>
             <dd>Enable printing a progress bar under the status line on the terminal.
@@ -4173,6 +4220,785 @@
             </dd>
             </dl>
             </div>
+            <div class="section" id="alsa-audio-output-options">
+            <h2>ALSA audio output options</h2>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--alsa-device=&lt;device&gt;</span></tt></dt>
+            <dd><p class="first">Sets the device name. For ac3 output via S/PDIF, use an &quot;iec958&quot; or
+            &quot;spdif&quot; device, unless you really know how to set it correctly.</p>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p>MPlayer and mplayer2 required you to replace any ',' with '.' and
+            any ':' with '=' in the ALSA device name. mpv does not do this anymore.
+            Instead, quote the device name:</p>
+            <blockquote>
+            <tt class="docutils literal"><span class="pre">--ao=alsa:device=[plug:surround50]</span></tt></blockquote>
+            <p>Note that the <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt> simply quote the device name. With some
+            shells (like zsh), you have to quote the option string to prevent the
+            shell from interpreting the brackets instead of passing them to mpv.</p>
+            <p class="last">Actually, you should use the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option, instead of
+            setting the device directly.</p>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-resample=yes</span></tt></dt>
+            <dd>Enable ALSA resampling plugin. (This is disabled by default, because
+            some drivers report incorrect audio delay in some cases.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-mixer-device=&lt;device&gt;</span></tt></dt>
+            <dd>Set the mixer device used with <tt class="docutils literal"><span class="pre">ao-volume</span></tt> (default: <tt class="docutils literal">default</tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-mixer-name=&lt;name&gt;</span></tt></dt>
+            <dd>Set the name of the mixer element (default: <tt class="docutils literal">Master</tt>). This is for
+            example <tt class="docutils literal">PCM</tt> or <tt class="docutils literal">Master</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-mixer-index=&lt;number&gt;</span></tt></dt>
+            <dd>Set the index of the mixer channel (default: 0). Consider the output of
+            &quot;<tt class="docutils literal">amixer scontrols</tt>&quot;, then the index is the number that follows the
+            name of the element.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-non-interleaved</span></tt></dt>
+            <dd>Allow output of non-interleaved formats (if the audio decoder uses
+            this format). Currently disabled by default, because some popular
+            ALSA plugins are utterly broken with non-interleaved formats.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-ignore-chmap</span></tt></dt>
+            <dd>Don't read or set the channel map of the ALSA device - only request the
+            required number of channels, and then pass the audio as-is to it. This
+            option most likely should not be used. It can be useful for debugging,
+            or for static setups with a specially engineered ALSA configuration (in
+            this case you should always force the same layout with <tt class="docutils literal"><span class="pre">--audio-channels</span></tt>,
+            or it will work only for files which use the layout implicit to your
+            ALSA device).</dd>
+            </dl>
+            </div>
+            <div class="section" id="opengl-renderer-options">
+            <h2>OpenGL renderer options</h2>
+            <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> and
+            <tt class="docutils literal"><span class="pre">-vo=opengl-cb</span></tt> only, which are the only VOs that implement them.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--opengl-dumb-mode=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">This mode is extremely restricted, and will disable most extended OpenGL
+            features. This includes high quality scalers and custom shaders!</p>
+            <p>It is intended for hardware that does not support FBOs (including GLES,
+            which supports it insufficiently), or to get some more performance out of
+            bad or old hardware.</p>
+            <p>This mode is forced automatically if needed, and this option is mostly
+            useful for debugging. It's also enabled automatically if nothing uses
+            features which require FBOs.</p>
+            <p class="last">This option might be silently removed in the future.</p>
+            </dd>
+            </dl>
+            <p><tt class="docutils literal"><span class="pre">--scale=&lt;filter&gt;</span></tt></p>
+            <blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">bilinear</tt></dt>
+            <dd>Bilinear hardware texture filtering (fastest, very low quality). This
+            is the default for compatibility reasons.</dd>
+            <dt><tt class="docutils literal">spline36</tt></dt>
+            <dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>.</dd>
+            <dt><tt class="docutils literal">lanczos</tt></dt>
+            <dd><p class="first">Lanczos scaling. Provides mid quality and speed. Generally worse than
+            <tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image which is good
+            for some content types. The number of taps can be controlled with
+            <tt class="docutils literal"><span class="pre">scale-radius</span></tt>, but is best left unchanged.</p>
+            <p class="last">(This filter is an alias for <tt class="docutils literal">sinc</tt>-windowed <tt class="docutils literal">sinc</tt>)</p>
+            </dd>
+            <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
+            <dd><p class="first">Elliptic weighted average Lanczos scaling. Also known as Jinc.
+            Relatively slow, but very good quality. The radius can be controlled
+            with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>. Increasing the radius makes the filter sharper
+            but adds more ringing.</p>
+            <p class="last">(This filter is an alias for <tt class="docutils literal">jinc</tt>-windowed <tt class="docutils literal">jinc</tt>)</p>
+            </dd>
+            <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
+            <dd>A slightly sharpened version of ewa_lanczos, preconfigured to use an
+            ideal radius and parameter. If your hardware can run it, this is
+            probably what you should use by default.</dd>
+            <dt><tt class="docutils literal">mitchell</tt></dt>
+            <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
+            <tt class="docutils literal"><span class="pre">--scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">--scale-param2</span></tt>. This filter is very good at
+            downscaling (see <tt class="docutils literal"><span class="pre">--dscale</span></tt>).</dd>
+            <dt><tt class="docutils literal">oversample</tt></dt>
+            <dd>A version of nearest neighbour that (naively) oversamples pixels, so
+            that pixels overlapping edges get linearly interpolated instead of
+            rounded. This essentially removes the small imperfections and judder
+            artifacts caused by nearest-neighbour interpolation, in exchange for
+            adding some blur. This filter is good at temporal interpolation, and
+            also known as &quot;smoothmotion&quot; (see <tt class="docutils literal"><span class="pre">--tscale</span></tt>).</dd>
+            <dt><tt class="docutils literal">linear</tt></dt>
+            <dd>A <tt class="docutils literal"><span class="pre">--tscale</span></tt> filter.</dd>
+            </dl>
+            <p>There are some more filters, but most are not as useful. For a complete
+            list, pass <tt class="docutils literal">help</tt> as value, e.g.:</p>
+            <pre class="literal-block">
+            mpv --scale=help
+            </pre>
+            </blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-param2=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Set filter parameters. Ignored if the filter is not tunable. Currently,
+            this affects the following filter parameters:</p>
+            <dl class="last docutils">
+            <dt>bcspline</dt>
+            <dd>Spline parameters (<tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt>). Defaults to 0.5 for both.</dd>
+            <dt>gaussian</dt>
+            <dd>Scale parameter (<tt class="docutils literal">t</tt>). Increasing this makes the result blurrier.
+            Defaults to 1.</dd>
+            <dt>oversample</dt>
+            <dd>Minimum distance to an edge before interpolation is used. Setting this
+            to 0 will always interpolate edges, whereas setting it to 0.5 will
+            never interpolate, thus behaving as if the regular nearest neighbour
+            algorithm was used. Defaults to 0.0.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-blur=&lt;value&gt;</span></tt></dt>
+            <dd>Kernel scaling factor (also known as a blur factor). Decreasing this makes
+            the result sharper, increasing it makes it blurrier (default 0). If set to
+            0, the kernel's preferred blur factor is used. Note that setting this too
+            low (eg. 0.5) leads to bad results. It's generally recommended to stick to
+            values between 0.8 and 1.2.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-radius=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Set radius for tunable filters, must be a float number between 0.5 and
+            16.0. Defaults to the filter's preferred radius if not specified. Doesn't
+            work for every scaler and VO combination.</p>
+            <p class="last">Note that depending on filter implementation details and video scaling
+            ratio, the radius that actually being used might be different (most likely
+            being increased a bit).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-antiring=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Set the antiringing strength. This tries to eliminate ringing, but can
+            introduce other artifacts in the process. Must be a float number between
+            0.0 and 1.0. The default value of 0.0 disables antiringing entirely.</p>
+            <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt> and
+            <tt class="docutils literal">bicubic_fast</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-window=&lt;window&gt;</span></tt></dt>
+            <dd>(Advanced users only) Choose a custom windowing function for the kernel.
+            Defaults to the filter's preferred window if unset. Use
+            <tt class="docutils literal"><span class="pre">--scale-window=help</span></tt> to get a list of supported windowing functions.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-wparam=&lt;window&gt;</span></tt></dt>
+            <dd><p class="first">(Advanced users only) Configure the parameter for the window function given
+            by <tt class="docutils literal"><span class="pre">--scale-window</span></tt>. Ignored if the window is not tunable. Currently,
+            this affects the following window parameters:</p>
+            <dl class="last docutils">
+            <dt>kaiser</dt>
+            <dd>Window parameter (alpha). Defaults to 6.33.</dd>
+            <dt>blackman</dt>
+            <dd>Window parameter (alpha). Defaults to 0.16.</dd>
+            <dt>gaussian</dt>
+            <dd>Scale parameter (t). Increasing this makes the window wider. Defaults
+            to 1.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--scaler-lut-size=&lt;4..10&gt;</span></tt></dt>
+            <dd><p class="first">Set the size of the lookup texture for scaler kernels (default: 6). The
+            actual size of the texture is <tt class="docutils literal">2^N</tt> for an option value of <tt class="docutils literal">N</tt>. So the
+            lookup texture with the default setting uses 64 samples.</p>
+            <p class="last">All weights are linearly interpolated from those samples, so increasing
+            the size of lookup table might improve the accuracy of scaler.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--scaler-resizes-only</span></tt></dt>
+            <dd>Disable the scaler if the video image is not resized. In that case,
+            <tt class="docutils literal">bilinear</tt> is used instead of whatever is set with <tt class="docutils literal"><span class="pre">--scale</span></tt>. Bilinear
+            will reproduce the source image perfectly if no scaling is performed.
+            Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-pbo</span></tt></dt>
+            <dd><p class="first">Enable use of PBOs. On some drivers this can be faster, especially if the
+            source video size is huge (e.g. so called &quot;4K&quot; video). On other drivers it
+            might be slower or cause latency issues.</p>
+            <p class="last">In theory, this can sometimes lead to sporadic and temporary image
+            corruption (because reupload is not retried when it fails).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--dither-depth=&lt;N|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">Set dither target depth to N. Default: no.</p>
+            <dl class="docutils">
+            <dt>no</dt>
+            <dd>Disable any dithering done by mpv.</dd>
+            <dt>auto</dt>
+            <dd>Automatic selection. If output bit depth cannot be detected, 8 bits per
+            component are assumed.</dd>
+            <dt>8</dt>
+            <dd>Dither to 8 bit output.</dd>
+            </dl>
+            <p class="last">Note that the depth of the connected video display device cannot be
+            detected. Often, LCD panels will do dithering on their own, which conflicts
+            with this option and leads to ugly output.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--dither-size-fruit=&lt;2-8&gt;</span></tt></dt>
+            <dd><p class="first">Set the size of the dither matrix (default: 6). The actual size of the
+            matrix is <tt class="docutils literal">(2^N) x (2^N)</tt> for an option value of <tt class="docutils literal">N</tt>, so a value of 6
+            gives a size of 64x64. The matrix is generated at startup time, and a large
+            matrix can take rather long to compute (seconds).</p>
+            <p class="last">Used in <tt class="docutils literal"><span class="pre">--dither=fruit</span></tt> mode only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--dither=&lt;fruit|ordered|no&gt;</span></tt></dt>
+            <dd>Select dithering algorithm (default: fruit). (Normally, the
+            <tt class="docutils literal"><span class="pre">--dither-depth</span></tt> option controls whether dithering is enabled.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--temporal-dither</span></tt></dt>
+            <dd>Enable temporal dithering. (Only active if dithering is enabled in
+            general.) This changes between 8 different dithering patterns on each frame
+            by changing the orientation of the tiled dithering matrix. Unfortunately,
+            this can lead to flicker on LCD displays, since these have a high reaction
+            time.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--temporal-dither-period=&lt;1-128&gt;</span></tt></dt>
+            <dd>Determines how often the dithering pattern is updated when
+            <tt class="docutils literal"><span class="pre">--temporal-dither</span></tt> is in use. 1 (the default) will update on every video
+            frame, 2 on every other frame, etc.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-debug</span></tt></dt>
+            <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also, request a
+            debug OpenGL context (which does nothing with current graphics drivers
+            as of this writing).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--interpolation</span></tt></dt>
+            <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display refresh
+            rate (also known as judder).</p>
+            <div class="warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
+            of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
+            This was not required before mpv 0.14.0.</p>
+            </div>
+            <p>This essentially attempts to interpolate the missing frames by convoluting
+            the video along the temporal axis. The filter used can be controlled using
+            the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
+            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
+            more information.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-swapinterval=&lt;n&gt;</span></tt></dt>
+            <dd><p class="first">Interval in displayed frames between two buffer swaps. 1 is equivalent to
+            enable VSYNC, 0 to disable VSYNC. Defaults to 1 if not specified.</p>
+            <p class="last">Note that this depends on proper OpenGL vsync support. On some platforms
+            and drivers, this only works reliably when in fullscreen mode. It may also
+            require driver-specific hacks if using multiple monitors, to ensure mpv
+            syncs to the right one. Compositing window managers can also lead to bad
+            results, as can missing or incorrect display FPS information (see
+            <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--dscale=&lt;filter&gt;</span></tt></dt>
+            <dd>Like <tt class="docutils literal"><span class="pre">--scale</span></tt>, but apply these filters on downscaling instead. If this
+            option is unset, the filter implied by <tt class="docutils literal"><span class="pre">--scale</span></tt> will be applied.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cscale=&lt;filter&gt;</span></tt></dt>
+            <dd>As <tt class="docutils literal"><span class="pre">--scale</span></tt>, but for interpolating chroma information. If the image is
+            not subsampled, this option is ignored entirely.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--tscale=&lt;filter&gt;</span></tt></dt>
+            <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is only
+            used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
+            <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
+            get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
+            <p class="last">Note that the maximum supported filter radius is currently 3, due to
+            limitations in the number of video textures that can be loaded
+            simultaneously.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
+            <dd>Clamp the <tt class="docutils literal"><span class="pre">--tscale</span></tt> filter kernel's value range to [0-1]. This reduces
+            excessive ringing artifacts in the temporal domain (which typically
+            manifest themselves as short flashes or fringes of black, mostly around
+            moving edges) in exchange for potentially adding more blur.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
+            <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
+            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
+            where <tt class="docutils literal">vfps</tt> is the speed-adjusted display FPS, and <tt class="docutils literal">disphz</tt> the
+            display refresh rate.</p>
+            <p>The default is intended to almost always enable interpolation if the
+            playback rate is even slightly different from the display refresh rate. But
+            note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small deviations
+            in the rate can disable interpolation and introduce a discontinuity every
+            other minute.</p>
+            <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-radius</span></tt>, etc.</dt>
+            <dd><p class="first">Set filter parameters for <tt class="docutils literal"><span class="pre">--dscale</span></tt>, <tt class="docutils literal"><span class="pre">--cscale</span></tt> and <tt class="docutils literal"><span class="pre">--tscale</span></tt>,
+            respectively.</p>
+            <p class="last">See the corresponding options for <tt class="docutils literal"><span class="pre">--scale</span></tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
+            <dd>Scale in linear light. It should only be used with a
+            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
+            <dd><p class="first">When using convolution based filters, extend the filter size when
+            downscaling. Increases quality, but reduces performance while downscaling.</p>
+            <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
+            better than without it) since it will extend the size to match only the
+            milder of the scale factors between the axes.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-shaders=&lt;files&gt;</span></tt></dt>
+            <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
+            which can be injected at almost arbitrary points in the rendering pipeline,
+            and access all previous intermediate textures.</p>
+            <div class="admonition-warning admonition">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">The syntax is not stable yet and may change any time.</p>
+            </div>
+            <p>The general syntax of a user shader looks like this:</p>
+            <pre class="literal-block">
+            //!METADATA ARGS...
+            //!METADATA ARGS...
+            
+            vec4 hook() {
+               ...
+               return something;
+            }
+            
+            //!METADATA ARGS...
+            //!METADATA ARGS...
+            
+            ...
+            </pre>
+            <p>Each block of metadata, along with the non-metadata lines after it, defines
+            a single pass. Each pass can set the following metadata:</p>
+            <dl class="docutils">
+            <dt>HOOK &lt;name&gt; (required)</dt>
+            <dd>The texture which to hook into. May occur multiple times within a
+            metadata block, up to a predetermined limit. See below for a list of
+            hookable textures.</dd>
+            <dt>BIND &lt;name&gt;</dt>
+            <dd>Loads a texture and makes it available to the pass, and sets up macros
+            to enable accessing it. See below for a list of set macros. By default,
+            no textures are bound. The special name HOOKED can be used to refer to
+            the texture that triggered this pass.</dd>
+            <dt>SAVE &lt;name&gt;</dt>
+            <dd>Gives the name of the texture to save the result of this pass into. By
+            default, this is set to the special name HOOKED which has the effect of
+            overwriting the hooked texture.</dd>
+            <dt>WIDTH &lt;szexpr&gt;, HEIGHT &lt;szexpr&gt;</dt>
+            <dd>Specifies the size of the resulting texture for this pass. <tt class="docutils literal">szexpr</tt>
+            refers to an expression in RPN (reverse polish notation), using the
+            operators + - * / &gt; &lt; !, floating point literals, and references to
+            sizes of existing texture and OUTPUT (such as MAIN.width or
+            CHROMA.height). By default, these are set to HOOKED.w and HOOKED.h,
+            respectively.</dd>
+            <dt>WHEN &lt;szexpr&gt;</dt>
+            <dd>Specifies a condition that needs to be true (non-zero) for the shader
+            stage to be evaluated. If it fails, it will silently be omitted. (Note
+            that a shader stage like this which has a dependency on an optional
+            hook point can still cause that hook point to be saved, which has some
+            minor overhead)</dd>
+            <dt>OFFSET ox oy</dt>
+            <dd>Indicates a pixel shift (offset) introduced by this pass. These pixel
+            offsets will be accumulated and corrected during the next scaling pass
+            (<tt class="docutils literal">cscale</tt> or <tt class="docutils literal">scale</tt>). The default values are 0 0 which correspond
+            to no shift. Note that offsets are ignored when not overwriting the
+            hooked texture.</dd>
+            <dt>COMPONENTS n</dt>
+            <dd>Specifies how many components of this pass's output are relevant and
+            should be stored in the texture, up to 4 (rgba). By default, this value
+            is equal to the number of components in HOOKED.</dd>
+            </dl>
+            <p>Each bound texture (via <tt class="docutils literal">BIND</tt>) will make available the following
+            definitions to that shader pass, where NAME is the name of the bound
+            texture:</p>
+            <dl class="docutils">
+            <dt>vec4 NAME_tex(vec2 pos)</dt>
+            <dd>The sampling function to use to access the texture at a certain spot
+            (in texture coordinate space, range [0,1]). This takes care of any
+            necessary normalization conversions.</dd>
+            <dt>vec4 NAME_texOff(vec2 offset)</dt>
+            <dd>Sample the texture at a certain offset in pixels. This works like
+            NAME_tex but additionally takes care of necessary rotations, so that
+            sampling at e.g. vec2(-1,0) is always one pixel to the left.</dd>
+            <dt>vec2 NAME_pos</dt>
+            <dd>The local texture coordinate of that texture, range [0,1].</dd>
+            <dt>vec2 NAME_size</dt>
+            <dd>The (rotated) size in pixels of the texture.</dd>
+            <dt>mat2 NAME_rot</dt>
+            <dd>The rotation matrix associated with this texture. (Rotates pixel space
+            to texture coordinates)</dd>
+            <dt>vec2 NAME_pt</dt>
+            <dd>The (unrotated) size of a single pixel, range [0,1].</dd>
+            <dt>sampler NAME_raw</dt>
+            <dd>The raw bound texture itself. The use of this should be avoided unless
+            absolutely necessary.</dd>
+            </dl>
+            <p>In addition to these parameters, the following uniforms are also globally
+            available:</p>
+            <dl class="docutils">
+            <dt>float random</dt>
+            <dd>A random number in the range [0-1], different per frame.</dd>
+            <dt>int frame</dt>
+            <dd>A simple count of frames rendered, increases by one per frame and never
+            resets (regardless of seeks).</dd>
+            <dt>vec2 image_size</dt>
+            <dd>The size in pixels of the input image.</dd>
+            <dt>vec2 target_size</dt>
+            <dd>The size in pixels of the visible part of the scaled (and possibly
+            cropped) image.</dd>
+            </dl>
+            <p>Internally, vo_opengl may generate any number of the following textures.
+            Whenever a texture is rendered and saved by vo_opengl, all of the passes
+            that have hooked into it will run, in the order they were added by the
+            user. This is a list of the legal hook points:</p>
+            <dl class="docutils">
+            <dt>RGB, LUMA, CHROMA, ALPHA, XYZ (resizable)</dt>
+            <dd>Source planes (raw). Which of these fire depends on the image format of
+            the source.</dd>
+            <dt>CHROMA_SCALED, ALPHA_SCALED (fixed)</dt>
+            <dd>Source planes (upscaled). These only fire on subsampled content.</dd>
+            <dt>NATIVE (resizable)</dt>
+            <dd>The combined image, in the source colorspace, before conversion to RGB.</dd>
+            <dt>MAINPRESUB (resizable)</dt>
+            <dd>The image, after conversion to RGB, but before
+            <tt class="docutils literal"><span class="pre">--blend-subtitles=video</span></tt> is applied.</dd>
+            <dt>MAIN (resizable)</dt>
+            <dd>The main image, after conversion to RGB but before upscaling.</dd>
+            <dt>LINEAR (fixed)</dt>
+            <dd>Linear light image, before scaling. This only fires when
+            <tt class="docutils literal"><span class="pre">--linear-scaling</span></tt> is in effect.</dd>
+            <dt>SIGMOID (fixed)</dt>
+            <dd>Sigmoidized light, before scaling. This only fires when
+            <tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt> is in effect.</dd>
+            <dt>PREKERNEL (fixed)</dt>
+            <dd>The image immediately before the scaler kernel runs.</dd>
+            <dt>POSTKERNEL (fixed)</dt>
+            <dd>The image immediately after the scaler kernel runs.</dd>
+            <dt>SCALED (fixed)</dt>
+            <dd>The final upscaled image, before color management.</dd>
+            <dt>OUTPUT (fixed)</dt>
+            <dd>The final output image, after color management but before dithering and
+            drawing to screen.</dd>
+            </dl>
+            <p class="last">Only the textures labelled with <tt class="docutils literal">resizable</tt> may be transformed by the
+            pass. When overwriting a texture marked <tt class="docutils literal">fixed</tt>, the WIDTH, HEIGHT and
+            OFFSET must be left at their default values.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--deband</span></tt></dt>
+            <dd>Enable the debanding algorithm. This greatly reduces the amount of visible
+            banding, blocking and other quantization artifacts, at the expensive of
+            very slightly blurring some of the finest details. In practice, it's
+            virtually always an improvement - the only reason to disable it would be
+            for performance.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--deband-iterations=&lt;1..16&gt;</span></tt></dt>
+            <dd>The number of debanding steps to perform per sample. Each step reduces a
+            bit more banding, but takes time to compute. Note that the strength of each
+            step falls off very quickly, so high numbers (&gt;4) are practically useless.
+            (Default 1)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--deband-threshold=&lt;0..4096&gt;</span></tt></dt>
+            <dd>The debanding filter's cut-off threshold. Higher numbers increase the
+            debanding strength dramatically but progressively diminish image details.
+            (Default 64)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--deband-range=&lt;1..64&gt;</span></tt></dt>
+            <dd><p class="first">The debanding filter's initial radius. The radius increases linearly for
+            each iteration. A higher radius will find more gradients, but a lower
+            radius will smooth more aggressively. (Default 16)</p>
+            <p class="last">If you increase the <tt class="docutils literal"><span class="pre">--deband-iterations</span></tt>, you should probably decrease
+            this to compensate.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--deband-grain=&lt;0..4096&gt;</span></tt></dt>
+            <dd>Add some extra noise to the image. This significantly helps cover up
+            remaining quantization artifacts. Higher numbers add more noise. (Default
+            48)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt></dt>
+            <dd>When upscaling, use a sigmoidal color transform to avoid emphasizing
+            ringing artifacts. This also implies <tt class="docutils literal"><span class="pre">--linear-scaling</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sigmoid-center</span></tt></dt>
+            <dd>The center of the sigmoid curve used for <tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt>, must be a
+            float between 0.0 and 1.0. Defaults to 0.75 if not specified.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sigmoid-slope</span></tt></dt>
+            <dd>The slope of the sigmoid curve used for <tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt>, must be a
+            float between 1.0 and 20.0. Defaults to 6.5 if not specified.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sharpen=&lt;value&gt;</span></tt></dt>
+            <dd>If set to a value other than 0, enable an unsharp masking filter. Positive
+            values will sharpen the image (but add more ringing and aliasing). Negative
+            values will blur the image. If your GPU is powerful enough, consider
+            alternatives like the <tt class="docutils literal">ewa_lanczossharp</tt> scale filter, or the
+            <tt class="docutils literal"><span class="pre">--scale-blur</span></tt> option.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-glfinish</span></tt></dt>
+            <dd>Call <tt class="docutils literal">glFinish()</tt> before and after swapping buffers (default: disabled).
+            Slower, but might improve results when doing framedropping. Can completely
+            ruin performance. The details depend entirely on the OpenGL driver.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-waitvsync</span></tt></dt>
+            <dd><p class="first">Call <tt class="docutils literal">glXWaitVideoSyncSGI</tt> after each buffer swap (default: disabled).
+            This may or may not help with video timing accuracy and frame drop. It's
+            possible that this makes video output slower, or has no effect at all.</p>
+            <p class="last">X11/GLX only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-vsync-fences=&lt;N&gt;</span></tt></dt>
+            <dd>Synchronize the CPU to the Nth past frame using the <tt class="docutils literal">GL_ARB_sync</tt>
+            extension. A value of 0 disables this behavior (default). A value of 1
+            means it will synchronize to the current frame after rendering it. Like
+            <tt class="docutils literal"><span class="pre">--glfinish</span></tt> and <tt class="docutils literal"><span class="pre">--waitvsync</span></tt>, this can lower or ruin performance. Its
+            advantage is that it can span multiple frames, and effectively limit the
+            number of frames the GPU queues ahead (which also has an influence on
+            vsync).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-dwmflush=&lt;no|windowed|yes|auto&gt;</span></tt></dt>
+            <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: auto). It
+            also sets <tt class="docutils literal">SwapInterval(0)</tt> to ignore the OpenGL timing. Values are: no
+            (disabled), windowed (only in windowed mode), yes (also in full screen).</p>
+            <p>The value <tt class="docutils literal">auto</tt> will try to determine whether the compositor is active,
+            and calls <tt class="docutils literal">DwmFlush</tt> only if it seems to be.</p>
+            <p>This may help to get more consistent frame intervals, especially with
+            high-fps clips - which might also reduce dropped frames. Typically, a value
+            of <tt class="docutils literal">windowed</tt> should be enough, since full screen may bypass the DWM.</p>
+            <p class="last">Windows only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-dcomposition=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Allows DirectComposition when using the ANGLE backend (default: yes).
+            DirectComposition implies flip-model presentation, which can improve
+            rendering efficiency on Windows 8+ by avoiding a copy of the video frame.
+            mpv uses it by default where possible, but it can cause poor behaviour with
+            some drivers, such as a black screen or graphical corruption when leaving
+            full-screen mode. Use &quot;no&quot; to disable it.</p>
+            <p class="last">Windows with ANGLE only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-sw</span></tt></dt>
+            <dd>Continue even if a software renderer is detected.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-backend=&lt;sys&gt;</span></tt></dt>
+            <dd><p class="first">The value <tt class="docutils literal">auto</tt> (the default) selects the windowing backend. You can
+            also pass <tt class="docutils literal">help</tt> to get a complete list of compiled in backends (sorted
+            by autoprobe order).</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>auto-select (default)</dd>
+            <dt>cocoa</dt>
+            <dd>Cocoa/OS X</dd>
+            <dt>win</dt>
+            <dd>Win32/WGL</dd>
+            <dt>angle</dt>
+            <dd>Direct3D11 through the OpenGL ES translation layer ANGLE. This supports
+            almost everything the <tt class="docutils literal">win</tt> backend does (if the ANGLE build is new
+            enough).</dd>
+            <dt>dxinterop (experimental)</dt>
+            <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation. Works
+            on Nvidia and AMD. Newer Intel chips with the latest drivers may also
+            work.</dd>
+            <dt>x11</dt>
+            <dd>X11/GLX</dd>
+            <dt>wayland</dt>
+            <dd>Wayland/EGL</dd>
+            <dt>drm-egl</dt>
+            <dd>DRM/EGL</dd>
+            <dt>x11egl</dt>
+            <dd>X11/EGL</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-es=&lt;mode&gt;</span></tt></dt>
+            <dd><p class="first">Select whether to use GLES:</p>
+            <dl class="last docutils">
+            <dt>yes</dt>
+            <dd>Try to prefer ES over Desktop GL</dd>
+            <dt>no</dt>
+            <dd>Try to prefer desktop GL over ES</dd>
+            <dt>auto</dt>
+            <dd>Use the default for each backend (default)</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-fbo-format=&lt;fmt&gt;</span></tt></dt>
+            <dd>Selects the internal format of textures used for FBOs. The format can
+            influence performance and quality of the video output. <tt class="docutils literal">fmt</tt> can be one
+            of: rgb8, rgb10, rgb10_a2, rgb16, rgb16f, rgb32f, rgba12, rgba16, rgba16f,
+            rgba32f. Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL, and rgba16f
+            or rgb10_a2 on GLES (e.g. ANGLE), unless GL_EXT_texture_norm16 is
+            available.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-gamma=&lt;0.1..2.0&gt;</span></tt></dt>
+            <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways (like
+            with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt> property),
+            the value is multiplied with the other gamma value.</p>
+            <p>Recommended values based on the environmental brightness:</p>
+            <dl class="docutils">
+            <dt>1.0</dt>
+            <dd>Brightly illuminated (default)</dd>
+            <dt>0.9</dt>
+            <dd>Slightly dim</dd>
+            <dt>0.8</dt>
+            <dd>Pitch black room</dd>
+            </dl>
+            <p class="last">NOTE: Typical movie content (Blu-ray etc.) already contains a gamma drop of
+            about 0.8, so specifying it here as well will result in even even darker
+            image than intended!</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--gamma-auto</span></tt></dt>
+            <dd><p class="first">Automatically corrects the gamma value depending on ambient lighting
+            conditions (adding a gamma boost for dark rooms).</p>
+            <p>With ambient illuminance of 64lux, mpv will pick the 1.0 gamma value (no
+            boost), and slightly increase the boost up until 0.8 for 16lux.</p>
+            <p class="last">NOTE: Only implemented on OS X.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
+            this colorspace when ICC color management is not being used. Valid values
+            are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Disable any adaptation (default)</dd>
+            <dt>bt.470m</dt>
+            <dd>ITU-R BT.470 M</dd>
+            <dt>bt.601-525</dt>
+            <dd>ITU-R BT.601 (525-line SD systems, eg. NTSC), SMPTE 170M/240M</dd>
+            <dt>bt.601-625</dt>
+            <dd>ITU-R BT.601 (625-line SD systems, eg. PAL/SECAM), ITU-R BT.470 B/G</dd>
+            <dt>bt.709</dt>
+            <dd>ITU-R BT.709 (HD), IEC 61966-2-4 (sRGB), SMPTE RP177 Annex B</dd>
+            <dt>bt.2020</dt>
+            <dd>ITU-R BT.2020 (UHD)</dd>
+            <dt>apple</dt>
+            <dd>Apple RGB</dd>
+            <dt>adobe</dt>
+            <dd>Adobe RGB (1998)</dd>
+            <dt>prophoto</dt>
+            <dd>ProPhoto RGB (ROMM)</dd>
+            <dt>cie1931</dt>
+            <dd>CIE 1931 RGB (not to be confused with CIE XYZ)</dd>
+            <dt>dci-p3</dt>
+            <dd>DCI-P3 (Digital Cinema Colorspace), SMPTE RP431-2</dd>
+            <dt>v-gamut</dt>
+            <dd>Panasonic V-Gamut (VARICAM) primaries</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--target-trc=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the transfer characteristics (gamma) of the display. Video colors
+            will be adjusted to this curve when ICC color management is not being used.
+            Valid values are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Disable any adaptation (default)</dd>
+            <dt>bt.1886</dt>
+            <dd>ITU-R BT.1886 curve (assuming infinite contrast)</dd>
+            <dt>srgb</dt>
+            <dd>IEC 61966-2-4 (sRGB)</dd>
+            <dt>linear</dt>
+            <dd>Linear light output</dd>
+            <dt>gamma1.8</dt>
+            <dd>Pure power curve (gamma 1.8), also used for Apple RGB</dd>
+            <dt>gamma2.2</dt>
+            <dd>Pure power curve (gamma 2.2)</dd>
+            <dt>gamma2.8</dt>
+            <dd>Pure power curve (gamma 2.8), also used for BT.470-BG</dd>
+            <dt>prophoto</dt>
+            <dd>ProPhoto RGB (ROMM)</dd>
+            <dt>st2084</dt>
+            <dd>SMPTE ST2084 (HDR) curve, PQ OETF</dd>
+            <dt>std-b67</dt>
+            <dd>ARIB STD-B67 (Hybrid Log-gamma) curve, also known as BBC/NHK HDR</dd>
+            <dt>v-log</dt>
+            <dd>Panasonic V-Log (VARICAM) curve</dd>
+            <dt>NOTE: When using HDR output formats, mpv will encode to the specified</dt>
+            <dd>curve but it will not set any HDMI flags or other signalling that
+            might be required for the target device to correctly display the
+            HDR signal. The user should independently guarantee this before
+            using these signal formats for display.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--target-brightness=&lt;1..100000&gt;</span></tt></dt>
+            <dd>Specifies the display's approximate brightness in cd/m^2. When playing HDR
+            content on a SDR display (or SDR content on an HDR display), video colors
+            will be tone mapped to this target brightness using the algorithm specified
+            by <tt class="docutils literal"><span class="pre">--hdr-tone-mapping</span></tt>. The default of 250 cd/m^2 corresponds to a
+            typical consumer display.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--hdr-tone-mapping=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the algorithm used for tone-mapping HDR images onto the target
+            display. Valid values are:</p>
+            <dl class="last docutils">
+            <dt>clip</dt>
+            <dd>Hard-clip any out-of-range values.</dd>
+            <dt>reinhard</dt>
+            <dd>Reinhard tone mapping algorithm. Very simple continuous curve.
+            Preserves dynamic range and peak but uses nonlinear contrast.</dd>
+            <dt>hable</dt>
+            <dd>Similar to <tt class="docutils literal">reinhard</tt> but preserves dark contrast better (slightly
+            sigmoidal). Developed by John Hable for use in video games. (default)</dd>
+            <dt>gamma</dt>
+            <dd>Fits a logarithmic transfer between the tone curves.</dd>
+            <dt>linear</dt>
+            <dd>Linearly stretches the entire reference gamut to (a linear multiple of)
+            the display.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--tone-mapping-param=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Set tone mapping parameters. Ignored if the tone mapping algorithm is not
+            tunable. This affects the following tone mapping algorithms:</p>
+            <dl class="last docutils">
+            <dt>reinhard</dt>
+            <dd>Specifies the local contrast coefficient at the display peak. Defaults
+            to 0.5, which means that in-gamut values will be about half as bright
+            as when clipping.</dd>
+            <dt>gamma</dt>
+            <dd>Specifies the exponent of the function. Defaults to 1.8.</dd>
+            <dt>linear</dt>
+            <dd>Specifies the scale factor to use while stretching. Defaults to 1.0.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-profile=&lt;file&gt;</span></tt></dt>
+            <dd>Load an ICC profile and use it to transform video RGB to screen output.
+            Needs LittleCMS 2 support compiled in. This option overrides the
+            <tt class="docutils literal"><span class="pre">--target-prim</span></tt>, <tt class="docutils literal"><span class="pre">--target-trc</span></tt> and <tt class="docutils literal"><span class="pre">--icc-profile-auto</span></tt> options.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-profile-auto</span></tt></dt>
+            <dd><p class="first">Automatically select the ICC display profile currently specified by the
+            display settings of the operating system.</p>
+            <p class="last">NOTE: On Windows, the default profile must be an ICC profile. WCS profiles
+            are not supported.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-cache-dir=&lt;dirname&gt;</span></tt></dt>
+            <dd><p class="first">Store and load the 3D LUTs created from the ICC profile in this directory.
+            This can be used to speed up loading, since LittleCMS 2 can take a while to
+            create a 3D LUT. Note that these files contain uncompressed LUTs. Their
+            size depends on the <tt class="docutils literal"><span class="pre">--icc-3dlut-size</span></tt>, and can be very big.</p>
+            <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
+            stick around indefinitely.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-intent=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the ICC intent used for the color transformation (when using
+            <tt class="docutils literal"><span class="pre">--icc-profile</span></tt>).</p>
+            <dl class="last docutils">
+            <dt>0</dt>
+            <dd>perceptual</dd>
+            <dt>1</dt>
+            <dd>relative colorimetric (default)</dd>
+            <dt>2</dt>
+            <dd>saturation</dd>
+            <dt>3</dt>
+            <dd>absolute colorimetric</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-3dlut-size=&lt;r&gt;x&lt;g&gt;x&lt;b&gt;</span></tt></dt>
+            <dd>Size of the 3D LUT generated from the ICC profile in each dimension.
+            Default is 64x64x64. Sizes may range from 2 to 512.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-contrast=&lt;0-100000&gt;</span></tt></dt>
+            <dd>Specifies an upper limit on the target device's contrast ratio. This is
+            detected automatically from the profile if possible, but for some profiles
+            it might be missing, causing the contrast to be assumed as infinite. As a
+            result, video may appear darker than intended. This only affects BT.1886
+            content. The default of 0 means no limit.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video|no&gt;</span></tt></dt>
+            <dd><p class="first">Blend subtitles directly onto upscaled video frames, before interpolation
+            and/or color management (default: no). Enabling this causes subtitles to be
+            affected by <tt class="docutils literal"><span class="pre">--icc-profile</span></tt>, <tt class="docutils literal"><span class="pre">--target-prim</span></tt>, <tt class="docutils literal"><span class="pre">--target-trc</span></tt>,
+            <tt class="docutils literal"><span class="pre">--interpolation</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-gamma</span></tt> and <tt class="docutils literal"><span class="pre">--post-shader</span></tt>. It also
+            increases subtitle performance when using <tt class="docutils literal"><span class="pre">--interpolation</span></tt>.</p>
+            <p>The downside of enabling this is that it restricts subtitles to the visible
+            portion of the video, so you can't have subtitles exist in the black
+            margins below a video (for example).</p>
+            <p>If <tt class="docutils literal">video</tt> is selected, the behavior is similar to <tt class="docutils literal">yes</tt>, but subs are
+            drawn at the video's native resolution, and scaled along with the video.</p>
+            <div class="warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This changes the way subtitle colors are handled. Normally,
+            subtitle colors are assumed to be in sRGB and color managed as
+            such. Enabling this makes them treated as being in the video's
+            color space instead. This is good if you want things like
+            softsubbed ASS signs to match the video colors, but may cause
+            SRT subtitles or similar to look slightly off.</p>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--alpha=&lt;blend-tiles|blend|yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Decides what to do if the input has an alpha component.</p>
+            <dl class="last docutils">
+            <dt>blend-tiles</dt>
+            <dd>Blend the frame against a 16x16 gray/white tiles background (default).</dd>
+            <dt>blend</dt>
+            <dd>Blend the frame against a black background.</dd>
+            <dt>yes</dt>
+            <dd>Try to create a framebuffer with alpha component. This only makes sense
+            if the video contains alpha information (which is extremely rare). May
+            not be supported on all platforms. If alpha framebuffers are
+            unavailable, it silently falls back on a normal framebuffer. Note that
+            if you set the <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> option to a non-default value, a
+            format with alpha must be specified, or this won't work.</dd>
+            <dt>no</dt>
+            <dd>Ignore alpha component.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-rectangle-textures</span></tt></dt>
+            <dd>Force use of rectangle textures (default: no). Normally this shouldn't have
+            any advantages over normal textures. Note that hardware decoding overrides
+            this flag.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--background=&lt;color&gt;</span></tt></dt>
+            <dd>Color used to draw parts of the mpv window not covered by video. See
+            <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
+            </dl>
+            </div>
             <div class="section" id="miscellaneous">
             <h2>Miscellaneous</h2>
             <dl class="docutils">
@@ -4274,7 +5100,7 @@
             <dt><tt class="docutils literal"><span class="pre">--video-sync-max-audio-change=&lt;value&gt;</span></tt></dt>
             <dd>Maximum <em>additional</em> speed difference in percent that is applied to audio
             with <tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt> (default: 0.125). Normally, the player
-            play the audio at the speed of the video. But if the difference between
+            plays the audio at the speed of the video. But if the difference between
             audio and video position is too high, e.g. due to drift or other timing
             errors, it will attempt to speed up or slow down audio by this additional
             factor. Too low values could lead to video frame dropping or repeating if
@@ -4430,72 +5256,12 @@
             <dl class="docutils">
             <dt><tt class="docutils literal">alsa</tt> (Linux only)</dt>
             <dd><p class="first">ALSA audio output driver</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">device=&lt;device&gt;</span></tt></dt>
-            <dd>Sets the device name. For ac3 output via S/PDIF, use an &quot;iec958&quot; or
-            &quot;spdif&quot; device, unless you really know how to set it correctly.</dd>
-            <dt><tt class="docutils literal">resample=yes</tt></dt>
-            <dd>Enable ALSA resampling plugin. (This is disabled by default, because
-            some drivers report incorrect audio delay in some cases.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">mixer-device=&lt;device&gt;</span></tt></dt>
-            <dd>Set the mixer device used with <tt class="docutils literal"><span class="pre">--no-softvol</span></tt> (default: <tt class="docutils literal">default</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">mixer-name=&lt;name&gt;</span></tt></dt>
-            <dd>Set the name of the mixer element (default: <tt class="docutils literal">Master</tt>). This is for
-            example <tt class="docutils literal">PCM</tt> or <tt class="docutils literal">Master</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">mixer-index=&lt;number&gt;</span></tt></dt>
-            <dd>Set the index of the mixer channel (default: 0). Consider the output of
-            &quot;<tt class="docutils literal">amixer scontrols</tt>&quot;, then the index is the number that follows the
-            name of the element.</dd>
-            <dt><tt class="docutils literal"><span class="pre">non-interleaved</span></tt></dt>
-            <dd>Allow output of non-interleaved formats (if the audio decoder uses
-            this format). Currently disabled by default, because some popular
-            ALSA plugins are utterly broken with non-interleaved formats.</dd>
-            <dt><tt class="docutils literal"><span class="pre">ignore-chmap</span></tt></dt>
-            <dd>Don't read or set the channel map of the ALSA device - only request the
-            required number of channels, and then pass the audio as-is to it. This
-            option most likely should not be used. It can be useful for debugging,
-            or for static setups with a specially engineered ALSA configuration (in
-            this case you should always force the same layout with <tt class="docutils literal"><span class="pre">--audio-channels</span></tt>,
-            or it will work only for files which use the layout implicit to your
-            ALSA device).</dd>
-            </dl>
-            <div class="note">
-            <p class="first admonition-title">Note</p>
-            <p>MPlayer and mplayer2 required you to replace any ',' with '.' and
-            any ':' with '=' in the ALSA device name. mpv does not do this anymore.
-            Instead, quote the device name:</p>
-            <blockquote>
-            <tt class="docutils literal"><span class="pre">--ao=alsa:device=[plug:surround50]</span></tt></blockquote>
-            <p>Note that the <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt> simply quote the device name. With some
-            shells (like zsh), you have to quote the option string to prevent the
-            shell from interpreting the brackets instead of passing them to mpv.</p>
-            <p class="last">Actually, you should use the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option, instead of
-            setting the device directly.</p>
-            </div>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
-            <p>Handling of multichannel/surround audio changed in mpv 0.8.0 from the
-            behavior in MPlayer/mplayer2 and older versions of mpv.</p>
-            <p>The old behavior is that the player always downmixed to stereo by
-            default. The <tt class="docutils literal"><span class="pre">--audio-channels</span></tt> (or <tt class="docutils literal"><span class="pre">--channels</span></tt> before that) option
-            had to be set to get multichannel audio. Then playing stereo would
-            use the <tt class="docutils literal">default</tt> device (which typically allows multiple programs
-            to play audio at the same time via dmix), while playing anything with
-            more channels would open one of the hardware devices, e.g. via the
-            <tt class="docutils literal">surround51</tt> alias (typically with exclusive access). Whether the
-            player would use exclusive access or not would depend on the file
-            being played.</p>
-            <p>The new behavior since mpv 0.8.0 always enables multichannel audio,
-            i.e. <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt> is the default. However, since ALSA
-            provides no good way to play multichannel audio in a non-exclusive
-            way (without blocking other applications from using audio), the player
-            is restricted to the capabilities of the <tt class="docutils literal">default</tt> device by default,
-            which means it supports only stereo and mono (at least with current
-            typical ALSA configurations). But if a hardware device is selected,
-            then multichannel audio will typically work.</p>
-            <p>The short story is: if you want multichannel audio with ALSA, use
-            <tt class="docutils literal"><span class="pre">--audio-device</span></tt> to select the device (use <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt>
-            to get a list of all devices and their mpv name).</p>
+            <p>To get multichannel/surround audio, use <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt>. The
+            default for this option is <tt class="docutils literal"><span class="pre">auto-safe</span></tt>, which makes this audio otuput
+            explicitly reject multichannel output, as there is no way to detect
+            whether a certain channel layout is actually supported.</p>
             <p class="last">You can also try <a class="reference external" href="http://git.io/vfuAy">using the upmix plugin</a>.
             This setup enables multichannel audio on the <tt class="docutils literal">default</tt> device
             with automatic upmixing with shared access, so playing stereo
@@ -4577,7 +5343,7 @@
             <dt><tt class="docutils literal">pulse</tt></dt>
             <dd><p class="first">PulseAudio audio output driver</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">[&lt;host&gt;][:&lt;output</span> sink&gt;]</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">host=&lt;host&gt;</span></tt>, <tt class="docutils literal"><span class="pre">sink=&lt;sink&gt;</span></tt></dt>
             <dd>Specify the host and optionally output sink to use. An empty &lt;host&gt;
             string uses a local connection, &quot;localhost&quot; uses network transfer
             (most likely not what you want).</dd>
@@ -4730,12 +5496,14 @@
             normal driver parameters.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--vo-defaults=&lt;driver1[:parameter1:parameter2:...],driver2,...&gt;</span></tt></dt>
-            <dd>Set defaults for each driver.</dd>
+            <dd><p class="first">Set defaults for each driver.</p>
+            <p class="last">Deprecated. No replacement.</p>
+            </dd>
             </dl>
             <div class="note">
             <p class="first admonition-title">Note</p>
             <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
-            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=opengl-hq</span></tt>. All other drivers are
+            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. All other drivers are
             for compatibility or special purposes. By default, <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> is used,
             but if that appears not to work, it fallback to other drivers (in the same
             order as listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).</p>
@@ -4767,9 +5535,11 @@
             <dd>Same as use but also sets the supplied color key.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">ck-method=&lt;man|bg|auto&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">ck-method=&lt;none|man|bg|auto&gt;</span></tt></dt>
             <dd><p class="first">Sets the color key drawing method (default: man).</p>
             <dl class="last docutils">
+            <dt>none</dt>
+            <dd>Disables color-keying.</dd>
             <dt>man</dt>
             <dd>Draw the color key manually (reduces flicker in some cases).</dd>
             <dt>bg</dt>
@@ -4781,8 +5551,6 @@
             <dt><tt class="docutils literal"><span class="pre">colorkey=&lt;number&gt;</span></tt></dt>
             <dd>Changes the color key to an RGB value of your choice. <tt class="docutils literal">0x000000</tt> is
             black and <tt class="docutils literal">0xffffff</tt> is white.</dd>
-            <dt><tt class="docutils literal"><span class="pre">no-colorkey</span></tt></dt>
-            <dd>Disables color-keying.</dd>
             <dt><tt class="docutils literal"><span class="pre">buffers=&lt;number&gt;</span></tt></dt>
             <dd>Number of image buffers to use for the internal ringbuffer (default: 2).
             Increasing this will use more memory, but might help with the X server
@@ -4992,9 +5760,12 @@
             <dt><tt class="docutils literal">opengl</tt></dt>
             <dd><p class="first">OpenGL video output driver. It supports extended scaling methods, dithering
             and color management.</p>
-            <p>By default, it tries to use fast and fail-safe settings. Use the alias
-            <tt class="docutils literal"><span class="pre">opengl-hq</span></tt> to use this driver with defaults set to high quality
-            rendering.</p>
+            <p>See <a class="reference internal" href="#opengl-renderer-options">OpenGL renderer options</a> for options specific to this VO.</p>
+            <p>By default, it tries to use fast and fail-safe settings. Use the
+            <tt class="docutils literal"><span class="pre">opengl-hq</span></tt> profile to use this driver with defaults set to high
+            quality rendering. (This profile is also the replacement for
+            <tt class="docutils literal"><span class="pre">--vo=opengl-hq</span></tt>.) The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=opengl-hq</span></tt>
+            and its contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=opengl-hq</span></tt>.</p>
             <p>Requires at least OpenGL 2.1.</p>
             <p>Some features are available with OpenGL 3 capable graphics drivers only
             (or if the necessary extensions are available).</p>
@@ -5003,809 +5774,13 @@
             that in this mode, some corner case might not be gracefully handled, and
             color space conversion and chroma upsampling is generally in the hand of
             the hardware decoder APIs.</p>
-            <p><tt class="docutils literal">opengl</tt> makes use of FBOs by default. Sometimes you can achieve better
-            quality or performance by changing the <tt class="docutils literal"><span class="pre">fbo-format</span></tt> suboption to
+            <p class="last"><tt class="docutils literal">opengl</tt> makes use of FBOs by default. Sometimes you can achieve better
+            quality or performance by changing the <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> option to
             <tt class="docutils literal">rgb16f</tt>, <tt class="docutils literal">rgb32f</tt> or <tt class="docutils literal">rgb</tt>. Known problems include Mesa/Intel not
             accepting <tt class="docutils literal">rgb16</tt>, Mesa sometimes not being compiled with float texture
             support, and some OS X setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
-            with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try passing the
-            <tt class="docutils literal"><span class="pre">dumb-mode=yes</span></tt> sub-option.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">dumb-mode=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">This mode is extremely restricted, and will disable most extended
-            OpenGL features. This includes high quality scalers and custom
-            shaders!</p>
-            <p>It is intended for hardware that does not support FBOs (including GLES,
-            which supports it insufficiently), or to get some more performance out
-            of bad or old hardware.</p>
-            <p>This mode is forced automatically if needed, and this option is mostly
-            useful for debugging. It's also enabled automatically if nothing uses
-            features which require FBOs.</p>
-            <p class="last">This option might be silently removed in the future.</p>
-            </dd>
-            </dl>
-            <p><tt class="docutils literal"><span class="pre">scale=&lt;filter&gt;</span></tt></p>
-            <blockquote>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">bilinear</tt></dt>
-            <dd>Bilinear hardware texture filtering (fastest, very low quality).
-            This is the default for compatibility reasons.</dd>
-            <dt><tt class="docutils literal">spline36</tt></dt>
-            <dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>.</dd>
-            <dt><tt class="docutils literal">lanczos</tt></dt>
-            <dd><p class="first">Lanczos scaling. Provides mid quality and speed. Generally worse
-            than <tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image
-            which is good for some content types. The number of taps can be
-            controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>, but is best left unchanged.</p>
-            <p>This filter corresponds to the old <tt class="docutils literal">lanczos3</tt> alias if the default
-            radius is used, while <tt class="docutils literal">lanczos2</tt> corresponds to a radius of 2.</p>
-            <p class="last">(This filter is an alias for <tt class="docutils literal">sinc</tt>-windowed <tt class="docutils literal">sinc</tt>)</p>
-            </dd>
-            <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
-            <dd><p class="first">Elliptic weighted average Lanczos scaling. Also known as Jinc.
-            Relatively slow, but very good quality. The radius can be
-            controlled with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>. Increasing the radius makes the
-            filter sharper but adds more ringing.</p>
-            <p class="last">(This filter is an alias for <tt class="docutils literal">jinc</tt>-windowed <tt class="docutils literal">jinc</tt>)</p>
-            </dd>
-            <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
-            <dd>A slightly sharpened version of ewa_lanczos, preconfigured to use
-            an ideal radius and parameter. If your hardware can run it, this is
-            probably what you should use by default.</dd>
-            <dt><tt class="docutils literal">mitchell</tt></dt>
-            <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
-            <tt class="docutils literal"><span class="pre">scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">scale-param2</span></tt>. This filter is very good at
-            downscaling (see <tt class="docutils literal">dscale</tt>).</dd>
-            <dt><tt class="docutils literal">oversample</tt></dt>
-            <dd>A version of nearest neighbour that (naively) oversamples pixels,
-            so that pixels overlapping edges get linearly interpolated instead
-            of rounded. This essentially removes the small imperfections and
-            judder artifacts caused by nearest-neighbour interpolation, in
-            exchange for adding some blur. This filter is good at temporal
-            interpolation, and also known as &quot;smoothmotion&quot; (see <tt class="docutils literal">tscale</tt>).</dd>
-            <dt><tt class="docutils literal">linear</tt></dt>
-            <dd>A <tt class="docutils literal">tscale</tt> filter.</dd>
-            <dt><tt class="docutils literal">custom</tt></dt>
-            <dd>A user-defined custom shader (see <tt class="docutils literal"><span class="pre">scale-shader</span></tt>).</dd>
-            </dl>
-            <p>There are some more filters, but most are not as useful. For a complete
-            list, pass <tt class="docutils literal">help</tt> as value, e.g.:</p>
-            <pre class="literal-block">
-            mpv --vo=opengl:scale=help
-            </pre>
-            </blockquote>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">scale-param2=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Set filter parameters. Ignored if the filter is not tunable.
-            Currently, this affects the following filter parameters:</p>
-            <dl class="last docutils">
-            <dt>bcspline</dt>
-            <dd>Spline parameters (<tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt>). Defaults to 0.5 for both.</dd>
-            <dt>gaussian</dt>
-            <dd>Scale parameter (<tt class="docutils literal">t</tt>). Increasing this makes the result blurrier.
-            Defaults to 1.</dd>
-            <dt>oversample</dt>
-            <dd>Minimum distance to an edge before interpolation is used. Setting
-            this to 0 will always interpolate edges, whereas setting it to 0.5
-            will never interpolate, thus behaving as if the regular nearest
-            neighbour algorithm was used. Defaults to 0.0.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-blur=&lt;value&gt;</span></tt></dt>
-            <dd>Kernel scaling factor (also known as a blur factor). Decreasing this
-            makes the result sharper, increasing it makes it blurrier (default 0).
-            If set to 0, the kernel's preferred blur factor is used. Note that
-            setting this too low (eg. 0.5) leads to bad results. It's generally
-            recommended to stick to values between 0.8 and 1.2.</dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-radius=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Set radius for filters listed below, must be a float number between 0.5
-            and 16.0. Defaults to the filter's preferred radius if not specified.</p>
-            <blockquote>
-            <tt class="docutils literal">sinc</tt> and derivatives, <tt class="docutils literal">jinc</tt> and derivatives, <tt class="docutils literal">gaussian</tt>, <tt class="docutils literal">box</tt> and <tt class="docutils literal">triangle</tt></blockquote>
-            <p class="last">Note that depending on filter implementation details and video scaling
-            ratio, the radius that actually being used might be different
-            (most likely being increased a bit).</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-antiring=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Set the antiringing strength. This tries to eliminate ringing, but can
-            introduce other artifacts in the process. Must be a float number
-            between 0.0 and 1.0. The default value of 0.0 disables antiringing
-            entirely.</p>
-            <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt> and
-            <tt class="docutils literal">bicubic_fast</tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-window=&lt;window&gt;</span></tt></dt>
-            <dd>(Advanced users only) Choose a custom windowing function for the kernel.
-            Defaults to the filter's preferred window if unset. Use
-            <tt class="docutils literal"><span class="pre">scale-window=help</span></tt> to get a list of supported windowing functions.</dd>
-            <dt><tt class="docutils literal"><span class="pre">scale-wparam=&lt;window&gt;</span></tt></dt>
-            <dd><p class="first">(Advanced users only) Configure the parameter for the window function
-            given by <tt class="docutils literal"><span class="pre">scale-window</span></tt>. Ignored if the window is not tunable.
-            Currently, this affects the following window parameters:</p>
-            <dl class="last docutils">
-            <dt>kaiser</dt>
-            <dd>Window parameter (alpha). Defaults to 6.33.</dd>
-            <dt>blackman</dt>
-            <dd>Window parameter (alpha). Defaults to 0.16.</dd>
-            <dt>gaussian</dt>
-            <dd>Scale parameter (t). Increasing this makes the window wider.
-            Defaults to 1.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">scaler-lut-size=&lt;4..10&gt;</span></tt></dt>
-            <dd><p class="first">Set the size of the lookup texture for scaler kernels (default: 6).
-            The actual size of the texture is <tt class="docutils literal">2^N</tt> for an option value of <tt class="docutils literal">N</tt>.
-            So the lookup texture with the default setting uses 64 samples.</p>
-            <p class="last">All weights are bilinearly interpolated from those samples, so
-            increasing the size of lookup table might improve the accuracy of
-            scaler.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">scaler-resizes-only</span></tt></dt>
-            <dd>Disable the scaler if the video image is not resized. In that case,
-            <tt class="docutils literal">bilinear</tt> is used instead whatever is set with <tt class="docutils literal">scale</tt>. Bilinear
-            will reproduce the source image perfectly if no scaling is performed.
-            Enabled by default. Note that this option never affects <tt class="docutils literal">cscale</tt>.</dd>
-            <dt><tt class="docutils literal">pbo</tt></dt>
-            <dd><p class="first">Enable use of PBOs. On some drivers this can be faster, especially if
-            the source video size is huge (e.g. so called &quot;4K&quot; video). On other
-            drivers it might be slower or cause latency issues.</p>
-            <p class="last">In theory, this can sometimes lead to sporadic and temporary image
-            corruption (because reupload is not retried when it fails).</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">dither-depth=&lt;N|no|auto&gt;</span></tt></dt>
-            <dd><p class="first">Set dither target depth to N. Default: no.</p>
-            <dl class="docutils">
-            <dt>no</dt>
-            <dd>Disable any dithering done by mpv.</dd>
-            <dt>auto</dt>
-            <dd>Automatic selection. If output bit depth cannot be detected,
-            8 bits per component are assumed.</dd>
-            <dt>8</dt>
-            <dd>Dither to 8 bit output.</dd>
-            </dl>
-            <p class="last">Note that the depth of the connected video display device cannot be
-            detected. Often, LCD panels will do dithering on their own, which
-            conflicts with <tt class="docutils literal">opengl</tt>'s dithering and leads to ugly output.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">dither-size-fruit=&lt;2-8&gt;</span></tt></dt>
-            <dd><p class="first">Set the size of the dither matrix (default: 6). The actual size of
-            the matrix is <tt class="docutils literal">(2^N) x (2^N)</tt> for an option value of <tt class="docutils literal">N</tt>, so a
-            value of 6 gives a size of 64x64. The matrix is generated at startup
-            time, and a large matrix can take rather long to compute (seconds).</p>
-            <p class="last">Used in <tt class="docutils literal">dither=fruit</tt> mode only.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">dither=&lt;fruit|ordered|no&gt;</span></tt></dt>
-            <dd>Select dithering algorithm (default: fruit). (Normally, the
-            <tt class="docutils literal"><span class="pre">dither-depth</span></tt> option controls whether dithering is enabled.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">temporal-dither</span></tt></dt>
-            <dd>Enable temporal dithering. (Only active if dithering is enabled in
-            general.) This changes between 8 different dithering patterns on each
-            frame by changing the orientation of the tiled dithering matrix.
-            Unfortunately, this can lead to flicker on LCD displays, since these
-            have a high reaction time.</dd>
-            <dt><tt class="docutils literal"><span class="pre">temporal-dither-period=&lt;1-128&gt;</span></tt></dt>
-            <dd>Determines how often the dithering pattern is updated when
-            <tt class="docutils literal"><span class="pre">temporal-dither</span></tt> is in use. 1 (the default) will update on every
-            video frame, 2 on every other frame, etc.</dd>
-            <dt><tt class="docutils literal">debug</tt></dt>
-            <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also, request a
-            debug OpenGL context (which does nothing with current graphics drivers
-            as of this writing).</dd>
-            <dt><tt class="docutils literal">interpolation</tt></dt>
-            <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display
-            refresh rate (also known as judder).</p>
-            <div class="warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
-            of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
-            This was not required before mpv 0.14.0.</p>
-            </div>
-            <p>This essentially attempts to interpolate the missing frames by
-            convoluting the video along the temporal axis. The filter used can be
-            controlled using the <tt class="docutils literal">tscale</tt> setting.</p>
-            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal">swapinterval</tt> for more
-            information.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">swapinterval=&lt;n&gt;</span></tt></dt>
-            <dd><p class="first">Interval in displayed frames between two buffer swaps.
-            1 is equivalent to enable VSYNC, 0 to disable VSYNC. Defaults to 1 if
-            not specified.</p>
-            <p class="last">Note that this depends on proper OpenGL vsync support. On some platforms
-            and drivers, this only works reliably when in fullscreen mode. It may
-            also require driver-specific hacks if using multiple monitors, to
-            ensure mpv syncs to the right one. Compositing window managers can
-            also lead to bad results, as can missing or incorrect display FPS
-            information (see <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">dscale=&lt;filter&gt;</span></tt></dt>
-            <dd>Like <tt class="docutils literal">scale</tt>, but apply these filters on downscaling instead. If this
-            option is unset, the filter implied by <tt class="docutils literal">scale</tt> will be applied.</dd>
-            <dt><tt class="docutils literal"><span class="pre">cscale=&lt;filter&gt;</span></tt></dt>
-            <dd>As <tt class="docutils literal">scale</tt>, but for interpolating chroma information. If the image
-            is not subsampled, this option is ignored entirely.</dd>
-            <dt><tt class="docutils literal"><span class="pre">tscale=&lt;filter&gt;</span></tt></dt>
-            <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is
-            only used if <tt class="docutils literal">interpolation</tt> is enabled. The only valid choices
-            for <tt class="docutils literal">tscale</tt> are separable convolution filters (use <tt class="docutils literal">tscale=help</tt>
-            to get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
-            <p class="last">Note that the maximum supported filter radius is currently 3, due to
-            limitations in the number of video textures that can be loaded
-            simultaneously.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">tscale-clamp</span></tt></dt>
-            <dd>Clamp the <tt class="docutils literal">tscale</tt> filter kernel's value range to [0-1]. This reduces
-            excessive ringing artifacts in the temporal domain (which typically
-            manifest themselves as short flashes or fringes of black, mostly
-            around moving edges) in exchange for potentially adding more blur.</dd>
-            <dt><tt class="docutils literal"><span class="pre">interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
-            <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
-            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
-            where <tt class="docutils literal">vfps</tt> is the speed-adjusted display FPS, and <tt class="docutils literal">disphz</tt> the
-            display refresh rate.</p>
-            <p>The default is intended to almost always enable interpolation if the
-            playback rate is even slightly different from the display refresh rate.
-            But note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small
-            deviations in the rate can disable interpolation and introduce a
-            discontinuity every other minute.</p>
-            <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">tscale-radius</span></tt>, etc.</dt>
-            <dd><p class="first">Set filter parameters for <tt class="docutils literal">dscale</tt>, <tt class="docutils literal">cscale</tt> and <tt class="docutils literal">tscale</tt>,
-            respectively.</p>
-            <p class="last">See the corresponding options for <tt class="docutils literal">scale</tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">linear-scaling</span></tt></dt>
-            <dd>Scale in linear light. It should only be used with a <tt class="docutils literal"><span class="pre">fbo-format</span></tt>
-            that has at least 16 bit precision.</dd>
-            <dt><tt class="docutils literal"><span class="pre">correct-downscaling</span></tt></dt>
-            <dd><p class="first">When using convolution based filters, extend the filter size
-            when downscaling. Increases quality, but reduces performance while
-            downscaling.</p>
-            <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
-            better than without it) since it will extend the size to match only the
-            milder of the scale factors between the axes.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">pre-shaders=&lt;files&gt;</span></tt>, <tt class="docutils literal"><span class="pre">post-shaders=&lt;files&gt;</span></tt>, <tt class="docutils literal"><span class="pre">scale-shader=&lt;file&gt;</span></tt></dt>
-            <dd><p class="first">Custom GLSL fragment shaders.</p>
-            <dl class="docutils">
-            <dt>pre-shaders (list)</dt>
-            <dd>These get applied after conversion to RGB and before linearization
-            and upscaling. Operates on non-linear RGB (same as input). This is
-            the best place to put things like sharpen filters.</dd>
-            <dt>scale-shader</dt>
-            <dd>This gets used instead of scale/cscale when those options are set
-            to <tt class="docutils literal">custom</tt>. The colorspace it operates on depends on the values
-            of <tt class="docutils literal"><span class="pre">linear-scaling</span></tt> and <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt>, so no assumptions
-            should be made here.</dd>
-            <dt>post-shaders (list)</dt>
-            <dd>These get applied after upscaling and subtitle blending (when
-            <tt class="docutils literal"><span class="pre">blend-subtitles</span></tt> is enabled), but before color management.
-            Operates on linear RGB if <tt class="docutils literal"><span class="pre">linear-scaling</span></tt> is in effect,
-            otherwise non-linear RGB. This is the best place for colorspace
-            transformations (eg. saturation mapping).</dd>
-            </dl>
-            <p>These files must define a function with the following signature:</p>
-            <pre class="literal-block">
-            vec4 sample_pixel(sampler2D tex, vec2 pos, vec2 tex_size)
-            </pre>
-            <p>(If there is no string <tt class="docutils literal">sample_pixel</tt> in the shader script, it will
-            use <tt class="docutils literal">sample</tt> instead. This is a compatibility hack for older shader
-            scripts, and is deprecated.)</p>
-            <p>The meanings of the parameters are as follows:</p>
-            <dl class="docutils">
-            <dt>sampler2D tex</dt>
-            <dd>The source texture for the shader.</dd>
-            <dt>vec2 pos</dt>
-            <dd>The position to be sampled, in coordinate space [0-1].</dd>
-            <dt>vec2 tex_size</dt>
-            <dd>The size of the texture, in pixels. This may differ from image_size,
-            eg. for subsampled content or for post-shaders.</dd>
-            </dl>
-            <p>In addition to these parameters, the following uniforms are also
-            globally available:</p>
-            <dl class="docutils">
-            <dt>float random</dt>
-            <dd>A random number in the range [0-1], different per frame.</dd>
-            <dt>int frame</dt>
-            <dd>A simple count of frames rendered, increases by one per frame and
-            never resets (regardless of seeks).</dd>
-            <dt>vec2 image_size</dt>
-            <dd>The size in pixels of the input image.</dd>
-            <dt>vec2 target_size</dt>
-            <dd>The size in pixels of the visible part of the scaled (and possibly
-            cropped) image.</dd>
-            </dl>
-            <p>For example, a shader that inverts the colors could look like this:</p>
-            <pre class="last literal-block">
-            vec4 sample(sampler2D tex, vec2 pos, vec2 tex_size)
-            {
-                vec4 color = texture(tex, pos);
-                return vec4(1.0 - color.rgb, color.a);
-            }
-            </pre>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">user-shaders=&lt;files&gt;</span></tt></dt>
-            <dd><p class="first">Custom GLSL hooks. These are similar to <tt class="docutils literal"><span class="pre">post-shaders</span></tt> etc., but more
-            flexible: They can be injected at almost arbitrary points in the
-            rendering pipeline, and access all previous intermediate textures.</p>
-            <div class="admonition-warning admonition">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">The syntax is not stable yet and may change any time.</p>
-            </div>
-            <p>The general syntax of a user shader looks like this:</p>
-            <pre class="literal-block">
-            //!METADATA ARGS...
-            //!METADATA ARGS...
-            
-            vec4 hook() {
-               ...
-               return something;
-            }
-            
-            //!METADATA ARGS...
-            //!METADATA ARGS...
-            
-            ...
-            </pre>
-            <p>Each block of metadata, along with the non-metadata lines after it,
-            defines a single pass. Each pass can set the following metadata:</p>
-            <dl class="docutils">
-            <dt>HOOK &lt;name&gt; (required)</dt>
-            <dd>The texture which to hook into. May occur multiple times within a
-            metadata block, up to a predetermined limit. See below for a list
-            of hookable textures.</dd>
-            <dt>BIND &lt;name&gt;</dt>
-            <dd>Loads a texture and makes it available to the pass, and sets up
-            macros to enable accessing it. See below for a list of set macros.
-            By default, no textures are bound. The special name HOOKED can be
-            used to refer to the texture that triggered this pass.</dd>
-            <dt>SAVE &lt;name&gt;</dt>
-            <dd>Gives the name of the texture to save the result of this pass
-            into. By default, this is set to the special name HOOKED which has
-            the effect of overwriting the hooked texture.</dd>
-            <dt>WIDTH &lt;szexpr&gt;, HEIGHT &lt;szexpr&gt;</dt>
-            <dd>Specifies the size of the resulting texture for this pass.
-            <tt class="docutils literal">szexpr</tt> refers to an expression in RPN (reverse polish
-            notation), using the operators + - * / &gt; &lt; !, floating point
-            literals, and references to sizes of existing texture and OUTPUT
-            (such as MAIN.width or CHROMA.height). By default, these are set to
-            HOOKED.w and HOOKED.h, respectively.</dd>
-            <dt>WHEN &lt;szexpr&gt;</dt>
-            <dd>Specifies a condition that needs to be true (non-zero) for the
-            shader stage to be evaluated. If it fails, it will silently be
-            omitted. (Note that a shader stage like this which has a dependency
-            on an optional hook point can still cause that hook point to be
-            saved, which has some minor overhead)</dd>
-            <dt>OFFSET ox oy</dt>
-            <dd>Indicates a pixel shift (offset) introduced by this pass. These
-            pixel offsets will be accumulated and corrected during the
-            next scaling pass (<tt class="docutils literal">cscale</tt> or <tt class="docutils literal">scale</tt>). The default values
-            are 0 0 which correspond to no shift. Note that offsets are ignored
-            when not overwriting the hooked texture.</dd>
-            <dt>COMPONENTS n</dt>
-            <dd>Specifies how many components of this pass's output are relevant
-            and should be stored in the texture, up to 4 (rgba). By default,
-            this value is equal to the number of components in HOOKED.</dd>
-            </dl>
-            <p>Each bound texture (via <tt class="docutils literal">BIND</tt>) will make available the following
-            definitions to that shader pass, where NAME is the name of the bound
-            texture:</p>
-            <dl class="docutils">
-            <dt>vec4 NAME_tex(vec2 pos)</dt>
-            <dd>The sampling function to use to access the texture at a certain
-            spot (in texture coordinate space, range [0,1]). This takes care
-            of any necessary normalization conversions.</dd>
-            <dt>vec4 NAME_texOff(vec2 offset)</dt>
-            <dd>Sample the texture at a certain offset in pixels. This works like
-            NAME_tex but additionally takes care of necessary rotations, so
-            that sampling at e.g. vec2(-1,0) is always one pixel to the left.</dd>
-            <dt>vec2 NAME_pos</dt>
-            <dd>The local texture coordinate of that texture, range [0,1].</dd>
-            <dt>vec2 NAME_size</dt>
-            <dd>The (rotated) size in pixels of the texture.</dd>
-            <dt>mat2 NAME_rot</dt>
-            <dd>The rotation matrix associated with this texture. (Rotates
-            pixel space to texture coordinates)</dd>
-            <dt>vec2 NAME_pt</dt>
-            <dd>The (unrotated) size of a single pixel, range [0,1].</dd>
-            <dt>sampler NAME_raw</dt>
-            <dd>The raw bound texture itself. The use of this should be
-            avoided unless absolutely necessary.</dd>
-            </dl>
-            <p>In addition, the global uniforms described in <tt class="docutils literal"><span class="pre">post-shaders</span></tt> are
-            also available.</p>
-            <p>Internally, vo_opengl may generate any number of the following
-            textures. Whenever a texture is rendered and saved by vo_opengl, all of
-            the passes that have hooked into it will run, in the order they were
-            added by the user. This is a list of the legal hook points:</p>
-            <dl class="docutils">
-            <dt>RGB, LUMA, CHROMA, ALPHA, XYZ (resizable)</dt>
-            <dd>Source planes (raw). Which of these fire depends on the image
-            format of the source.</dd>
-            <dt>CHROMA_SCALED, ALPHA_SCALED (fixed)</dt>
-            <dd>Source planes (upscaled). These only fire on subsampled content.</dd>
-            <dt>NATIVE (resizable)</dt>
-            <dd>The combined image, in the source colorspace, before conversion
-            to RGB.</dd>
-            <dt>MAINPRESUB (resizable)</dt>
-            <dd>The image, after conversion to RGB, but before
-            <tt class="docutils literal"><span class="pre">blend-subtitles=video</span></tt> is applied.</dd>
-            <dt>MAIN (resizable)</dt>
-            <dd>The main image, after conversion to RGB but before upscaling.</dd>
-            <dt>LINEAR (fixed)</dt>
-            <dd>Linear light image, before scaling. This only fires when
-            <tt class="docutils literal"><span class="pre">linear-scaling</span></tt> is in effect.</dd>
-            <dt>SIGMOID (fixed)</dt>
-            <dd>Sigmoidized light, before scaling. This only fires when
-            <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt> is in effect.</dd>
-            <dt>PREKERNEL (fixed)</dt>
-            <dd>The image immediately before the scaler kernel runs.</dd>
-            <dt>POSTKERNEL (fixed)</dt>
-            <dd>The image immediately after the scaler kernel runs.</dd>
-            <dt>SCALED (fixed)</dt>
-            <dd>The final upscaled image, before color management.</dd>
-            <dt>OUTPUT (fixed)</dt>
-            <dd>The final output image, after color management but before
-            dithering and drawing to screen.</dd>
-            </dl>
-            <p class="last">Only the textures labelled with <tt class="docutils literal">resizable</tt> may be transformed by the
-            pass. When overwriting a texture marked <tt class="docutils literal">fixed</tt>, the WIDTH, HEIGHT
-            and OFFSET must be left at their default values.</p>
-            </dd>
-            <dt><tt class="docutils literal">deband</tt></dt>
-            <dd>Enable the debanding algorithm. This greatly reduces the amount of
-            visible banding, blocking and other quantization artifacts, at the
-            expensive of very slightly blurring some of the finest details. In
-            practice, it's virtually always an improvement - the only reason to
-            disable it would be for performance.</dd>
-            <dt><tt class="docutils literal"><span class="pre">deband-iterations=&lt;1..16&gt;</span></tt></dt>
-            <dd>The number of debanding steps to perform per sample. Each step reduces
-            a bit more banding, but takes time to compute. Note that the strength
-            of each step falls off very quickly, so high numbers (&gt;4) are
-            practically useless. (Default 1)</dd>
-            <dt><tt class="docutils literal"><span class="pre">deband-threshold=&lt;0..4096&gt;</span></tt></dt>
-            <dd>The debanding filter's cut-off threshold. Higher numbers increase the
-            debanding strength dramatically but progressively diminish image
-            details. (Default 64)</dd>
-            <dt><tt class="docutils literal"><span class="pre">deband-range=&lt;1..64&gt;</span></tt></dt>
-            <dd><p class="first">The debanding filter's initial radius. The radius increases linearly
-            for each iteration. A higher radius will find more gradients, but
-            a lower radius will smooth more aggressively. (Default 16)</p>
-            <p class="last">If you increase the <tt class="docutils literal"><span class="pre">deband-iterations</span></tt>, you should probably
-            decrease this to compensate.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">deband-grain=&lt;0..4096&gt;</span></tt></dt>
-            <dd>Add some extra noise to the image. This significantly helps cover up
-            remaining quantization artifacts. Higher numbers add more noise.
-            (Default 48)</dd>
-            <dt><tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt></dt>
-            <dd>When upscaling, use a sigmoidal color transform to avoid emphasizing
-            ringing artifacts. This also implies <tt class="docutils literal"><span class="pre">linear-scaling</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sigmoid-center</span></tt></dt>
-            <dd>The center of the sigmoid curve used for <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt>, must
-            be a float between 0.0 and 1.0. Defaults to 0.75 if not specified.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sigmoid-slope</span></tt></dt>
-            <dd>The slope of the sigmoid curve used for <tt class="docutils literal"><span class="pre">sigmoid-upscaling</span></tt>, must
-            be a float between 1.0 and 20.0. Defaults to 6.5 if not specified.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sharpen=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">If set to a value other than 0, enable an unsharp masking filter.
-            Positive values will sharpen the image (but add more ringing and
-            aliasing). Negative values will blur the image. If your GPU is powerful
-            enough, consider alternatives like the <tt class="docutils literal">ewa_lanczossharp</tt> scale
-            filter, or the <tt class="docutils literal"><span class="pre">scale-blur</span></tt> sub-option.</p>
-            <p class="last">(This feature is the replacement for the old <tt class="docutils literal">sharpen3</tt> and
-            <tt class="docutils literal">sharpen5</tt> scalers.)</p>
-            </dd>
-            <dt><tt class="docutils literal">glfinish</tt></dt>
-            <dd>Call <tt class="docutils literal">glFinish()</tt> before and after swapping buffers (default: disabled).
-            Slower, but might improve results when doing framedropping.
-            Can completely ruin performance. The details depend entirely on the
-            OpenGL driver.</dd>
-            <dt><tt class="docutils literal">waitvsync</tt></dt>
-            <dd><p class="first">Call <tt class="docutils literal">glXWaitVideoSyncSGI</tt> after each buffer swap (default: disabled).
-            This may or may not help with video timing accuracy and frame drop. It's
-            possible that this makes video output slower, or has no effect at all.</p>
-            <p class="last">X11/GLX only.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">vsync-fences=&lt;N&gt;</span></tt></dt>
-            <dd>Synchronize the CPU to the Nth past frame using the <tt class="docutils literal">GL_ARB_sync</tt>
-            extension. A value of 0 disables this behavior (default). A value of
-            1 means it will synchronize to the current frame after rendering it.
-            Like <tt class="docutils literal">glfinish</tt> and <tt class="docutils literal">waitvsync</tt>, this can lower or ruin performance.
-            Its advantage is that it can span multiple frames, and effectively limit
-            the number of frames the GPU queues ahead (which also has an influence
-            on vsync).</dd>
-            <dt><tt class="docutils literal"><span class="pre">dwmflush=&lt;no|windowed|yes|auto&gt;</span></tt></dt>
-            <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: auto).
-            It also sets <tt class="docutils literal">SwapInterval(0)</tt> to ignore the OpenGL timing. Values
-            are: no (disabled), windowed (only in windowed mode), yes (also in
-            full screen).</p>
-            <p>The value <tt class="docutils literal">auto</tt> will try to determine whether the compositor is
-            active, and calls <tt class="docutils literal">DwmFlush</tt> only if it seems to be.</p>
-            <p>This may help to get more consistent frame intervals, especially with
-            high-fps clips - which might also reduce dropped frames. Typically, a
-            value of <tt class="docutils literal">windowed</tt> should be enough, since full screen may bypass the
-            DWM.</p>
-            <p class="last">Windows only.</p>
-            </dd>
-            <dt><tt class="docutils literal">sw</tt></dt>
-            <dd>Continue even if a software renderer is detected.</dd>
-            <dt><tt class="docutils literal"><span class="pre">backend=&lt;sys&gt;</span></tt></dt>
-            <dd><p class="first">The value <tt class="docutils literal">auto</tt> (the default) selects the windowing backend. You
-            can also pass <tt class="docutils literal">help</tt> to get a complete list of compiled in backends
-            (sorted by autoprobe order).</p>
-            <dl class="last docutils">
-            <dt>auto</dt>
-            <dd>auto-select (default)</dd>
-            <dt>cocoa</dt>
-            <dd>Cocoa/OS X</dd>
-            <dt>win</dt>
-            <dd>Win32/WGL</dd>
-            <dt>angle</dt>
-            <dd>Direct3D11 through the OpenGL ES translation layer ANGLE. This
-            supports almost everything the <tt class="docutils literal">win</tt> backend does (if the ANGLE
-            build is new enough).</dd>
-            <dt>dxinterop (experimental)</dt>
-            <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation.
-            Works on Nvidia and AMD. Newer Intel chips with the latest drivers
-            may also work.</dd>
-            <dt>x11</dt>
-            <dd>X11/GLX</dd>
-            <dt>wayland</dt>
-            <dd>Wayland/EGL</dd>
-            <dt>drm-egl</dt>
-            <dd>DRM/EGL</dd>
-            <dt>x11egl</dt>
-            <dd>X11/EGL</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">es=&lt;mode&gt;</span></tt></dt>
-            <dd><p class="first">Select whether to use GLES:</p>
-            <dl class="last docutils">
-            <dt>yes</dt>
-            <dd>Try to prefer ES over Desktop GL</dd>
-            <dt>no</dt>
-            <dd>Try to prefer desktop GL over ES</dd>
-            <dt>auto</dt>
-            <dd>Use the default for each backend (default)</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">fbo-format=&lt;fmt&gt;</span></tt></dt>
-            <dd>Selects the internal format of textures used for FBOs. The format can
-            influence performance and quality of the video output.
-            <tt class="docutils literal">fmt</tt> can be one of: rgb8, rgb10, rgb10_a2, rgb16, rgb16f,
-            rgb32f, rgba12, rgba16, rgba16f, rgba32f.
-            Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL, and rgba16f or
-            rgb10_a2 on GLES (e.g. ANGLE), unless GL_EXT_texture_norm16 is
-            available.</dd>
-            <dt><tt class="docutils literal"><span class="pre">gamma=&lt;0.1..2.0&gt;</span></tt></dt>
-            <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways
-            (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt>
-            property), the value is multiplied with the other gamma value.</p>
-            <p>Recommended values based on the environmental brightness:</p>
-            <dl class="docutils">
-            <dt>1.0</dt>
-            <dd>Brightly illuminated (default)</dd>
-            <dt>0.9</dt>
-            <dd>Slightly dim</dd>
-            <dt>0.8</dt>
-            <dd>Pitch black room</dd>
-            </dl>
-            <p class="last">NOTE: Typical movie content (Blu-ray etc.) already contains a gamma
-            drop of about 0.8, so specifying it here as well will result in even
-            even darker image than intended!</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">gamma-auto</span></tt></dt>
-            <dd><p class="first">Automatically corrects the gamma value depending on ambient lighting
-            conditions (adding a gamma boost for dark rooms).</p>
-            <p>With ambient illuminance of 64lux, mpv will pick the 1.0 gamma value
-            (no boost), and slightly increase the boost up until 0.8 for 16lux.</p>
-            <p class="last">NOTE: Only implemented on OS X.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">target-prim=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
-            this colorspace when ICC color management is not being used. Valid
-            values are:</p>
-            <dl class="last docutils">
-            <dt>auto</dt>
-            <dd>Disable any adaptation (default)</dd>
-            <dt>bt.470m</dt>
-            <dd>ITU-R BT.470 M</dd>
-            <dt>bt.601-525</dt>
-            <dd>ITU-R BT.601 (525-line SD systems, eg. NTSC), SMPTE 170M/240M</dd>
-            <dt>bt.601-625</dt>
-            <dd>ITU-R BT.601 (625-line SD systems, eg. PAL/SECAM), ITU-R BT.470 B/G</dd>
-            <dt>bt.709</dt>
-            <dd>ITU-R BT.709 (HD), IEC 61966-2-4 (sRGB), SMPTE RP177 Annex B</dd>
-            <dt>bt.2020</dt>
-            <dd>ITU-R BT.2020 (UHD)</dd>
-            <dt>apple</dt>
-            <dd>Apple RGB</dd>
-            <dt>adobe</dt>
-            <dd>Adobe RGB (1998)</dd>
-            <dt>prophoto</dt>
-            <dd>ProPhoto RGB (ROMM)</dd>
-            <dt>cie1931</dt>
-            <dd>CIE 1931 RGB (not to be confused with CIE XYZ)</dd>
-            <dt>dci-p3</dt>
-            <dd>DCI-P3 (Digital Cinema Colorspace), SMPTE RP431-2</dd>
-            <dt>v-gamut</dt>
-            <dd>Panasonic V-Gamut (VARICAM) primaries</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">target-trc=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Specifies the transfer characteristics (gamma) of the display. Video
-            colors will be adjusted to this curve when ICC color management is
-            not being used. Valid values are:</p>
-            <dl class="last docutils">
-            <dt>auto</dt>
-            <dd>Disable any adaptation (default)</dd>
-            <dt>bt.1886</dt>
-            <dd>ITU-R BT.1886 curve (assuming infinite contrast)</dd>
-            <dt>srgb</dt>
-            <dd>IEC 61966-2-4 (sRGB)</dd>
-            <dt>linear</dt>
-            <dd>Linear light output</dd>
-            <dt>gamma1.8</dt>
-            <dd>Pure power curve (gamma 1.8), also used for Apple RGB</dd>
-            <dt>gamma2.2</dt>
-            <dd>Pure power curve (gamma 2.2)</dd>
-            <dt>gamma2.8</dt>
-            <dd>Pure power curve (gamma 2.8), also used for BT.470-BG</dd>
-            <dt>prophoto</dt>
-            <dd>ProPhoto RGB (ROMM)</dd>
-            <dt>st2084</dt>
-            <dd>SMPTE ST2084 (HDR) curve, PQ OETF</dd>
-            <dt>std-b67</dt>
-            <dd>ARIB STD-B67 (Hybrid Log-gamma) curve, also known as BBC/NHK HDR</dd>
-            <dt>v-log</dt>
-            <dd>Panasonic V-Log (VARICAM) curve</dd>
-            <dt>NOTE: When using HDR output formats, mpv will encode to the specified</dt>
-            <dd>curve but it will not set any HDMI flags or other signalling that
-            might be required for the target device to correctly display the
-            HDR signal. The user should independently guarantee this before
-            using these signal formats for display.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">target-brightness=&lt;1..100000&gt;</span></tt></dt>
-            <dd>Specifies the display's approximate brightness in cd/m^2. When playing
-            HDR content on a SDR display (or SDR content on an HDR display), video
-            colors will be tone mapped to this target brightness using the
-            algorithm specified by <tt class="docutils literal"><span class="pre">hdr-tone-mapping</span></tt>. The default of 250 cd/m^2
-            corresponds to a typical consumer display.</dd>
-            <dt><tt class="docutils literal"><span class="pre">hdr-tone-mapping=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Specifies the algorithm used for tone-mapping HDR images onto the
-            target display. Valid values are:</p>
-            <dl class="last docutils">
-            <dt>clip</dt>
-            <dd>Hard-clip any out-of-range values.</dd>
-            <dt>reinhard</dt>
-            <dd>Reinhard tone mapping algorithm. Very simple continuous curve.
-            Preserves dynamic range and peak but uses nonlinear contrast.</dd>
-            <dt>hable</dt>
-            <dd>Similar to <tt class="docutils literal">reinhard</tt> but preserves dark contrast better
-            (slightly sigmoidal). Developed by John Hable for use in video
-            games. (default)</dd>
-            <dt>gamma</dt>
-            <dd>Fits a logarithmic transfer between the tone curves.</dd>
-            <dt>linear</dt>
-            <dd>Linearly stretches the entire reference gamut to (a linear multiple
-            of) the display.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">tone-mapping-param=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Set tone mapping parameters. Ignored if the tone mapping algorithm is
-            not tunable. This affects the following tone mapping algorithms:</p>
-            <dl class="last docutils">
-            <dt>reinhard</dt>
-            <dd>Specifies the local contrast coefficient at the display peak.
-            Defaults to 0.5, which means that in-gamut values will be about
-            half as bright as when clipping.</dd>
-            <dt>gamma</dt>
-            <dd>Specifies the exponent of the function. Defaults to 1.8.</dd>
-            <dt>linear</dt>
-            <dd>Specifies the scale factor to use while stretching. Defaults to
-            1.0.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">icc-profile=&lt;file&gt;</span></tt></dt>
-            <dd>Load an ICC profile and use it to transform video RGB to screen output.
-            Needs LittleCMS 2 support compiled in. This option overrides the
-            <tt class="docutils literal"><span class="pre">target-prim</span></tt>, <tt class="docutils literal"><span class="pre">target-trc</span></tt> and <tt class="docutils literal"><span class="pre">icc-profile-auto</span></tt> options.</dd>
-            <dt><tt class="docutils literal"><span class="pre">icc-profile-auto</span></tt></dt>
-            <dd><p class="first">Automatically select the ICC display profile currently specified by
-            the display settings of the operating system.</p>
-            <p class="last">NOTE: On Windows, the default profile must be an ICC profile. WCS
-            profiles are not supported.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">icc-cache-dir=&lt;dirname&gt;</span></tt></dt>
-            <dd><p class="first">Store and load the 3D LUTs created from the ICC profile in this directory.
-            This can be used to speed up loading, since LittleCMS 2 can take a while
-            to create a 3D LUT. Note that these files contain uncompressed LUTs.
-            Their size depends on the <tt class="docutils literal"><span class="pre">3dlut-size</span></tt>, and can be very big.</p>
-            <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files
-            may stick around indefinitely.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">icc-intent=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Specifies the ICC intent used for the color transformation (when using
-            <tt class="docutils literal"><span class="pre">icc-profile</span></tt>).</p>
-            <dl class="last docutils">
-            <dt>0</dt>
-            <dd>perceptual</dd>
-            <dt>1</dt>
-            <dd>relative colorimetric (default)</dd>
-            <dt>2</dt>
-            <dd>saturation</dd>
-            <dt>3</dt>
-            <dd>absolute colorimetric</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">3dlut-size=&lt;r&gt;x&lt;g&gt;x&lt;b&gt;</span></tt></dt>
-            <dd>Size of the 3D LUT generated from the ICC profile in each dimension.
-            Default is 64x64x64. Sizes may range from 2 to 512.</dd>
-            <dt><tt class="docutils literal"><span class="pre">icc-contrast=&lt;0-100000&gt;</span></tt></dt>
-            <dd>Specifies an upper limit on the target device's contrast ratio.
-            This is detected automatically from the profile if possible, but for
-            some profiles it might be missing, causing the contrast to be assumed
-            as infinite. As a result, video may appear darker than intended. This
-            only affects BT.1886 content. The default of 0 means no limit.</dd>
-            <dt><tt class="docutils literal"><span class="pre">blend-subtitles=&lt;yes|video|no&gt;</span></tt></dt>
-            <dd><p class="first">Blend subtitles directly onto upscaled video frames, before
-            interpolation and/or color management (default: no). Enabling this
-            causes subtitles to be affected by <tt class="docutils literal"><span class="pre">icc-profile</span></tt>, <tt class="docutils literal"><span class="pre">target-prim</span></tt>,
-            <tt class="docutils literal"><span class="pre">target-trc</span></tt>, <tt class="docutils literal">interpolation</tt>, <tt class="docutils literal">gamma</tt> and <tt class="docutils literal"><span class="pre">post-shader</span></tt>. It
-            also increases subtitle performance when using <tt class="docutils literal">interpolation</tt>.</p>
-            <p>The downside of enabling this is that it restricts subtitles to the
-            visible portion of the video, so you can't have subtitles exist in the
-            black margins below a video (for example).</p>
-            <p>If <tt class="docutils literal">video</tt> is selected, the behavior is similar to <tt class="docutils literal">yes</tt>, but subs
-            are drawn at the video's native resolution, and scaled along with the
-            video.</p>
-            <div class="warning last">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This changes the way subtitle colors are handled. Normally,
-            subtitle colors are assumed to be in sRGB and color managed
-            as such. Enabling this makes them treated as being in the
-            video's color space instead. This is good if you want
-            things like softsubbed ASS signs to match the video colors,
-            but may cause SRT subtitles or similar to look slightly off.</p>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">alpha=&lt;blend-tiles|blend|yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Decides what to do if the input has an alpha component.</p>
-            <dl class="last docutils">
-            <dt>blend-tiles</dt>
-            <dd>Blend the frame against a 16x16 gray/white tiles background (default).</dd>
-            <dt>blend</dt>
-            <dd>Blend the frame against a black background.</dd>
-            <dt>yes</dt>
-            <dd>Try to create a framebuffer with alpha component. This only makes sense
-            if the video contains alpha information (which is extremely rare). May
-            not be supported on all platforms. If alpha framebuffers are
-            unavailable, it silently falls back on a normal framebuffer. Note
-            that if you set the <tt class="docutils literal"><span class="pre">fbo-format</span></tt> option to a non-default value,
-            a format with alpha must be specified, or this won't work.</dd>
-            <dt>no</dt>
-            <dd>Ignore alpha component.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">rectangle-textures</span></tt></dt>
-            <dd>Force use of rectangle textures (default: no). Normally this shouldn't
-            have any advantages over normal textures. Note that hardware decoding
-            overrides this flag.</dd>
-            <dt><tt class="docutils literal"><span class="pre">background=&lt;color&gt;</span></tt></dt>
-            <dd>Color used to draw parts of the mpv window not covered by video.
-            See <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">opengl-hq</span></tt></dt>
-            <dd><p class="first">Same as <tt class="docutils literal">opengl</tt>, but with default settings for high quality rendering.</p>
-            <p>This is equivalent to:</p>
-            <pre class="literal-block">
-            --vo=opengl:scale=spline36:cscale=spline36:dscale=mitchell:dither-depth=auto:correct-downscaling:sigmoid-upscaling:deband:es=no
-            </pre>
-            <p class="last">Note that some cheaper LCDs do dithering that gravely interferes with
-            <tt class="docutils literal">opengl</tt>'s dithering. Disabling dithering with <tt class="docutils literal"><span class="pre">dither-depth=no</span></tt> helps.</p>
+            with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try enabling the
+            <tt class="docutils literal"><span class="pre">--opengl-dumb-mode=yes</span></tt> option.</p>
             </dd>
             <dt><tt class="docutils literal">sdl</tt></dt>
             <dd><p class="first">SDL 2.0+ Render video output driver, depending on system with or without
@@ -5954,9 +5929,7 @@
             <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
             <dd><p class="first">For use with libmpv direct OpenGL embedding; useless in any other contexts.
             (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
-            <p>This also supports many of the suboptions the <tt class="docutils literal">opengl</tt> VO has. Run
-            <tt class="docutils literal">mpv <span class="pre">--vo=opengl-cb:help</span></tt> for a list.</p>
-            <p class="last">This also supports the <tt class="docutils literal"><span class="pre">vo-cmdline</span></tt> command.</p>
+            <p class="last">This also supports many of the options the <tt class="docutils literal">opengl</tt> VO has.</p>
             </dd>
             <dt><tt class="docutils literal">rpi</tt> (Raspberry Pi)</dt>
             <dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
@@ -8024,7 +7997,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">disable-section</span> &quot;&lt;section&gt;&quot;</tt></dt>
             <dd>Disable the named input section. Undoes <tt class="docutils literal"><span class="pre">enable-section</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">define-section</span> &quot;&lt;section&gt;&quot; &quot;&lt;contents&gt;&quot; [default|forced]</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">define-section</span> &quot;&lt;section&gt;&quot; &quot;&lt;contents&gt;&quot; [default|force]</tt></dt>
             <dd><p class="first">Create a named input section, or replace the contents of an already existing
             input section. The <tt class="docutils literal">contents</tt> parameter uses the same syntax as the
             <tt class="docutils literal">input.conf</tt> file (except that using the section syntax in it is not
@@ -8038,7 +8011,7 @@
             <dt>&lt;default&gt; (also used if parameter omitted)</dt>
             <dd>Use a key binding defined by this section only if the user hasn't
             already bound this key to a command.</dd>
-            <dt>&lt;forced&gt;</dt>
+            <dt>&lt;force&gt;</dt>
             <dd>Always bind a key. (The input section that was made active most recently
             wins if there are ambiguities.)</dd>
             </dl>
@@ -8145,12 +8118,6 @@
             <dd>Cycle through A-B loop states. The first command will set the <tt class="docutils literal">A</tt> point
             (the <tt class="docutils literal"><span class="pre">ab-loop-a</span></tt> property); the second the <tt class="docutils literal">B</tt> point, and the third
             will clear both points.</dd>
-            <dt><tt class="docutils literal"><span class="pre">vo-cmdline</span> &quot;&lt;args&gt;&quot;</tt></dt>
-            <dd>Reset the sub-option of the current VO. Currently works with <tt class="docutils literal">opengl</tt>
-            (including <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>). The argument is the sub-option string usually
-            passed to the VO on the command line. Not all sub-options can be set, but
-            those which can will be reset even if they don't appear in the argument.
-            This command might be changed or removed in the future.</dd>
             <dt><tt class="docutils literal"><span class="pre">drop-buffers</span></tt></dt>
             <dd>Drop audio/video/demuxer buffers, and restart from fresh. Might help with
             unseekable streams that are going out of sync.
@@ -8302,17 +8269,14 @@
             </div>
             <div class="section" id="property-list">
             <h2>Property list</h2>
+            <div class="note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Most options can be set as runtime via properties as well. Just remove the
+            leading <tt class="docutils literal"><span class="pre">--</span></tt> from the option name. These are not documented. Only
+            properties which do not exist as option with the same name, or which have
+            very different behavior from the options are documented below.</p>
+            </div>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">osd-level</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--osd-level</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">osd-scale</span></tt> (RW)</dt>
-            <dd>OSD font size multiplier, see <tt class="docutils literal"><span class="pre">--osd-scale</span></tt>.</dd>
-            <dt><tt class="docutils literal">loop</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--loop</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">loop-file</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--loop-file</span></tt> (uses <tt class="docutils literal">yes</tt>/<tt class="docutils literal">no</tt>).</dd>
-            <dt><tt class="docutils literal">speed</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--speed</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-speed-correction</span></tt>, <tt class="docutils literal"><span class="pre">video-speed-correction</span></tt></dt>
             <dd><p class="first">Factor multiplied with <tt class="docutils literal">speed</tt> at which the player attempts to play the
             file. Usually it's exactly 1. (Display sync mode will make this useful.)</p>
@@ -8368,8 +8332,10 @@
             <dd>Symbolic name of the file format. In some cases, this is a comma-separated
             list of format names, e.g. mp4 is <tt class="docutils literal">mov,mp4,m4a,3gp,3g2,mj2</tt> (the list
             may grow in the future for any format).</dd>
-            <dt><tt class="docutils literal">demuxer</tt></dt>
-            <dd>Name of the current demuxer. (This is useless.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">current-demuxer</span></tt></dt>
+            <dd><p class="first">Name of the current demuxer. (This is useless.)</p>
+            <p class="last">(Renamed from <tt class="docutils literal">demuxer</tt>.)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">stream-path</span></tt></dt>
             <dd>Filename (full path) of the stream layer filename. (This is probably
             useless. It looks like this can be different from <tt class="docutils literal">path</tt> only when
@@ -8502,9 +8468,6 @@
                     &quot;default&quot;           MPV_FORMAT_FLAG
             </pre>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">ab-loop-a</span></tt>, <tt class="docutils literal"><span class="pre">ab-loop-b</span></tt> (RW)</dt>
-            <dd>Set/get A-B loop points. See corresponding options and <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command
-            for details.</dd>
             <dt><tt class="docutils literal">angle</tt> (RW)</dt>
             <dd>Current DVD angle.</dd>
             <dt><tt class="docutils literal">metadata</tt></dt>
@@ -8561,11 +8524,11 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">af-metadata/&lt;filter-label&gt;</span></tt></dt>
             <dd>Equivalent to <tt class="docutils literal"><span class="pre">vf-metadata/&lt;filter-label&gt;</span></tt>, but for audio filters.</dd>
-            <dt><tt class="docutils literal">pause</tt> (RW)</dt>
-            <dd>Pause status. This is usually <tt class="docutils literal">yes</tt> or <tt class="docutils literal">no</tt>. See <tt class="docutils literal"><span class="pre">--pause</span></tt>.</dd>
-            <dt><tt class="docutils literal">idle</tt></dt>
-            <dd>Return <tt class="docutils literal">yes</tt> if no file is loaded, but the player is staying around
-            because of the <tt class="docutils literal"><span class="pre">--idle</span></tt> option.</dd>
+            <dt><tt class="docutils literal"><span class="pre">idle-active</span></tt></dt>
+            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if no file is loaded, but the player is staying around
+            because of the <tt class="docutils literal"><span class="pre">--idle</span></tt> option.</p>
+            <p class="last">(Renamed from <tt class="docutils literal">idle</tt>.)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">core-idle</span></tt></dt>
             <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the playback core is paused, otherwise <tt class="docutils literal">no</tt>. This can
             be different <tt class="docutils literal">pause</tt> in special situations, such as when the player
@@ -8625,20 +8588,11 @@
             to restart playback. (It's possible that it returns <tt class="docutils literal">yes</tt> while a file
             is loaded, or when switching ordered chapter segments. This is because
             the same underlying code is used for seeking and resyncing.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">hr-seek</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--hr-seek</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
             <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise.</p>
             <p class="last">This option is relatively useless. Before mpv 0.18.1, it could be used to
             infer behavior of the <tt class="docutils literal">volume</tt> property.</p>
             </dd>
-            <dt><tt class="docutils literal">volume</tt> (RW)</dt>
-            <dd>Current volume (see <tt class="docutils literal"><span class="pre">--volume</span></tt> for details).</dd>
-            <dt><tt class="docutils literal"><span class="pre">volume-max</span></tt> (RW)</dt>
-            <dd>Current maximum value the volume property can be set to. (Equivalent to the
-            <tt class="docutils literal"><span class="pre">--volume-max</span></tt> option.)</dd>
-            <dt><tt class="docutils literal">mute</tt> (RW)</dt>
-            <dd>Current mute status (<tt class="docutils literal">yes</tt>/<tt class="docutils literal">no</tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">ao-volume</span></tt> (RW)</dt>
             <dd>System volume. This property is available only if mpv audio output is
             currently active, and only if the underlying implementation supports volume
@@ -8648,8 +8602,6 @@
             <dt><tt class="docutils literal"><span class="pre">ao-mute</span></tt> (RW)</dt>
             <dd>Similar to <tt class="docutils literal"><span class="pre">ao-volume</span></tt>, but controls the mute state. May be unimplemented
             even if <tt class="docutils literal"><span class="pre">ao-volume</span></tt> works.</dd>
-            <dt><tt class="docutils literal"><span class="pre">audio-delay</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--audio-delay</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-codec</span></tt></dt>
             <dd>Audio codec selected for decoding.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-codec-name</span></tt></dt>
@@ -8689,51 +8641,13 @@
             <dt><tt class="docutils literal"><span class="pre">audio-out-params</span></tt></dt>
             <dd>Same as <tt class="docutils literal"><span class="pre">audio-params</span></tt>, but the format of the data written to the audio
             API.</dd>
-            <dt><tt class="docutils literal">aid</tt> (RW)</dt>
-            <dd>Current audio track (similar to <tt class="docutils literal"><span class="pre">--aid</span></tt>).</dd>
-            <dt><tt class="docutils literal">audio</tt> (RW)</dt>
-            <dd>Alias for <tt class="docutils literal">aid</tt>.</dd>
-            <dt><tt class="docutils literal">balance</tt> (RW)</dt>
-            <dd><p class="first">Audio channel balance. (The implementation of this feature is rather odd.
-            It doesn't change the volumes of each channel, but instead sets up a pan
-            matrix to mix the left and right channels.)</p>
-            <p class="last">Deprecated.</p>
-            </dd>
-            <dt><tt class="docutils literal">fullscreen</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--fullscreen</span></tt>.</dd>
-            <dt><tt class="docutils literal">deinterlace</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--deinterlace</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">field-dominance</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--field-dominance</span></tt></dd>
             <dt><tt class="docutils literal">colormatrix</tt> (R)</dt>
             <dd>Redirects to <tt class="docutils literal"><span class="pre">video-params/colormatrix</span></tt>. This parameter (as well as
             similar ones) can be overridden with the <tt class="docutils literal">format</tt> video filter.</dd>
             <dt><tt class="docutils literal"><span class="pre">colormatrix-input-range</span></tt> (R)</dt>
             <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-output-levels</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--video-output-levels</span></tt>,</dd>
             <dt><tt class="docutils literal"><span class="pre">colormatrix-primaries</span></tt> (R)</dt>
             <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">taskbar-progress</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--taskbar-progress</span></tt>.</dd>
-            <dt><tt class="docutils literal">ontop</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--ontop</span></tt>.</dd>
-            <dt><tt class="docutils literal">border</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--border</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">on-all-workspaces</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--on-all-workspaces</span></tt>. Unsetting may not work on all WMs.</dd>
-            <dt><tt class="docutils literal">framedrop</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--framedrop</span></tt>.</dd>
-            <dt><tt class="docutils literal">gamma</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--gamma</span></tt>.</dd>
-            <dt><tt class="docutils literal">brightness</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--brightness</span></tt>.</dd>
-            <dt><tt class="docutils literal">contrast</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--contrast</span></tt>.</dd>
-            <dt><tt class="docutils literal">saturation</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--saturation</span></tt>.</dd>
-            <dt><tt class="docutils literal">hue</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--hue</span></tt>.</dd>
             <dt><tt class="docutils literal">hwdec</tt> (RW)</dt>
             <dd><p class="first">Reflects the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option.</p>
             <p>Writing to it may change the currently used hardware decoder, if possible.
@@ -8761,24 +8675,6 @@
             multiple interop drivers for the same hardware decoder, depending on
             platform and VO.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">hwdec-active</span></tt></dt>
-            <dd><p class="first">Deprecated. To be removed in mpv 0.20.0. Use <tt class="docutils literal"><span class="pre">hwdec-current</span></tt> instead.</p>
-            <p class="last">Return <tt class="docutils literal">yes</tt> or <tt class="docutils literal">no</tt>, depending on whether any type of hardware decoding
-            is actually in use.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">hwdec-detected</span></tt></dt>
-            <dd><p class="first">Deprecated. To be removed in mpv 0.20.0.</p>
-            <p class="last">If hardware decoding is active, this returns the hardware decoder in use.
-            Otherwise, it returns either <tt class="docutils literal">no</tt>, or if applicable, the currently loaded
-            hardware decoding API. This is known only once the VO has opened (and
-            possibly later). With some VOs (like <tt class="docutils literal">opengl</tt>), this is never known in
-            advance, but only when the decoder attempted to create the hw decoder
-            successfully. Also, hw decoders with <tt class="docutils literal"><span class="pre">-copy</span></tt> suffix will return <tt class="docutils literal">no</tt>
-            while no video is being decoded. All this reflects how detecting hw decoders
-            are detected and used internally in mpv.</p>
-            </dd>
-            <dt><tt class="docutils literal">panscan</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--panscan</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-format</span></tt></dt>
             <dd>Video format as string.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-codec</span></tt></dt>
@@ -8878,9 +8774,11 @@
             <tt class="docutils literal"><span class="pre">video-frame-info/tff</span></tt>
             <tt class="docutils literal"><span class="pre">video-frame-info/repeat</span></tt></p>
             </dd>
-            <dt><tt class="docutils literal">fps</tt></dt>
-            <dd>Container FPS. This can easily contain bogus values. For videos that use
-            modern container formats or video codecs, this will often be incorrect.</dd>
+            <dt><tt class="docutils literal"><span class="pre">container-fps</span></tt></dt>
+            <dd><p class="first">Container FPS. This can easily contain bogus values. For videos that use
+            modern container formats or video codecs, this will often be incorrect.</p>
+            <p class="last">(Renamed from <tt class="docutils literal">fps</tt>.)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">estimated-vf-fps</span></tt></dt>
             <dd>Estimated/measured FPS of the video filter chain output. (If no filters
             are used, this corresponds to decoder output.) This uses the average of
@@ -8912,25 +8810,16 @@
             <dt><tt class="docutils literal"><span class="pre">vsync-jitter</span></tt></dt>
             <dd>Estimated deviation factor of the vsync duration.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt> (RW)</dt>
-            <dd>Video aspect, see <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</dd>
+            <dd><p class="first">Video aspect, see <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</p>
+            <p class="last">If video is active, this reports the effective aspect value, instead of
+            the value of the <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> option.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">osd-width</span></tt>, <tt class="docutils literal"><span class="pre">osd-height</span></tt></dt>
             <dd>Last known OSD width (can be 0). This is needed if you want to use the
             <tt class="docutils literal"><span class="pre">overlay-add</span></tt> command. It gives you the actual OSD size, which can be
             different from the window size in some cases.</dd>
             <dt><tt class="docutils literal"><span class="pre">osd-par</span></tt></dt>
             <dd>Last known OSD display pixel aspect (can be 0).</dd>
-            <dt><tt class="docutils literal">vid</tt> (RW)</dt>
-            <dd>Current video track (similar to <tt class="docutils literal"><span class="pre">--vid</span></tt>).</dd>
-            <dt><tt class="docutils literal">video</tt> (RW)</dt>
-            <dd>Alias for <tt class="docutils literal">vid</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-align-x</span></tt>, <tt class="docutils literal"><span class="pre">video-align-y</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--video-align-x</span></tt> and <tt class="docutils literal"><span class="pre">--video-align-y</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-pan-x</span></tt>, <tt class="docutils literal"><span class="pre">video-pan-y</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--video-pan-x</span></tt> and <tt class="docutils literal"><span class="pre">--video-pan-y</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-zoom</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--video-zoom</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-unscaled</span></tt> (W)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt>.</dd>
             <dt><tt class="docutils literal">program</tt> (W)</dt>
             <dd>Switch TS program (write-only).</dd>
             <dt><tt class="docutils literal"><span class="pre">dvb-channel</span></tt> (W)</dt>
@@ -8940,30 +8829,12 @@
             <dd>Name of current DVB program.
             On write, a channel-switch to the named channel on the same
             card is performed. Can also be used for channel switching.</dd>
-            <dt><tt class="docutils literal">sid</tt> (RW)</dt>
-            <dd>Current subtitle track (similar to <tt class="docutils literal"><span class="pre">--sid</span></tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">secondary-sid</span></tt> (RW)</dt>
-            <dd>Secondary subtitle track (see <tt class="docutils literal"><span class="pre">--secondary-sid</span></tt>).</dd>
-            <dt><tt class="docutils literal">sub</tt> (RW)</dt>
-            <dd>Alias for <tt class="docutils literal">sid</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-delay</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--sub-delay</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-pos</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--sub-pos</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-visibility</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--sub-visibility</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-forced-only</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--sub-forced-only</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-scale</span></tt> (RW)</dt>
-            <dd>Subtitle font size multiplier.</dd>
-            <dt><tt class="docutils literal"><span class="pre">ass-force-margins</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--ass-force-margins</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-use-margins</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">ass-vsfilter-aspect-compat</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--ass-vsfilter-aspect-compat</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">ass-style-override</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">sub-text</span></tt></dt>
+            <dd><p class="first">Return the current subtitle text. Formatting is stripped. If a subtitle
+            is selected, but no text is currently visible, or the subtitle is not
+            text-based (i.e. DVD/BD subtitles), an empty string is returned.</p>
+            <p class="last">This property is experimental and might be removed in the future.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">stream-capture</span></tt> (RW)</dt>
             <dd>A filename, see <tt class="docutils literal"><span class="pre">--stream-capture</span></tt>. Setting this will start capture using
             the given filename. Setting it to an empty string will stop it.</dd>
@@ -9136,10 +9007,8 @@
                     &quot;time&quot;  MPV_FORMAT_DOUBLE
             </pre>
             </dd>
-            <dt><tt class="docutils literal">af</tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--af</span></tt> and the <tt class="docutils literal">af</tt> command.</dd>
-            <dt><tt class="docutils literal">vf</tt> (RW)</dt>
-            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--vf</span></tt> and the <tt class="docutils literal">vf</tt> command.</p>
+            <dt><tt class="docutils literal">af</tt>, <tt class="docutils literal">vf</tt> (RW)</dt>
+            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--vf</span></tt>/<tt class="docutils literal"><span class="pre">--af</span></tt> and the <tt class="docutils literal">vf</tt>/<tt class="docutils literal">af</tt> command.</p>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
@@ -9154,10 +9023,6 @@
             </pre>
             <p class="last">It's also possible to write the property using this format.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">video-rotate</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--video-rotate</span></tt> option.</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-stereo-mode</span></tt> (RW)</dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.</dd>
             <dt><tt class="docutils literal">seekable</tt></dt>
             <dd>Return whether it's generally possible to seek in the current file.</dd>
             <dt><tt class="docutils literal"><span class="pre">partially-seekable</span></tt></dt>
@@ -9355,10 +9220,14 @@
             still named the same.) This property is unavailable if mpv is linked against
             older FFmpeg and Libav versions.</dd>
             <dt><tt class="docutils literal"><span class="pre">options/&lt;name&gt;</span></tt> (RW)</dt>
-            <dd>Read-only access to value of option <tt class="docutils literal"><span class="pre">--&lt;name&gt;</span></tt>. Most options can be
+            <dd><p class="first">Read-only access to value of option <tt class="docutils literal"><span class="pre">--&lt;name&gt;</span></tt>. Most options can be
             changed at runtime by writing to this property. Note that many options
             require reloading the file for changes to take effect. If there is an
-            equivalent property, prefer setting the property instead.</dd>
+            equivalent property, prefer setting the property instead.</p>
+            <p class="last">There shouldn't be any reason to access <tt class="docutils literal"><span class="pre">options/&lt;name&gt;</span></tt> instead of
+            <tt class="docutils literal">&lt;name&gt;</tt>, except in situations in which the properties have different
+            behavior or conflicting semantics.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">file-local-options/&lt;name&gt;</span></tt></dt>
             <dd><p class="first">Similar to <tt class="docutils literal"><span class="pre">options/&lt;name&gt;</span></tt>, but when setting an option through this
             property, the option is reset to its old value once the current file has
@@ -9404,6 +9273,52 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">property-list</span></tt></dt>
             <dd>Return the list of top-level properties.</dd>
+            <dt><tt class="docutils literal"><span class="pre">profile-list</span></tt></dt>
+            <dd>Return the list of profiles and their contents. This is highly
+            implementation-specific, and may change any time. Currently, it returns
+            an array of options for each profile. Each option has a name and a value,
+            with the value currently always being a string. Note that the options array
+            is not a map, as order matters and duplicate entries are possible. Recursive
+            profiles are not expanded, and show up as special <tt class="docutils literal">profile</tt> options.</dd>
+            </dl>
+            </div>
+            <div class="section" id="inconsistencies-between-options-and-properties">
+            <h2>Inconsistencies between options and properties</h2>
+            <p>You can access (almost) all options as properties, though there are some
+            caveats with some properties (due to historical reasons):</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">vid</tt>, <tt class="docutils literal">aid</tt>, <tt class="docutils literal">sid</tt></dt>
+            <dd>While playback is active, you can set existing tracks only. (The option
+            allows setting any track ID, and which tracks to enable is chosen at
+            loading time.)</dd>
+            <dt><tt class="docutils literal">deinterlace</tt></dt>
+            <dd>While video is active, this behaves differently from the option. It will
+            never return the <tt class="docutils literal">auto</tt> value (but the state as observed by the video
+            chain). You cannot set <tt class="docutils literal">auto</tt> either.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt></dt>
+            <dd>While video is active, always returns the effective aspect ratio.</dd>
+            <dt><tt class="docutils literal">brightness</tt> (and other color options)</dt>
+            <dd>If <tt class="docutils literal"><span class="pre">--vo=xv</span></tt> is used, these properties may return the adapter's current
+            values instead of the option values.</dd>
+            <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
+            <dd>If a VO is created, this will return either the actual display FPS, or
+            an invalid value, instead of the option value.</dd>
+            <dt><tt class="docutils literal"><span class="pre">audio-file</span></tt>, <tt class="docutils literal"><span class="pre">sub-file</span></tt>, <tt class="docutils literal"><span class="pre">external-file</span></tt></dt>
+            <dd><p class="first">These options/properties are actually lists of filenames. To make the
+            command-line interface easier, each <tt class="docutils literal"><span class="pre">--audio-file=...</span></tt> option appends
+            the full string to the internal list. However, when used as properties,
+            every time you set the property as a string the internal list will be
+            replaced with a single entry containing the string you set. <tt class="docutils literal">,</tt> or other
+            separators are never used. You have to use <tt class="docutils literal">MPV_FORMAT_NODE_ARRAY</tt> (or
+            corresponding API, e.g. <tt class="docutils literal">mp.set_property_native()</tt> with a table in Lua)
+            to set multiple entries.</p>
+            <p class="last">Strictly speaking, option access via API (e.g. <tt class="docutils literal">mpv_set_option_string()</tt>)
+            has the same problem, and it's only a difference between CLI/API.</p>
+            </dd>
+            <dt><tt class="docutils literal">demuxer</tt>, <tt class="docutils literal">idle</tt>, <tt class="docutils literal">length</tt>, <tt class="docutils literal"><span class="pre">audio-samplerate</span></tt>, <tt class="docutils literal"><span class="pre">audio-channels</span></tt>, <tt class="docutils literal"><span class="pre">audio-format</span></tt>, <tt class="docutils literal">fps</tt>, <tt class="docutils literal">cache</tt></dt>
+            <dd>These behave completely different as property, but are deprecated (newer
+            aliases which don't conflict have been added). After the deprecation period
+            they will be changed to the proper option behavior.</dd>
             </dl>
             </div>
             <div class="section" id="property-expansion">
@@ -10857,9 +10772,15 @@
             </li>
             <li><p class="first">The git log, which is the &quot;real&quot; changelog</p>
             </li>
+            <li><p class="first">The files <tt class="docutils literal"><span class="pre">client-api-changes.rst</span></tt> and <tt class="docutils literal"><span class="pre">interface-changes.rst</span></tt> in the
+            <tt class="docutils literal">DOCS</tt> sub directoryon the git repository, which document API and user
+            interface changes (the latter usually documents breaking changes only, rather
+            than additions).</p>
+            </li>
             <li><p class="first">The file <tt class="docutils literal"><span class="pre">mplayer-changes.rst</span></tt> in the <tt class="docutils literal">DOCS</tt> sub directory on the git
             repository, which used to be in place of this section. It documents some
-            changes that happened since mplayer2 forked off MPlayer.</p>
+            changes that happened since mplayer2 forked off MPlayer. (Not updated
+            anymore.)</p>
             </li>
             </ul>
             </div>
@@ -10869,6 +10790,15 @@
             recommended way to do so is using libmpv. See <tt class="docutils literal">libmpv/client.h</tt> in the mpv
             source code repository. This provides a C API. Bindings for other languages
             might be available (see wiki).</p>
+            <p>Since libmpv merely allows access to underlying mechanisms that can control
+            mpv, further documentation is spread over a few places:</p>
+            <ul class="simple">
+            <li><a class="reference external" href="https://github.com/mpv-player/mpv/blob/master/libmpv/client.h">https://github.com/mpv-player/mpv/blob/master/libmpv/client.h</a></li>
+            <li><a class="reference external" href="http://mpv.io/manual/master/#options">http://mpv.io/manual/master/#options</a></li>
+            <li><a class="reference external" href="http://mpv.io/manual/master/#list-of-input-commands">http://mpv.io/manual/master/#list-of-input-commands</a></li>
+            <li><a class="reference external" href="http://mpv.io/manual/master/#properties">http://mpv.io/manual/master/#properties</a></li>
+            <li><a class="reference external" href="https://github.com/mpv-player/mpv-examples/tree/master/libmpv">https://github.com/mpv-player/mpv-examples/tree/master/libmpv</a></li>
+            </ul>
             </div>
             <div class="section" id="environment-variables">
             <h1>ENVIRONMENT VARIABLES</h1>
