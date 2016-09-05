@@ -1735,17 +1735,24 @@
             <dt><tt class="docutils literal"><span class="pre">--audio-device=&lt;name&gt;</span></tt></dt>
             <dd><p class="first">Use the given audio device. This consists of the audio output name, e.g.
             <tt class="docutils literal">alsa</tt>, followed by <tt class="docutils literal">/</tt>, followed by the audio output specific device
-            name.</p>
+            name. The default value for this option is <tt class="docutils literal">auto</tt>, which tries every audio
+            output in preference order with the default device.</p>
             <p>You can list audio devices with <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt>. This outputs the
             device name in quotes, followed by a description. The device name is what
-            you have to pass to the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option.</p>
-            <p>The default value for this option is <tt class="docutils literal">auto</tt>, which tries every audio
-            output in preference order with the default device.</p>
-            <p>Note that many AOs have a <tt class="docutils literal">device</tt> sub-option, which overrides the
-            device selection of this option (but not the audio output selection).
-            Likewise, forcing an AO with <tt class="docutils literal"><span class="pre">--ao</span></tt> will override the audio output
-            selection of <tt class="docutils literal"><span class="pre">--audio-device</span></tt> (but not the device selection).</p>
-            <p class="last">Currently not implemented for most AOs.</p>
+            you have to pass to the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option. The list of audio devices
+            can be retrieved by API by using the <tt class="docutils literal"><span class="pre">audio-device-list</span></tt> property.</p>
+            <p class="last">While the option normally takes one of the strings as indicated by the
+            methods above, you can also force the device for most AOs by building it
+            manually. For example <tt class="docutils literal">name/foobar</tt> forces the AO <tt class="docutils literal">name</tt> to use the
+            device <tt class="docutils literal">foobar</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-exclusive=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable exclusive output mode. In this mode, the system is usually locked
+            out, and only mpv will be able to output audio.</p>
+            <p class="last">This only works for some audio outputs, such as <tt class="docutils literal">wasapi</tt> and
+            <tt class="docutils literal">coreaudio</tt>. Other audio outputs silently ignore this options. They either
+            have no concept of exclusive mode, or the mpv side of the implementation is
+            missing.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-fallback-to-null=&lt;yes|no&gt;</span></tt></dt>
             <dd>If no audio device can be opened, behave as if <tt class="docutils literal"><span class="pre">--ao=null</span></tt> was given. This
@@ -5235,7 +5242,9 @@
             normal driver parameters.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--ao-defaults=&lt;driver1[:parameter1:parameter2:...],driver2,...&gt;</span></tt></dt>
-            <dd>Set defaults for each driver.</dd>
+            <dd><p class="first">Set defaults for each driver.</p>
+            <p class="last">Deprecated. No replacement.</p>
+            </dd>
             </dl>
             <div class="note">
             <p class="first admonition-title">Note</p>
@@ -5244,18 +5253,11 @@
             where PulseAudio is used. On BSD systems, <tt class="docutils literal"><span class="pre">--ao=oss</span></tt> or <tt class="docutils literal"><span class="pre">--ao=sndio</span></tt>
             may work (the latter being experimental).</p>
             </div>
-            <div class="admonition-examples admonition">
-            <p class="first admonition-title">Examples</p>
-            <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--ao=alsa,oss,</span></tt> Try the ALSA driver, then the OSS driver, then others.</li>
-            <li><tt class="docutils literal"><span class="pre">--ao=alsa:resample=yes:device=[plughw:0,3]</span></tt> Lets ALSA resample and
-            sets the device-name as first card, fourth device.</li>
-            </ul>
-            </div>
             <p>Available audio output drivers are:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">alsa</tt> (Linux only)</dt>
             <dd><p class="first">ALSA audio output driver</p>
+            <p>See <a class="reference internal" href="#alsa-audio-output-options">ALSA audio output options</a> for options specific to this AO.</p>
             <div class="warning last">
             <p class="first admonition-title">Warning</p>
             <p>To get multichannel/surround audio, use <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt>. The
@@ -5270,33 +5272,36 @@
             </dd>
             <dt><tt class="docutils literal">oss</tt></dt>
             <dd><p class="first">OSS audio output driver</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;dsp-device&gt;</span></tt></dt>
-            <dd>Sets the audio output device (default: <tt class="docutils literal">/dev/dsp</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;mixer-device&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--oss-device</span></tt></dt>
+            <dd>Sets the audio output device (default: <tt class="docutils literal">/dev/dsp</tt>).
+            Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--oss-mixer-device</span></tt></dt>
             <dd>Sets the audio mixer device (default: <tt class="docutils literal">/dev/mixer</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;mixer-channel&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--oss-mixer-channel</span></tt></dt>
             <dd>Sets the audio mixer channel (default: <tt class="docutils literal">pcm</tt>). Other valid values
             include <strong>vol, pcm, line</strong>. For a complete list of options look for
             <tt class="docutils literal">SOUND_DEVICE_NAMES</tt> in <tt class="docutils literal">/usr/include/linux/soundcard.h</tt>.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">jack</tt></dt>
-            <dd><p class="first">JACK (Jack Audio Connection Kit) audio output driver</p>
+            <dd><p class="first">JACK (Jack Audio Connection Kit) audio output driver.</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">port=&lt;name&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--jack-port=&lt;name&gt;</span></tt></dt>
             <dd>Connects to the ports with the given name (default: physical ports).</dd>
-            <dt><tt class="docutils literal"><span class="pre">name=&lt;client&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--jack-name=&lt;client&gt;</span></tt></dt>
             <dd>Client name that is passed to JACK (default: <tt class="docutils literal">mpv</tt>). Useful
             if you want to have certain connections established automatically.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)autostart</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--jack-autostart=&lt;yes|no&gt;</span></tt></dt>
             <dd>Automatically start jackd if necessary (default: disabled). Note that
             this tends to be unreliable and will flood stdout with server messages.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)connect</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--jack-connect=&lt;yes|no&gt;</span></tt></dt>
             <dd>Automatically create connections to output ports (default: enabled).
             When enabled, the maximum number of output channels will be limited to
             the number of available output ports.</dd>
-            <dt><tt class="docutils literal"><span class="pre">std-channel-layout=waveext|any</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--jack-std-channel-layout=&lt;waveext|any&gt;</span></tt></dt>
             <dd>Select the standard channel layout (default: waveext). JACK itself has no
             notion of channel layouts (i.e. assigning which speaker a given
             channel is supposed to map to) - it just takes whatever the application
@@ -5315,16 +5320,18 @@
             sound server.</p>
             <p>Automatically redirects to <tt class="docutils literal">coreaudio_exclusive</tt> when playing compressed
             formats.</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">change-physical-format=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--coreaudio-change-physical-format=&lt;yes|no&gt;</span></tt></dt>
             <dd>Change the physical format to one similar to the requested audio format
             (default: no). This has the advantage that multichannel audio output
             will actually work. The disadvantage is that it will change the
             system-wide audio settings. This is equivalent to changing the <tt class="docutils literal">Format</tt>
             setting in the <tt class="docutils literal">Audio Devices</tt> dialog in the <tt class="docutils literal">Audio MIDI Setup</tt>
             utility. Note that this does not affect the selected speaker setup.</dd>
-            <dt><tt class="docutils literal">exclusive</tt></dt>
-            <dd>Use exclusive mode access. This merely redirects to
+            <dt><tt class="docutils literal"><span class="pre">--coreaudio-exclusive</span></tt></dt>
+            <dd>Deprecated, use <tt class="docutils literal"><span class="pre">--audio-exclusive</span></tt>.
+            Use exclusive mode access. This merely redirects to
             <tt class="docutils literal">coreaudio_exclusive</tt>, but should be preferred over using that AO
             directly.</dd>
             </dl>
@@ -5342,17 +5349,19 @@
             </dd>
             <dt><tt class="docutils literal">pulse</tt></dt>
             <dd><p class="first">PulseAudio audio output driver</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">host=&lt;host&gt;</span></tt>, <tt class="docutils literal"><span class="pre">sink=&lt;sink&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--pulse-host=&lt;host&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--pulse-sink=&lt;sink&gt;</span></tt></dt>
             <dd>Specify the host and optionally output sink to use. An empty &lt;host&gt;
             string uses a local connection, &quot;localhost&quot; uses network transfer
-            (most likely not what you want).</dd>
-            <dt><tt class="docutils literal"><span class="pre">buffer=&lt;1-2000|native&gt;</span></tt></dt>
+            (most likely not what you want).
+            Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--pulse-buffer=&lt;1-2000|native&gt;</span></tt></dt>
             <dd>Set the audio buffer size in milliseconds. A higher value buffers
             more data, and has a lower probability of buffer underruns. A smaller
             value makes the audio stream react faster, e.g. to playback speed
             changes. Default: 250.</dd>
-            <dt><tt class="docutils literal"><span class="pre">latency-hacks=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--pulse-latency-hacks=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Enable hacks to workaround PulseAudio timing bugs (default: no). If
             enabled, mpv will do elaborate latency calculations on its own. If
             disabled, it will use PulseAudio automatically updated timing
@@ -5374,13 +5383,14 @@
             environments, such as systems where none of the other drivers
             are available.</p>
             </div>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">buflen=&lt;length&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sdl-buflen=&lt;length&gt;</span></tt></dt>
             <dd>Sets the audio buffer length in seconds. Is used only as a hint by the
             sound system. Playing a file with <tt class="docutils literal"><span class="pre">-v</span></tt> will show the requested and
             obtained exact buffer size. A value of 0 selects the sound system
             default.</dd>
-            <dt><tt class="docutils literal"><span class="pre">bufcnt=&lt;count&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sdl-bufcnt=&lt;count&gt;</span></tt></dt>
             <dd>Sets the number of extra audio buffers in mpv. Usually needs not be
             changed.</dd>
             </dl>
@@ -5388,42 +5398,44 @@
             <dt><tt class="docutils literal">null</tt></dt>
             <dd><p class="first">Produces no audio output but maintains video playback speed. Use
             <tt class="docutils literal"><span class="pre">--ao=null:untimed</span></tt> for benchmarking.</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal">untimed</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-untimed</span></tt></dt>
             <dd>Do not simulate timing of a perfect audio device. This means audio
             decoding will go as fast as possible, instead of timing it to the
             system clock.</dd>
-            <dt><tt class="docutils literal">buffer</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-buffer</span></tt></dt>
             <dd>Simulated buffer length in seconds.</dd>
-            <dt><tt class="docutils literal">outburst</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-outburst</span></tt></dt>
             <dd>Simulated chunk size in samples.</dd>
-            <dt><tt class="docutils literal">speed</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-speed</span></tt></dt>
             <dd>Simulated audio playback speed as a multiplier. Usually, a real audio
             device will not go exactly as fast as the system clock. It will deviate
             just a little, and this option helps to simulate this.</dd>
-            <dt><tt class="docutils literal">latency</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-latency</span></tt></dt>
             <dd>Simulated device latency. This is additional to EOF.</dd>
-            <dt><tt class="docutils literal"><span class="pre">broken-eof</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-broken-eof</span></tt></dt>
             <dd>Simulate broken audio drivers, which always add the fixed device
             latency to the reported audio playback position.</dd>
-            <dt><tt class="docutils literal"><span class="pre">broken-delay</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-broken-delay</span></tt></dt>
             <dd>Simulate broken audio drivers, which don't report latency correctly.</dd>
-            <dt><tt class="docutils literal"><span class="pre">channel-layouts</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-channel-layouts</span></tt></dt>
             <dd>If not empty, this is a <tt class="docutils literal">,</tt> separated list of channel layouts the
             AO allows. This can be used to test channel layout selection.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">pcm</tt></dt>
             <dd><p class="first">Raw PCM/WAVE file writer audio output</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">(no-)waveheader</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-pcm-waveheader=&lt;yes|no&gt;</span></tt></dt>
             <dd>Include or do not include the WAVE header (default: included). When
             not included, raw PCM will be generated.</dd>
-            <dt><tt class="docutils literal"><span class="pre">file=&lt;filename&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-pcm-file=&lt;filename&gt;</span></tt></dt>
             <dd>Write the sound to <tt class="docutils literal">&lt;filename&gt;</tt> instead of the default
             <tt class="docutils literal">audiodump.wav</tt>. If <tt class="docutils literal"><span class="pre">no-waveheader</span></tt> is specified, the default is
             <tt class="docutils literal">audiodump.pcm</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)append</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao-pcm-append=&lt;yes|no&gt;</span></tt></dt>
             <dd>Append to the file, instead of overwriting it. Always use this with the
             <tt class="docutils literal"><span class="pre">no-waveheader</span></tt> option - with <tt class="docutils literal">waveheader</tt> it's broken, because
             it will write a WAVE header every time the file is opened.</dd>
@@ -5437,15 +5449,18 @@
             confused with RoarAudio, which is something completely
             different.</p>
             </div>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">host=&lt;name/path&gt;</span></tt></dt>
+            <p>The following global options are supported by this audio output:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--rsound-host=&lt;name/path&gt;</span></tt></dt>
             <dd>Set the address of the server (default: localhost).  Can be either a
             network hostname for TCP connections or a Unix domain socket path
             starting with '/'.</dd>
-            <dt><tt class="docutils literal"><span class="pre">port=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--rsound-port=&lt;number&gt;</span></tt></dt>
             <dd>Set the TCP port used for connecting to the server (default: 12345).
             Not used if connecting to a Unix domain socket.</dd>
             </dl>
+            <p class="last">These options are deprecated. If anyone cares enough, their functionality
+            can be added back using <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal">sndio</tt></dt>
             <dd><p class="first">Audio output to the OpenBSD sndio sound system</p>
@@ -5455,28 +5470,29 @@
             </div>
             <p>(Note: only supports mono, stereo, 4.0, 5.1 and 7.1 channel
             layouts.)</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">device=&lt;device&gt;</span></tt></dt>
-            <dd>sndio device to use (default: <tt class="docutils literal">$AUDIODEVICE</tt>, resp. <tt class="docutils literal">snd0</tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--ao-sndio-device=&lt;device&gt;</span></tt></dt>
+            <dd>sndio device to use (default: <tt class="docutils literal">$AUDIODEVICE</tt>, resp. <tt class="docutils literal">snd0</tt>).
+            Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">wasapi</tt></dt>
             <dd><p class="first">Audio output to the Windows Audio Session API.</p>
+            <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal">exclusive</tt></dt>
-            <dd>Requests exclusive, direct hardware access. By definition prevents
+            <dt><tt class="docutils literal"><span class="pre">--ao-wasapi-exclusive</span></tt></dt>
+            <dd>Deprecated, use <tt class="docutils literal"><span class="pre">--audio-exclusive</span></tt>.
+            Requests exclusive, direct hardware access. By definition prevents
             sound playback of any other program until mpv exits.</dd>
-            <dt><tt class="docutils literal"><span class="pre">device=&lt;id&gt;</span></tt></dt>
-            <dd><p class="first">Uses the requested endpoint instead of the system's default audio
+            <dt><tt class="docutils literal"><span class="pre">--ao-wasapi-device=&lt;id&gt;</span></tt></dt>
+            <dd><p class="first">Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</p>
+            <p>Uses the requested endpoint instead of the system's default audio
             endpoint. Both an ordinal number (0,1,2,...) and the GUID
             String are valid; the GUID string is guaranteed to not change
             unless the driver is uninstalled.</p>
-            <p>Also supports searching active devices by human-readable name. If more
+            <p class="last">Also supports searching active devices by human-readable name. If more
             than one device matches the name, refuses loading it.</p>
-            <p class="last">This option is mostly deprecated in favour of the more general
-            <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option. That said, <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt> will give
-            a list of valid device GUIDs (prefixed with <tt class="docutils literal">wasapi/</tt>), as well as
-            their human readable names, which should work here.</p>
             </dd>
             </dl>
             </dd>
@@ -5518,12 +5534,13 @@
             <p class="first admonition-title">Note</p>
             <p class="last">This driver is for compatibility with old systems.</p>
             </div>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">adaptor=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--xv-adaptor=&lt;number&gt;</span></tt></dt>
             <dd>Select a specific XVideo adapter (check xvinfo results).</dd>
-            <dt><tt class="docutils literal"><span class="pre">port=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--xv-port=&lt;number&gt;</span></tt></dt>
             <dd>Select a specific XVideo port.</dd>
-            <dt><tt class="docutils literal"><span class="pre">ck=&lt;cur|use|set&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--xv-ck=&lt;cur|use|set&gt;</span></tt></dt>
             <dd><p class="first">Select the source from which the color key is taken (default: cur).</p>
             <dl class="last docutils">
             <dt>cur</dt>
@@ -5535,7 +5552,7 @@
             <dd>Same as use but also sets the supplied color key.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">ck-method=&lt;none|man|bg|auto&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--xv-ck-method=&lt;none|man|bg|auto&gt;</span></tt></dt>
             <dd><p class="first">Sets the color key drawing method (default: man).</p>
             <dl class="last docutils">
             <dt>none</dt>
@@ -5548,10 +5565,10 @@
             <dd>Let Xv draw the color key.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">colorkey=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--xv-colorkey=&lt;number&gt;</span></tt></dt>
             <dd>Changes the color key to an RGB value of your choice. <tt class="docutils literal">0x000000</tt> is
             black and <tt class="docutils literal">0xffffff</tt> is white.</dd>
-            <dt><tt class="docutils literal"><span class="pre">buffers=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--xv-buffers=&lt;number&gt;</span></tt></dt>
             <dd>Number of image buffers to use for the internal ringbuffer (default: 2).
             Increasing this will use more memory, but might help with the X server
             not responding quickly enough if video FPS is close to or higher than
@@ -5576,18 +5593,19 @@
             <tt class="docutils literal"><span class="pre">chroma-deint</span></tt>, <tt class="docutils literal">pullup</tt>, <tt class="docutils literal">hqscaling</tt>. These sub-options are
             deprecated, and you should use the <tt class="docutils literal">vdpaupp</tt> video filter instead.</p>
             </div>
+            <p>The following global options are supported by this video output:</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">sharpen=&lt;-1-1&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-sharpen=&lt;-1-1&gt;</span></tt></dt>
             <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
             <p class="last">For positive values, apply a sharpening algorithm to the video, for
             negative values a blurring algorithm (default: 0).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">denoise=&lt;0-1&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-denoise=&lt;0-1&gt;</span></tt></dt>
             <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
             <p class="last">Apply a noise reduction algorithm to the video (default: 0; no noise
             reduction).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">deint=&lt;-4-4&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-deint=&lt;-4-4&gt;</span></tt></dt>
             <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
             <p>Select deinterlacing mode (default: 0). In older versions (as well as
             MPlayer/mplayer2) you could use this option to enable deinterlacing.
@@ -5611,18 +5629,18 @@
             interpolation. Needs fast video hardware.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">chroma-deint</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-chroma-deint</span></tt></dt>
             <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
             <p class="last">Makes temporal deinterlacers operate both on luma and chroma (default).
             Use no-chroma-deint to solely use luma and speed up advanced
             deinterlacing. Useful with slow video memory.</p>
             </dd>
-            <dt><tt class="docutils literal">pullup</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-pullup</span></tt></dt>
             <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
             <p class="last">Try to apply inverse telecine, needs motion adaptive temporal
             deinterlacing.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">hqscaling=&lt;0-9&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-hqscaling=&lt;0-9&gt;</span></tt></dt>
             <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
             <dl class="last docutils">
             <dt>0</dt>
@@ -5631,14 +5649,14 @@
             <dd>Apply high quality VDPAU scaling (needs capable hardware).</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">fps=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-fps=&lt;number&gt;</span></tt></dt>
             <dd>Override autodetected display refresh rate value (the value is needed
             for framedrop to allow video playback rates higher than display
             refresh rate, and for vsync-aware frame timing adjustments). Default 0
             means use autodetected value. A positive value is interpreted as a
             refresh rate in Hz and overrides the autodetected value. A negative
             value disables all timing adjustment and framedrop logic.</dd>
-            <dt><tt class="docutils literal"><span class="pre">composite-detect</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-composite-detect</span></tt></dt>
             <dd>NVIDIA's current VDPAU implementation behaves somewhat differently
             under a compositing window manager and does not give accurate frame
             timing information. With this option enabled, the player tries to
@@ -5649,20 +5667,20 @@
             with the composited mode behavior of the NVIDIA driver, there is no
             hard playback speed limit even without the disabled logic. Enabled by
             default, use <tt class="docutils literal"><span class="pre">no-composite-detect</span></tt> to disable.</dd>
-            <dt><tt class="docutils literal"><span class="pre">queuetime_windowed=&lt;number&gt;</span></tt> and <tt class="docutils literal"><span class="pre">queuetime_fs=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-queuetime_windowed=&lt;number&gt;</span></tt> and <tt class="docutils literal"><span class="pre">queuetime_fs=&lt;number&gt;</span></tt></dt>
             <dd>Use VDPAU's presentation queue functionality to queue future video
             frame changes at most this many milliseconds in advance (default: 50).
             See below for additional information.</dd>
-            <dt><tt class="docutils literal"><span class="pre">output_surfaces=&lt;2-15&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-output_surfaces=&lt;2-15&gt;</span></tt></dt>
             <dd>Allocate this many output surfaces to display video frames (default:
             3). See below for additional information.</dd>
-            <dt><tt class="docutils literal"><span class="pre">colorkey=&lt;#RRGGBB|#AARRGGBB&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-colorkey=&lt;#RRGGBB|#AARRGGBB&gt;</span></tt></dt>
             <dd>Set the VDPAU presentation queue background color, which in practice
             is the colorkey used if VDPAU operates in overlay mode (default:
             <tt class="docutils literal">#020507</tt>, some shade of black). If the alpha component of this value
             is 0, the default VDPAU colorkey will be used instead (which is usually
             green).</dd>
-            <dt><tt class="docutils literal"><span class="pre">force-yuv</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-force-yuv</span></tt></dt>
             <dd>Never accept RGBA input. This means mpv will insert a filter to convert
             to a YUV format before the VO. Sometimes useful to force availability
             of certain YUV-only features, like video equalizer or deinterlacing.</dd>
@@ -5688,28 +5706,38 @@
             driver implementation may also have limits on the length of maximum
             queuing time or number of queued surfaces that work well or at all.</p>
             </dd>
-            <dt><tt class="docutils literal">direct3d_shaders</tt> (Windows only)</dt>
+            <dt><tt class="docutils literal">direct3d</tt> (Windows only)</dt>
             <dd><p class="first">Video output driver that uses the Direct3D interface.</p>
             <div class="note">
             <p class="first admonition-title">Note</p>
             <p class="last">This driver is for compatibility with systems that don't provide
-            proper OpenGL drivers.</p>
+            proper OpenGL drivers, and where ANGLE does not perform well.</p>
             </div>
+            <div class="note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Before to 0.21.0, <tt class="docutils literal">direct3d_shaders</tt> and <tt class="docutils literal">direct3d</tt> were
+            different, with <tt class="docutils literal">direct3d</tt> not using shader by default. Now
+            both use shaders by default, and <tt class="docutils literal">direct3d_shaders</tt> is a
+            deprecated alias. Use the <tt class="docutils literal"><span class="pre">--vo-direct3d-prefer-stretchrect</span></tt>
+            or the <tt class="docutils literal"><span class="pre">--vo-direct3d-disable-shaders</span></tt> options to get the old
+            behavior of <tt class="docutils literal">direct3d</tt>.</p>
+            </div>
+            <p>The following global options are supported by this video output:</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">prefer-stretchrect</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-prefer-stretchrect</span></tt></dt>
             <dd>Use <tt class="docutils literal"><span class="pre">IDirect3DDevice9::StretchRect</span></tt> over other methods if possible.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disable-stretchrect</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-disable-stretchrect</span></tt></dt>
             <dd>Never render the video using <tt class="docutils literal"><span class="pre">IDirect3DDevice9::StretchRect</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disable-textures</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-disable-textures</span></tt></dt>
             <dd>Never render the video using D3D texture rendering. Rendering with
             textures + shader will still be allowed. Add <tt class="docutils literal"><span class="pre">disable-shaders</span></tt> to
             completely disable video rendering with textures.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disable-shaders</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-disable-shaders</span></tt></dt>
             <dd>Never use shaders when rendering video.</dd>
-            <dt><tt class="docutils literal"><span class="pre">only-8bit</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-only-8bit</span></tt></dt>
             <dd>Never render YUV video with more than 8 bits per component.
             Using this flag will force software conversion to 8-bit.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disable-texture-align</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-disable-texture-align</span></tt></dt>
             <dd>Normally texture sizes are always aligned to 16. With this option
             enabled, the video texture will always have exactly the same size as
             the video itself.</dd>
@@ -5718,10 +5746,10 @@
             might crash, might cause slow downs, etc. Contact the developers if you
             actually need any of these for performance or proper operation.</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">force-power-of-2</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-force-power-of-2</span></tt></dt>
             <dd>Always force textures to power of 2, even if the device reports
             non-power-of-2 texture sizes as supported.</dd>
-            <dt><tt class="docutils literal"><span class="pre">texture-memory=&lt;mode&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-texture-memory=&lt;mode&gt;</span></tt></dt>
             <dd><p class="first">Only affects operation with shaders/texturing enabled, and (E)OSD.
             Possible values:</p>
             <dl class="last docutils">
@@ -5742,20 +5770,12 @@
             locking.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">swap-discard</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-swap-discard</span></tt></dt>
             <dd>Use <tt class="docutils literal">D3DSWAPEFFECT_DISCARD</tt>, which might be faster.
             Might be slower too, as it must(?) clear every frame.</dd>
-            <dt><tt class="docutils literal"><span class="pre">exact-backbuffer</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-direct3d-exact-backbuffer</span></tt></dt>
             <dd>Always resize the backbuffer to window size.</dd>
             </dl>
-            </dd>
-            <dt><tt class="docutils literal">direct3d</tt> (Windows only)</dt>
-            <dd><p class="first">Same as <tt class="docutils literal">direct3d_shaders</tt>, but with the options <tt class="docutils literal"><span class="pre">disable-textures</span></tt>
-            and <tt class="docutils literal"><span class="pre">disable-shaders</span></tt> forced.</p>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This driver is for compatibility with old systems.</p>
-            </div>
             </dd>
             <dt><tt class="docutils literal">opengl</tt></dt>
             <dd><p class="first">OpenGL video output driver. It supports extended scaling methods, dithering
@@ -5791,10 +5811,11 @@
             <p class="last">This driver is for compatibility with systems that don't provide
             proper graphics drivers, or which support GLES only.</p>
             </div>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal">sw</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sdl-sw</span></tt></dt>
             <dd>Continue even if a software renderer is detected.</dd>
-            <dt><tt class="docutils literal"><span class="pre">switch-mode</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sdl-switch-mode</span></tt></dt>
             <dd>Instruct SDL to switch the monitor video mode when going fullscreen.</dd>
             </dl>
             </dd>
@@ -5808,8 +5829,9 @@
             <p class="last">This driver is for compatibility with crappy systems. You can
             use vaapi hardware decoding with <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> too.</p>
             </div>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">scaling=&lt;algorithm&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vaapi-scaling=&lt;algorithm&gt;</span></tt></dt>
             <dd><dl class="first last docutils">
             <dt>default</dt>
             <dd>Driver default (mpv default as well).</dd>
@@ -5821,7 +5843,7 @@
             <dd><tt class="docutils literal"><span class="pre">non-linear</span> anamorphic scaling</tt></dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">deint-mode=&lt;mode&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vaapi-deint-mode=&lt;mode&gt;</span></tt></dt>
             <dd><p class="first">Select deinterlacing algorithm. Note that by default deinterlacing is
             initially always off, and needs to be enabled with the <tt class="docutils literal">d</tt> key
             (default key binding for <tt class="docutils literal">cycle deinterlace</tt>).</p>
@@ -5840,7 +5862,7 @@
             <dd>bob deinterlacing (default for older libva).</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">scaled-osd=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-vaapi-scaled-osd=&lt;yes|no&gt;</span></tt></dt>
             <dd>If enabled, then the OSD is rendered at video resolution and scaled to
             display resolution. By default, this is disabled, and the OSD is
             rendered at display resolution if the driver supports it.</dd>
@@ -5849,8 +5871,9 @@
             <dt><tt class="docutils literal">null</tt></dt>
             <dd><p class="first">Produces no video output. Useful for benchmarking.</p>
             <p>Usually, it's better to disable video with <tt class="docutils literal"><span class="pre">--no-video</span></tt> instead.</p>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">fps=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-null-fps=&lt;value&gt;</span></tt></dt>
             <dd>Simulate display FPS. This artificially limits how many frames the
             VO accepts per second.</dd>
             </dl>
@@ -5865,8 +5888,9 @@
             <dt><tt class="docutils literal">image</tt></dt>
             <dd><p class="first">Output each frame into an image file in the current directory. Each file
             takes the frame number padded with leading zeros as name.</p>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">format=&lt;format&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-format=&lt;format&gt;</span></tt></dt>
             <dd><p class="first">Select the image file format.</p>
             <dl class="last docutils">
             <dt>jpg</dt>
@@ -5885,24 +5909,24 @@
             <dd>Truevision TGA.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">png-compression=&lt;0-9&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-png-compression=&lt;0-9&gt;</span></tt></dt>
             <dd>PNG compression factor (speed vs. file size tradeoff) (default: 7)</dd>
-            <dt><tt class="docutils literal"><span class="pre">png-filter=&lt;0-5&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-png-filter=&lt;0-5&gt;</span></tt></dt>
             <dd>Filter applied prior to PNG compression (0 = none; 1 = sub; 2 = up;
             3 = average; 4 = Paeth; 5 = mixed) (default: 5)</dd>
-            <dt><tt class="docutils literal"><span class="pre">jpeg-quality=&lt;0-100&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-jpeg-quality=&lt;0-100&gt;</span></tt></dt>
             <dd>JPEG quality factor (default: 90)</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)jpeg-progressive</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-jpeg-progressive=&lt;yes|no&gt;</span></tt></dt>
             <dd>Specify standard or progressive JPEG (default: no).</dd>
-            <dt><tt class="docutils literal"><span class="pre">(no-)jpeg-baseline</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-jpeg-baseline=&lt;yes|no&gt;</span></tt></dt>
             <dd>Specify use of JPEG baseline or not (default: yes).</dd>
-            <dt><tt class="docutils literal"><span class="pre">jpeg-optimize=&lt;0-100&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-jpeg-optimize=&lt;0-100&gt;</span></tt></dt>
             <dd>JPEG optimization factor (default: 100)</dd>
-            <dt><tt class="docutils literal"><span class="pre">jpeg-smooth=&lt;0-100&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-jpeg-smooth=&lt;0-100&gt;</span></tt></dt>
             <dd>smooth factor (default: 0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">jpeg-dpi=&lt;1-&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-jpeg-dpi=&lt;1-&gt;</span></tt></dt>
             <dd>JPEG DPI (default: 72)</dd>
-            <dt><tt class="docutils literal"><span class="pre">outdir=&lt;dirname&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-image-outdir=&lt;dirname&gt;</span></tt></dt>
             <dd>Specify the directory to save the image files to (default: <tt class="docutils literal">./</tt>).</dd>
             </dl>
             </dd>
@@ -5913,15 +5937,16 @@
             <p class="last">This driver is for compatibility with systems that don't provide
             working OpenGL drivers.</p>
             </div>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal">alpha</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-wayland-alpha</span></tt></dt>
             <dd>Use a buffer format that supports videos and images with alpha
             information</dd>
-            <dt><tt class="docutils literal">rgb565</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-wayland-rgb565</span></tt></dt>
             <dd>Use RGB565 as buffer format. This format is implemented on most
             platforms, especially on embedded where it is far more efficient then
             RGB8888.</dd>
-            <dt><tt class="docutils literal"><span class="pre">triple-buffering</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo-wayland-triple-buffering</span></tt></dt>
             <dd>Use 3 buffers instead of 2. This can lead to more fluid playback, but
             uses more memory.</dd>
             </dl>
@@ -5933,20 +5958,21 @@
             </dd>
             <dt><tt class="docutils literal">rpi</tt> (Raspberry Pi)</dt>
             <dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">display=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--rpi-display=&lt;number&gt;</span></tt></dt>
             <dd>Select the display number on which the video overlay should be shown
             (default: 0).</dd>
-            <dt><tt class="docutils literal"><span class="pre">layer=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--rpi-layer=&lt;number&gt;</span></tt></dt>
             <dd>Select the dispmanx layer on which the video overlay should be shown
             (default: -10). Note that mpv will also use the 2 layers above the
             selected layer, to handle the window background and OSD. Actual video
             rendering will happen on the layer above the selected layer.</dd>
-            <dt><tt class="docutils literal"><span class="pre">background=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--rpi-background=&lt;yes|no&gt;</span></tt></dt>
             <dd>Whether to render a black background behind the video (default: no).
             Normally it's better to kill the console framebuffer instead, which
             gives better performance.</dd>
-            <dt><tt class="docutils literal"><span class="pre">osd=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--rpi-osd=&lt;yes|no&gt;</span></tt></dt>
             <dd>Enabled by default. If disabled with <tt class="docutils literal">no</tt>, no OSD layer is created.
             This also means there will be no subtitles rendered.</dd>
             </dl>
@@ -5956,14 +5982,15 @@
             Should be used when one doesn't want to install full-blown graphical
             environment (e.g. no X). Does not support hardware acceleration (if you
             need this, check the <tt class="docutils literal"><span class="pre">drm-egl</span></tt> backend for <tt class="docutils literal">opengl</tt> VO).</p>
+            <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">connector=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--drm-connector=&lt;number&gt;</span></tt></dt>
             <dd>Select the connector to use (usually this is a monitor.) If set to -1,
             mpv renders the output on the first available connector. (default: -1)</dd>
-            <dt><tt class="docutils literal"><span class="pre">devpath=&lt;filename&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--drm-devpath=&lt;filename&gt;</span></tt></dt>
             <dd>Path to graphic card device.
             (default: /dev/dri/card0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">mode=&lt;number&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--drm-mode=&lt;number&gt;</span></tt></dt>
             <dd>Mode ID to use (resolution, bit depth and frame rate).
             (default: 0)</dd>
             </dl>
