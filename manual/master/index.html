@@ -259,14 +259,15 @@
             command line.</p>
             <p>The suboption parser can quote strings with <tt class="docutils literal">&quot;</tt> and <tt class="docutils literal"><span class="pre">[...]</span></tt>.
             Additionally, there is a special form of quoting with <tt class="docutils literal">%n%</tt> described below.</p>
-            <p>For example, the <tt class="docutils literal">opengl</tt> VO can take multiple options:</p>
+            <p>For example, assume the hypothetical <tt class="docutils literal">foo</tt> filter can take multiple options:</p>
             <blockquote>
-            <tt class="docutils literal">mpv test.mkv <span class="pre">--vo=opengl:scale=lanczos:icc-profile=file.icc,xv</span></tt></blockquote>
-            <p>This passes <tt class="docutils literal">scale=lanczos</tt> and <tt class="docutils literal"><span class="pre">icc-profile=file.icc</span></tt> to <tt class="docutils literal">opengl</tt>,
-            and also specifies <tt class="docutils literal">xv</tt> as fallback VO. If the icc-profile path contains
-            spaces or characters like <tt class="docutils literal">,</tt> or <tt class="docutils literal">:</tt>, you need to quote them:</p>
+            <tt class="docutils literal">mpv test.mkv <span class="pre">--vf=foo:option1=value1:option2:option3=value3,bar</span></tt></blockquote>
+            <p>This passes <tt class="docutils literal">option1</tt> and <tt class="docutils literal">option3</tt> to the <tt class="docutils literal">foo</tt> filter, with <tt class="docutils literal">option2</tt>
+            as flag (implicitly <tt class="docutils literal">option2=yes</tt>), and adds a <tt class="docutils literal">bar</tt> filter after that. If
+            an option contains spaces or characters like <tt class="docutils literal">,</tt> or <tt class="docutils literal">:</tt>, you need to quote
+            them:</p>
             <blockquote>
-            <tt class="docutils literal">mpv <span class="pre">'--vo=opengl:icc-profile=&quot;file</span> with <span class="pre">spaces.icc&quot;,xv'</span></tt></blockquote>
+            <tt class="docutils literal">mpv <span class="pre">'--vf=foo:option1=&quot;option</span> value with <span class="pre">spaces&quot;,bar'</span></tt></blockquote>
             <p>Shells may actually strip some quotes from the string passed to the commandline,
             so the example quotes the string twice, ensuring that mpv receives the <tt class="docutils literal">&quot;</tt>
             quotes.</p>
@@ -283,9 +284,9 @@
             </pre>
             <div class="admonition-examples admonition">
             <p class="first admonition-title">Examples</p>
-            <p><tt class="docutils literal">mpv <span class="pre">--ao=pcm:file=%10%C:test.wav</span> test.avi</tt></p>
+            <p><tt class="docutils literal">mpv <span class="pre">'--vf=foo:option1=%11%quoted</span> text' test.avi</tt></p>
             <p>Or in a script:</p>
-            <p class="last"><tt class="docutils literal">mpv <span class="pre">--ao=pcm:file=%`expr</span> length <span class="pre">&quot;$NAME&quot;`%&quot;$NAME&quot;</span> test.avi</tt></p>
+            <p class="last"><tt class="docutils literal">mpv <span class="pre">--vf=foo:option1=%`expr</span> length <span class="pre">&quot;$NAME&quot;`%&quot;$NAME&quot;</span> test.avi</tt></p>
             </div>
             <p>Suboptions passed to the client API are also subject to escaping. Using
             <tt class="docutils literal">mpv_set_option_string()</tt> is exactly like passing <tt class="docutils literal"><span class="pre">--name=data</span></tt> to the
@@ -293,8 +294,7 @@
             support passing values in a more structured way instead of flat strings, and
             can avoid the suboption parsing mess. For example, <tt class="docutils literal"><span class="pre">--vf</span></tt> supports
             <tt class="docutils literal">MPV_FORMAT_NODE</tt>, which lets you pass suboptions as a nested data structure
-            of maps and arrays. (<tt class="docutils literal"><span class="pre">--vo</span></tt> supports this in the same way, although this
-            fact is undocumented.)</p>
+            of maps and arrays.</p>
             </div>
             <div class="section" id="paths">
             <h2>Paths</h2>
@@ -547,7 +547,8 @@
             
             [slow]
             profile-desc=&quot;some profile name&quot;
-            vo=opengl:scale=ewa_lanczos:scale-radius=16
+            # reference a builtin profile
+            profile=opengl-hq
             
             [fast]
             vo=vdpau
@@ -566,10 +567,6 @@
             <div class="admonition-auto-profile-loading admonition">
             <p class="first admonition-title">Auto profile loading</p>
             <pre class="last literal-block">
-            [vo.vdpau]
-            # Use hardware decoding
-            hwdec=vdpau
-            
             [protocol.dvd]
             profile-desc=&quot;profile for dvd:// streams&quot;
             alang=en
@@ -577,9 +574,6 @@
             [extension.flv]
             profile-desc=&quot;profile for .flv files&quot;
             vf=flip
-            
-            [ao.alsa]
-            device=spdif
             </pre>
             </div>
             <p>The profile name follows the schema <tt class="docutils literal">type.name</tt>, where type can be <tt class="docutils literal">vo</tt>
@@ -1228,11 +1222,9 @@
             <div class="section" id="video">
             <h2>Video</h2>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--vo=&lt;driver1[:suboption1[=value]:...],driver2,...[,]&gt;</span></tt></dt>
-            <dd>Specify a priority list of video output drivers to be used. For
-            interactive use, one would normally specify a single one to use, but in
-            configuration files, specifying a list of fallbacks may make sense. See
-            <a class="reference internal" href="#video-output-drivers">VIDEO OUTPUT DRIVERS</a> for details and descriptions of available drivers.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo=&lt;driver&gt;</span></tt></dt>
+            <dd>Specify the video output backend to be used. See <a class="reference internal" href="#video-output-drivers">VIDEO OUTPUT DRIVERS</a> for
+            details and descriptions of available drivers.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
             <dd><p class="first">Specify a priority list of video decoders to be used, according to their
             family and name. See <tt class="docutils literal"><span class="pre">--ad</span></tt> for further details. Both of these options
@@ -1303,49 +1295,36 @@
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">no:</th><td class="field-body"><p class="first">always use software decoding (default)</p>
-            </td>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">always use software decoding (default)</td>
             </tr>
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body"><p class="first">see below</p>
-            </td>
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">see below</td>
             </tr>
-            <tr class="field"><th class="field-name">auto-copy:</th><td class="field-body"><p class="first">see below</p>
-            </td>
+            <tr class="field"><th class="field-name">auto-copy:</th><td class="field-body">see below</td>
             </tr>
-            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body"><p class="first">requires <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Linux only)</p>
-            </td>
+            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Linux only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body"><p class="first">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</p>
-            </td>
+            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body"><p class="first">copies video back into system RAM (Linux with Intel GPUs only)</p>
-            </td>
+            <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with Intel GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body"><p class="first">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X 10.8 and up only)</p>
-            </td>
+            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X 10.8 and up only)</td>
             </tr>
             <tr class="field"><th class="field-name" colspan="2">videotoolbox-copy:</th></tr>
-            <tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">copies video back into system RAM (OS X 10.8 and up only)</p>
-            </td>
+            <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (OS X 10.8 and up only)</td>
             </tr>
-            <tr class="field"><th class="field-name">dxva2:</th><td class="field-body"><p class="first">requires <tt class="docutils literal"><span class="pre">--vo=opengl:backend=angle</span></tt> or</p>
-            <p><tt class="docutils literal"><span class="pre">--vo=opengl:backend=dxinterop</span></tt> (Windows only)</p>
-            </td>
+            <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> with <tt class="docutils literal"><span class="pre">--opengl-backend=angle</span></tt> or
+            <tt class="docutils literal"><span class="pre">--opengl-backend=dxinterop</span></tt> (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body"><p class="first">copies video back to system RAM (Windows only)</p>
-            </td>
+            <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body"><p class="first">requires <tt class="docutils literal"><span class="pre">--vo=opengl:backend=angle</span></tt> (Windows only)</p>
-            </td>
+            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> with <tt class="docutils literal"><span class="pre">--opengl-backend=angle</span></tt>
+            (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body"><p class="first">copies video back to system RAM (Windows only)</p>
-            </td>
+            <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body"><p class="first">copies video back to system RAM (Android only)</p>
-            </td>
+            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">copies video back to system RAM (Android only)</td>
             </tr>
-            <tr class="field"><th class="field-name">rpi:</th><td class="field-body"><p class="first last">requires <tt class="docutils literal"><span class="pre">--vo=rpi</span></tt> (Raspberry Pi only - default if available)</p>
-            </td>
+            <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=rpi</span></tt> (Raspberry Pi only - default if available)</td>
             </tr>
             </tbody>
             </table>
@@ -1364,7 +1343,7 @@
             <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, requires Mesa 11 and most
             likely works with Intel GPUs only. It also requires the opengl EGL backend
             (automatically used if available). You can also try the old GLX backend by
-            forcing it with <tt class="docutils literal"><span class="pre">--vo=opengl:backend=x11</span></tt>, but the vaapi/GLX interop is
+            forcing it with <tt class="docutils literal"><span class="pre">--opengl-backend=x11</span></tt>, but the vaapi/GLX interop is
             said to be slower than <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>.</p>
             <p>Most video filters will not work with hardware decoding as they are
             primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
@@ -1577,8 +1556,7 @@
             disable deinterlacing just because the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> was not set.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--field-dominance=&lt;auto|top|bottom&gt;</span></tt></dt>
-            <dd><p class="first">Set first field for interlaced content. Useful for deinterlacers that
-            double the framerate: <tt class="docutils literal"><span class="pre">--vf=yadif=field</span></tt> and <tt class="docutils literal"><span class="pre">--vo=vdpau:deint</span></tt>.</p>
+            <dd><p class="first">Set first field for interlaced content.</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
@@ -1741,10 +1719,21 @@
             device name in quotes, followed by a description. The device name is what
             you have to pass to the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option. The list of audio devices
             can be retrieved by API by using the <tt class="docutils literal"><span class="pre">audio-device-list</span></tt> property.</p>
-            <p class="last">While the option normally takes one of the strings as indicated by the
+            <p>While the option normally takes one of the strings as indicated by the
             methods above, you can also force the device for most AOs by building it
             manually. For example <tt class="docutils literal">name/foobar</tt> forces the AO <tt class="docutils literal">name</tt> to use the
             device <tt class="docutils literal">foobar</tt>.</p>
+            <div class="admonition-example-for-alsa admonition last">
+            <p class="first admonition-title">Example for ALSA</p>
+            <p>MPlayer and mplayer2 required you to replace any ',' with '.' and
+            any ':' with '=' in the ALSA device name. For example, to use the
+            device named <tt class="docutils literal">dmix:default</tt>, you had to do:</p>
+            <blockquote>
+            <tt class="docutils literal"><span class="pre">-ao</span> alsa:device=dmix=default</tt></blockquote>
+            <p>In mpv you could instead use:</p>
+            <blockquote class="last">
+            <tt class="docutils literal"><span class="pre">--audio-device=alsa/dmix:default</span></tt></blockquote>
+            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-exclusive=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Enable exclusive output mode. In this mode, the system is usually locked
@@ -1761,11 +1750,9 @@
             Lua script) could let playback continue normally, and check the
             <tt class="docutils literal"><span class="pre">current-ao</span></tt> and <tt class="docutils literal"><span class="pre">audio-device-list</span></tt> properties to make high-level
             decisions about how to continue.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--ao=&lt;driver1[:suboption1[=value]:...],driver2,...[,]&gt;</span></tt></dt>
-            <dd>Specify a priority list of audio output drivers to be used. For
-            interactive use one would normally specify a single one to use, but in
-            configuration files specifying a list of fallbacks may make sense. See
-            <a class="reference internal" href="#audio-output-drivers">AUDIO OUTPUT DRIVERS</a> for details and descriptions of available drivers.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--ao=&lt;driver&gt;</span></tt></dt>
+            <dd>Specify the audio output drivers to be used. See <a class="reference internal" href="#audio-output-drivers">AUDIO OUTPUT DRIVERS</a> for
+            details and descriptions of available drivers.</dd>
             <dt><tt class="docutils literal"><span class="pre">--af=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
             <dd>Specify a list of audio filters to apply to the audio stream. See
             <a class="reference internal" href="#audio-filters">AUDIO FILTERS</a> for details and descriptions of the available filters.
@@ -4231,22 +4218,7 @@
             <h2>ALSA audio output options</h2>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--alsa-device=&lt;device&gt;</span></tt></dt>
-            <dd><p class="first">Sets the device name. For ac3 output via S/PDIF, use an &quot;iec958&quot; or
-            &quot;spdif&quot; device, unless you really know how to set it correctly.</p>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p>MPlayer and mplayer2 required you to replace any ',' with '.' and
-            any ':' with '=' in the ALSA device name. mpv does not do this anymore.
-            Instead, quote the device name:</p>
-            <blockquote>
-            <tt class="docutils literal"><span class="pre">--ao=alsa:device=[plug:surround50]</span></tt></blockquote>
-            <p>Note that the <tt class="docutils literal">[</tt> and <tt class="docutils literal">]</tt> simply quote the device name. With some
-            shells (like zsh), you have to quote the option string to prevent the
-            shell from interpreting the brackets instead of passing them to mpv.</p>
-            <p class="last">Actually, you should use the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option, instead of
-            setting the device directly.</p>
-            </div>
-            </dd>
+            <dd>Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt> (requires <tt class="docutils literal">alsa/</tt> prefix).</dd>
             <dt><tt class="docutils literal"><span class="pre">--alsa-resample=yes</span></tt></dt>
             <dd>Enable ALSA resampling plugin. (This is disabled by default, because
             some drivers report incorrect audio delay in some cases.)</dd>
@@ -5233,13 +5205,11 @@
             <p>Audio output drivers are interfaces to different audio output facilities. The
             syntax is:</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--ao=&lt;driver1[:suboption1[=value]:...],driver2,...[,]&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ao=&lt;driver1,driver2,...[,]&gt;</span></tt></dt>
             <dd>Specify a priority list of audio output drivers to be used.</dd>
             </dl>
             <p>If the list has a trailing ',', mpv will fall back on drivers not contained
-            in the list. Suboptions are optional and can mostly be omitted.</p>
-            <p>You can also set defaults for each driver. The defaults are applied before the
-            normal driver parameters.</p>
+            in the list.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--ao-defaults=&lt;driver1[:parameter1:parameter2:...],driver2,...&gt;</span></tt></dt>
             <dd><p class="first">Set defaults for each driver.</p>
@@ -5396,8 +5366,8 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal">null</tt></dt>
-            <dd><p class="first">Produces no audio output but maintains video playback speed. Use
-            <tt class="docutils literal"><span class="pre">--ao=null:untimed</span></tt> for benchmarking.</p>
+            <dd><p class="first">Produces no audio output but maintains video playback speed. You can use
+            <tt class="docutils literal"><span class="pre">--ao=null</span> <span class="pre">--ao-null-untimed</span></tt> for benchmarking.</p>
             <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--ao-null-untimed</span></tt></dt>
@@ -5503,13 +5473,11 @@
             <p>Video output drivers are interfaces to different video output facilities. The
             syntax is:</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--vo=&lt;driver1[:suboption1[=value]:...],driver2,...[,]&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vo=&lt;driver1,driver2,...[,]&gt;</span></tt></dt>
             <dd>Specify a priority list of video output drivers to be used.</dd>
             </dl>
-            <p>If the list has a trailing ',', mpv will fall back on drivers not contained
-            in the list. Suboptions are optional and can mostly be omitted.</p>
-            <p>You can also set defaults for each driver. The defaults are applied before the
-            normal driver parameters.</p>
+            <p>If the list has a trailing <tt class="docutils literal">,</tt>, mpv will fall back on drivers not contained
+            in the list.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--vo-defaults=&lt;driver1[:parameter1:parameter2:...],driver2,...&gt;</span></tt></dt>
             <dd><p class="first">Set defaults for each driver.</p>
@@ -5519,10 +5487,10 @@
             <div class="note">
             <p class="first admonition-title">Note</p>
             <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
-            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. All other drivers are
-            for compatibility or special purposes. By default, <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> is used,
-            but if that appears not to work, it fallback to other drivers (in the same
-            order as listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).</p>
+            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, which is the default. All
+            other drivers are for compatibility or special purposes. If the default
+            does not work, it will fallback to other drivers (in the same order as
+            listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).</p>
             </div>
             <p>Available video output drivers are:</p>
             <dl class="docutils">
