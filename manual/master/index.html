@@ -4483,8 +4483,11 @@
             <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
             <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
             <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
-            where <tt class="docutils literal">vfps</tt> is the speed-adjusted display FPS, and <tt class="docutils literal">disphz</tt> the
-            display refresh rate.</p>
+            where <tt class="docutils literal">vfps</tt> is the speed-adjusted video FPS, and <tt class="docutils literal">disphz</tt> the
+            display refresh rate. (The speed-adjusted video FPS is roughly equal to
+            the normal video FPS, but with slowdown and speedup applied. This matters
+            if you use <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> to make video run synchronously
+            to the display FPS, or if you change the <tt class="docutils literal">speed</tt> property.)</p>
             <p>The default is intended to almost always enable interpolation if the
             playback rate is even slightly different from the display refresh rate. But
             note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small deviations
