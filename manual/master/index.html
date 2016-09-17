@@ -8160,6 +8160,13 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">af-command</span> &quot;&lt;label&gt;&quot; &quot;&lt;cmd&gt;&quot; &quot;&lt;args&gt;&quot;</tt></dt>
             <dd>Same as <tt class="docutils literal"><span class="pre">vf-command</span></tt>, but for audio filters.</dd>
+            <dt><tt class="docutils literal"><span class="pre">apply-profile</span> &quot;&lt;name&gt;&quot;</tt></dt>
+            <dd><p class="first">Apply the contents of a named profile. This is like using <tt class="docutils literal">profile=name</tt>
+            in a config file, except you can map it to a key binding to change it at
+            runtime.</p>
+            <p class="last">There is no such thing as &quot;unapplying&quot; a profile - applying a profile
+            merely sets all option values listed within the profile.</p>
+            </dd>
             </dl>
             <p>Undocumented commands: <tt class="docutils literal"><span class="pre">tv-last-channel</span></tt> (TV/DVB only),
             <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
@@ -9308,13 +9315,17 @@
             caveats with some properties (due to historical reasons):</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">vid</tt>, <tt class="docutils literal">aid</tt>, <tt class="docutils literal">sid</tt></dt>
-            <dd>While playback is active, you can set existing tracks only. (The option
+            <dd><p class="first">While playback is active, you can set existing tracks only. (The option
             allows setting any track ID, and which tracks to enable is chosen at
-            loading time.)</dd>
+            loading time.)</p>
+            <p class="last">Option changes at runtime are affected by this as well.</p>
+            </dd>
             <dt><tt class="docutils literal">deinterlace</tt></dt>
-            <dd>While video is active, this behaves differently from the option. It will
+            <dd><p class="first">While video is active, this behaves differently from the option. It will
             never return the <tt class="docutils literal">auto</tt> value (but the state as observed by the video
-            chain). You cannot set <tt class="docutils literal">auto</tt> either.</dd>
+            chain). You cannot set <tt class="docutils literal">auto</tt> either.</p>
+            <p class="last">Option changes at runtime are affected by this as well.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt></dt>
             <dd>While video is active, always returns the effective aspect ratio.</dd>
             <dt><tt class="docutils literal">brightness</tt> (and other color options)</dt>
@@ -9323,6 +9334,32 @@
             <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
             <dd>If a VO is created, this will return either the actual display FPS, or
             an invalid value, instead of the option value.</dd>
+            <dt><tt class="docutils literal">vf</tt>, <tt class="docutils literal">af</tt></dt>
+            <dd><p class="first">If you set the properties during playback, and the filter chain fails to
+            reinitialize, the new value will be rejected. Setting the option or
+            setting the property outside of playback will always succeed/fail in the
+            same way. Also, there are no <tt class="docutils literal"><span class="pre">vf-add</span></tt> etc. properties, but you can use
+            the <tt class="docutils literal">vf</tt>/<tt class="docutils literal">af</tt> group of commands to achieve the same.</p>
+            <p class="last">Option changes at runtime are affected by this as well.</p>
+            </dd>
+            <dt><tt class="docutils literal">chapter</tt></dt>
+            <dd><p class="first">While playback is <em>not</em> active, the property behaves like the option, and
+            you can set a chapter range. While playback is active, you can set only
+            the current chapter (to which the player will seek immediately).</p>
+            <p class="last">Option changes at runtime are affected by this as well.</p>
+            </dd>
+            <dt><tt class="docutils literal">volume</tt></dt>
+            <dd>When set as option, the maximum (set by <tt class="docutils literal"><span class="pre">--volume-max</span></tt>) is not checked,
+            while when set as property, the maximum is enforced.</dd>
+            <dt><tt class="docutils literal">playlist</tt></dt>
+            <dd>The property is read-only and returns the current internal playlist. The
+            option is for loading playlist during command line parsing. For client API
+            uses, you should use the <tt class="docutils literal">loadlist</tt> command instead.</dd>
+            <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt></dt>
+            <dd>The property refuses setting out of range values, restarts playback
+            immediately when writing to it, and does not know the <tt class="docutils literal">no</tt> value (which
+            the option uses to indicate the default state, that is resuming a file
+            on the playlist and jumping to that instead of entry 0).</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-file</span></tt>, <tt class="docutils literal"><span class="pre">sub-file</span></tt>, <tt class="docutils literal"><span class="pre">external-file</span></tt></dt>
             <dd><p class="first">These options/properties are actually lists of filenames. To make the
             command-line interface easier, each <tt class="docutils literal"><span class="pre">--audio-file=...</span></tt> option appends
