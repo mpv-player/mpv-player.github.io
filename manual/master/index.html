@@ -6330,13 +6330,20 @@
             subwoofer for example).</dd>
             </dl>
             </div>
-            <div class="note last">
+            <div class="note">
             <p class="first admonition-title">Note</p>
             <p class="last">If you just want to force remixing to a certain output channel layout,
             it is easier to use the <tt class="docutils literal">format</tt> filter. For example,
             <tt class="docutils literal">mpv <span class="pre">'--af=format=channels=5.1'</span> <span class="pre">'--audio-channels=5.1'</span></tt> would always force
             remixing audio to 5.1 and output it like this.</p>
             </div>
+            <p>This filter supports the following <tt class="docutils literal"><span class="pre">af-command</span></tt> commands:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">set-matrix</span></tt></dt>
+            <dd>Set the <tt class="docutils literal">&lt;matrix&gt;</tt> argument dynamically. This can be used to change
+            the mixing matrix at runtime, without reinitializing the entire filter
+            chain.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">drc[=method:target]</span></tt></dt>
             <dd><p class="first">Applies dynamic range compression. This maximizes the volume by compressing
