@@ -6443,8 +6443,13 @@
             <dt><tt class="docutils literal">rubberband</tt></dt>
             <dd><p class="first">High quality pitch correction with librubberband. This can be used in place
             of <tt class="docutils literal">scaletempo</tt>, and will be used to adjust audio pitch when playing
-            at speed different from normal.</p>
-            <p class="last">This filter has a number of sub-options. You can list them with
+            at speed different from normal. It can also be used to adjust audio pitch
+            without changing playback speed.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">&lt;pitch-scale&gt;</span></tt></dt>
+            <dd>Sets the pitch scaling factor. Frequencies are multiplied by this value.</dd>
+            </dl>
+            <p>This filter has a number of additional sub-options. You can list them with
             <tt class="docutils literal">mpv <span class="pre">--af=rubberband=help</span></tt>. This will also show the default values
             for each option. The options are not documented here, because they are
             merely passed to librubberband. Look at the librubberband documentation
@@ -6452,6 +6457,13 @@
             <a class="reference external" href="http://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html">http://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html</a>
             (The mapping of the mpv rubberband filter sub-option names and values to
             those of librubberband follows a simple pattern: <tt class="docutils literal">&quot;Option&quot; + Name + Value</tt>.)</p>
+            <p>This filter supports the following <tt class="docutils literal"><span class="pre">af-command</span></tt> commands:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">set-pitch</span></tt></dt>
+            <dd>Set the <tt class="docutils literal"><span class="pre">&lt;pitch-scale&gt;</span></tt> argument dynamically. This can be used to
+            change the playback pitch at runtime. Note that speed is controlled
+            using the standard <tt class="docutils literal">speed</tt> property, not <tt class="docutils literal"><span class="pre">af-command</span></tt>.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal">lavfi=graph</tt></dt>
             <dd><p class="first">Filter audio using FFmpeg's libavfilter.</p>
