@@ -10279,19 +10279,24 @@
             are useful only in special situations.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">mp.suspend()</tt></dt>
-            <dd><p class="first">Suspend the mpv main loop. There is a long-winded explanation of this in
+            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
+            <p>Suspend the mpv main loop. There is a long-winded explanation of this in
             the C API function <tt class="docutils literal">mpv_suspend()</tt>. In short, this prevents the player
             from displaying the next video frame, so that you don't get blocked when
             trying to access the player.</p>
             <p class="last">Before mpv 0.17.0, this was automatically called by the event handler.</p>
             </dd>
             <dt><tt class="docutils literal">mp.resume()</tt></dt>
-            <dd>Undo one <tt class="docutils literal">mp.suspend()</tt> call. <tt class="docutils literal">mp.suspend()</tt> increments an internal
+            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
+            <p class="last">Undo one <tt class="docutils literal">mp.suspend()</tt> call. <tt class="docutils literal">mp.suspend()</tt> increments an internal
             counter, and <tt class="docutils literal">mp.resume()</tt> decrements it. When 0 is reached, the player
-            is actually resumed.</dd>
+            is actually resumed.</p>
+            </dd>
             <dt><tt class="docutils literal">mp.resume_all()</tt></dt>
-            <dd>This resets the internal suspend counter and resumes the player. (It's
-            like calling <tt class="docutils literal">mp.resume()</tt> until the player is actually resumed.)</dd>
+            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
+            <p class="last">This resets the internal suspend counter and resumes the player. (It's
+            like calling <tt class="docutils literal">mp.resume()</tt> until the player is actually resumed.)</p>
+            </dd>
             <dt><tt class="docutils literal">mp.get_wakeup_pipe()</tt></dt>
             <dd>Calls <tt class="docutils literal">mpv_get_wakeup_pipe()</tt> and returns the read end of the wakeup
             pipe. (See <tt class="docutils literal">client.h</tt> for details.)</dd>
@@ -10458,7 +10463,7 @@
             </dl>
             </blockquote>
             <p>The function returns a table as result with the following entries:</p>
-            <blockquote>
+            <blockquote class="last">
             <dl class="docutils">
             <dt><tt class="docutils literal">status</tt></dt>
             <dd>The raw exit status of the process. It will be negative on error.</dd>
@@ -10476,7 +10481,18 @@
             of <tt class="docutils literal">cancellable</tt> being set to <tt class="docutils literal">true</tt>.</dd>
             </dl>
             </blockquote>
-            <p class="last">In all cases, <tt class="docutils literal">mp.resume_all()</tt> is implicitly called.</p>
+            </dd>
+            <dt><tt class="docutils literal">utils.subprocess_detached(t)</tt></dt>
+            <dd><p class="first">Runs an external process and detaches it from mpv's control.</p>
+            <p>The parameter <tt class="docutils literal">t</tt> is a table. The function reads the following entries:</p>
+            <blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">args</tt></dt>
+            <dd>Array of strings of the same semantics as the <tt class="docutils literal">args</tt> used in the
+            <tt class="docutils literal">subprocess</tt> function.</dd>
+            </dl>
+            </blockquote>
+            <p class="last">The function returns <tt class="docutils literal">nil</tt>.</p>
             </dd>
             <dt><tt class="docutils literal">utils.parse_json(str [, trail])</tt></dt>
             <dd><p class="first">Parses the given string argument as JSON, and returns it as a Lua table. On
