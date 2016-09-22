@@ -1111,6 +1111,14 @@
             <p class="last">This behavior is disabled by default, but is always available when quitting
             the player with Shift+Q.</p>
             </dd>
+            </dl>
+            <p><tt class="docutils literal"><span class="pre">--watch-later-directory=&lt;path&gt;</span></tt></p>
+            <blockquote>
+            <p>The directory in which to store the &quot;watch later&quot; temporary files.</p>
+            <p>The default is a subdirectory named &quot;watch_later&quot; underneath the
+            config directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).</p>
+            </blockquote>
+            <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--dump-stats=&lt;filename&gt;</span></tt></dt>
             <dd><p class="first">Write certain statistics to the given file. The file is truncated on
             opening. The file will contain raw samples, each with a timestamp. To
@@ -1398,13 +1406,16 @@
             In addition to driver-specific behavior, global system settings might
             affect this additionally. This can give incorrect results even with
             completely ordinary video sources.</p>
-            <p><tt class="docutils literal">cuda</tt> is usually safe. Interlaced content will be weaved by the
-            decoder, and it may not be possible for a deinterlacing filter to
-            do anything useful with this. 10bit HEVC is currently not
-            supported but maybe we can add support after CUDA 8 is released (and
-            it will be rounded down to 8 bits).</p>
-            <p><tt class="docutils literal"><span class="pre">cuda-copy</span></tt> has the same limitations as <tt class="docutils literal">cuda</tt> - particularly
-            its handling of deinterlacing.</p>
+            <p><tt class="docutils literal">cuda</tt> is usually safe. Interlaced content can be deinterlaced by
+            the decoder, which is useful as there is no other deinterlacing
+            mechanism in the opengl output path. To use this deinterlacing you
+            must pass the option: <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>. Pass
+            <tt class="docutils literal">weave</tt> to not attempt any deinterlacing.
+            10bit HEVC is currently not supported but maybe we can add support
+            after CUDA 8 is released (and it will be rounded down to 8 bits).</p>
+            <p><tt class="docutils literal"><span class="pre">cuda-copy</span></tt> has the same behaviour as <tt class="docutils literal">cuda</tt> - including the ability
+            to deinterlace inside the decoder. However, traditional deinterlacing
+            filters can be used in this case.</p>
             <p>All other methods, in particular the copy-back methods (like
             <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> etc.) are either fully safe, or not worse than software
             decoding.</p>
