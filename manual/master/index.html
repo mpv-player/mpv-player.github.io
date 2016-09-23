@@ -728,10 +728,13 @@
             or file associations provided by desktop environments)</li>
             <li>if started from explorer.exe on Windows (technically, if it was started on
             Windows, and all of the stdout/stderr/stdin handles are unset)</li>
-            <li>manually adding <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt> to the command line</li>
+            <li>started out of the bundle on OSX</li>
+            <li>you can add <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt> to the command line, but it will behave
+            subtly differently (since mpv 0.22.0)</li>
             </ul>
-            <p>This mode implicitly adds <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt> to the command line, with
-            the <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile being predefined with the following contents:</p>
+            <p>This mode implicitly performs the same action as <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt>, but
+            roughly before config files are loaded and the command line is applied. The
+            <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile is predefined with the following contents:</p>
             <pre class="literal-block">
             [pseudo-gui]
             terminal=no
@@ -739,10 +742,13 @@
             idle=once
             screenshot-directory=~~desktop/
             </pre>
-            <p>This follows the mpv config file format. To customize pseudo-GUI mode, you can
-            put your own <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile into your <tt class="docutils literal">mpv.conf</tt>. This profile will
-            enhance the default profile, rather than overwrite it.</p>
-            <p>The profile always overrides other settings in <tt class="docutils literal">mpv.conf</tt>.</p>
+            <div class="warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">Currently, you can extend the <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile in the config file the
+            normal way. This is deprecated. In future mpv releases, the behavior might
+            change, and not apply your additional settings, and/or use a different
+            profile name.</p>
+            </div>
             </div>
             <div class="section" id="options">
             <h1>OPTIONS</h1>
@@ -1230,6 +1236,11 @@
             <tt class="docutils literal"><span class="pre">--ytdl-raw-options=force-ipv6=</span></tt></p>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--player-operation-mode=&lt;cplayer|pseudo-gui&gt;</span></tt></dt>
+            <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
+            options are changed. This option should not normally be used directly, but
+            only by mpv internally, or mpv-provided scripts, config files, or .desktop
+            files.</dd>
             </dl>
             </div>
             <div class="section" id="video">
