@@ -729,18 +729,22 @@
             <li>if started from explorer.exe on Windows (technically, if it was started on
             Windows, and all of the stdout/stderr/stdin handles are unset)</li>
             <li>started out of the bundle on OSX</li>
-            <li>you can add <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt> to the command line, but it will behave
-            subtly differently (since mpv 0.22.0)</li>
+            <li>if you manually use <tt class="docutils literal"><span class="pre">--player-operation-mode=pseudo-gui</span></tt> on the command line</li>
             </ul>
-            <p>This mode implicitly performs the same action as <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt>, but
-            roughly before config files are loaded and the command line is applied. The
-            <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile is predefined with the following contents:</p>
+            <p>This mode applies options from the builtin profile <tt class="docutils literal"><span class="pre">builtin-pseudo-gui</span></tt>, but
+            only if these haven't been set in the user's config file or on the command line.
+            Also, for compatibility with the old pseudo-gui behavior, the options in the
+            <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile are applied unconditionally. In addition, the profile
+            makes sure to enable the pseudo-GUI mode, so that <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt>
+            works like in older mpv releases. The profiles are currently defined as follows:</p>
             <pre class="literal-block">
-            [pseudo-gui]
+            [builtin-pseudo-gui]
             terminal=no
             force-window=yes
             idle=once
             screenshot-directory=~~desktop/
+            [pseudo-gui]
+            player-operation-mode=pseudo-gui
             </pre>
             <div class="warning">
             <p class="first admonition-title">Warning</p>
