@@ -1356,6 +1356,8 @@
             </tr>
             <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Raspberry Pi only - default if available)</td>
             </tr>
+            <tr class="field"><th class="field-name">rpi-copy:</th><td class="field-body">copies video back to system RAM (Raspberry Pi only)</td>
+            </tr>
             <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
@@ -1431,6 +1433,8 @@
             <p><tt class="docutils literal"><span class="pre">cuda-copy</span></tt> has the same behaviour as <tt class="docutils literal">cuda</tt> - including the ability
             to deinterlace inside the decoder. However, traditional deinterlacing
             filters can be used in this case.</p>
+            <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
+            <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>.</p>
             <p>All other methods, in particular the copy-back methods (like
             <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> etc.) are either fully safe, or not worse than software
             decoding.</p>
