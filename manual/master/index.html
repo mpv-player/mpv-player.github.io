@@ -161,10 +161,10 @@
             <dt>u</dt>
             <dd>Switch between applying no style overrides to SSA/ASS subtitles, and
             overriding them almost completely with the normal subtitle style. See
-            <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt> for more info.</dd>
+            <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt> for more info.</dd>
             <dt>V</dt>
             <dd>Toggle subtitle VSFilter aspect compatibility mode. See
-            <tt class="docutils literal"><span class="pre">--ass-vsfilter-aspect-compat</span></tt> for more info.</dd>
+            <tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-aspect-compat</span></tt> for more info.</dd>
             <dt>r and t</dt>
             <dd>Move subtitles up/down.</dd>
             <dt>s</dt>
@@ -2148,10 +2148,14 @@
             <h2>Subtitles</h2>
             <div class="note">
             <p class="first admonition-title">Note</p>
-            <p class="last">Changing styling and position does not work with all subtitles. Image-based
+            <p>Changing styling and position does not work with all subtitles. Image-based
             subtitles (DVD, Bluray/PGS, DVB) cannot changed for fundamental reasons.
             Subtitles in ASS format are normally not changed intentionally, but
-            overriding them can be controlled with <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt>.</p>
+            overriding them can be controlled with <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt>.</p>
+            <p class="last">Previously some options working on text subtitles were called
+            <tt class="docutils literal"><span class="pre">--sub-text-*</span></tt>, they are now named <tt class="docutils literal"><span class="pre">--sub-*</span></tt>, and those specifically
+            for ASS have been renamed from <tt class="docutils literal"><span class="pre">--ass-*</span></tt> to <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt>.
+            They are now all in this section.</p>
             </div>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--sub-demuxer=&lt;[+]name&gt;</span></tt></dt>
@@ -2197,7 +2201,7 @@
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">This affects ASS subtitles as well, and may lead to incorrect subtitle
-            rendering. Use with care, or use <tt class="docutils literal"><span class="pre">--sub-text-font-size</span></tt> instead.</p>
+            rendering. Use with care, or use <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> instead.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-scale-by-window=&lt;yes|no&gt;</span></tt></dt>
@@ -2215,10 +2219,10 @@
             option <tt class="docutils literal"><span class="pre">--sub-scale-by-window</span></tt> is that <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> still
             scales with the approximate window size, while the other option disables
             this scaling.</p>
-            <p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt> is
+            <p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt> is
             set high enough).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Like <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt>, but affects subtitles in ASS format only.
             Like <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>, this can break ASS subtitles.</p>
             <p class="last">Default: no.</p>
@@ -2232,7 +2236,7 @@
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">This affects ASS subtitles as well, and may lead to incorrect subtitle
-            rendering. Use with care, or use <tt class="docutils literal"><span class="pre">--sub-text-margin-y</span></tt> instead.</p>
+            rendering. Use with care, or use <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> instead.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-speed=&lt;0.1-10.0&gt;</span></tt></dt>
@@ -2245,13 +2249,13 @@
             loaded assuming a framerate of 23.976 at 25 FPS.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-force-style=&lt;[Style.]Param=Value[,...]&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-force-style=&lt;[Style.]Param=Value[,...]&gt;</span></tt></dt>
             <dd><p class="first">Override some style or script info parameters.</p>
             <div class="admonition-examples admonition">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--ass-force-style=FontName=Arial,Default.Bold=1</span></tt></li>
-            <li><tt class="docutils literal"><span class="pre">--ass-force-style=PlayResY=768</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--sub-ass-force-style=FontName=Arial,Default.Bold=1</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--sub-ass-force-style=PlayResY=768</span></tt></li>
             </ul>
             </div>
             <div class="note last">
@@ -2259,7 +2263,7 @@
             <p class="last">Using this option may lead to incorrect subtitle rendering.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-hinting=&lt;none|light|normal|native&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-hinting=&lt;none|light|normal|native&gt;</span></tt></dt>
             <dd><p class="first">Set font hinting type. &lt;type&gt; can be:</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -2283,9 +2287,9 @@
             to not use this option, unless really needed.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-line-spacing=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-line-spacing=&lt;value&gt;</span></tt></dt>
             <dd>Set line spacing value for SSA/ASS renderer.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-shaper=&lt;simple|complex&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-shaper=&lt;simple|complex&gt;</span></tt></dt>
             <dd><p class="first">Set the text layout engine used by libass.</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -2300,7 +2304,7 @@
             <p class="last"><tt class="docutils literal">complex</tt> is the default. If libass hasn't been compiled against HarfBuzz,
             libass silently reverts to <tt class="docutils literal">simple</tt>.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-styles=&lt;filename&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-styles=&lt;filename&gt;</span></tt></dt>
             <dd><p class="first">Load all SSA/ASS styles found in the specified file and use them for
             rendering text subtitles. The syntax of the file is exactly like the <tt class="docutils literal">[V4
             Styles]</tt> / <tt class="docutils literal">[V4+ Styles]</tt> section of SSA/ASS.</p>
@@ -2309,13 +2313,13 @@
             <p class="last">Using this option may lead to incorrect subtitle rendering.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-style-override=&lt;yes|no|force|signfs|strip&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-style-override=&lt;yes|no|force|signfs|strip&gt;</span></tt></dt>
             <dd><p class="first">Control whether user style overrides should be applied.</p>
             <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Apply all the <tt class="docutils literal"><span class="pre">--ass-*</span></tt> style override options. Changing the default
+            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Apply all the <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt> style override options. Changing the default
             for any of these options can lead to incorrect subtitle rendering
             (default).</td>
             </tr>
@@ -2323,7 +2327,7 @@
             </tr>
             <tr class="field"><th class="field-name">no:</th><td class="field-body">Render subtitles as forced by subtitle scripts.</td>
             </tr>
-            <tr class="field"><th class="field-name">force:</th><td class="field-body">Try to force the font style as defined by the <tt class="docutils literal"><span class="pre">--sub-text-*</span></tt>
+            <tr class="field"><th class="field-name">force:</th><td class="field-body">Try to force the font style as defined by the <tt class="docutils literal"><span class="pre">--sub-*</span></tt>
             options. Can break rendering easily.</td>
             </tr>
             <tr class="field"><th class="field-name">strip:</th><td class="field-body">Radically strip all ASS tags and styles from the subtitle. This
@@ -2332,7 +2336,7 @@
             </tbody>
             </table>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-force-margins</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-force-margins</span></tt></dt>
             <dd><p class="first">Enables placing toptitles and subtitles in black borders when they are
             available, if the subtitles are in the ASS format.</p>
             <p class="last">Default: no.</p>
@@ -2340,12 +2344,12 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt></dt>
             <dd><p class="first">Enables placing toptitles and subtitles in black borders when they are
             available, if the subtitles are in a plain text format  (or ASS if
-            <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt> is set high enough).</p>
+            <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt> is set high enough).</p>
             <p>Default: yes.</p>
-            <p class="last">Renamed from <tt class="docutils literal"><span class="pre">--ass-use-margins</span></tt>. To place ASS subtitles in the borders
-            too (like the old option did), also add <tt class="docutils literal"><span class="pre">--ass-force-margins</span></tt>.</p>
+            <p class="last">Renamed from <tt class="docutils literal"><span class="pre">--sub-ass-use-margins</span></tt>. To place ASS subtitles in the borders
+            too (like the old option did), also add <tt class="docutils literal"><span class="pre">--sub-ass-force-margins</span></tt>.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-vsfilter-aspect-compat=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-aspect-compat=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Stretch SSA/ASS subtitles when playing anamorphic videos for compatibility
             with traditional VSFilter behavior. This switch has no effect when the
             video is stored with square pixels.</p>
@@ -2360,7 +2364,7 @@
             behavior (undesirable but expected by many existing scripts).</p>
             <p class="last">Enabled by default.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-vsfilter-blur-compat=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-blur-compat=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Scale <tt class="docutils literal">\blur</tt> tags by video resolution instead of script resolution
             (enabled by default). This is bug in VSFilter, which according to some,
             can't be fixed anymore in the name of compatibility.</p>
@@ -2368,7 +2372,7 @@
             offset scale factor, not what the video filter chain or the video output
             use.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ass-vsfilter-color-compat=&lt;basic|full|force-601|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-color-compat=&lt;basic|full|force-601|no&gt;</span></tt></dt>
             <dd><p class="first">Mangle colors like (xy-)vsfilter do (default: basic). Historically, VSFilter
             was not color space aware. This was no problem as long as the color space
             used for SD video (BT.601) was used. But when everything switched to HD
@@ -2398,7 +2402,7 @@
             </table>
             <p class="last">Choosing anything other than <tt class="docutils literal">no</tt> will make the subtitle color depend on
             the video color space, and it's for example in theory not possible to reuse
-            a subtitle script with another video file. The <tt class="docutils literal"><span class="pre">--ass-style-override</span></tt>
+            a subtitle script with another video file. The <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt>
             option doesn't affect how this option is interpreted.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--stretch-dvd-subs=&lt;yes|no&gt;</span></tt></dt>
@@ -2426,14 +2430,14 @@
             <dd><p class="first">Render ASS subtitles natively (enabled by default).</p>
             <div class="note">
             <p class="first admonition-title">Note</p>
-            <p class="last">This has been deprecated by <tt class="docutils literal"><span class="pre">--ass-style-override=strip</span></tt>. You also
+            <p class="last">This has been deprecated by <tt class="docutils literal"><span class="pre">--sub-ass-style-override=strip</span></tt>. You also
             may need <tt class="docutils literal"><span class="pre">--embeddedfonts=no</span></tt> to get the same behavior. Also,
-            using <tt class="docutils literal"><span class="pre">--ass-style-override=force</span></tt> should give better results
+            using <tt class="docutils literal"><span class="pre">--sub-ass-style-override=force</span></tt> should give better results
             without breaking subtitles too much.</p>
             </div>
             <p>If <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> is specified, all tags and style declarations are
             stripped and ignored on display. The subtitle renderer uses the font style
-            as specified by the <tt class="docutils literal"><span class="pre">--sub-text-</span></tt> options instead.</p>
+            as specified by the <tt class="docutils literal"><span class="pre">--sub-</span></tt> options instead.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
             <p class="last">Using <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> may lead to incorrect or completely broken
@@ -2581,6 +2585,123 @@
             <dt><tt class="docutils literal"><span class="pre">--teletext-page=&lt;1-999&gt;</span></tt></dt>
             <dd>This works for <tt class="docutils literal">dvb_teletext</tt> subtitle streams, and if FFmpeg has been
             compiled with support for it.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-font=&lt;name&gt;</span></tt></dt>
+            <dd><p class="first">Specify font to use for subtitles that do not themselves
+            specify a particular font. The default is <tt class="docutils literal"><span class="pre">sans-serif</span></tt>.</p>
+            <div class="admonition-examples admonition">
+            <p class="first admonition-title">Examples</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--sub-font='Bitstream</span> Vera Sans'</tt></li>
+            <li><tt class="docutils literal"><span class="pre">--sub-font='MS</span> Comic Sans'</tt></li>
+            </ul>
+            </div>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p>The <tt class="docutils literal"><span class="pre">--sub-font</span></tt> option (and many other style related <tt class="docutils literal"><span class="pre">--sub-</span></tt>
+            options) are ignored when ASS-subtitles are rendered, unless the
+            <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> option is specified.</p>
+            <p class="last">This used to support fontconfig patterns. Starting with libass 0.13.0,
+            this stopped working.</p>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-font-size=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Specify the sub font size. The unit is the size in scaled pixels at a
+            window height of 720. The actual pixel size is scaled with the window
+            height: if the window height is larger or smaller than 720, the actual size
+            of the text increases or decreases as well.</p>
+            <p class="last">Default: 55.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-back-color=&lt;color&gt;</span></tt></dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text background.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-blur=&lt;0..20.0&gt;</span></tt></dt>
+            <dd>Gaussian blur factor. 0 means no blur applied (default).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-bold=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Format text on bold.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-italic=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Format text on italic.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-border-color=&lt;color&gt;</span></tt></dt>
+            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the sub font border.</p>
+            <div class="note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">ignored when <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt> is
+            specified (or more exactly: when that option is not set to completely
+            transparent).</p>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-border-size=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Size of the sub font border in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
+            for details). A value of 0 disables borders.</p>
+            <p class="last">Default: 3.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-color=&lt;color&gt;</span></tt></dt>
+            <dd><p class="first">Specify the color used for unstyled text subtitles.</p>
+            <p>The color is specified in the form <tt class="docutils literal">r/g/b</tt>, where each color component
+            is specified as number in the range 0.0 to 1.0. It's also possible to
+            specify the transparency by using <tt class="docutils literal">r/g/b/a</tt>, where the alpha value 0
+            means fully transparent, and 1.0 means opaque. If the alpha component is
+            not given, the color is 100% opaque.</p>
+            <p>Passing a single number to the option sets the sub to gray, and the form
+            <tt class="docutils literal">gray/a</tt> lets you specify alpha additionally.</p>
+            <div class="admonition-examples admonition">
+            <p class="first admonition-title">Examples</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--sub-color=1.0/0.0/0.0</span></tt> set sub to opaque red</li>
+            <li><tt class="docutils literal"><span class="pre">--sub-color=1.0/0.0/0.0/0.75</span></tt> set sub to opaque red with 75% alpha</li>
+            <li><tt class="docutils literal"><span class="pre">--sub-color=0.5/0.75</span></tt> set sub to 50% gray with 75% alpha</li>
+            </ul>
+            </div>
+            <p>Alternatively, the color can be specified as a RGB hex triplet in the form
+            <tt class="docutils literal">#RRGGBB</tt>, where each 2-digit group expresses a color value in the
+            range 0 (<tt class="docutils literal">00</tt>) to 255 (<tt class="docutils literal">FF</tt>). For example, <tt class="docutils literal">#FF0000</tt> is red.
+            This is similar to web colors. Alpha is given with <tt class="docutils literal">#AARRGGBB</tt>.</p>
+            <div class="admonition-examples admonition last">
+            <p class="first admonition-title">Examples</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--sub-color='#FF0000'</span></tt> set sub to opaque red</li>
+            <li><tt class="docutils literal"><span class="pre">--sub-color='#C0808080'</span></tt> set sub to 50% gray with 75% alpha</li>
+            </ul>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-margin-x=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Left and right screen margin for the subs in scaled pixels (see
+            <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details).</p>
+            <p>This option specifies the distance of the sub to the left, as well as at
+            which distance from the right border long sub text will be broken.</p>
+            <p class="last">Default: 25.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-margin-y=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Top and bottom screen margin for the subs in scaled pixels (see
+            <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details).</p>
+            <p>This option specifies the vertical margins of unstyled text subtitles.
+            If you just want to raise the vertical subtitle position, use <tt class="docutils literal"><span class="pre">--sub-pos</span></tt>.</p>
+            <p class="last">Default: 22.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-align-x=&lt;left|center|right&gt;</span></tt></dt>
+            <dd><p class="first">Control to which corner of the screen text subtitles should be
+            aligned to (default: <tt class="docutils literal">center</tt>).</p>
+            <p class="last">Never applied to ASS subtitles, except in <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> mode. Likewise,
+            this does not apply to image subtitles.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-align-y=&lt;top|center|bottom&gt;</span></tt></dt>
+            <dd>Vertical position (default: <tt class="docutils literal">bottom</tt>).
+            Details see <tt class="docutils literal"><span class="pre">--sub-align-x</span></tt>.</dd>
+            <dt><a href="#id1"><span class="problematic" id="id2">``</span></a>--sub-shadow-color=&lt;color&gt;</dt>
+            <dd><div class="first system-message" id="id1">
+            <p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">mpv/DOCS/man/options.rst</tt>, line 1973); <em><a href="#id2">backlink</a></em></p>
+            Inline literal start-string without end-string.</div>
+            <p class="last">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text shadow.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-shadow-offset=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Displacement of the sub text shadow in scaled pixels (see
+            <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details). A value of 0 disables shadows.</p>
+            <p class="last">Default: 0.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-spacing=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Horizontal sub font spacing in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
+            for details). This value is added to the normal letter spacing. Negative
+            values are allowed.</p>
+            <p class="last">Default: 0.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="window">
@@ -3389,30 +3510,18 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-duration=&lt;time&gt;</span></tt></dt>
             <dd>Set the duration of the OSD messages in ms (default: 1000).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-font=&lt;name&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-font=&lt;name&gt;</span></tt></dt>
-            <dd><p class="first">Specify font to use for OSD and for subtitles that do not themselves
-            specify a particular font. The default is <tt class="docutils literal"><span class="pre">sans-serif</span></tt>.</p>
-            <div class="admonition-examples admonition">
+            <dt><tt class="docutils literal"><span class="pre">--osd-font=&lt;name&gt;</span></tt></dt>
+            <dd><p class="first">Specify font to use for OSD. The default is <tt class="docutils literal"><span class="pre">sans-serif</span></tt>.</p>
+            <div class="admonition-examples admonition last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
             <li><tt class="docutils literal"><span class="pre">--osd-font='Bitstream</span> Vera Sans'</tt></li>
             <li><tt class="docutils literal"><span class="pre">--osd-font='MS</span> Comic Sans'</tt></li>
             </ul>
             </div>
-            <div class="note last">
-            <p class="first admonition-title">Note</p>
-            <p>The <tt class="docutils literal"><span class="pre">--sub-text-font</span></tt> option (and most other <tt class="docutils literal"><span class="pre">--sub-text-</span></tt>
-            options) are ignored when ASS-subtitles are rendered, unless the
-            <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> option is specified.</p>
-            <p class="last">This used to support fontconfig patterns. Starting with libass 0.13.0,
-            this stopped working.</p>
-            </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-font-size=&lt;size&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-font-size=&lt;size&gt;</span></tt></dt>
-            <dd><p class="first">Specify the OSD/sub font size. The unit is the size in scaled pixels at a
-            window height of 720. The actual pixel size is scaled with the window
-            height: if the window height is larger or smaller than 720, the actual size
-            of the text increases or decreases as well.</p>
+            <dt><tt class="docutils literal"><span class="pre">--osd-font-size=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Specify the OSD font size. See <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details.</p>
             <p class="last">Default: 55.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-msg1=&lt;string&gt;</span></tt></dt>
@@ -3458,57 +3567,31 @@
             A value of 50 means the bar is half the screen wide.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-bar-h=&lt;0.1-50&gt;</span></tt></dt>
             <dd>Height of the OSD bar, in percentage of the screen height (default: 3.125).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-back-color=&lt;color&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-back-color=&lt;color&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for OSD/sub text background.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-blur=&lt;0..20.0&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--osd-back-color=&lt;color&gt;</span></tt></dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for OSD text background.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt></dt>
             <dd>Gaussian blur factor. 0 means no blur applied (default).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-bold=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-bold=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--osd-bold=&lt;yes|no&gt;</span></tt></dt>
             <dd>Format text on bold.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-italic=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-italic=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--osd-italic=&lt;yes|no&gt;</span></tt></dt>
             <dd>Format text on italic.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-border-color=&lt;color&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-border-color=&lt;color&gt;</span></tt></dt>
-            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for the OSD/sub font border.</p>
+            <dt><tt class="docutils literal"><span class="pre">--osd-border-color=&lt;color&gt;</span></tt></dt>
+            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for the OSD font border.</p>
             <div class="note last">
             <p class="first admonition-title">Note</p>
-            <p class="last">ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt>/<tt class="docutils literal"><span class="pre">--sub-text-back-color</span></tt> is
+            <p class="last">ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt> is
             specified (or more exactly: when that option is not set to completely
             transparent).</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-border-size=&lt;size&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-border-size=&lt;size&gt;</span></tt></dt>
-            <dd><p class="first">Size of the OSD/sub font border in scaled pixels (see <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt>
+            <dt><tt class="docutils literal"><span class="pre">--osd-border-size=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Size of the OSD font border in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
             for details). A value of 0 disables borders.</p>
             <p class="last">Default: 3.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-color=&lt;color&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-text-color=&lt;color&gt;</span></tt></dt>
-            <dd><p class="first">Specify the color used for OSD/unstyled text subtitles.</p>
-            <p>The color is specified in the form <tt class="docutils literal">r/g/b</tt>, where each color component
-            is specified as number in the range 0.0 to 1.0. It's also possible to
-            specify the transparency by using <tt class="docutils literal">r/g/b/a</tt>, where the alpha value 0
-            means fully transparent, and 1.0 means opaque. If the alpha component is
-            not given, the color is 100% opaque.</p>
-            <p>Passing a single number to the option sets the OSD to gray, and the form
-            <tt class="docutils literal">gray/a</tt> lets you specify alpha additionally.</p>
-            <div class="admonition-examples admonition">
-            <p class="first admonition-title">Examples</p>
-            <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--osd-color=1.0/0.0/0.0</span></tt> set OSD to opaque red</li>
-            <li><tt class="docutils literal"><span class="pre">--osd-color=1.0/0.0/0.0/0.75</span></tt> set OSD to opaque red with 75% alpha</li>
-            <li><tt class="docutils literal"><span class="pre">--osd-color=0.5/0.75</span></tt> set OSD to 50% gray with 75% alpha</li>
-            </ul>
-            </div>
-            <p>Alternatively, the color can be specified as a RGB hex triplet in the form
-            <tt class="docutils literal">#RRGGBB</tt>, where each 2-digit group expresses a color value in the
-            range 0 (<tt class="docutils literal">00</tt>) to 255 (<tt class="docutils literal">FF</tt>). For example, <tt class="docutils literal">#FF0000</tt> is red.
-            This is similar to web colors. Alpha is given with <tt class="docutils literal">#AARRGGBB</tt>.</p>
-            <div class="admonition-examples admonition last">
-            <p class="first admonition-title">Examples</p>
-            <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--osd-color='#FF0000'</span></tt> set OSD to opaque red</li>
-            <li><tt class="docutils literal"><span class="pre">--osd-color='#C0808080'</span></tt> set OSD to 50% gray with 75% alpha</li>
-            </ul>
-            </div>
-            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-color=&lt;color&gt;</span></tt></dt>
+            <dd>Specify the color used for OSD.
+            See <tt class="docutils literal"><span class="pre">--sub-color</span></tt> for details.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-fractions</span></tt></dt>
             <dd>Show OSD times with fractions of seconds (in millisecond precision). Useful
             to see the exact timestamp of a video frame.</dd>
@@ -3529,29 +3612,24 @@
             </tbody>
             </table>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-margin-x=&lt;size&gt;,</span> <span class="pre">--sub-text-margin-x=&lt;size&gt;</span></tt></dt>
-            <dd><p class="first">Left and right screen margin for the OSD/subs in scaled pixels (see
-            <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> for details).</p>
+            <dt><tt class="docutils literal"><span class="pre">--osd-margin-x=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Left and right screen margin for the OSD in scaled pixels (see
+            <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details).</p>
             <p>This option specifies the distance of the OSD to the left, as well as at
             which distance from the right border long OSD text will be broken.</p>
             <p class="last">Default: 25.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-margin-y=&lt;size&gt;,</span> <span class="pre">--sub-text-margin-y=&lt;size&gt;</span></tt></dt>
-            <dd><p class="first">Top and bottom screen margin for the OSD/subs in scaled pixels (see
-            <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> for details).</p>
-            <p>This option specifies the vertical margins of the OSD. This is also used
-            for unstyled text subtitles. If you just want to raise the vertical
-            subtitle position, use <tt class="docutils literal"><span class="pre">--sub-pos</span></tt>.</p>
+            <dt><tt class="docutils literal"><span class="pre">--osd-margin-y=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Top and bottom screen margin for the OSD in scaled pixels (see
+            <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details).</p>
+            <p>This option specifies the vertical margins of the OSD.</p>
             <p class="last">Default: 22.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-align-x=&lt;left|center|right&gt;</span></tt>,  <tt class="docutils literal"><span class="pre">--sub-text-align-x=...</span></tt></dt>
-            <dd><p class="first">Control to which corner of the screen OSD or text subtitles should be
-            aligned to (default: <tt class="docutils literal">center</tt> for subs, <tt class="docutils literal">left</tt> for OSD).</p>
-            <p class="last">Never applied to ASS subtitles, except in <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> mode. Likewise,
-            this does not apply to image subtitles.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-align-y=&lt;top|center|bottom&gt;</span></tt> <tt class="docutils literal"><span class="pre">--sub-text-align-y=...</span></tt></dt>
-            <dd>Vertical position (default: <tt class="docutils literal">bottom</tt> for subs, <tt class="docutils literal">top</tt> for OSD).
+            <dt><tt class="docutils literal"><span class="pre">--osd-align-x=&lt;left|center|right&gt;</span></tt></dt>
+            <dd>Control to which corner of the screen OSD should be
+            aligned to (default: <tt class="docutils literal">left</tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-align-y=&lt;top|center|bottom&gt;</span></tt></dt>
+            <dd>Vertical position (default: <tt class="docutils literal">top</tt>).
             Details see <tt class="docutils literal"><span class="pre">--osd-align-x</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-scale=&lt;factor&gt;</span></tt></dt>
             <dd>OSD font size multiplier, multiplied with <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> value.</dd>
@@ -3560,15 +3638,15 @@
             disabled, <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> and other OSD options that use scaled pixels
             are always in actual pixels. The effect is that changing the window size
             won't change the OSD font size.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-shadow-color=&lt;color&gt;,</span> <span class="pre">--sub-text-shadow-color=&lt;color&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for OSD/sub text shadow.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-shadow-offset=&lt;size&gt;,</span> <span class="pre">--sub-text-shadow-offset=&lt;size&gt;</span></tt></dt>
-            <dd><p class="first">Displacement of the OSD/sub text shadow in scaled pixels (see
-            <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> for details). A value of 0 disables shadows.</p>
+            <dt><tt class="docutils literal"><span class="pre">--osd-shadow-color=&lt;color&gt;</span></tt></dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD shadow.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-shadow-offset=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Displacement of the OSD shadow in scaled pixels (see
+            <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details). A value of 0 disables shadows.</p>
             <p class="last">Default: 0.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--osd-spacing=&lt;size&gt;,</span> <span class="pre">--sub-text-spacing=&lt;size&gt;</span></tt></dt>
-            <dd><p class="first">Horizontal OSD/sub font spacing in scaled pixels (see <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt>
+            <dt><tt class="docutils literal"><span class="pre">--osd-spacing=&lt;size&gt;</span></tt></dt>
+            <dd><p class="first">Horizontal OSD/sub font spacing in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
             for details). This value is added to the normal letter spacing. Negative
             values are allowed.</p>
             <p class="last">Default: 0.</p>
