@@ -1362,6 +1362,8 @@
             </tr>
             <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
             </tr>
+            <tr class="field"><th class="field-name">crystalhd:</th><td class="field-body">copies video back to system RAM (Any platform supported by hardware)</td>
+            </tr>
             </tbody>
             </table>
             <p><tt class="docutils literal">auto</tt> tries to automatically enable hardware decoding using the first
@@ -1435,6 +1437,10 @@
             filters can be used in this case.</p>
             <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
             <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>.</p>
+            <p><tt class="docutils literal">crystalhd</tt> is not safe. It always converts to 4:2:2 YUV, which
+            may be lossy, depending on how chroma sub-sampling is done during
+            conversion. It also discards the top left pixel of each frame for
+            some reason.</p>
             <p>All other methods, in particular the copy-back methods (like
             <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> etc.) are either fully safe, or not worse than software
             decoding.</p>
