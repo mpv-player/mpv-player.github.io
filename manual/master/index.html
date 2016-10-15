@@ -9619,20 +9619,15 @@
             <div class="section" id="the-interface">
             <h3>The Interface</h3>
             <pre class="literal-block">
-            +------------------+-----------+--------------------+
-            | playlist prev    |   title   |      playlist next |
-            +-------+------+---+--+------+-+----+------+--------+
-            | audio | skip | seek |      | seek | skip |  full  |
-            +-------+ back | back | play | frwd | frwd | screen |
-            | sub   |      |      |      |      |      |        |
-            +-------+------+------+------+------+------+--------+
-            |                     seekbar                       |
-            +----------------+--------------+-------------------+
-            | time passed    | cache status |    time remaining |
-            +----------------+--------------+-------------------+
+            +---------+----------+----------------------------+-------------+
+            | pl prev | pl next  |  title                     |       cache |
+            +------+--+---+------+---------+-----------+------+-------+-----+
+            | play | skip | skip | time    |  seekbar  | time | audio | sub |
+            |      | back | frwd | elapsed |           | left |       |     |
+            +------+------+------+---------+-----------+------+-------+-----+
             </pre>
             <dl class="docutils">
-            <dt>playlist prev</dt>
+            <dt>pl prev</dt>
             <dd><table border="1" class="first last docutils">
             <colgroup>
             <col width="21%" />
@@ -9641,6 +9636,28 @@
             <tbody valign="top">
             <tr><td>left-click</td>
             <td>play previous file in playlist</td>
+            </tr>
+            <tr><td>right-click</td>
+            <td>show playlist</td>
+            </tr>
+            <tr><td>shift+L-click</td>
+            <td>show playlist</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt>pl next</dt>
+            <dd><table border="1" class="first last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>play next file in playlist</td>
+            </tr>
+            <tr><td>right-click</td>
+            <td>show playlist</td>
             </tr>
             <tr><td>shift+L-click</td>
             <td>show playlist</td>
@@ -9667,7 +9684,12 @@
             </tbody>
             </table>
             </dd>
-            <dt>playlist next</dt>
+            <dt>cache</dt>
+            <dd><div class="first last line-block">
+            <div class="line">Shows current cache fill status</div>
+            </div>
+            </dd>
+            <dt>play</dt>
             <dd><table border="1" class="first last docutils">
             <colgroup>
             <col width="21%" />
@@ -9675,10 +9697,93 @@
             </colgroup>
             <tbody valign="top">
             <tr><td>left-click</td>
-            <td>play next file in playlist</td>
+            <td>toggle play/pause</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt>skip back</dt>
+            <dd><table border="1" class="first last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>go to beginning of chapter / previous chapter</td>
+            </tr>
+            <tr><td>right-click</td>
+            <td>show chapters</td>
             </tr>
             <tr><td>shift+L-click</td>
-            <td>show playlist</td>
+            <td>show chapters</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt>skip frwd</dt>
+            <dd><table border="1" class="first last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>go to next chapter</td>
+            </tr>
+            <tr><td>right-click</td>
+            <td>show chapters</td>
+            </tr>
+            <tr><td>shift+L-click</td>
+            <td>show chapters</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt>time elapsed</dt>
+            <dd><div class="first line-block">
+            <div class="line">Shows current playback position timestamp</div>
+            </div>
+            <table border="1" class="last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>toggle displaying timecodes with milliseconds</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt>seekbar</dt>
+            <dd><div class="first line-block">
+            <div class="line">Indicates current playback position and position of chapters</div>
+            </div>
+            <table border="1" class="last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>seek to position</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt>time left</dt>
+            <dd><div class="first line-block">
+            <div class="line">Shows remaining playback time timestamp</div>
+            </div>
+            <table border="1" class="last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>toggle between total and remaining time</td>
             </tr>
             </tbody>
             </table>
@@ -9701,155 +9806,6 @@
             </tr>
             <tr><td>shift+L-click</td>
             <td>show available audio/sub tracks</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>skip back</dt>
-            <dd><table border="1" class="first last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>go to beginning of chapter / previous chapter</td>
-            </tr>
-            <tr><td>shift+L-click</td>
-            <td>show chapters</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>seek back</dt>
-            <dd><table border="1" class="first last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>skip back  5 seconds</td>
-            </tr>
-            <tr><td>right-click</td>
-            <td>skip back 30 seconds</td>
-            </tr>
-            <tr><td>shift-L-click</td>
-            <td>skip back  1 frame</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>play</dt>
-            <dd><table border="1" class="first last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>toggle play/pause</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>seek frwd</dt>
-            <dd><table border="1" class="first last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>skip forward 10 seconds</td>
-            </tr>
-            <tr><td>right-click</td>
-            <td>skip forward 60 seconds</td>
-            </tr>
-            <tr><td>shift-L-click</td>
-            <td>skip forward  1 frame</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>skip frwd</dt>
-            <dd><table border="1" class="first last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>go to next chapter</td>
-            </tr>
-            <tr><td>shift+L-click</td>
-            <td>show chapters</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>fullscreen</dt>
-            <dd><table border="1" class="first last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>toggle fullscreen</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>seekbar</dt>
-            <dd><div class="first line-block">
-            <div class="line">Indicates current playback position and position of chapters</div>
-            </div>
-            <table border="1" class="last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>seek to position</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>time passed</dt>
-            <dd><div class="first line-block">
-            <div class="line">Shows current playback position timestamp</div>
-            </div>
-            <table border="1" class="last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>toggle displaying timecodes with milliseconds</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt>cache status</dt>
-            <dd><div class="first last line-block">
-            <div class="line">Shows current cache fill status (only visible when below 45%)</div>
-            </div>
-            </dd>
-            <dt>time remaining</dt>
-            <dd><div class="first line-block">
-            <div class="line">Shows remaining playback time timestamp</div>
-            </div>
-            <table border="1" class="last docutils">
-            <colgroup>
-            <col width="21%" />
-            <col width="79%" />
-            </colgroup>
-            <tbody valign="top">
-            <tr><td>left-click</td>
-            <td>toggle between total and remaining time</td>
             </tr>
             </tbody>
             </table>
@@ -9917,13 +9873,13 @@
             </dd>
             <dt><tt class="docutils literal">scalewindowed</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 1.0</div>
+            <div class="line">Default: 1.5</div>
             <div class="line">Scale factor of the OSC when windowed</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">scalefullscreen</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 1.0</div>
+            <div class="line">Default: 1.5</div>
             <div class="line">Scale factor of the OSC when fullscreen</div>
             </div>
             </dd>
@@ -9952,6 +9908,12 @@
             <div class="line">Horizontal alignment, -1 (left) to 1 (right)</div>
             </div>
             </dd>
+            <dt><tt class="docutils literal">barmargin</tt></dt>
+            <dd><div class="first last line-block">
+            <div class="line">Default: 0</div>
+            <div class="line">Margin from bottom (bottombar) or top (topbar), in pixels</div>
+            </div>
+            </dd>
             <dt><tt class="docutils literal">boxalpha</tt></dt>
             <dd><div class="first last line-block">
             <div class="line">Default: 80</div>
@@ -9973,7 +9935,7 @@
             </dd>
             <dt><tt class="docutils literal">deadzonesize</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 0</div>
+            <div class="line">Default: 1</div>
             <div class="line">Size of the deadzone. The deadzone is an area that makes the mouse act
             like leaving the window. Movement there won't make the OSC show up and
             it will hide immediately if the mouse enters it. The deadzone starts
@@ -9983,21 +9945,21 @@
             </dd>
             <dt><tt class="docutils literal">minmousemove</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: 3</div>
+            <div class="line">Default: 0</div>
             <div class="line">Minimum amount of pixels the mouse has to move between ticks to make
             the OSC show up</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">layout</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: box</div>
+            <div class="line">Default: bottombar</div>
             <div class="line">The layout for the OSC. Currently available are: box, slimbox,
             bottombar and topbar.</div>
             </div>
             </dd>
             <dt><tt class="docutils literal">seekbarstyle</tt></dt>
             <dd><div class="first last line-block">
-            <div class="line">Default: slider</div>
+            <div class="line">Default: bar</div>
             <div class="line">Sets the style of the seekbar, slider (diamond marker) or bar (fill)</div>
             </div>
             </dd>
