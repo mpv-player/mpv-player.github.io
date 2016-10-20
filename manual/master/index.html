@@ -1333,6 +1333,8 @@
             </tr>
             <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Linux only)</td>
             </tr>
+            <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
+            </tr>
             <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with Intel GPUs only)</td>
@@ -1386,10 +1388,10 @@
             <p>Most video filters will not work with hardware decoding as they are
             primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
             <tt class="docutils literal">vdpaurb</tt> and <tt class="docutils literal">vavpp</tt>. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for more details.</p>
-            <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> and <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> modes allow you to use hardware
+            <p>The <tt class="docutils literal"><span class="pre">...-copy</span></tt> modes (e.g. <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt>) allow you to use hardware
             decoding with any VO, backend or filter. Because these copy the decoded
-            video back to system RAM, they're likely less efficient than the <tt class="docutils literal">vaapi</tt>
-            or <tt class="docutils literal">dxva2</tt> modes respectively.</p>
+            video back to system RAM, they're likely less efficient than the direct
+            modes (like e.g. <tt class="docutils literal">dxva2</tt>).</p>
             <div class="note">
             <p class="first admonition-title">Note</p>
             <p class="last">When using this switch, hardware decoding is still only done for some
@@ -7555,11 +7557,13 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal">vdpaurb</tt></dt>
-            <dd>VDPAU video read back. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> only.
+            <dd><p class="first">This filter is deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec=vdpau-copy</span></tt> instead.</p>
+            <p class="last">VDPAU video read back. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> only.
             This filter will read back frames decoded by VDPAU so that other filters,
             which are not normally compatible with VDPAU, can be used like normal.
             This filter must be specified before <tt class="docutils literal">vdpaupp</tt> in the filter chain if
-            <tt class="docutils literal">vdpaupp</tt> is used.</dd>
+            <tt class="docutils literal">vdpaupp</tt> is used.</p>
+            </dd>
             <dt><tt class="docutils literal">d3d11vpp</tt></dt>
             <dd><p class="first">Direct3D 11 video post processing. Currently requires D3D11 hardware
             decoding for use.</p>
