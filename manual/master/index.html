@@ -5117,10 +5117,13 @@
             (normally textures are sized exactly, but due to hardware decoding interop
             we may have to deal with additional padding, which can be tested with these
             options). Could be removed any time.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-early-flush=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-early-flush=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd>Call <tt class="docutils literal">glFlush()</tt> after rendering a frame and before attempting to display
-            it (default: no). Can fix stuttering in some cases, in other cases probably
-            causes it. For testing - could be removed any time.</dd>
+            it (default: auto). Can fix stuttering in some cases, in other cases
+            probably causes it. The <tt class="docutils literal">auto</tt> mode will call <tt class="docutils literal">glFlush()</tt> only if
+            the renderer is going to wait for a while after rendering, instead of
+            flipping GL front and backbuffers immediately (i.e. it doesn't call it
+            in display-sync mode).</dd>
             </dl>
             </div>
             <div class="section" id="miscellaneous">
