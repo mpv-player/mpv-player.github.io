@@ -4445,7 +4445,22 @@
             </pre>
             </blockquote>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-param2=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--cscale=&lt;filter&gt;</span></tt></dt>
+            <dd>As <tt class="docutils literal"><span class="pre">--scale</span></tt>, but for interpolating chroma information. If the image is
+            not subsampled, this option is ignored entirely.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--dscale=&lt;filter&gt;</span></tt></dt>
+            <dd>Like <tt class="docutils literal"><span class="pre">--scale</span></tt>, but apply these filters on downscaling instead. If this
+            option is unset, the filter implied by <tt class="docutils literal"><span class="pre">--scale</span></tt> will be applied.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--tscale=&lt;filter&gt;</span></tt></dt>
+            <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is only
+            used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
+            <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
+            get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
+            <p class="last">Note that the maximum supported filter radius is currently 3, due to
+            limitations in the number of video textures that can be loaded
+            simultaneously.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param2=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set filter parameters. Ignored if the filter is not tunable. Currently,
             this affects the following filter parameters:</p>
             <dl class="last docutils">
@@ -4461,13 +4476,25 @@
             algorithm was used. Defaults to 0.0.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-blur=&lt;value&gt;</span></tt></dt>
-            <dd>Kernel scaling factor (also known as a blur factor). Decreasing this makes
-            the result sharper, increasing it makes it blurrier (default 0). If set to
-            0, the kernel's preferred blur factor is used. Note that setting this too
-            low (eg. 0.5) leads to bad results. It's generally recommended to stick to
-            values between 0.8 and 1.2.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-radius=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wblur=&lt;value&gt;</span></tt></dt>
+            <dd>Kernel/window scaling factor (also known as a blur factor). Decreasing this
+            makes the result sharper, increasing it makes it blurrier (default 0). If
+            set to 0, the kernel's preferred blur factor is used. Note that setting
+            this too low (eg. 0.5) leads to bad results. It's generally recommended to
+            stick to values between 0.8 and 1.2.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
+            <dd>Clamp the filter kernel's value range to [0-1]. This is especially useful
+            for <tt class="docutils literal"><span class="pre">--tscale</span></tt>, where it reduces excessive ringing artifacts in the
+            temporal domain (which typically manifest themselves as short flashes or
+            fringes of black, mostly around moving edges) in exchange for potentially
+            adding more blur.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wtaper=&lt;value&gt;</span></tt></dt>
+            <dd>Kernel/window taper factor. Increasing this flattens the filter function.
+            Value range is 0 to 1. A value of 0 (the default) means no flattening, a
+            value of 1 makes the filter completely flat (equivalent to a box function).
+            Values in between mean that some portion will be flat and the actual filter
+            function will be squeezed into the space in between.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-radius=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-radius=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-radius=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-radius=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set radius for tunable filters, must be a float number between 0.5 and
             16.0. Defaults to the filter's preferred radius if not specified. Doesn't
             work for every scaler and VO combination.</p>
@@ -4475,20 +4502,20 @@
             ratio, the radius that actually being used might be different (most likely
             being increased a bit).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-antiring=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-antiring=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set the antiringing strength. This tries to eliminate ringing, but can
             introduce other artifacts in the process. Must be a float number between
             0.0 and 1.0. The default value of 0.0 disables antiringing entirely.</p>
             <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt> and
             <tt class="docutils literal">bicubic_fast</tt>.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-window=&lt;window&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-window=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-window=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-window=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-window=&lt;window&gt;</span></tt></dt>
             <dd>(Advanced users only) Choose a custom windowing function for the kernel.
             Defaults to the filter's preferred window if unset. Use
             <tt class="docutils literal"><span class="pre">--scale-window=help</span></tt> to get a list of supported windowing functions.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-wparam=&lt;window&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-wparam=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wparam=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wparam=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wparam=&lt;window&gt;</span></tt></dt>
             <dd><p class="first">(Advanced users only) Configure the parameter for the window function given
-            by <tt class="docutils literal"><span class="pre">--scale-window</span></tt>. Ignored if the window is not tunable. Currently,
+            by <tt class="docutils literal"><span class="pre">--scale-window</span></tt> etc. Ignored if the window is not tunable. Currently,
             this affects the following window parameters:</p>
             <dl class="last docutils">
             <dt>kaiser</dt>
@@ -4512,6 +4539,46 @@
             <tt class="docutils literal">bilinear</tt> is used instead of whatever is set with <tt class="docutils literal"><span class="pre">--scale</span></tt>. Bilinear
             will reproduce the source image perfectly if no scaling is performed.
             Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
+            <dd>Scale in linear light. It should only be used with a
+            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
+            <dd><p class="first">When using convolution based filters, extend the filter size when
+            downscaling. Increases quality, but reduces performance while downscaling.</p>
+            <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
+            better than without it) since it will extend the size to match only the
+            milder of the scale factors between the axes.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--interpolation</span></tt></dt>
+            <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display refresh
+            rate (also known as judder).</p>
+            <div class="warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
+            of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
+            This was not required before mpv 0.14.0.</p>
+            </div>
+            <p>This essentially attempts to interpolate the missing frames by convoluting
+            the video along the temporal axis. The filter used can be controlled using
+            the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
+            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
+            more information.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
+            <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
+            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
+            where <tt class="docutils literal">vfps</tt> is the speed-adjusted video FPS, and <tt class="docutils literal">disphz</tt> the
+            display refresh rate. (The speed-adjusted video FPS is roughly equal to
+            the normal video FPS, but with slowdown and speedup applied. This matters
+            if you use <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> to make video run synchronously
+            to the display FPS, or if you change the <tt class="docutils literal">speed</tt> property.)</p>
+            <p>The default is intended to almost always enable interpolation if the
+            playback rate is even slightly different from the display refresh rate. But
+            note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small deviations
+            in the rate can disable interpolation and introduce a discontinuity every
+            other minute.</p>
+            <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-pbo</span></tt></dt>
             <dd><p class="first">Enable use of PBOs. On some drivers this can be faster, especially if the
             source video size is huge (e.g. so called &quot;4K&quot; video). On other drivers it
@@ -4558,21 +4625,6 @@
             <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also, request a
             debug OpenGL context (which does nothing with current graphics drivers
             as of this writing).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--interpolation</span></tt></dt>
-            <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display refresh
-            rate (also known as judder).</p>
-            <div class="warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
-            of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
-            This was not required before mpv 0.14.0.</p>
-            </div>
-            <p>This essentially attempts to interpolate the missing frames by convoluting
-            the video along the temporal axis. The filter used can be controlled using
-            the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
-            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
-            more information.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-swapinterval=&lt;n&gt;</span></tt></dt>
             <dd><p class="first">Interval in displayed frames between two buffer swaps. 1 is equivalent to
             enable VSYNC, 0 to disable VSYNC. Defaults to 1 if not specified.</p>
@@ -4582,56 +4634,6 @@
             syncs to the right one. Compositing window managers can also lead to bad
             results, as can missing or incorrect display FPS information (see
             <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--dscale=&lt;filter&gt;</span></tt></dt>
-            <dd>Like <tt class="docutils literal"><span class="pre">--scale</span></tt>, but apply these filters on downscaling instead. If this
-            option is unset, the filter implied by <tt class="docutils literal"><span class="pre">--scale</span></tt> will be applied.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--cscale=&lt;filter&gt;</span></tt></dt>
-            <dd>As <tt class="docutils literal"><span class="pre">--scale</span></tt>, but for interpolating chroma information. If the image is
-            not subsampled, this option is ignored entirely.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tscale=&lt;filter&gt;</span></tt></dt>
-            <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is only
-            used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
-            <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
-            get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
-            <p class="last">Note that the maximum supported filter radius is currently 3, due to
-            limitations in the number of video textures that can be loaded
-            simultaneously.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
-            <dd>Clamp the <tt class="docutils literal"><span class="pre">--tscale</span></tt> filter kernel's value range to [0-1]. This reduces
-            excessive ringing artifacts in the temporal domain (which typically
-            manifest themselves as short flashes or fringes of black, mostly around
-            moving edges) in exchange for potentially adding more blur.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
-            <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
-            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
-            where <tt class="docutils literal">vfps</tt> is the speed-adjusted video FPS, and <tt class="docutils literal">disphz</tt> the
-            display refresh rate. (The speed-adjusted video FPS is roughly equal to
-            the normal video FPS, but with slowdown and speedup applied. This matters
-            if you use <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> to make video run synchronously
-            to the display FPS, or if you change the <tt class="docutils literal">speed</tt> property.)</p>
-            <p>The default is intended to almost always enable interpolation if the
-            playback rate is even slightly different from the display refresh rate. But
-            note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small deviations
-            in the rate can disable interpolation and introduce a discontinuity every
-            other minute.</p>
-            <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-radius</span></tt>, etc.</dt>
-            <dd><p class="first">Set filter parameters for <tt class="docutils literal"><span class="pre">--dscale</span></tt>, <tt class="docutils literal"><span class="pre">--cscale</span></tt> and <tt class="docutils literal"><span class="pre">--tscale</span></tt>,
-            respectively.</p>
-            <p class="last">See the corresponding options for <tt class="docutils literal"><span class="pre">--scale</span></tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
-            <dd>Scale in linear light. It should only be used with a
-            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
-            <dd><p class="first">When using convolution based filters, extend the filter size when
-            downscaling. Increases quality, but reduces performance while downscaling.</p>
-            <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
-            better than without it) since it will extend the size to match only the
-            milder of the scale factors between the axes.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-shaders=&lt;files&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
