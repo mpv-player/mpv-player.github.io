@@ -657,6 +657,14 @@
             either aliases to documented protocols, or are just redirections to
             protocols implemented and documented in FFmpeg.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">ytdl://...</span></tt></dt>
+            <dd><p class="first">By default, the youtube-dl hook script (enabled by default for mpv CLI)
+            only looks at http URLs. Prefixing an URL with <tt class="docutils literal"><span class="pre">ytdl://</span></tt> forces it to
+            be always processed by the script. This can also be used to invoke special
+            youtube-dl functionality like playing a video by ID or invoking search.</p>
+            <p class="last">Keep in mind that you can't pass youtube-dl command line options by this,
+            and you have to use <tt class="docutils literal"><span class="pre">--ytdl-raw-options</span></tt> instead.</p>
+            </dd>
             <dt><tt class="docutils literal">-</tt></dt>
             <dd>Play data from stdin.</dd>
             <dt><tt class="docutils literal"><span class="pre">smb://PATH</span></tt></dt>
@@ -1333,6 +1341,8 @@
             </tr>
             <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Linux only)</td>
             </tr>
+            <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
+            </tr>
             <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with Intel GPUs only)</td>
@@ -1386,10 +1396,10 @@
             <p>Most video filters will not work with hardware decoding as they are
             primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
             <tt class="docutils literal">vdpaurb</tt> and <tt class="docutils literal">vavpp</tt>. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for more details.</p>
-            <p>The <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> and <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> modes allow you to use hardware
+            <p>The <tt class="docutils literal"><span class="pre">...-copy</span></tt> modes (e.g. <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt>) allow you to use hardware
             decoding with any VO, backend or filter. Because these copy the decoded
-            video back to system RAM, they're likely less efficient than the <tt class="docutils literal">vaapi</tt>
-            or <tt class="docutils literal">dxva2</tt> modes respectively.</p>
+            video back to system RAM, they're likely less efficient than the direct
+            modes (like e.g. <tt class="docutils literal">dxva2</tt>).</p>
             <div class="note">
             <p class="first admonition-title">Note</p>
             <p class="last">When using this switch, hardware decoding is still only done for some
@@ -1886,9 +1896,9 @@
             <dd><p class="first">Deprecated/unfunctional. Before mpv 0.18.1, this used to control whether
             to use the volume controls of the audio output driver or the internal mpv
             volume filter.</p>
-            <p>The current behavior is as if this option was set to <tt class="docutils literal">yes</tt>. The other
-            behaviors are not available anymore, although <tt class="docutils literal">auto</tt> almost matches
-            current behavior in most cases.</p>
+            <p>The current behavior is that softvol is always enabled, i.e. as if this
+            option is set to <tt class="docutils literal">yes</tt>. The other behaviors are not available anymore,
+            although <tt class="docutils literal">auto</tt> almost matches current behavior in most cases.</p>
             <p class="last">The <tt class="docutils literal">no</tt> behavior is still partially available through the <tt class="docutils literal"><span class="pre">ao-volume</span></tt>
             and <tt class="docutils literal"><span class="pre">ao-mute</span></tt> properties. But there are no options to reset these.</p>
             </dd>
@@ -2218,7 +2228,7 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Make the subtitle font size relative to the window, instead of the video.
             This is useful if you always want the same font size, even if the video
-            doesn't covert the window fully, e.g. because screen aspect and window
+            doesn't cover the window fully, e.g. because screen aspect and window
             aspect mismatch (and the player adds black bars).</p>
             <p>Default: yes.</p>
             <p>This option is misnamed. The difference to the confusingly similar sounding
@@ -3053,6 +3063,12 @@
             </ul>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--hidpi-window-scale</span></tt>, <tt class="docutils literal"><span class="pre">--no-hidpi-window-scale</span></tt></dt>
+            <dd>(OS X only)
+            Scale the window size according to the backing scale factor (default: yes).
+            On regular HiDPI resolutions the window opens with double the size but appears
+            as having the same size as on none-HiDPI resolutions. This is the default OS X
+            behavior.</dd>
             <dt><tt class="docutils literal"><span class="pre">--monitorpixelaspect=&lt;ratio&gt;</span></tt></dt>
             <dd>Set the aspect of a single pixel of your monitor or TV screen (default:
             1). A value of 1 means square pixels (correct for (almost?) all LCDs). See
@@ -4435,7 +4451,22 @@
             </pre>
             </blockquote>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-param2=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--cscale=&lt;filter&gt;</span></tt></dt>
+            <dd>As <tt class="docutils literal"><span class="pre">--scale</span></tt>, but for interpolating chroma information. If the image is
+            not subsampled, this option is ignored entirely.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--dscale=&lt;filter&gt;</span></tt></dt>
+            <dd>Like <tt class="docutils literal"><span class="pre">--scale</span></tt>, but apply these filters on downscaling instead. If this
+            option is unset, the filter implied by <tt class="docutils literal"><span class="pre">--scale</span></tt> will be applied.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--tscale=&lt;filter&gt;</span></tt></dt>
+            <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is only
+            used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
+            <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
+            get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
+            <p class="last">Note that the maximum supported filter radius is currently 3, due to
+            limitations in the number of video textures that can be loaded
+            simultaneously.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param2=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set filter parameters. Ignored if the filter is not tunable. Currently,
             this affects the following filter parameters:</p>
             <dl class="last docutils">
@@ -4451,13 +4482,25 @@
             algorithm was used. Defaults to 0.0.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-blur=&lt;value&gt;</span></tt></dt>
-            <dd>Kernel scaling factor (also known as a blur factor). Decreasing this makes
-            the result sharper, increasing it makes it blurrier (default 0). If set to
-            0, the kernel's preferred blur factor is used. Note that setting this too
-            low (eg. 0.5) leads to bad results. It's generally recommended to stick to
-            values between 0.8 and 1.2.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-radius=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wblur=&lt;value&gt;</span></tt></dt>
+            <dd>Kernel/window scaling factor (also known as a blur factor). Decreasing this
+            makes the result sharper, increasing it makes it blurrier (default 0). If
+            set to 0, the kernel's preferred blur factor is used. Note that setting
+            this too low (eg. 0.5) leads to bad results. It's generally recommended to
+            stick to values between 0.8 and 1.2.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
+            <dd>Clamp the filter kernel's value range to [0-1]. This is especially useful
+            for <tt class="docutils literal"><span class="pre">--tscale</span></tt>, where it reduces excessive ringing artifacts in the
+            temporal domain (which typically manifest themselves as short flashes or
+            fringes of black, mostly around moving edges) in exchange for potentially
+            adding more blur.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wtaper=&lt;value&gt;</span></tt></dt>
+            <dd>Kernel/window taper factor. Increasing this flattens the filter function.
+            Value range is 0 to 1. A value of 0 (the default) means no flattening, a
+            value of 1 makes the filter completely flat (equivalent to a box function).
+            Values in between mean that some portion will be flat and the actual filter
+            function will be squeezed into the space in between.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-radius=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-radius=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-radius=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-radius=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set radius for tunable filters, must be a float number between 0.5 and
             16.0. Defaults to the filter's preferred radius if not specified. Doesn't
             work for every scaler and VO combination.</p>
@@ -4465,20 +4508,20 @@
             ratio, the radius that actually being used might be different (most likely
             being increased a bit).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-antiring=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-antiring=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set the antiringing strength. This tries to eliminate ringing, but can
             introduce other artifacts in the process. Must be a float number between
             0.0 and 1.0. The default value of 0.0 disables antiringing entirely.</p>
             <p class="last">Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt> and
             <tt class="docutils literal">bicubic_fast</tt>.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-window=&lt;window&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-window=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-window=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-window=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-window=&lt;window&gt;</span></tt></dt>
             <dd>(Advanced users only) Choose a custom windowing function for the kernel.
             Defaults to the filter's preferred window if unset. Use
             <tt class="docutils literal"><span class="pre">--scale-window=help</span></tt> to get a list of supported windowing functions.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-wparam=&lt;window&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--scale-wparam=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wparam=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wparam=&lt;window&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wparam=&lt;window&gt;</span></tt></dt>
             <dd><p class="first">(Advanced users only) Configure the parameter for the window function given
-            by <tt class="docutils literal"><span class="pre">--scale-window</span></tt>. Ignored if the window is not tunable. Currently,
+            by <tt class="docutils literal"><span class="pre">--scale-window</span></tt> etc. Ignored if the window is not tunable. Currently,
             this affects the following window parameters:</p>
             <dl class="last docutils">
             <dt>kaiser</dt>
@@ -4502,6 +4545,46 @@
             <tt class="docutils literal">bilinear</tt> is used instead of whatever is set with <tt class="docutils literal"><span class="pre">--scale</span></tt>. Bilinear
             will reproduce the source image perfectly if no scaling is performed.
             Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
+            <dd>Scale in linear light. It should only be used with a
+            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
+            <dd><p class="first">When using convolution based filters, extend the filter size when
+            downscaling. Increases quality, but reduces performance while downscaling.</p>
+            <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
+            better than without it) since it will extend the size to match only the
+            milder of the scale factors between the axes.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--interpolation</span></tt></dt>
+            <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display refresh
+            rate (also known as judder).</p>
+            <div class="warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
+            of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
+            This was not required before mpv 0.14.0.</p>
+            </div>
+            <p>This essentially attempts to interpolate the missing frames by convoluting
+            the video along the temporal axis. The filter used can be controlled using
+            the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
+            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
+            more information.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
+            <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
+            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
+            where <tt class="docutils literal">vfps</tt> is the speed-adjusted video FPS, and <tt class="docutils literal">disphz</tt> the
+            display refresh rate. (The speed-adjusted video FPS is roughly equal to
+            the normal video FPS, but with slowdown and speedup applied. This matters
+            if you use <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> to make video run synchronously
+            to the display FPS, or if you change the <tt class="docutils literal">speed</tt> property.)</p>
+            <p>The default is intended to almost always enable interpolation if the
+            playback rate is even slightly different from the display refresh rate. But
+            note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small deviations
+            in the rate can disable interpolation and introduce a discontinuity every
+            other minute.</p>
+            <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-pbo</span></tt></dt>
             <dd><p class="first">Enable use of PBOs. On some drivers this can be faster, especially if the
             source video size is huge (e.g. so called &quot;4K&quot; video). On other drivers it
@@ -4548,21 +4631,6 @@
             <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also, request a
             debug OpenGL context (which does nothing with current graphics drivers
             as of this writing).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--interpolation</span></tt></dt>
-            <dd><p class="first">Reduce stuttering caused by mismatches in the video fps and display refresh
-            rate (also known as judder).</p>
-            <div class="warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
-            of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
-            This was not required before mpv 0.14.0.</p>
-            </div>
-            <p>This essentially attempts to interpolate the missing frames by convoluting
-            the video along the temporal axis. The filter used can be controlled using
-            the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
-            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
-            more information.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-swapinterval=&lt;n&gt;</span></tt></dt>
             <dd><p class="first">Interval in displayed frames between two buffer swaps. 1 is equivalent to
             enable VSYNC, 0 to disable VSYNC. Defaults to 1 if not specified.</p>
@@ -4572,56 +4640,6 @@
             syncs to the right one. Compositing window managers can also lead to bad
             results, as can missing or incorrect display FPS information (see
             <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--dscale=&lt;filter&gt;</span></tt></dt>
-            <dd>Like <tt class="docutils literal"><span class="pre">--scale</span></tt>, but apply these filters on downscaling instead. If this
-            option is unset, the filter implied by <tt class="docutils literal"><span class="pre">--scale</span></tt> will be applied.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--cscale=&lt;filter&gt;</span></tt></dt>
-            <dd>As <tt class="docutils literal"><span class="pre">--scale</span></tt>, but for interpolating chroma information. If the image is
-            not subsampled, this option is ignored entirely.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tscale=&lt;filter&gt;</span></tt></dt>
-            <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is only
-            used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
-            <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
-            get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
-            <p class="last">Note that the maximum supported filter radius is currently 3, due to
-            limitations in the number of video textures that can be loaded
-            simultaneously.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
-            <dd>Clamp the <tt class="docutils literal"><span class="pre">--tscale</span></tt> filter kernel's value range to [0-1]. This reduces
-            excessive ringing artifacts in the temporal domain (which typically
-            manifest themselves as short flashes or fringes of black, mostly around
-            moving edges) in exchange for potentially adding more blur.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
-            <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
-            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
-            where <tt class="docutils literal">vfps</tt> is the speed-adjusted video FPS, and <tt class="docutils literal">disphz</tt> the
-            display refresh rate. (The speed-adjusted video FPS is roughly equal to
-            the normal video FPS, but with slowdown and speedup applied. This matters
-            if you use <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> to make video run synchronously
-            to the display FPS, or if you change the <tt class="docutils literal">speed</tt> property.)</p>
-            <p>The default is intended to almost always enable interpolation if the
-            playback rate is even slightly different from the display refresh rate. But
-            note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small deviations
-            in the rate can disable interpolation and introduce a discontinuity every
-            other minute.</p>
-            <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--dscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-radius</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-radius</span></tt>, etc.</dt>
-            <dd><p class="first">Set filter parameters for <tt class="docutils literal"><span class="pre">--dscale</span></tt>, <tt class="docutils literal"><span class="pre">--cscale</span></tt> and <tt class="docutils literal"><span class="pre">--tscale</span></tt>,
-            respectively.</p>
-            <p class="last">See the corresponding options for <tt class="docutils literal"><span class="pre">--scale</span></tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
-            <dd>Scale in linear light. It should only be used with a
-            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
-            <dd><p class="first">When using convolution based filters, extend the filter size when
-            downscaling. Increases quality, but reduces performance while downscaling.</p>
-            <p class="last">This will perform slightly sub-optimally for anamorphic video (but still
-            better than without it) since it will extend the size to match only the
-            milder of the scale factors between the axes.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-shaders=&lt;files&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
@@ -5091,7 +5109,8 @@
             <dt>blend-tiles</dt>
             <dd>Blend the frame against a 16x16 gray/white tiles background (default).</dd>
             <dt>blend</dt>
-            <dd>Blend the frame against a black background.</dd>
+            <dd>Blend the frame against the background color (<tt class="docutils literal"><span class="pre">--background</span></tt>, normally
+            black).</dd>
             <dt>yes</dt>
             <dd>Try to create a framebuffer with alpha component. This only makes sense
             if the video contains alpha information (which is extremely rare). May
@@ -5115,10 +5134,13 @@
             (normally textures are sized exactly, but due to hardware decoding interop
             we may have to deal with additional padding, which can be tested with these
             options). Could be removed any time.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-early-flush=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-early-flush=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd>Call <tt class="docutils literal">glFlush()</tt> after rendering a frame and before attempting to display
-            it (default: no). Can fix stuttering in some cases, in other cases probably
-            causes it. For testing - could be removed any time.</dd>
+            it (default: auto). Can fix stuttering in some cases, in other cases
+            probably causes it. The <tt class="docutils literal">auto</tt> mode will call <tt class="docutils literal">glFlush()</tt> only if
+            the renderer is going to wait for a while after rendering, instead of
+            flipping GL front and backbuffers immediately (i.e. it doesn't call it
+            in display-sync mode).</dd>
             </dl>
             </div>
             <div class="section" id="miscellaneous">
@@ -5777,7 +5799,7 @@
             means timing is somewhat less accurate than without compositing, but
             with the composited mode behavior of the NVIDIA driver, there is no
             hard playback speed limit even without the disabled logic. Enabled by
-            default, use <tt class="docutils literal"><span class="pre">no-composite-detect</span></tt> to disable.</dd>
+            default, use <tt class="docutils literal"><span class="pre">--vo-vdpau-composite-detect=no</span></tt> to disable.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-queuetime-windowed=&lt;number&gt;</span></tt> and <tt class="docutils literal"><span class="pre">queuetime-fs=&lt;number&gt;</span></tt></dt>
             <dd>Use VDPAU's presentation queue functionality to queue future video
             frame changes at most this many milliseconds in advance (default: 50).
@@ -5996,6 +6018,29 @@
             <p class="last">This driver is a joke.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal">tct</tt></dt>
+            <dd><p class="first">Color Unicode art video output driver that works on a text console.
+            Depends on support of true color by modern terminals to display the images
+            at full color range. On Windows it requires an ansi terminal such as mintty.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">--vo-tct-algo=&lt;algo&gt;</span></tt></dt>
+            <dd><p class="first">Select how to write the pixels to the terminal.</p>
+            <dl class="last docutils">
+            <dt>half-blocks</dt>
+            <dd>Uses unicode LOWER HALF BLOCK character to achieve higher vertical
+            resolution. (Default.)</dd>
+            <dt>plain</dt>
+            <dd>Uses spaces. Causes vertical resolution to drop twofolds, but in
+            theory works in more places.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-tct-width=&lt;width&gt;</span></tt>  <tt class="docutils literal"><span class="pre">--vo-tct-height=&lt;height&gt;</span></tt></dt>
+            <dd>Assume the terminal has the specified character width and/or height.
+            These default to 80x25 if the terminal size cannot be determined.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-tct-256=&lt;yes|no&gt;</span></tt> (default: no)</dt>
+            <dd>Use 256 colors - for terminals which don't support true color.</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal">image</tt></dt>
             <dd><p class="first">Output each frame into an image file in the current directory. Each file
             takes the frame number padded with leading zeros as name.</p>
@@ -6098,7 +6143,7 @@
             <dd><p class="first">Video output driver using Kernel Mode Setting / Direct Rendering Manager.
             Should be used when one doesn't want to install full-blown graphical
             environment (e.g. no X). Does not support hardware acceleration (if you
-            need this, check the <tt class="docutils literal"><span class="pre">drm-egl</span></tt> backend for <tt class="docutils literal">opengl</tt> VO).</p>
+            need this, check the <tt class="docutils literal">drm</tt> backend for <tt class="docutils literal">opengl</tt> VO).</p>
             <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--drm-connector=[&lt;gpu_number&gt;.]&lt;name&gt;</span></tt></dt>
@@ -7537,11 +7582,13 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal">vdpaurb</tt></dt>
-            <dd>VDPAU video read back. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> only.
+            <dd><p class="first">This filter is deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec=vdpau-copy</span></tt> instead.</p>
+            <p class="last">VDPAU video read back. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> only.
             This filter will read back frames decoded by VDPAU so that other filters,
             which are not normally compatible with VDPAU, can be used like normal.
             This filter must be specified before <tt class="docutils literal">vdpaupp</tt> in the filter chain if
-            <tt class="docutils literal">vdpaupp</tt> is used.</dd>
+            <tt class="docutils literal">vdpaupp</tt> is used.</p>
+            </dd>
             <dt><tt class="docutils literal">d3d11vpp</tt></dt>
             <dd><p class="first">Direct3D 11 video post processing. Currently requires D3D11 hardware
             decoding for use.</p>
@@ -9322,8 +9369,9 @@
             </pre>
             <p>The <tt class="docutils literal">name</tt> is what is to be passed to the <tt class="docutils literal"><span class="pre">--audio-device</span></tt> option (and
             often a rather cryptic audio API-specific ID), while <tt class="docutils literal">description</tt> is
-            human readable free form text. The description is an empty string if none
-            was received.</p>
+            human readable free form text. The description is set to the device name
+            (minus mpv-specific <tt class="docutils literal">&lt;driver&gt;/</tt> prefix) if no description is available
+            or the description would have been an empty string.</p>
             <p>The special entry with the name set to <tt class="docutils literal">auto</tt> selects the default audio
             output driver and the default device.</p>
             <p class="last">The property can be watched with the property observation mechanism in
@@ -9865,135 +9913,97 @@
             <div class="section" id="configurable-options">
             <h3>Configurable Options</h3>
             <dl class="docutils">
-            <dt><tt class="docutils literal">showwindowed</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: yes</div>
-            <div class="line">Enable the OSC when windowed</div>
-            </div>
+            <dt><tt class="docutils literal">layout</tt></dt>
+            <dd><p class="first">Default: bottombar</p>
+            <p class="last">The layout for the OSC. Currently available are: box, slimbox,
+            bottombar and topbar. Default pre-0.21.0 was 'box'.</p>
             </dd>
-            <dt><tt class="docutils literal">showfullscreen</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: yes</div>
-            <div class="line">Enable the OSC when fullscreen</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">scalewindowed</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 1.5</div>
-            <div class="line">Scale factor of the OSC when windowed</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">scalefullscreen</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 1.5</div>
-            <div class="line">Scale factor of the OSC when fullscreen</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">scaleforcedwindow</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 2.0</div>
-            <div class="line">Scale factor of the OSC when rendered on a forced (dummy) window</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">vidscale</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: yes</div>
-            <div class="line">Scale the OSC with the video</div>
-            <div class="line"><tt class="docutils literal">no</tt> tries to keep the OSC size constant as much as the window size allows</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">valign</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 0.8</div>
-            <div class="line">Vertical alignment, -1 (top) to 1 (bottom)</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">halign</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 0.0</div>
-            <div class="line">Horizontal alignment, -1 (left) to 1 (right)</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">barmargin</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 0</div>
-            <div class="line">Margin from bottom (bottombar) or top (topbar), in pixels</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">boxalpha</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 80</div>
-            <div class="line">Alpha of the background box, 0 (opaque) to 255 (fully transparent)</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">hidetimeout</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 500</div>
-            <div class="line">Duration in ms until the OSC hides if no mouse movement, must not be
-            negative</div>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">fadeduration</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 200</div>
-            <div class="line">Duration of fade out in ms, 0 = no fade</div>
-            </div>
+            <dt><tt class="docutils literal">seekbarstyle</tt></dt>
+            <dd><p class="first">Default: bar</p>
+            <p class="last">Sets the style of the seekbar, slider (diamond marker), knob (circle
+            marker with guide), or bar (fill).
+            Default pre-0.21.0 was 'slider'.</p>
             </dd>
             <dt><tt class="docutils literal">deadzonesize</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 1</div>
-            <div class="line">Size of the deadzone. The deadzone is an area that makes the mouse act
+            <dd><p class="first">Default: 0.5</p>
+            <p class="last">Size of the deadzone. The deadzone is an area that makes the mouse act
             like leaving the window. Movement there won't make the OSC show up and
             it will hide immediately if the mouse enters it. The deadzone starts
             at the window border opposite to the OSC and the size controls how much
-            of the window it will span. Values between 0 and 1, where 0 means the
+            of the window it will span. Values between 0.0 and 1.0, where 0 means the
             OSC will always popup with mouse movement in the window, and 1 means the
-            OSC will only show up when the mouse hovers it.</div>
-            </div>
+            OSC will only show up when the mouse hovers it. Default pre-0.21.0 was 0.</p>
             </dd>
             <dt><tt class="docutils literal">minmousemove</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 0</div>
-            <div class="line">Minimum amount of pixels the mouse has to move between ticks to make
-            the OSC show up</div>
-            </div>
+            <dd><p class="first">Default: 0</p>
+            <p class="last">Minimum amount of pixels the mouse has to move between ticks to make
+            the OSC show up. Default pre-0.21.0 was 3.</p>
             </dd>
-            <dt><tt class="docutils literal">layout</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: bottombar</div>
-            <div class="line">The layout for the OSC. Currently available are: box, slimbox,
-            bottombar and topbar.</div>
-            </div>
+            <dt><tt class="docutils literal">showwindowed</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Enable the OSC when windowed</p>
             </dd>
-            <dt><tt class="docutils literal">seekbarstyle</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: bar</div>
-            <div class="line">Sets the style of the seekbar, slider (diamond marker) or bar (fill)</div>
-            </div>
+            <dt><tt class="docutils literal">showfullscreen</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Enable the OSC when fullscreen</p>
+            </dd>
+            <dt><tt class="docutils literal">scalewindowed</tt></dt>
+            <dd><p class="first">Default: 1.0</p>
+            <p class="last">Scale factor of the OSC when windowed.</p>
+            </dd>
+            <dt><tt class="docutils literal">scalefullscreen</tt></dt>
+            <dd><p class="first">Default: 1.0</p>
+            <p class="last">Scale factor of the OSC when fullscreen</p>
+            </dd>
+            <dt><tt class="docutils literal">scaleforcedwindow</tt></dt>
+            <dd><p class="first">Default: 2.0</p>
+            <p class="last">Scale factor of the OSC when rendered on a forced (dummy) window</p>
+            </dd>
+            <dt><tt class="docutils literal">vidscale</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Scale the OSC with the video
+            <tt class="docutils literal">no</tt> tries to keep the OSC size constant as much as the window size allows</p>
+            </dd>
+            <dt><tt class="docutils literal">valign</tt></dt>
+            <dd><p class="first">Default: 0.8</p>
+            <p class="last">Vertical alignment, -1 (top) to 1 (bottom)</p>
+            </dd>
+            <dt><tt class="docutils literal">halign</tt></dt>
+            <dd><p class="first">Default: 0.0</p>
+            <p class="last">Horizontal alignment, -1 (left) to 1 (right)</p>
+            </dd>
+            <dt><tt class="docutils literal">barmargin</tt></dt>
+            <dd><p class="first">Default: 0</p>
+            <p class="last">Margin from bottom (bottombar) or top (topbar), in pixels</p>
+            </dd>
+            <dt><tt class="docutils literal">boxalpha</tt></dt>
+            <dd><p class="first">Default: 80</p>
+            <p class="last">Alpha of the background box, 0 (opaque) to 255 (fully transparent)</p>
+            </dd>
+            <dt><tt class="docutils literal">hidetimeout</tt></dt>
+            <dd><p class="first">Default: 500</p>
+            <p class="last">Duration in ms until the OSC hides if no mouse movement, must not be
+            negative</p>
+            </dd>
+            <dt><tt class="docutils literal">fadeduration</tt></dt>
+            <dd><p class="first">Default: 200</p>
+            <p class="last">Duration of fade out in ms, 0 = no fade</p>
             </dd>
             <dt><tt class="docutils literal">tooltipborder</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: 1</div>
-            <div class="line">Size of the tooltip outline when using bottombar or topbar layouts</div>
-            </div>
+            <dd><p class="first">Default: 1</p>
+            <p class="last">Size of the tooltip outline when using bottombar or topbar layouts</p>
             </dd>
             <dt><tt class="docutils literal">timetotal</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: no</div>
-            <div class="line">Show total time instead of time remaining</div>
-            </div>
+            <dd><p class="first">Default: no</p>
+            <p class="last">Show total time instead of time remaining</p>
             </dd>
             <dt><tt class="docutils literal">timems</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: no</div>
-            <div class="line">Display timecodes with milliseconds</div>
-            </div>
+            <dd><p class="first">Default: no</p>
+            <p class="last">Display timecodes with milliseconds</p>
             </dd>
             <dt><tt class="docutils literal">visibility</tt></dt>
-            <dd><div class="first last line-block">
-            <div class="line">Default: auto (auto hide/show on mouse move)</div>
-            <div class="line">Also supports <tt class="docutils literal">never</tt> and <tt class="docutils literal">always</tt></div>
-            </div>
+            <dd><p class="first">Default: auto (auto hide/show on mouse move)</p>
+            <p class="last">Also supports <tt class="docutils literal">never</tt> and <tt class="docutils literal">always</tt></p>
             </dd>
             </dl>
             </div>
@@ -10016,6 +10026,11 @@
             a script-message osc-visibility never
             b script-message osc-visibility auto
             </pre>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">osc-playlist</span></tt>, <tt class="docutils literal"><span class="pre">osc-chapterlist</span></tt>, <tt class="docutils literal"><span class="pre">osc-tracklist</span></tt></dt>
+            <dd>Shows a limited view of the respective type of list using the OSC. First
+            argument is duration in seconds.</dd>
+            </dl>
             </div>
             </div>
             </div>
