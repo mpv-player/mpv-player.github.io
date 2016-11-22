@@ -7581,14 +7581,6 @@
             </dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">vdpaurb</tt></dt>
-            <dd><p class="first">This filter is deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec=vdpau-copy</span></tt> instead.</p>
-            <p class="last">VDPAU video read back. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> only.
-            This filter will read back frames decoded by VDPAU so that other filters,
-            which are not normally compatible with VDPAU, can be used like normal.
-            This filter must be specified before <tt class="docutils literal">vdpaupp</tt> in the filter chain if
-            <tt class="docutils literal">vdpaupp</tt> is used.</p>
-            </dd>
             <dt><tt class="docutils literal">d3d11vpp</tt></dt>
             <dd><p class="first">Direct3D 11 video post processing. Currently requires D3D11 hardware
             decoding for use.</p>
@@ -9567,10 +9559,9 @@
             <p class="last">Strictly speaking, option access via API (e.g. <tt class="docutils literal">mpv_set_option_string()</tt>)
             has the same problem, and it's only a difference between CLI/API.</p>
             </dd>
-            <dt><tt class="docutils literal">demuxer</tt>, <tt class="docutils literal">idle</tt>, <tt class="docutils literal">length</tt>, <tt class="docutils literal"><span class="pre">audio-samplerate</span></tt>, <tt class="docutils literal"><span class="pre">audio-channels</span></tt>, <tt class="docutils literal"><span class="pre">audio-format</span></tt>, <tt class="docutils literal">fps</tt>, <tt class="docutils literal">cache</tt>, <tt class="docutils literal"><span class="pre">playlist-pos</span></tt>, <tt class="docutils literal">chapter</tt></dt>
-            <dd>These behave completely different as property, but are deprecated (newer
-            aliases which don't conflict have been added). After the deprecation period
-            they will be changed to the proper option behavior.</dd>
+            <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt>, <tt class="docutils literal">chapter</tt></dt>
+            <dd>These properties behave different from the deprecated options with the same
+            names.</dd>
             </dl>
             </div>
             <div class="section" id="property-expansion">
@@ -10070,9 +10061,8 @@
             timers added with <tt class="docutils literal">mp.add_timeout</tt> or similar.</p>
             <p>When the player quits, all scripts will be asked to terminate. This happens via
             a <tt class="docutils literal">shutdown</tt> event, which by default will make the event loop return. If your
-            script got into an endless loop, mpv will probably behave fine during playback
-            (unless the player is suspended, see <tt class="docutils literal">mp.suspend</tt>), but it won't terminate
-            when quitting, because it's waiting on your script.</p>
+            script got into an endless loop, mpv will probably behave fine during playback,
+            but it won't terminate when quitting, because it's waiting on your script.</p>
             <p>Internally, the C code will call the Lua function <tt class="docutils literal">mp_event_loop</tt> after
             loading a Lua script. This function is normally defined by the default prelude
             loaded before your script (see <tt class="docutils literal">player/lua/defaults.lua</tt> in the mpv sources).
@@ -10386,24 +10376,14 @@
             are useful only in special situations.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">mp.suspend()</tt></dt>
-            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
-            <p>Suspend the mpv main loop. There is a long-winded explanation of this in
-            the C API function <tt class="docutils literal">mpv_suspend()</tt>. In short, this prevents the player
-            from displaying the next video frame, so that you don't get blocked when
-            trying to access the player.</p>
-            <p class="last">Before mpv 0.17.0, this was automatically called by the event handler.</p>
-            </dd>
+            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
+            with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.resume()</tt></dt>
-            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
-            <p class="last">Undo one <tt class="docutils literal">mp.suspend()</tt> call. <tt class="docutils literal">mp.suspend()</tt> increments an internal
-            counter, and <tt class="docutils literal">mp.resume()</tt> decrements it. When 0 is reached, the player
-            is actually resumed.</p>
-            </dd>
+            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
+            with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.resume_all()</tt></dt>
-            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
-            <p class="last">This resets the internal suspend counter and resumes the player. (It's
-            like calling <tt class="docutils literal">mp.resume()</tt> until the player is actually resumed.)</p>
-            </dd>
+            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
+            with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.get_wakeup_pipe()</tt></dt>
             <dd>Calls <tt class="docutils literal">mpv_get_wakeup_pipe()</tt> and returns the read end of the wakeup
             pipe. (See <tt class="docutils literal">client.h</tt> for details.)</dd>
@@ -10946,18 +10926,6 @@
             events are enabled or disabled.</p>
             <p class="last">By default, most events are enabled, and there is not much use for this
             command.</p>
-            </dd>
-            <dt><tt class="docutils literal">suspend</tt></dt>
-            <dd><p class="first">Deprecated, will be removed completely in 0.21.0.</p>
-            <p class="last">Suspend the mpv main loop. There is a long-winded explanation of this in
-            the C API function <tt class="docutils literal">mpv_suspend()</tt>. In short, this prevents the player
-            from displaying the next video frame, so that you don't get blocked when
-            trying to access the player.</p>
-            </dd>
-            <dt><tt class="docutils literal">resume</tt></dt>
-            <dd><p class="first">Deprecated, will be removed completely in 0.21.0.</p>
-            <p class="last">Undo one <tt class="docutils literal">suspend</tt> call. <tt class="docutils literal">suspend</tt> increments an internal counter, and
-            <tt class="docutils literal">resume</tt> decrements it. When 0 is reached, the player is actually resumed.</p>
             </dd>
             <dt><tt class="docutils literal">get_version</tt></dt>
             <dd><p class="first">Returns the client API version the C API of the remote mpv instance
