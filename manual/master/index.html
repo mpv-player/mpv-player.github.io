@@ -1025,6 +1025,23 @@
             <p class="last">Note that <tt class="docutils literal"><span class="pre">--playlist</span></tt> always loads all entries, so you use that instead
             if you really have the need for this functionality.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--access-references=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Follow any references in the file being opened (default: yes). Disabling
+            this is helpful if the file is automatically scanned (e.g. thumbnail
+            generation). If the thumbnail scanner for example encounters a playlist
+            file, which contains network URLs, and the scanner should not open these,
+            enabling this option will prevent it. This option also disables ordered
+            chapters, mov reference files, opening of archives, and a number of other
+            features.</p>
+            <p>On older FFmpeg versions, this will not work in some cases. Some FFmpeg
+            demuxers might not respect this option.</p>
+            <p>This option does not prevent opening of paired subtitle files and such. Use
+            <tt class="docutils literal"><span class="pre">--autoload-files=no</span></tt> to prevent this.</p>
+            <p class="last">This option does not always work if you open non-files (for example using
+            <tt class="docutils literal"><span class="pre">dvd://directory</span></tt> would open a whole bunch of files in the given
+            directory). Prefixing the filename with <tt class="docutils literal">./</tt> if it doesn't start with
+            a <tt class="docutils literal">/</tt> will avoid this.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--loop-file=&lt;N|inf|no&gt;</span></tt></dt>
             <dd><p class="first">Loop a single file N times. <tt class="docutils literal">inf</tt> means forever, <tt class="docutils literal">no</tt> means normal
             playback. For compatibility, <tt class="docutils literal"><span class="pre">--loop-file</span></tt> and <tt class="docutils literal"><span class="pre">--loop-file=yes</span></tt> are
