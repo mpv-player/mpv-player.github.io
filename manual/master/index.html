@@ -1300,7 +1300,7 @@
             <dt><tt class="docutils literal"><span class="pre">--vo=&lt;driver&gt;</span></tt></dt>
             <dd>Specify the video output backend to be used. See <a class="reference internal" href="#video-output-drivers">VIDEO OUTPUT DRIVERS</a> for
             details and descriptions of available drivers.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vd=&lt;...&gt;</span></tt></dt>
             <dd><p class="first">Specify a priority list of video decoders to be used, according to their
             family and name. See <tt class="docutils literal"><span class="pre">--ad</span></tt> for further details. Both of these options
             use the same syntax and semantics; the only difference is that they
@@ -1869,10 +1869,9 @@
             <p>Possible codecs are <tt class="docutils literal">ac3</tt>, <tt class="docutils literal">dts</tt>, <tt class="docutils literal"><span class="pre">dts-hd</span></tt>. Multiple codecs can be
             specified by separating them with <tt class="docutils literal">,</tt>. <tt class="docutils literal">dts</tt> refers to low bitrate DTS
             core, while <tt class="docutils literal"><span class="pre">dts-hd</span></tt> refers to DTS MA (receiver and OS support varies).
-            You should only use either <tt class="docutils literal">dts</tt> or <tt class="docutils literal"><span class="pre">dts-hd</span></tt> (if both are specified,
-            and <tt class="docutils literal">dts</tt> comes first, only <tt class="docutils literal">dts</tt> will be used).</p>
-            <p>In general, all codecs in the <tt class="docutils literal">spdif</tt> family listed with <tt class="docutils literal"><span class="pre">--ad=help</span></tt>
-            are supported in theory.</p>
+            If both <tt class="docutils literal">dts</tt> and <tt class="docutils literal"><span class="pre">dts-hd</span></tt> are specified, it behaves equivalent to
+            specifying <tt class="docutils literal"><span class="pre">dts-hd</span></tt> only.</p>
+            <p>In earlier mpv versions</p>
             <div class="admonition admonition-warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">There is not much reason to use this. HDMI supports uncompressed
@@ -1882,24 +1881,27 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ad=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
             <dd><p class="first">Specify a priority list of audio decoders to be used, according to their
-            family and decoder name. Entries like <tt class="docutils literal">family:*</tt> prioritize all decoders
-            of the given family. When determining which decoder to use, the first
-            decoder that matches the audio format is selected. If that is unavailable,
-            the next decoder is used. Finally, it tries all other decoders that are not
+            decoder name. When determining which decoder to use, the first decoder that
+            matches the audio format is selected. If that is unavailable, the next
+            decoder is used. Finally, it tries all other decoders that are not
             explicitly selected or rejected by the option.</p>
+            <p>Specifying family names is deprecated. Entries like <tt class="docutils literal">family:*</tt> prioritize
+            all decoders of the given family.</p>
             <p><tt class="docutils literal">-</tt> at the end of the list suppresses fallback on other available
             decoders not on the <tt class="docutils literal"><span class="pre">--ad</span></tt> list. <tt class="docutils literal">+</tt> in front of an entry forces the
             decoder. Both of these should not normally be used, because they break
-            normal decoder auto-selection!</p>
-            <p><tt class="docutils literal">-</tt> in front of an entry disables selection of the decoder.</p>
+            normal decoder auto-selection! Both of these methods are deprecated.</p>
+            <p><tt class="docutils literal">-</tt> in front of an entry disables selection of the decoder. This is
+            deprecated.</p>
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--ad=lavc:mp3float</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ad=mp3float</span></tt></dt>
             <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
             decoders.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--ad=spdif:ac3,lavc:*</span></tt></dt>
-            <dd>Always prefer spdif AC3 over FFmpeg/Libav over anything else.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--ad=lavc:mp3float</span></tt></dt>
+            <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
+            decoders. (Using deprecated family syntax.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--ad=help</span></tt></dt>
             <dd>List all available decoders.</dd>
             </dl>
