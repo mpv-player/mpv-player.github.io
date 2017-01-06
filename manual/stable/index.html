@@ -208,8 +208,6 @@
             <dd>Resize video window to double its original size.</dd>
             <dt>command + f (OSX only)</dt>
             <dd>Toggle fullscreen (see also <tt class="docutils literal"><span class="pre">--fs</span></tt>).</dd>
-            <dt>command + [ and command + ] (OSX only)</dt>
-            <dd>Set video window alpha.</dd>
             </dl>
             <p>(The following keys are valid if you have a keyboard with multimedia keys.)</p>
             <dl class="docutils">
@@ -241,11 +239,34 @@
             </div>
             <div class="section" id="usage">
             <h1>USAGE</h1>
+            <p>Command line arguments starting with <tt class="docutils literal">-</tt> are interpreted as options,
+            everything else as filenames or URLs. All options except <em>flag</em> options (or
+            choice options which include <tt class="docutils literal">yes</tt>) require a parameter in the form
+            <tt class="docutils literal"><span class="pre">--option=value</span></tt>.</p>
+            <p>One exception is the lone <tt class="docutils literal">-</tt> (without anything else), which means media data
+            will be read from stdin. Also, <tt class="docutils literal"><span class="pre">--</span></tt> (without anything else) will make the
+            player interpret all following arguments as filenames, even if they start with
+            <tt class="docutils literal">-</tt>. (To play a file named <tt class="docutils literal">-</tt>, you need to use <tt class="docutils literal">./-</tt>.)</p>
             <p>Every <em>flag</em> option has a <em>no-flag</em> counterpart, e.g. the opposite of the
             <tt class="docutils literal"><span class="pre">--fs</span></tt> option is <tt class="docutils literal"><span class="pre">--no-fs</span></tt>. <tt class="docutils literal"><span class="pre">--fs=yes</span></tt> is same as <tt class="docutils literal"><span class="pre">--fs</span></tt>, <tt class="docutils literal"><span class="pre">--fs=no</span></tt>
             is the same as <tt class="docutils literal"><span class="pre">--no-fs</span></tt>.</p>
             <p>If an option is marked as <em>(XXX only)</em>, it will only work in combination with
             the <em>XXX</em> option or if <em>XXX</em> is compiled in.</p>
+            <div class="section" id="legacy-option-syntax">
+            <h2>Legacy option syntax</h2>
+            <p>The <tt class="docutils literal"><span class="pre">--option=value</span></tt> syntax is not strictly enforced, and the alternative
+            legacy syntax <tt class="docutils literal"><span class="pre">-option</span> value</tt> and <tt class="docutils literal"><span class="pre">--option</span> value</tt> will also work. This is
+            mostly  for compatibility with MPlayer. Using these should be avoided. Their
+            semantics can change any time in the future.</p>
+            <p>For example, the alternative syntax will consider an argument following the
+            option a filename. <tt class="docutils literal">mpv <span class="pre">-fs</span> no</tt> will attempt to play a file named <tt class="docutils literal">no</tt>,
+            because <tt class="docutils literal"><span class="pre">--fs</span></tt> is a flag option that requires no parameter. If an option
+            changes and its parameter becomes optional, then a command line using the
+            alternative syntax will break.</p>
+            <p>Currently, the parser makes no difference whether an option starts with <tt class="docutils literal"><span class="pre">--</span></tt>
+            or a single <tt class="docutils literal">-</tt>. This might also change in the future, and <tt class="docutils literal"><span class="pre">--option</span> value</tt>
+            might always interpret <tt class="docutils literal">value</tt> as filename in order to reduce ambiguities.</p>
+            </div>
             <div class="section" id="escaping-spaces-and-other-special-characters">
             <h2>Escaping spaces and other special characters</h2>
             <p>Keep in mind that the shell will partially parse and mangle the arguments you
@@ -888,11 +909,11 @@
             speed higher than normal automatically inserts the <tt class="docutils literal">scaletempo</tt> audio
             filter.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|force|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|force|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--loop</span></tt></dt>
             <dd><p class="first">Loops playback <tt class="docutils literal">N</tt> times. A value of <tt class="docutils literal">1</tt> plays it one time (default),
             <tt class="docutils literal">2</tt> two times, etc. <tt class="docutils literal">inf</tt> means forever. <tt class="docutils literal">no</tt> is the same as <tt class="docutils literal">1</tt> and
             disables looping. If several files are specified on command line, the
-            entire playlist is looped.</p>
+            entire playlist is looped. <tt class="docutils literal"><span class="pre">--loop</span></tt> is the same as <tt class="docutils literal"><span class="pre">--loop=inf</span></tt>.</p>
             <p class="last">The <tt class="docutils literal">force</tt> mode is like <tt class="docutils literal">inf</tt>, but does not skip playlist entries
             which have been marked as failing. This means the player might waste CPU
             time trying to loop a file that doesn't exist. But it might be useful for
@@ -1025,6 +1046,23 @@
             <p class="last">Note that <tt class="docutils literal"><span class="pre">--playlist</span></tt> always loads all entries, so you use that instead
             if you really have the need for this functionality.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--access-references=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Follow any references in the file being opened (default: yes). Disabling
+            this is helpful if the file is automatically scanned (e.g. thumbnail
+            generation). If the thumbnail scanner for example encounters a playlist
+            file, which contains network URLs, and the scanner should not open these,
+            enabling this option will prevent it. This option also disables ordered
+            chapters, mov reference files, opening of archives, and a number of other
+            features.</p>
+            <p>On older FFmpeg versions, this will not work in some cases. Some FFmpeg
+            demuxers might not respect this option.</p>
+            <p>This option does not prevent opening of paired subtitle files and such. Use
+            <tt class="docutils literal"><span class="pre">--autoload-files=no</span></tt> to prevent this.</p>
+            <p class="last">This option does not always work if you open non-files (for example using
+            <tt class="docutils literal"><span class="pre">dvd://directory</span></tt> would open a whole bunch of files in the given
+            directory). Prefixing the filename with <tt class="docutils literal">./</tt> if it doesn't start with
+            a <tt class="docutils literal">/</tt> will avoid this.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--loop-file=&lt;N|inf|no&gt;</span></tt></dt>
             <dd><p class="first">Loop a single file N times. <tt class="docutils literal">inf</tt> means forever, <tt class="docutils literal">no</tt> means normal
             playback. For compatibility, <tt class="docutils literal"><span class="pre">--loop-file</span></tt> and <tt class="docutils literal"><span class="pre">--loop-file=yes</span></tt> are
@@ -1081,9 +1119,10 @@
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--help</span></tt>, <tt class="docutils literal"><span class="pre">--h</span></tt></dt>
             <dd><p class="first">Show short summary of options.</p>
-            <p class="last">You can also pass a shell pattern to this option, which will list all
-            matching top-level options, e.g. <tt class="docutils literal"><span class="pre">--h=*scale*</span></tt> for all options that
-            contain the word &quot;scale&quot;.</p>
+            <p class="last">You can also pass a string to this option, which will list all top-level
+            options which contain the string in the name, e.g. <tt class="docutils literal"><span class="pre">--h=scale</span></tt> for all
+            options that contain the word <tt class="docutils literal">scale</tt>. The special string <tt class="docutils literal">*</tt> lists
+            all top-level options.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">-v</span></tt></dt>
             <dd>Increment verbosity level, one level for each <tt class="docutils literal"><span class="pre">-v</span></tt> found on the command
@@ -1261,7 +1300,7 @@
             <dt><tt class="docutils literal"><span class="pre">--vo=&lt;driver&gt;</span></tt></dt>
             <dd>Specify the video output backend to be used. See <a class="reference internal" href="#video-output-drivers">VIDEO OUTPUT DRIVERS</a> for
             details and descriptions of available drivers.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vd=&lt;...&gt;</span></tt></dt>
             <dd><p class="first">Specify a priority list of video decoders to be used, according to their
             family and name. See <tt class="docutils literal"><span class="pre">--ad</span></tt> for further details. Both of these options
             use the same syntax and semantics; the only difference is that they
@@ -1440,8 +1479,8 @@
             mechanism in the opengl output path. To use this deinterlacing you
             must pass the option: <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>. Pass
             <tt class="docutils literal">weave</tt> to not attempt any deinterlacing.
-            10bit HEVC is available if the hardware supports it but it will be
-            rounded down to 8 bits.</p>
+            10 and 12bit HEVC is available if the hardware supports it and a
+            sufficiently new driver (&gt; 375.xx) is used.</p>
             <p><tt class="docutils literal"><span class="pre">cuda-copy</span></tt> has the same behaviour as <tt class="docutils literal">cuda</tt> - including the ability
             to deinterlace inside the decoder. However, traditional deinterlacing
             filters can be used in this case.</p>
@@ -1830,10 +1869,9 @@
             <p>Possible codecs are <tt class="docutils literal">ac3</tt>, <tt class="docutils literal">dts</tt>, <tt class="docutils literal"><span class="pre">dts-hd</span></tt>. Multiple codecs can be
             specified by separating them with <tt class="docutils literal">,</tt>. <tt class="docutils literal">dts</tt> refers to low bitrate DTS
             core, while <tt class="docutils literal"><span class="pre">dts-hd</span></tt> refers to DTS MA (receiver and OS support varies).
-            You should only use either <tt class="docutils literal">dts</tt> or <tt class="docutils literal"><span class="pre">dts-hd</span></tt> (if both are specified,
-            and <tt class="docutils literal">dts</tt> comes first, only <tt class="docutils literal">dts</tt> will be used).</p>
-            <p>In general, all codecs in the <tt class="docutils literal">spdif</tt> family listed with <tt class="docutils literal"><span class="pre">--ad=help</span></tt>
-            are supported in theory.</p>
+            If both <tt class="docutils literal">dts</tt> and <tt class="docutils literal"><span class="pre">dts-hd</span></tt> are specified, it behaves equivalent to
+            specifying <tt class="docutils literal"><span class="pre">dts-hd</span></tt> only.</p>
+            <p>In earlier mpv versions</p>
             <div class="admonition admonition-warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">There is not much reason to use this. HDMI supports uncompressed
@@ -1843,24 +1881,27 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ad=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
             <dd><p class="first">Specify a priority list of audio decoders to be used, according to their
-            family and decoder name. Entries like <tt class="docutils literal">family:*</tt> prioritize all decoders
-            of the given family. When determining which decoder to use, the first
-            decoder that matches the audio format is selected. If that is unavailable,
-            the next decoder is used. Finally, it tries all other decoders that are not
+            decoder name. When determining which decoder to use, the first decoder that
+            matches the audio format is selected. If that is unavailable, the next
+            decoder is used. Finally, it tries all other decoders that are not
             explicitly selected or rejected by the option.</p>
+            <p>Specifying family names is deprecated. Entries like <tt class="docutils literal">family:*</tt> prioritize
+            all decoders of the given family.</p>
             <p><tt class="docutils literal">-</tt> at the end of the list suppresses fallback on other available
             decoders not on the <tt class="docutils literal"><span class="pre">--ad</span></tt> list. <tt class="docutils literal">+</tt> in front of an entry forces the
             decoder. Both of these should not normally be used, because they break
-            normal decoder auto-selection!</p>
-            <p><tt class="docutils literal">-</tt> in front of an entry disables selection of the decoder.</p>
+            normal decoder auto-selection! Both of these methods are deprecated.</p>
+            <p><tt class="docutils literal">-</tt> in front of an entry disables selection of the decoder. This is
+            deprecated.</p>
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--ad=lavc:mp3float</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ad=mp3float</span></tt></dt>
             <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
             decoders.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--ad=spdif:ac3,lavc:*</span></tt></dt>
-            <dd>Always prefer spdif AC3 over FFmpeg/Libav over anything else.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--ad=lavc:mp3float</span></tt></dt>
+            <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
+            decoders. (Using deprecated family syntax.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--ad=help</span></tt></dt>
             <dd>List all available decoders.</dd>
             </dl>
@@ -2481,59 +2522,30 @@
             </table>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-codepage=&lt;codepage&gt;</span></tt></dt>
-            <dd><p class="first">If your system supports <tt class="docutils literal">iconv(3)</tt>, you can use this option to specify
-            the subtitle codepage. By default, uchardet will be used to guess the
-            charset. If mpv is not compiled with uchardet, enca will be used.
-            If mpv is compiled with neither uchardet nor enca, <tt class="docutils literal"><span class="pre">UTF-8:UTF-8-BROKEN</span></tt>
-            is the default, which means it will try to use UTF-8, otherwise the
-            <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> pseudo codepage (see below).</p>
-            <p>The default value for this option is <tt class="docutils literal">auto</tt>, whose actual effect depends
-            on whether ENCA is compiled.</p>
-            <div class="admonition admonition-warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">If you force the charset, even subtitles that are known to be
-            UTF-8 will be recoded, which is perhaps not what you expect. Prefix
-            codepages with <tt class="docutils literal">utf8:</tt> if you want the codepage to be used only if the
-            input is not valid UTF-8.</p>
-            </div>
+            <dd><p class="first">You can use this option to specify the subtitle codepage. uchardet will be
+            used to guess the charset. (If mpv was not compiled with uchardet, then
+            <tt class="docutils literal"><span class="pre">utf-8</span></tt> is the effective default.)</p>
+            <p>The default value for this option is <tt class="docutils literal">auto</tt>, which enables autodetection.</p>
+            <p>The following steps are taken to determine the final codepage, in order:</p>
+            <ul class="simple">
+            <li>if the specific codepage has a <tt class="docutils literal">+</tt>, use that codepage</li>
+            <li>if the data looks like UTF-8, assume it is UTF-8</li>
+            <li>if <tt class="docutils literal"><span class="pre">--sub-codepage</span></tt> is set to a specific codepage, use that</li>
+            <li>run uchardet, and if successful, use that</li>
+            <li>otherwise, use <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt></li>
+            </ul>
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--sub-codepage=utf8:latin2</span></tt> Use Latin 2 if input is not UTF-8.</li>
-            <li><tt class="docutils literal"><span class="pre">--sub-codepage=cp1250</span></tt> Always force recoding to cp1250.</li>
+            <li><tt class="docutils literal"><span class="pre">--sub-codepage=latin2</span></tt> Use Latin 2 if input is not UTF-8.</li>
+            <li><tt class="docutils literal"><span class="pre">--sub-codepage=+cp1250</span></tt> Always force recoding to cp1250.</li>
             </ul>
             </div>
-            <p>The pseudo codepage <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> is used internally. When it
-            is the codepage, subtitles are interpreted as UTF-8 with &quot;Latin 1&quot; as
-            fallback for bytes which are not valid UTF-8 sequences. iconv is
-            never involved in this mode.</p>
-            <p>If the player was compiled with ENCA support, you can control it with the
-            following syntax:</p>
-            <p><tt class="docutils literal"><span class="pre">--sub-codepage=enca:&lt;language&gt;:&lt;fallback</span> codepage&gt;</tt></p>
-            <p>Language is specified using a two letter code to help ENCA detect
-            the codepage automatically. If an invalid language code is
-            entered, mpv will complain and list valid languages.  (Note
-            however that this list will only be printed when the conversion code is actually
-            called, for example when loading an external subtitle). The
-            fallback codepage is used if autodetection fails.  If no fallback
-            is specified, <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> is used.</p>
-            <div class="admonition admonition-examples">
-            <p class="first admonition-title">Examples</p>
-            <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--sub-codepage=enca:pl:cp1250</span></tt> guess the encoding, assuming the subtitles
-            are Polish, fall back on cp1250</li>
-            <li><tt class="docutils literal"><span class="pre">--sub-codepage=enca:pl</span></tt> guess the encoding for Polish, fall back on UTF-8.</li>
-            <li><tt class="docutils literal"><span class="pre">--sub-codepage=enca</span></tt> try universal detection, fall back on UTF-8.</li>
-            </ul>
-            </div>
-            <p>If the player was compiled with libguess support, you can use it with:</p>
-            <p><tt class="docutils literal"><span class="pre">--sub-codepage=guess:&lt;language&gt;:&lt;fallback</span> codepage&gt;</tt></p>
-            <p>libguess always needs a language. There is no universal detection
-            mode. Use <tt class="docutils literal"><span class="pre">--sub-codepage=guess:help</span></tt> to get a list of
-            languages subject to the same caveat as with ENCA above.</p>
-            <p>If the player was compiled with uchardet support you can use it with:</p>
-            <p><tt class="docutils literal"><span class="pre">--sub-codepage=uchardet</span></tt></p>
-            <p class="last">This mode doesn't take language or fallback codepage.</p>
+            <p>The pseudo codepage <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> is used internally. If it's set,
+            subtitles are interpreted as UTF-8 with &quot;Latin 1&quot; as fallback for bytes
+            which are not valid UTF-8 sequences. iconv is never involved in this mode.</p>
+            <p class="last">This option changed in mpv 0.23.0. The old syntax is still emulated to some
+            degree.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-fix-timing</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-fix-timing</span></tt></dt>
             <dd>By default, subtitle timing is adjusted to remove minor gaps or overlaps
@@ -2761,11 +2773,6 @@
             </div>
             <p class="last">See also <tt class="docutils literal"><span class="pre">--screen</span></tt>.</p>
             </dd>
-            </dl>
-            <p><tt class="docutils literal"><span class="pre">--fs-black-out-screens</span></tt></p>
-            <blockquote>
-            OS X only. Black out other displays when going fullscreen.</blockquote>
-            <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--keep-open=&lt;yes|no|always&gt;</span></tt></dt>
             <dd><p class="first">Do not terminate when playing or seeking beyond the end of the file, and
             there is not next file to be played (and <tt class="docutils literal"><span class="pre">--loop</span></tt> is not used).
@@ -2897,7 +2904,7 @@
             <dt><tt class="docutils literal">50%x50%</tt></dt>
             <dd>Forces the window width and height to half the screen width and
             height. Will show black borders to compensate for the video aspect
-            ration (with most VOs and without <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>).</dd>
+            ratio (with most VOs and without <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">50%+10+10</span></tt></dt>
             <dd>Sets the window to half the screen widths, and positions it 10
             pixels below/left of the top left corner of the screen.</dd>
@@ -3016,7 +3023,7 @@
             ensure it does not cause security problems (e.g. make sure to use full
             paths if &quot;.&quot; is in your path like on Windows). It also only works when
             playing video (i.e. not with <tt class="docutils literal"><span class="pre">--no-video</span></tt> but works with
-            <tt class="docutils literal"><span class="pre">-vo=null</span></tt>).</p>
+            <tt class="docutils literal"><span class="pre">--vo=null</span></tt>).</p>
             </div>
             <p>This can be &quot;misused&quot; to disable screensavers that do not support the
             proper X API (see also <tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt>). If you think this is too
@@ -4390,20 +4397,7 @@
             <div class="section" id="opengl-renderer-options">
             <h2>OpenGL renderer options</h2>
             <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> and
-            <tt class="docutils literal"><span class="pre">-vo=opengl-cb</span></tt> only, which are the only VOs that implement them.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--opengl-dumb-mode=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">This mode is extremely restricted, and will disable most extended OpenGL
-            features. This includes high quality scalers and custom shaders!</p>
-            <p>It is intended for hardware that does not support FBOs (including GLES,
-            which supports it insufficiently), or to get some more performance out of
-            bad or old hardware.</p>
-            <p>This mode is forced automatically if needed, and this option is mostly
-            useful for debugging. It's also enabled automatically if nothing uses
-            features which require FBOs.</p>
-            <p class="last">This option might be silently removed in the future.</p>
-            </dd>
-            </dl>
+            <tt class="docutils literal"><span class="pre">--vo=opengl-cb</span></tt> only, which are the only VOs that implement them.</p>
             <p><tt class="docutils literal"><span class="pre">--scale=&lt;filter&gt;</span></tt></p>
             <blockquote>
             <dl class="docutils">
@@ -5141,6 +5135,17 @@
             the renderer is going to wait for a while after rendering, instead of
             flipping GL front and backbuffers immediately (i.e. it doesn't call it
             in display-sync mode).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-dumb-mode=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">This mode is extremely restricted, and will disable most extended OpenGL
+            features. This includes high quality scalers and custom shaders!</p>
+            <p>It is intended for hardware that does not support FBOs (including GLES,
+            which supports it insufficiently), or to get some more performance out of
+            bad or old hardware.</p>
+            <p>This mode is forced automatically if needed, and this option is mostly
+            useful for debugging. It's also enabled automatically if nothing uses
+            features which require FBOs.</p>
+            <p class="last">This option might be silently removed in the future.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="miscellaneous">
@@ -5375,12 +5380,6 @@
             </dl>
             <p>If the list has a trailing ',', mpv will fall back on drivers not contained
             in the list.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--ao-defaults=&lt;driver1[:parameter1:parameter2:...],driver2,...&gt;</span></tt></dt>
-            <dd><p class="first">Set defaults for each driver.</p>
-            <p class="last">Deprecated. No replacement.</p>
-            </dd>
-            </dl>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">--ao=help</span></tt> for a list of compiled-in audio output drivers. The
@@ -5643,12 +5642,6 @@
             </dl>
             <p>If the list has a trailing <tt class="docutils literal">,</tt>, mpv will fall back on drivers not contained
             in the list.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--vo-defaults=&lt;driver1[:parameter1:parameter2:...],driver2,...&gt;</span></tt></dt>
-            <dd><p class="first">Set defaults for each driver.</p>
-            <p class="last">Deprecated. No replacement.</p>
-            </dd>
-            </dl>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
@@ -6116,9 +6109,9 @@
             <dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
             <p>This is deprecated. Use <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> instead, which is the default and
             provides the same functionality. The <tt class="docutils literal">rpi</tt> VO will be removed in
-            mpv 0.22.0. Its functionality was folded into --vo=opengl, which now uses
+            mpv 0.23.0. Its functionality was folded into --vo=opengl, which now uses
             RPI hardware decoding by treating it as a hardware overlay (without applying
-            GL filtering). Also to be changed in 0.22.0: the --fs flag will be reset to
+            GL filtering). Also to be changed in 0.23.0: the --fs flag will be reset to
             &quot;no&quot; by default (like on the other platforms).</p>
             <p>The following deprecated global options are supported by this video output:</p>
             <dl class="last docutils">
@@ -7580,14 +7573,6 @@
             </dl>
             </dd>
             </dl>
-            </dd>
-            <dt><tt class="docutils literal">vdpaurb</tt></dt>
-            <dd><p class="first">This filter is deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec=vdpau-copy</span></tt> instead.</p>
-            <p class="last">VDPAU video read back. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> only.
-            This filter will read back frames decoded by VDPAU so that other filters,
-            which are not normally compatible with VDPAU, can be used like normal.
-            This filter must be specified before <tt class="docutils literal">vdpaupp</tt> in the filter chain if
-            <tt class="docutils literal">vdpaupp</tt> is used.</p>
             </dd>
             <dt><tt class="docutils literal">d3d11vpp</tt></dt>
             <dd><p class="first">Direct3D 11 video post processing. Currently requires D3D11 hardware
@@ -9567,10 +9552,9 @@
             <p class="last">Strictly speaking, option access via API (e.g. <tt class="docutils literal">mpv_set_option_string()</tt>)
             has the same problem, and it's only a difference between CLI/API.</p>
             </dd>
-            <dt><tt class="docutils literal">demuxer</tt>, <tt class="docutils literal">idle</tt>, <tt class="docutils literal">length</tt>, <tt class="docutils literal"><span class="pre">audio-samplerate</span></tt>, <tt class="docutils literal"><span class="pre">audio-channels</span></tt>, <tt class="docutils literal"><span class="pre">audio-format</span></tt>, <tt class="docutils literal">fps</tt>, <tt class="docutils literal">cache</tt>, <tt class="docutils literal"><span class="pre">playlist-pos</span></tt>, <tt class="docutils literal">chapter</tt></dt>
-            <dd>These behave completely different as property, but are deprecated (newer
-            aliases which don't conflict have been added). After the deprecation period
-            they will be changed to the proper option behavior.</dd>
+            <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt>, <tt class="docutils literal">chapter</tt></dt>
+            <dd>These properties behave different from the deprecated options with the same
+            names.</dd>
             </dl>
             </div>
             <div class="section" id="property-expansion">
@@ -10070,9 +10054,8 @@
             timers added with <tt class="docutils literal">mp.add_timeout</tt> or similar.</p>
             <p>When the player quits, all scripts will be asked to terminate. This happens via
             a <tt class="docutils literal">shutdown</tt> event, which by default will make the event loop return. If your
-            script got into an endless loop, mpv will probably behave fine during playback
-            (unless the player is suspended, see <tt class="docutils literal">mp.suspend</tt>), but it won't terminate
-            when quitting, because it's waiting on your script.</p>
+            script got into an endless loop, mpv will probably behave fine during playback,
+            but it won't terminate when quitting, because it's waiting on your script.</p>
             <p>Internally, the C code will call the Lua function <tt class="docutils literal">mp_event_loop</tt> after
             loading a Lua script. This function is normally defined by the default prelude
             loaded before your script (see <tt class="docutils literal">player/lua/defaults.lua</tt> in the mpv sources).
@@ -10386,24 +10369,14 @@
             are useful only in special situations.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">mp.suspend()</tt></dt>
-            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
-            <p>Suspend the mpv main loop. There is a long-winded explanation of this in
-            the C API function <tt class="docutils literal">mpv_suspend()</tt>. In short, this prevents the player
-            from displaying the next video frame, so that you don't get blocked when
-            trying to access the player.</p>
-            <p class="last">Before mpv 0.17.0, this was automatically called by the event handler.</p>
-            </dd>
+            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
+            with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.resume()</tt></dt>
-            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
-            <p class="last">Undo one <tt class="docutils literal">mp.suspend()</tt> call. <tt class="docutils literal">mp.suspend()</tt> increments an internal
-            counter, and <tt class="docutils literal">mp.resume()</tt> decrements it. When 0 is reached, the player
-            is actually resumed.</p>
-            </dd>
+            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
+            with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.resume_all()</tt></dt>
-            <dd><p class="first">This function has been deprecated in mpv 0.21.0 (no replacement).</p>
-            <p class="last">This resets the internal suspend counter and resumes the player. (It's
-            like calling <tt class="docutils literal">mp.resume()</tt> until the player is actually resumed.)</p>
-            </dd>
+            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
+            with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.get_wakeup_pipe()</tt></dt>
             <dd>Calls <tt class="docutils literal">mpv_get_wakeup_pipe()</tt> and returns the read end of the wakeup
             pipe. (See <tt class="docutils literal">client.h</tt> for details.)</dd>
@@ -10947,18 +10920,6 @@
             <p class="last">By default, most events are enabled, and there is not much use for this
             command.</p>
             </dd>
-            <dt><tt class="docutils literal">suspend</tt></dt>
-            <dd><p class="first">Deprecated, will be removed completely in 0.21.0.</p>
-            <p class="last">Suspend the mpv main loop. There is a long-winded explanation of this in
-            the C API function <tt class="docutils literal">mpv_suspend()</tt>. In short, this prevents the player
-            from displaying the next video frame, so that you don't get blocked when
-            trying to access the player.</p>
-            </dd>
-            <dt><tt class="docutils literal">resume</tt></dt>
-            <dd><p class="first">Deprecated, will be removed completely in 0.21.0.</p>
-            <p class="last">Undo one <tt class="docutils literal">suspend</tt> call. <tt class="docutils literal">suspend</tt> increments an internal counter, and
-            <tt class="docutils literal">resume</tt> decrements it. When 0 is reached, the player is actually resumed.</p>
-            </dd>
             <dt><tt class="docutils literal">get_version</tt></dt>
             <dd><p class="first">Returns the client API version the C API of the remote mpv instance
             provides.</p>
@@ -11228,7 +11189,7 @@
     <footer>
       <div class='container'>
         <small class='pull-left text-muted copyright'>
-          &copy; 2012-2016 mpv.io
+          &copy; 2012-2017 mpv.io
         </small>
         <div class='social-icons pull-right'>
                     <a target="_blank" href="https://github.com/mpv-player/mpv"><i class='fa fa-github-alt'></i>
