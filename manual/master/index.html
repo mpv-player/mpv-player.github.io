@@ -10979,6 +10979,53 @@
             <li><a class="reference external" href="https://github.com/mpv-player/mpv-examples/tree/master/libmpv">https://github.com/mpv-player/mpv-examples/tree/master/libmpv</a></li>
             </ul>
             </div>
+            <div class="section" id="c-plugins">
+            <h1>C PLUGINS</h1>
+            <p>You can write C plugins for mpv. These use the libmpv API, although they do not
+            use the libmpv library itself.</p>
+            <p>Currently, they must be explicitlx enabled at build time with
+            <tt class="docutils literal"><span class="pre">--enable-cplugins</span></tt>. They are available on Linux/BSD platforms only.</p>
+            <div class="section" id="c-plugins-location">
+            <h2>C plugins location</h2>
+            <p>C plugins are put into the mpv scripts directory in its config directory
+            (see the <a class="reference internal" href="#files">FILES</a> section for details). They must have a <tt class="docutils literal">.so</tt> file extension.
+            They can also be explicitly loaded with the <tt class="docutils literal"><span class="pre">--script</span></tt> option.</p>
+            </div>
+            <div class="section" id="api">
+            <h2>API</h2>
+            <p>A C plugin must export the following function:</p>
+            <pre class="literal-block">
+            int mpv_open_cplugin(mpv_handle *handle)
+            </pre>
+            <p>The plugin function will be called on loading time. This function does not
+            return as long as your plugin is loaded (it runs in its own thread). The
+            <tt class="docutils literal">handle</tt> will be deallocated as soon as the plugin function returns.</p>
+            <p>The return value is interpreted as error status. A value of <tt class="docutils literal">0</tt> is
+            interpreted as success, while any other value signals an error. In the latter
+            case, the player prints an uninformative error message that loading failed.</p>
+            <p>Within the plugin function, you can call libmpv API functions. The <tt class="docutils literal">handle</tt>
+            is created by <tt class="docutils literal">mpv_create_client()</tt> (or actually an internal equivalent),
+            and belongs to you. You can call <tt class="docutils literal">mpv_wait_event()</tt> to wait for things
+            happening, and so on.</p>
+            <p>Note that the player might block until your plugin calls <tt class="docutils literal">mpv_wait_event()</tt>
+            for the first time. This gives you a chance to install initial hooks etc.
+            before playback begins.</p>
+            <p>The details are quite similar to Lua scripts.</p>
+            </div>
+            <div class="section" id="linkage-to-libmpv">
+            <h2>Linkage to libmpv</h2>
+            <p>The current implementation requires that your plugins are <strong>not</strong> linked against
+            libmpv. What your plugins uses are not symbols from a libmpv binary, but
+            symbols from the mpv host binary.</p>
+            </div>
+            <div class="section" id="examples">
+            <h2>Examples</h2>
+            <p>See:</p>
+            <ul class="simple">
+            <li><a class="reference external" href="https://github.com/mpv-player/mpv-examples/tree/master/cplugins">https://github.com/mpv-player/mpv-examples/tree/master/cplugins</a></li>
+            </ul>
+            </div>
+            </div>
             <div class="section" id="environment-variables">
             <h1>ENVIRONMENT VARIABLES</h1>
             <p>There are a number of environment variables that can be used to control the
