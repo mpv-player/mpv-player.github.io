@@ -11001,8 +11001,10 @@
             return as long as your plugin is loaded (it runs in its own thread). The
             <tt class="docutils literal">handle</tt> will be deallocated as soon as the plugin function returns.</p>
             <p>The return value is interpreted as error status. A value of <tt class="docutils literal">0</tt> is
-            interpreted as success, while any other value signals an error. In the latter
-            case, the player prints an uninformative error message that loading failed.</p>
+            interpreted as success, while <tt class="docutils literal"><span class="pre">-1</span></tt> signals an error. In the latter case,
+            the player prints an uninformative error message that loading failed.</p>
+            <p>Return values other than <tt class="docutils literal">0</tt> and <tt class="docutils literal"><span class="pre">-1</span></tt> are reserved, and trigger undefined
+            behavior.</p>
             <p>Within the plugin function, you can call libmpv API functions. The <tt class="docutils literal">handle</tt>
             is created by <tt class="docutils literal">mpv_create_client()</tt> (or actually an internal equivalent),
             and belongs to you. You can call <tt class="docutils literal">mpv_wait_event()</tt> to wait for things
