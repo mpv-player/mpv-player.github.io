@@ -1497,18 +1497,28 @@
             (although potentially slower than other methods).</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--hwdec-preload=&lt;api&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=&lt;name&gt;</span></tt></dt>
             <dd><p class="first">This is useful for the <tt class="docutils literal">opengl</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for creating the
             hardware decoding OpenGL interop context, but without actually enabling
             hardware decoding itself (like <tt class="docutils literal"><span class="pre">--hwdec</span></tt> does).</p>
-            <p>If set to <tt class="docutils literal">no</tt> (default), the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option is used.</p>
+            <p>If set to an empty string (default), the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option is used.</p>
             <p>For <tt class="docutils literal">opengl</tt>, if set, do not create the interop context on demand, but
             when the VO is created.</p>
-            <p class="last">For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, if set, load the interop context as soon as the OpenGL
+            <p>For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, if set, load the interop context as soon as the OpenGL
             context is created. Since <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> has no on-demand loading, this
             allows enabling hardware decoding at runtime at all, without having
             to temporarily set the <tt class="docutils literal">hwdec</tt> option just during OpenGL context
             initialization with <tt class="docutils literal">mpv_opengl_cb_init_gl()</tt>.</p>
+            <p>See <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=help</span></tt> for accepted values. This lists the
+            interop backend, with the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> alias after it in <tt class="docutils literal"><span class="pre">[...]</span></tt>. Consider
+            all values except the proper interop backend name, <tt class="docutils literal">auto</tt>, and <tt class="docutils literal">no</tt> as
+            silently deprecated and subject to change. Also, if you use this in
+            application code (e.g. via libmpv), any value other than <tt class="docutils literal">auto</tt> and <tt class="docutils literal">no</tt>
+            should be avoided, as backends can change.</p>
+            <p>Currently the option sets a single value. It is possible that the option
+            type changes to a list in the future.</p>
+            <p class="last">The old alias <tt class="docutils literal"><span class="pre">--hwdec-preload</span></tt> has different behavior if the option value
+            is <tt class="docutils literal">no</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--videotoolbox-format=&lt;name&gt;</span></tt></dt>
             <dd>Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
@@ -8878,13 +8888,15 @@
             This is known only once the VO has opened (and possibly later). With some
             VOs (like <tt class="docutils literal">opengl</tt>), this might be never known in advance, but only when
             the decoder attempted to create the hw decoder successfully. (Using
-            <tt class="docutils literal"><span class="pre">--hwdec-preload</span></tt> can load it eagerly.) If there are multiple drivers
-            loaded, they will be separated by <tt class="docutils literal">,</tt>.</p>
+            <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop</span></tt> can load it eagerly.) If there are multiple
+            drivers loaded, they will be separated by <tt class="docutils literal">,</tt>.</p>
             <p>If no VO is active or no interop driver is known, this property is
             unavailable.</p>
-            <p class="last">This does not necessarily use the same values as <tt class="docutils literal">hwdec</tt>. There can be
+            <p>This does not necessarily use the same values as <tt class="docutils literal">hwdec</tt>. There can be
             multiple interop drivers for the same hardware decoder, depending on
             platform and VO.</p>
+            <p class="last">This is somewhat similar to the <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop</span></tt> option, but
+            it returns the actually loaded backend, not the value of this option.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">video-format</span></tt></dt>
             <dd>Video format as string.</dd>
