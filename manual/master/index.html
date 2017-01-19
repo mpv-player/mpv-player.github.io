@@ -1889,29 +1889,22 @@
             FFmpeg's new DCA decoder (based on libdcadec).</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ad=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ad=&lt;decoder1,decoder2,...[-]&gt;</span></tt></dt>
             <dd><p class="first">Specify a priority list of audio decoders to be used, according to their
             decoder name. When determining which decoder to use, the first decoder that
             matches the audio format is selected. If that is unavailable, the next
             decoder is used. Finally, it tries all other decoders that are not
             explicitly selected or rejected by the option.</p>
-            <p>Specifying family names is deprecated. Entries like <tt class="docutils literal">family:*</tt> prioritize
-            all decoders of the given family.</p>
             <p><tt class="docutils literal">-</tt> at the end of the list suppresses fallback on other available
             decoders not on the <tt class="docutils literal"><span class="pre">--ad</span></tt> list. <tt class="docutils literal">+</tt> in front of an entry forces the
             decoder. Both of these should not normally be used, because they break
             normal decoder auto-selection! Both of these methods are deprecated.</p>
-            <p><tt class="docutils literal">-</tt> in front of an entry disables selection of the decoder. This is
-            deprecated.</p>
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--ad=mp3float</span></tt></dt>
             <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
             decoders.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--ad=lavc:mp3float</span></tt></dt>
-            <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
-            decoders. (Using deprecated family syntax.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--ad=help</span></tt></dt>
             <dd>List all available decoders.</dd>
             </dl>
@@ -1919,7 +1912,7 @@
             <div class="admonition admonition-warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">Enabling compressed audio passthrough (AC3 and DTS via SPDIF/HDMI) with
-            this option is deprecated. Use <tt class="docutils literal"><span class="pre">--audio-spdif</span></tt> instead.</p>
+            this option is not possible. Use <tt class="docutils literal"><span class="pre">--audio-spdif</span></tt> instead.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--volume=&lt;value&gt;</span></tt></dt>
@@ -2554,8 +2547,8 @@
             <p>The pseudo codepage <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> is used internally. If it's set,
             subtitles are interpreted as UTF-8 with &quot;Latin 1&quot; as fallback for bytes
             which are not valid UTF-8 sequences. iconv is never involved in this mode.</p>
-            <p class="last">This option changed in mpv 0.23.0. The old syntax is still emulated to some
-            degree.</p>
+            <p class="last">This option changed in mpv 0.23.0. Support for the old syntax was fully
+            removed in mpv 0.24.0.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-fix-timing</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-fix-timing</span></tt></dt>
             <dd>By default, subtitle timing is adjusted to remove minor gaps or overlaps
@@ -3081,7 +3074,7 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--hidpi-window-scale</span></tt>, <tt class="docutils literal"><span class="pre">--no-hidpi-window-scale</span></tt></dt>
-            <dd>(OS X only)
+            <dd>(OS X and X11 only)
             Scale the window size according to the backing scale factor (default: yes).
             On regular HiDPI resolutions the window opens with double the size but appears
             as having the same size as on none-HiDPI resolutions. This is the default OS X
