@@ -5291,20 +5291,10 @@
             <dt><tt class="docutils literal"><span class="pre">--mf-type=&lt;value&gt;</span></tt></dt>
             <dd>Input file type for <tt class="docutils literal"><span class="pre">mf://</span></tt> (available: jpeg, png, tga, sgi). By default,
             this is guessed from the file extension.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--stream-capture=&lt;filename&gt;</span></tt></dt>
-            <dd><p class="first">Allows capturing the primary stream (not additional audio tracks or other
-            kind of streams) into the given file. Capturing can also be started and
-            stopped by changing the filename with the <tt class="docutils literal"><span class="pre">stream-capture</span></tt> property.
-            Generally this will not produce usable results for anything else than MPEG
-            or raw streams, unless capturing includes the file headers and is not
-            interrupted. Note that, due to cache latencies, captured data may begin and
-            end somewhat delayed compared to what you see displayed.</p>
-            <p class="last">The destination file is always appended. (Before mpv 0.8.0, the file was
-            overwritten.)</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--stream-dump=&lt;filename&gt;</span></tt></dt>
-            <dd>Same as <tt class="docutils literal"><span class="pre">--stream-capture</span></tt>, but do not start playback. Instead, the entire
-            file is dumped.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--stream-dump=&lt;destination-filename&gt;</span></tt></dt>
+            <dd>Instead of playing a file, read its byte stream and write it to the given
+            destination file. The destination is overwritten. Can be useful to test
+            network-related behavior.</dd>
             <dt><tt class="docutils literal"><span class="pre">--stream-lavf-o=opt1=value1,opt2=value2,...</span></tt></dt>
             <dd>Set AVOptions on streams opened with libavformat. Unknown or misspelled
             options are silently ignored. (They are mentioned in the terminal output
@@ -9076,9 +9066,6 @@
             text-based (i.e. DVD/BD subtitles), an empty string is returned.</p>
             <p class="last">This property is experimental and might be removed in the future.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">stream-capture</span></tt> (RW)</dt>
-            <dd>A filename, see <tt class="docutils literal"><span class="pre">--stream-capture</span></tt>. Setting this will start capture using
-            the given filename. Setting it to an empty string will stop it.</dd>
             <dt><tt class="docutils literal"><span class="pre">tv-brightness</span></tt>, <tt class="docutils literal"><span class="pre">tv-contrast</span></tt>, <tt class="docutils literal"><span class="pre">tv-saturation</span></tt>, <tt class="docutils literal"><span class="pre">tv-hue</span></tt> (RW)</dt>
             <dd>TV stuff.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
