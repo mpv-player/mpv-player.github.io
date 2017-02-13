@@ -157,7 +157,7 @@
             <dt>L</dt>
             <dd>Toggle infinite looping.</dd>
             <dt>Ctrl + and Ctrl -</dt>
-            <dd>Adjust audio delay by +/- 0.1 seconds.</dd>
+            <dd>Adjust audio delay (A/V sync) by +/- 0.1 seconds.</dd>
             <dt>u</dt>
             <dd>Switch between applying no style overrides to SSA/ASS subtitles, and
             overriding them almost completely with the normal subtitle style. See
@@ -674,9 +674,12 @@
             <dd><p class="first">Many network protocols are supported, but the protocol prefix must always
             be specified. mpv will never attempt to guess whether a filename is
             actually a network address. A protocol prefix is always required.</p>
-            <p class="last">Note that not all prefixes are documented here. Undocumented prefixes are
+            <p>Note that not all prefixes are documented here. Undocumented prefixes are
             either aliases to documented protocols, or are just redirections to
             protocols implemented and documented in FFmpeg.</p>
+            <p class="last"><tt class="docutils literal">data:</tt> is supported in FFmpeg (not in Libav), but needs to be in the
+            format <tt class="docutils literal"><span class="pre">data://</span></tt>. This is done to avoid ambiguity with filenames. You
+            can also prefix it with <tt class="docutils literal"><span class="pre">lavf://</span></tt> or <tt class="docutils literal"><span class="pre">ffmpeg://</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">ytdl://...</span></tt></dt>
             <dd><p class="first">By default, the youtube-dl hook script (enabled by default for mpv CLI)
@@ -1397,9 +1400,9 @@
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
             <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> with <tt class="docutils literal"><span class="pre">--opengl-backend=angle</span></tt>
-            (Windows only)</td>
+            (Windows 8+ only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
+            <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows 8+ only)</td>
             </tr>
             <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">copies video back to system RAM (Android only)</td>
             </tr>
@@ -1432,6 +1435,13 @@
             (automatically used if available). You can also try the old GLX backend by
             forcing it with <tt class="docutils literal"><span class="pre">--opengl-backend=x11</span></tt>, but the vaapi/GLX interop is
             said to be slower than <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>.</p>
+            <p>The <tt class="docutils literal">cuda</tt> and <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> modes provides deinterlacing in the decoder
+            which is useful as there is no other deinterlacing mechanism in the opengl
+            output path. To use this deinterlacing you must pass the option:
+            <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>.
+            Pass <tt class="docutils literal">weave</tt> (or leave the option unset) to not attempt any
+            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred unless the <tt class="docutils literal">opengl</tt>
+            vo is not being used or filters are required.</p>
             <p>Most video filters will not work with hardware decoding as they are
             primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
             <tt class="docutils literal">vdpaurb</tt> and <tt class="docutils literal">vavpp</tt>. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for more details.</p>
@@ -1474,16 +1484,6 @@
             In addition to driver-specific behavior, global system settings might
             affect this additionally. This can give incorrect results even with
             completely ordinary video sources.</p>
-            <p><tt class="docutils literal">cuda</tt> is usually safe. Interlaced content can be deinterlaced by
-            the decoder, which is useful as there is no other deinterlacing
-            mechanism in the opengl output path. To use this deinterlacing you
-            must pass the option: <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>. Pass
-            <tt class="docutils literal">weave</tt> to not attempt any deinterlacing.
-            10 and 12bit HEVC is available if the hardware supports it and a
-            sufficiently new driver (&gt; 375.xx) is used.</p>
-            <p><tt class="docutils literal"><span class="pre">cuda-copy</span></tt> has the same behaviour as <tt class="docutils literal">cuda</tt> - including the ability
-            to deinterlace inside the decoder. However, traditional deinterlacing
-            filters can be used in this case.</p>
             <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
             <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>.</p>
             <p><tt class="docutils literal">crystalhd</tt> is not safe. It always converts to 4:2:2 YUV, which
@@ -1497,18 +1497,28 @@
             (although potentially slower than other methods).</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--hwdec-preload=&lt;api&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=&lt;name&gt;</span></tt></dt>
             <dd><p class="first">This is useful for the <tt class="docutils literal">opengl</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for creating the
             hardware decoding OpenGL interop context, but without actually enabling
             hardware decoding itself (like <tt class="docutils literal"><span class="pre">--hwdec</span></tt> does).</p>
-            <p>If set to <tt class="docutils literal">no</tt> (default), the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option is used.</p>
+            <p>If set to an empty string (default), the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option is used.</p>
             <p>For <tt class="docutils literal">opengl</tt>, if set, do not create the interop context on demand, but
             when the VO is created.</p>
-            <p class="last">For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, if set, load the interop context as soon as the OpenGL
+            <p>For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, if set, load the interop context as soon as the OpenGL
             context is created. Since <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> has no on-demand loading, this
             allows enabling hardware decoding at runtime at all, without having
             to temporarily set the <tt class="docutils literal">hwdec</tt> option just during OpenGL context
             initialization with <tt class="docutils literal">mpv_opengl_cb_init_gl()</tt>.</p>
+            <p>See <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=help</span></tt> for accepted values. This lists the
+            interop backend, with the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> alias after it in <tt class="docutils literal"><span class="pre">[...]</span></tt>. Consider
+            all values except the proper interop backend name, <tt class="docutils literal">auto</tt>, and <tt class="docutils literal">no</tt> as
+            silently deprecated and subject to change. Also, if you use this in
+            application code (e.g. via libmpv), any value other than <tt class="docutils literal">auto</tt> and <tt class="docutils literal">no</tt>
+            should be avoided, as backends can change.</p>
+            <p>Currently the option sets a single value. It is possible that the option
+            type changes to a list in the future.</p>
+            <p class="last">The old alias <tt class="docutils literal"><span class="pre">--hwdec-preload</span></tt> has different behavior if the option value
+            is <tt class="docutils literal">no</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--videotoolbox-format=&lt;name&gt;</span></tt></dt>
             <dd>Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
@@ -1879,29 +1889,22 @@
             FFmpeg's new DCA decoder (based on libdcadec).</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ad=&lt;[+|-]family1:(*|decoder1),[+|-]family2:(*|decoder2),...[-]&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--ad=&lt;decoder1,decoder2,...[-]&gt;</span></tt></dt>
             <dd><p class="first">Specify a priority list of audio decoders to be used, according to their
             decoder name. When determining which decoder to use, the first decoder that
             matches the audio format is selected. If that is unavailable, the next
             decoder is used. Finally, it tries all other decoders that are not
             explicitly selected or rejected by the option.</p>
-            <p>Specifying family names is deprecated. Entries like <tt class="docutils literal">family:*</tt> prioritize
-            all decoders of the given family.</p>
             <p><tt class="docutils literal">-</tt> at the end of the list suppresses fallback on other available
             decoders not on the <tt class="docutils literal"><span class="pre">--ad</span></tt> list. <tt class="docutils literal">+</tt> in front of an entry forces the
             decoder. Both of these should not normally be used, because they break
             normal decoder auto-selection! Both of these methods are deprecated.</p>
-            <p><tt class="docutils literal">-</tt> in front of an entry disables selection of the decoder. This is
-            deprecated.</p>
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--ad=mp3float</span></tt></dt>
             <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
             decoders.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--ad=lavc:mp3float</span></tt></dt>
-            <dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
-            decoders. (Using deprecated family syntax.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--ad=help</span></tt></dt>
             <dd>List all available decoders.</dd>
             </dl>
@@ -1909,7 +1912,7 @@
             <div class="admonition admonition-warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">Enabling compressed audio passthrough (AC3 and DTS via SPDIF/HDMI) with
-            this option is deprecated. Use <tt class="docutils literal"><span class="pre">--audio-spdif</span></tt> instead.</p>
+            this option is not possible. Use <tt class="docutils literal"><span class="pre">--audio-spdif</span></tt> instead.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--volume=&lt;value&gt;</span></tt></dt>
@@ -2483,6 +2486,12 @@
             <p>This option does not display subtitles correctly. Use with care.</p>
             <p class="last">Disabled by default.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--image-subs-video-resolution=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Override the image subtitle resolution with the video resolution
+            (default: no). Normally, the subtitle canvas is fit into the video canvas
+            (e.g. letterboxed). Setting this option uses the video size as subtitle
+            canvas size. Can be useful to test broken subtitles, which often happen
+            when the video was trancoded, while attempting to keep the old subtitles.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-ass</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt></dt>
             <dd><p class="first">Render ASS subtitles natively (enabled by default).</p>
             <div class="admonition note">
@@ -2544,8 +2553,8 @@
             <p>The pseudo codepage <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> is used internally. If it's set,
             subtitles are interpreted as UTF-8 with &quot;Latin 1&quot; as fallback for bytes
             which are not valid UTF-8 sequences. iconv is never involved in this mode.</p>
-            <p class="last">This option changed in mpv 0.23.0. The old syntax is still emulated to some
-            degree.</p>
+            <p class="last">This option changed in mpv 0.23.0. Support for the old syntax was fully
+            removed in mpv 0.24.0.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-fix-timing</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-fix-timing</span></tt></dt>
             <dd>By default, subtitle timing is adjusted to remove minor gaps or overlaps
@@ -2713,6 +2722,16 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-align-y=&lt;top|center|bottom&gt;</span></tt></dt>
             <dd>Vertical position (default: <tt class="docutils literal">bottom</tt>).
             Details see <tt class="docutils literal"><span class="pre">--sub-align-x</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-justify=&lt;auto|left|center|right&gt;</span></tt></dt>
+            <dd>Control how multi line subs are justified irrespective of where they
+            are aligned (default: <tt class="docutils literal">auto</tt> which justifies as defined by
+            <tt class="docutils literal"><span class="pre">--sub-align-y</span></tt>).
+            Left justification is recommended to make the subs easier to read
+            as it is easier for the eyes.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-justify=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Applies justification as defined by <tt class="docutils literal"><span class="pre">--sub-justify</span></tt> on ASS subtitles
+            if <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt> is not set to <tt class="docutils literal">no</tt>.
+            Default: <tt class="docutils literal">no</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-shadow-color=&lt;color&gt;</span></tt></dt>
             <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text shadow.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-shadow-offset=&lt;size&gt;</span></tt></dt>
@@ -2845,6 +2864,8 @@
             Enable/disable playback progress rendering in taskbar (Windows 7 and above).</p>
             <p class="last">Enabled by default.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--snap-window</span></tt></dt>
+            <dd>(Windows only) Snap the player window to screen edges.</dd>
             <dt><tt class="docutils literal"><span class="pre">--ontop</span></tt></dt>
             <dd><p class="first">Makes the player window stay on top of other windows.</p>
             <p class="last">On Windows, if combined with fullscreen mode, this causes mpv to be
@@ -3071,7 +3092,7 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--hidpi-window-scale</span></tt>, <tt class="docutils literal"><span class="pre">--no-hidpi-window-scale</span></tt></dt>
-            <dd>(OS X only)
+            <dd>(OS X and X11 only)
             Scale the window size according to the backing scale factor (default: yes).
             On regular HiDPI resolutions the window opens with double the size but appears
             as having the same size as on none-HiDPI resolutions. This is the default OS X
@@ -3404,6 +3425,22 @@
             is enabled, and the value is larger.</p>
             <p class="last">(This value tends to be fuzzy, because many file formats don't store linear
             timestamps.)</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--prefetch-playlist=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Prefetch next playlist entry while playback of the current entry is ending
+            (default: no). This merely opens the URL of the next playlist entry as soon
+            as the current URL is fully read.</p>
+            <p>This does <strong>not</strong> work with URLs resolved by the <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> wrapper,
+            and it won't.</p>
+            <p>This does not affect HLS (<tt class="docutils literal">.m3u8</tt> URLs) - HLS prefetching depends on the
+            demuxer cache settings and is on by default.</p>
+            <p>This can give subtly wrong results if per-file options are used, or if
+            options are changed in the time window between prefetching start and next
+            file played.</p>
+            <p>This can occasionally make wrong prefetching decisions. For example, it
+            can't predict whether you go backwards in the playlist, and assumes you
+            won't edit the playlist.</p>
+            <p class="last">Highly experimental.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--force-seekable=&lt;yes|no&gt;</span></tt></dt>
             <dd>If the player thinks that the media is not seekable (e.g. playing from a
@@ -4844,14 +4881,62 @@
             of <tt class="docutils literal">windowed</tt> should be enough, since full screen may bypass the DWM.</p>
             <p class="last">Windows only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-dcomposition=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Allows DirectComposition when using the ANGLE backend (default: yes).
-            DirectComposition implies flip-model presentation, which can improve
-            rendering efficiency on Windows 8+ by avoiding a copy of the video frame.
-            mpv uses it by default where possible, but it can cause poor behaviour with
-            some drivers, such as a black screen or graphical corruption when leaving
-            full-screen mode. Use &quot;no&quot; to disable it.</p>
+            <dt><tt class="docutils literal"><span class="pre">--angle-d3d11-feature-level=&lt;11_0|10_1|10_0|9_3&gt;</span></tt></dt>
+            <dd><p class="first">Selects a specific feature level when using the ANGLE backend with D3D11.
+            By default, the highest available feature level is used. This option can be
+            used to select a lower feature level, which is mainly useful for debugging.
+            Note that OpenGL ES 3.0 is only supported at feature level 10_1 or higher.
+            Most extended OpenGL features will not work at lower feature levels
+            (similar to <tt class="docutils literal"><span class="pre">--opengl-dumb-mode</span></tt>).</p>
             <p class="last">Windows with ANGLE only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--angle-d3d11-warp=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">Use WARP (Windows Advanced Rasterization Platform) when using the ANGLE
+            backend with D3D11 (default: auto). This is a high performance software
+            renderer. By default, it is used when the Direct3D hardware does not
+            support Direct3D 11 feature level 9_3. While the extended OpenGL features
+            will work with WARP, they can be very slow.</p>
+            <p class="last">Windows with ANGLE only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--angle-egl-windowing=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">Use ANGLE's built in EGL windowing functions to create a swap chain
+            (default: auto). If this is set to <tt class="docutils literal">no</tt> and the D3D11 renderer is in use,
+            ANGLE's built in swap chain will not be used and a custom swap chain that
+            is optimized for video rendering will be created instead. If set to
+            <tt class="docutils literal">auto</tt>, a custom swap chain will be used for D3D11 and the built in swap
+            chain will be used for D3D9. This option is mainly for debugging purposes,
+            in case the custom swap chain has poor performance or does not work.</p>
+            <p>If set to <tt class="docutils literal">yes</tt>, the <tt class="docutils literal"><span class="pre">--angle-max-frame-latency</span></tt> and
+            <tt class="docutils literal"><span class="pre">--angle-swapchain-length</span></tt> options will have no effect.</p>
+            <p class="last">Windows with ANGLE only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--angle-max-frame-latency=&lt;1-16&gt;</span></tt></dt>
+            <dd><p class="first">Sets the maximum number of frames that the system is allowed to queue for
+            rendering with the ANGLE backend (default: 3). Lower values should make
+            VSync timing more accurate, but a value of <tt class="docutils literal">1</tt> requires powerful
+            hardware, since the CPU will not be able to &quot;render ahead&quot; of the GPU.</p>
+            <p class="last">Windows with ANGLE only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--angle-renderer=&lt;d3d9|d3d11|auto&gt;</span></tt></dt>
+            <dd><p class="first">Forces a specific renderer when using the ANGLE backend (default: auto). In
+            auto mode this will pick D3D11 for systems that support Direct3D 11 feature
+            level 9_3 or higher, and D3D9 otherwise. This option is mainly for
+            debugging purposes. Normally there is no reason to force a specific
+            renderer, though <tt class="docutils literal"><span class="pre">--angle-renderer=d3d9</span></tt> may give slightly better
+            performance on old hardware. Note that the D3D9 renderer only supports
+            OpenGL ES 2.0, so most extended OpenGL features will not work if this
+            renderer is selected (similar to <tt class="docutils literal"><span class="pre">--opengl-dumb-mode</span></tt>).</p>
+            <p class="last">Windows with ANGLE only.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--angle-swapchain-length=&lt;2-16&gt;</span></tt></dt>
+            <dd><p class="first">Sets the number of buffers in the D3D11 presentation queue when using the
+            ANGLE backend (default: 6). At least 2 are required, since one is the back
+            buffer that mpv renders to and the other is the front buffer that is
+            presented by the DWM. Additional buffers can improve performance, because
+            for example, mpv will not have to wait on the DWM to release the front
+            buffer before rendering a new frame to it. For this reason, Microsoft
+            recommends at least 4.</p>
+            <p class="last">Windows 8+ with ANGLE only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-sw</span></tt></dt>
             <dd>Continue even if a software renderer is detected.</dd>
@@ -4876,6 +4961,9 @@
             work.</dd>
             <dt>x11</dt>
             <dd>X11/GLX</dd>
+            <dt>x11probe</dt>
+            <dd>For internal autoprobing, equivalent to <tt class="docutils literal">x11</tt> otherwise. Don't use
+            directly, it could be removed without warning as autoprobing is changed.</dd>
             <dt>wayland</dt>
             <dd>Wayland/EGL</dd>
             <dt>drm</dt>
@@ -5111,7 +5199,8 @@
             not be supported on all platforms. If alpha framebuffers are
             unavailable, it silently falls back on a normal framebuffer. Note that
             if you set the <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> option to a non-default value, a
-            format with alpha must be specified, or this won't work.</dd>
+            format with alpha must be specified, or this won't work.
+            This does not work on X11 with EGL and Mesa (freedesktop bug 67676).</dd>
             <dt>no</dt>
             <dd>Ignore alpha component.</dd>
             </dl>
@@ -5268,20 +5357,10 @@
             <dt><tt class="docutils literal"><span class="pre">--mf-type=&lt;value&gt;</span></tt></dt>
             <dd>Input file type for <tt class="docutils literal"><span class="pre">mf://</span></tt> (available: jpeg, png, tga, sgi). By default,
             this is guessed from the file extension.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--stream-capture=&lt;filename&gt;</span></tt></dt>
-            <dd><p class="first">Allows capturing the primary stream (not additional audio tracks or other
-            kind of streams) into the given file. Capturing can also be started and
-            stopped by changing the filename with the <tt class="docutils literal"><span class="pre">stream-capture</span></tt> property.
-            Generally this will not produce usable results for anything else than MPEG
-            or raw streams, unless capturing includes the file headers and is not
-            interrupted. Note that, due to cache latencies, captured data may begin and
-            end somewhat delayed compared to what you see displayed.</p>
-            <p class="last">The destination file is always appended. (Before mpv 0.8.0, the file was
-            overwritten.)</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--stream-dump=&lt;filename&gt;</span></tt></dt>
-            <dd>Same as <tt class="docutils literal"><span class="pre">--stream-capture</span></tt>, but do not start playback. Instead, the entire
-            file is dumped.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--stream-dump=&lt;destination-filename&gt;</span></tt></dt>
+            <dd>Instead of playing a file, read its byte stream and write it to the given
+            destination file. The destination is overwritten. Can be useful to test
+            network-related behavior.</dd>
             <dt><tt class="docutils literal"><span class="pre">--stream-lavf-o=opt1=value1,opt2=value2,...</span></tt></dt>
             <dd>Set AVOptions on streams opened with libavformat. Unknown or misspelled
             options are silently ignored. (They are mentioned in the terminal output
@@ -5317,6 +5396,25 @@
             added (like with <tt class="docutils literal"><span class="pre">--sub-file</span></tt>), they will not be auto-selected.</p>
             <p class="last">This does not affect playlist expansion, redirection, or other loading of
             referenced files like with ordered chapters.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--record-file=&lt;file&gt;</span></tt></dt>
+            <dd><p class="first">Record the current stream to the given target file. The target file will
+            always be overwritten without asking.</p>
+            <p>This remuxes the source stream without reencoding, which makes this a
+            highly fragile and experimental feature. It's entirely possible that this
+            writes files which are broken, not standards compliant, not playable with
+            all players (including mpv), or incomplete.</p>
+            <p>The target file format is determined by the file extension of the target
+            filename. It is recommended to use the same target container as the source
+            container if possible, and preferring Matroska as fallback.</p>
+            <p>Seeking during stream recording, or enabling/disabling stream recording
+            during playback, can cut off data, or produce &quot;holes&quot; in the output file.
+            These are technical restrictions. In particular, video data or subtitles
+            which were read ahead can produce such holes, which might cause playback
+            problems with various players (including mpv).</p>
+            <p class="last">The behavior of this option might changed in the future, such as changing
+            it to a template (similar to <tt class="docutils literal"><span class="pre">--screenshot-template</span></tt>), being renamed,
+            removed, or anything else, until it is declared semi-stable.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--lavfi-complex=&lt;string&gt;</span></tt></dt>
             <dd><p class="first">Set a &quot;complex&quot; libavfilter filter, which means a single filter graph can
@@ -8560,13 +8658,17 @@
             <dt><tt class="docutils literal"><span class="pre">total-avsync-change</span></tt></dt>
             <dd>Total A-V sync correction done. Unavailable if audio or video is
             disabled.</dd>
-            <dt><tt class="docutils literal"><span class="pre">drop-frame-count</span></tt></dt>
-            <dd>Video frames dropped by decoder, because video is too far behind audio (when
+            <dt><tt class="docutils literal"><span class="pre">decoder-frame-drop-count</span></tt></dt>
+            <dd><p class="first">Video frames dropped by decoder, because video is too far behind audio (when
             using <tt class="docutils literal"><span class="pre">--framedrop=decoder</span></tt>). Sometimes, this may be incremented in other
             situations, e.g. when video packets are damaged, or the decoder doesn't
-            follow the usual rules. Unavailable if video is disabled.</dd>
-            <dt><tt class="docutils literal"><span class="pre">vo-drop-frame-count</span></tt></dt>
-            <dd>Frames dropped by VO (when using <tt class="docutils literal"><span class="pre">--framedrop=vo</span></tt>).</dd>
+            follow the usual rules. Unavailable if video is disabled.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">drop-frame-count</span></tt> is a deprecated alias.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">frame-drop-count</span></tt></dt>
+            <dd><p class="first">Frames dropped by VO (when using <tt class="docutils literal"><span class="pre">--framedrop=vo</span></tt>).</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">vo-drop-frame-count</span></tt> is a deprecated alias.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">mistimed-frame-count</span></tt></dt>
             <dd>Number of video frames that were not timed correctly in display-sync mode
             for the sake of keeping A/V sync. This does not include external
@@ -8874,13 +8976,15 @@
             This is known only once the VO has opened (and possibly later). With some
             VOs (like <tt class="docutils literal">opengl</tt>), this might be never known in advance, but only when
             the decoder attempted to create the hw decoder successfully. (Using
-            <tt class="docutils literal"><span class="pre">--hwdec-preload</span></tt> can load it eagerly.) If there are multiple drivers
-            loaded, they will be separated by <tt class="docutils literal">,</tt>.</p>
+            <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop</span></tt> can load it eagerly.) If there are multiple
+            drivers loaded, they will be separated by <tt class="docutils literal">,</tt>.</p>
             <p>If no VO is active or no interop driver is known, this property is
             unavailable.</p>
-            <p class="last">This does not necessarily use the same values as <tt class="docutils literal">hwdec</tt>. There can be
+            <p>This does not necessarily use the same values as <tt class="docutils literal">hwdec</tt>. There can be
             multiple interop drivers for the same hardware decoder, depending on
             platform and VO.</p>
+            <p class="last">This is somewhat similar to the <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop</span></tt> option, but
+            it returns the actually loaded backend, not the value of this option.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">video-format</span></tt></dt>
             <dd>Video format as string.</dd>
@@ -9047,9 +9151,6 @@
             text-based (i.e. DVD/BD subtitles), an empty string is returned.</p>
             <p class="last">This property is experimental and might be removed in the future.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">stream-capture</span></tt> (RW)</dt>
-            <dd>A filename, see <tt class="docutils literal"><span class="pre">--stream-capture</span></tt>. Setting this will start capture using
-            the given filename. Setting it to an empty string will stop it.</dd>
             <dt><tt class="docutils literal"><span class="pre">tv-brightness</span></tt>, <tt class="docutils literal"><span class="pre">tv-contrast</span></tt>, <tt class="docutils literal"><span class="pre">tv-saturation</span></tt>, <tt class="docutils literal"><span class="pre">tv-hue</span></tt> (RW)</dt>
             <dd>TV stuff.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
@@ -10402,6 +10503,10 @@
             example to delay processing of property change events: if you're observing
             multiple properties at once, you might not want to act on each property
             change, but only when all change notifications have been received.</dd>
+            <dt><tt class="docutils literal">mp.unregister_idle(fn)</tt></dt>
+            <dd>Undo <tt class="docutils literal">mp.register_idle(fn)</tt>. This removes all idle handlers that
+            are equal to the <tt class="docutils literal">fn</tt> parameter. This uses normal Lua <tt class="docutils literal">==</tt> comparison,
+            so be careful when dealing with closures.</dd>
             <dt><tt class="docutils literal">mp.enable_messages(level)</tt></dt>
             <dd>Set the minimum log level of which mpv message output to receive. These
             messages are normally printed to the terminal. By calling this function,
@@ -10975,6 +11080,55 @@
             <li><a class="reference external" href="http://mpv.io/manual/master/#properties">http://mpv.io/manual/master/#properties</a></li>
             <li><a class="reference external" href="https://github.com/mpv-player/mpv-examples/tree/master/libmpv">https://github.com/mpv-player/mpv-examples/tree/master/libmpv</a></li>
             </ul>
+            </div>
+            <div class="section" id="c-plugins">
+            <h1>C PLUGINS</h1>
+            <p>You can write C plugins for mpv. These use the libmpv API, although they do not
+            use the libmpv library itself.</p>
+            <p>Currently, they must be explicitly enabled at build time with
+            <tt class="docutils literal"><span class="pre">--enable-cplugins</span></tt>. They are available on Linux/BSD platforms only.</p>
+            <div class="section" id="c-plugins-location">
+            <h2>C plugins location</h2>
+            <p>C plugins are put into the mpv scripts directory in its config directory
+            (see the <a class="reference internal" href="#files">FILES</a> section for details). They must have a <tt class="docutils literal">.so</tt> file extension.
+            They can also be explicitly loaded with the <tt class="docutils literal"><span class="pre">--script</span></tt> option.</p>
+            </div>
+            <div class="section" id="api">
+            <h2>API</h2>
+            <p>A C plugin must export the following function:</p>
+            <pre class="literal-block">
+            int mpv_open_cplugin(mpv_handle *handle)
+            </pre>
+            <p>The plugin function will be called on loading time. This function does not
+            return as long as your plugin is loaded (it runs in its own thread). The
+            <tt class="docutils literal">handle</tt> will be deallocated as soon as the plugin function returns.</p>
+            <p>The return value is interpreted as error status. A value of <tt class="docutils literal">0</tt> is
+            interpreted as success, while <tt class="docutils literal"><span class="pre">-1</span></tt> signals an error. In the latter case,
+            the player prints an uninformative error message that loading failed.</p>
+            <p>Return values other than <tt class="docutils literal">0</tt> and <tt class="docutils literal"><span class="pre">-1</span></tt> are reserved, and trigger undefined
+            behavior.</p>
+            <p>Within the plugin function, you can call libmpv API functions. The <tt class="docutils literal">handle</tt>
+            is created by <tt class="docutils literal">mpv_create_client()</tt> (or actually an internal equivalent),
+            and belongs to you. You can call <tt class="docutils literal">mpv_wait_event()</tt> to wait for things
+            happening, and so on.</p>
+            <p>Note that the player might block until your plugin calls <tt class="docutils literal">mpv_wait_event()</tt>
+            for the first time. This gives you a chance to install initial hooks etc.
+            before playback begins.</p>
+            <p>The details are quite similar to Lua scripts.</p>
+            </div>
+            <div class="section" id="linkage-to-libmpv">
+            <h2>Linkage to libmpv</h2>
+            <p>The current implementation requires that your plugins are <strong>not</strong> linked against
+            libmpv. What your plugins uses are not symbols from a libmpv binary, but
+            symbols from the mpv host binary.</p>
+            </div>
+            <div class="section" id="examples">
+            <h2>Examples</h2>
+            <p>See:</p>
+            <ul class="simple">
+            <li><a class="reference external" href="https://github.com/mpv-player/mpv-examples/tree/master/cplugins">https://github.com/mpv-player/mpv-examples/tree/master/cplugins</a></li>
+            </ul>
+            </div>
             </div>
             <div class="section" id="environment-variables">
             <h1>ENVIRONMENT VARIABLES</h1>
