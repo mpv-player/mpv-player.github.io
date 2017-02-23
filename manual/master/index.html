@@ -3271,6 +3271,14 @@
             some checks. Give the demuxer name as printed by <tt class="docutils literal"><span class="pre">--demuxer=help</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-analyzeduration=&lt;value&gt;</span></tt></dt>
             <dd>Maximum length in seconds to analyze the stream properties.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-probe-info=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">Whether to probe stream information (default: auto). Technically, this
+            controls whether libavformat's <tt class="docutils literal">avformat_find_stream_info()</tt> function
+            is called. Usually it's safer to call it, but it can also make startup
+            slower.</p>
+            <p class="last">The <tt class="docutils literal">auto</tt> choice (the default) tries to skip this for a few know-safe
+            whitelisted formats, while calling it for everything else.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-probescore=&lt;1-100&gt;</span></tt></dt>
             <dd>Minimum required libavformat probe score. Lower values will require
             less data to be loaded (makes streams start faster), but makes file
