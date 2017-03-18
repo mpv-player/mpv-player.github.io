@@ -8456,11 +8456,12 @@
             <dt><tt class="docutils literal"><span class="pre">screenshot-raw</span> [subtitles|video|window]</tt></dt>
             <dd>Return a screenshot in memory. This can be used only through the client
             API. The MPV_FORMAT_NODE_MAP returned by this command has the <tt class="docutils literal">w</tt>, <tt class="docutils literal">h</tt>,
-            <tt class="docutils literal">stride</tt> fields set to obvious contents. A <tt class="docutils literal">format</tt> field is set to
+            <tt class="docutils literal">stride</tt> fields set to obvious contents. The <tt class="docutils literal">format</tt> field is set to
             <tt class="docutils literal">bgr0</tt> by default. This format is organized as <tt class="docutils literal">B8G8R8X8</tt> (where <tt class="docutils literal">B</tt>
-            is the LSB). The contents of the padding <tt class="docutils literal">X</tt> is undefined. The <tt class="docutils literal">data</tt>
+            is the LSB). The contents of the padding <tt class="docutils literal">X</tt> are undefined. The <tt class="docutils literal">data</tt>
             field is of type MPV_FORMAT_BYTE_ARRAY with the actual image data. The image
-            is freed as soon as the result node is freed.</dd>
+            is freed as soon as the result mpv_node is freed. As usual with client API
+            semantics, you are not allowed to write to the image data.</dd>
             <dt><tt class="docutils literal"><span class="pre">vf-command</span> &quot;&lt;label&gt;&quot; &quot;&lt;cmd&gt;&quot; &quot;&lt;args&gt;&quot;</tt></dt>
             <dd><p class="first">Send a command to the filter with the given <tt class="docutils literal">&lt;label&gt;</tt>. Use <tt class="docutils literal">all</tt> to send
             it to all filters at once. The command and argument string is filter
