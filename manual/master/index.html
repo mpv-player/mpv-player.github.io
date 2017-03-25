@@ -5330,6 +5330,9 @@
             side effect of turning this option on, for all sound drivers.</dd>
             <dt><tt class="docutils literal"><span class="pre">--video-sync=&lt;audio|...&gt;</span></tt></dt>
             <dd><p class="first">How the player synchronizes audio and video.</p>
+            <p>If you use this option, you usually want to set it to <tt class="docutils literal"><span class="pre">display-resample</span></tt>
+            to enable a timing mode that tries to not skip or repeat frames when for
+            example playing 24fps video on a 24Hz screen.</p>
             <p>The modes starting with <tt class="docutils literal">display-</tt> try to output video frames completely
             synchronously to the display, using the detected display vertical refresh
             rate as a hint how fast frames will be displayed on average. These modes
@@ -6312,8 +6315,8 @@
             <p>Audio filters allow you to modify the audio stream and its properties. The
             syntax is:</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--af=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
-            <dd>Setup a chain of audio filters.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--af=...</span></tt></dt>
+            <dd>Setup a chain of audio filters. See <tt class="docutils literal"><span class="pre">--vf</span></tt> for the syntax.</dd>
             </dl>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
@@ -6322,25 +6325,8 @@
             wrapper, which gives you access to most of libavfilter's filters. This
             includes all filters that have been ported from MPlayer to libavfilter.</p>
             </div>
-            <p>You can also set defaults for each filter. The defaults are applied before the
-            normal filter parameters.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--af-defaults=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
-            <dd>Set defaults for each filter.</dd>
-            </dl>
-            <p>Audio filters are managed in lists. There are a few commands to manage the
-            filter list:</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--af-add=&lt;filter1[,filter2,...]&gt;</span></tt></dt>
-            <dd>Appends the filters given as arguments to the filter list.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--af-pre=&lt;filter1[,filter2,...]&gt;</span></tt></dt>
-            <dd>Prepends the filters given as arguments to the filter list.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--af-del=&lt;index1[,index2,...]&gt;</span></tt></dt>
-            <dd>Deletes the filters at the given indexes. Index numbers start at 0,
-            negative numbers address the end of the list (-1 is the last).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--af-clr</span></tt></dt>
-            <dd>Completely empties the filter list.</dd>
-            </dl>
+            <p>See <tt class="docutils literal"><span class="pre">--vf</span></tt> group of options for info on how <tt class="docutils literal"><span class="pre">--af-defaults</span></tt>, <tt class="docutils literal"><span class="pre">--af-add</span></tt>,
+            <tt class="docutils literal"><span class="pre">--af-pre</span></tt>, <tt class="docutils literal"><span class="pre">--af-del</span></tt>, <tt class="docutils literal"><span class="pre">--af-clr</span></tt>, and possibly others work.</p>
             <p>Available filters are:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">lavrresample[=option1:option2:...]</span></tt></dt>
@@ -6776,7 +6762,31 @@
             syntax is:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--vf=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
-            <dd>Setup a chain of video filters.</dd>
+            <dd><p class="first">Setup a chain of video filters. This consists on the filter name, and an
+            option list of parameters after <tt class="docutils literal">=</tt>. The parameters are separated by
+            <tt class="docutils literal">:</tt> (not <tt class="docutils literal">,</tt>, as that starts a new filter entry).</p>
+            <p>Before the filter name, a label can be specified with <tt class="docutils literal">&#64;name:</tt>, where
+            name is an arbitrary user-given name, which identifies the filter. This
+            is only needed if you want to toggle the filter at runtime.</p>
+            <p>A <tt class="docutils literal">!</tt> before the filter name means the filter is enabled by default. It
+            will be skipped on filter creation. This is also useful for runtime filter
+            toggling.</p>
+            <p>See the <tt class="docutils literal">vf</tt> command (and <tt class="docutils literal">toggle</tt> sub-command) for further explanations
+            and examples.</p>
+            <p>The general filter entry syntax is:</p>
+            <blockquote>
+            <tt class="docutils literal"><span class="pre">[&quot;&#64;&quot;&lt;label-name&gt;&quot;:&quot;]</span> <span class="pre">[&quot;!&quot;]</span> <span class="pre">&lt;filter-name&gt;</span> [ &quot;=&quot; <span class="pre">&lt;filter-parameter-list&gt;</span> ]</tt></blockquote>
+            <p>and the <tt class="docutils literal"><span class="pre">filter-parameter-list</span></tt>:</p>
+            <blockquote>
+            <tt class="docutils literal"><span class="pre">&lt;filter-parameter&gt;</span> | <span class="pre">&lt;filter-parameter&gt;</span> &quot;,&quot; <span class="pre">&lt;filter-parameter-list&gt;</span></tt></blockquote>
+            <p>and <tt class="docutils literal"><span class="pre">filter-parameter</span></tt>:</p>
+            <blockquote>
+            <tt class="docutils literal">( <span class="pre">&lt;param-name&gt;</span> &quot;=&quot; <span class="pre">&lt;param-value&gt;</span> ) | <span class="pre">&lt;param-value&gt;</span></tt></blockquote>
+            <p class="last"><tt class="docutils literal"><span class="pre">param-value</span></tt> can further be quoted in <tt class="docutils literal">[</tt> / <tt class="docutils literal">]</tt> in case the value
+            contains characters like <tt class="docutils literal">,</tt> or <tt class="docutils literal">=</tt>. This is used in particular with
+            the <tt class="docutils literal">lavfi</tt> filter, which uses a very similar syntax as mpv (MPlayer
+            historically) to specify filters and their parameters.</p>
+            </dd>
             </dl>
             <p>You can also set defaults for each filter. The defaults are applied before the
             normal filter parameters.</p>
@@ -8264,10 +8274,13 @@
             <dt>add</dt>
             <dd>Append the new filter chain to the previous one.</dd>
             <dt>toggle</dt>
-            <dd>Check if the given filter (with the exact parameters) is already
+            <dd><p class="first">Check if the given filter (with the exact parameters) is already
             in the video chain. If yes, remove the filter. If no, add the filter.
             (If several filters are passed to the command, this is done for
-            each filter.)</dd>
+            each filter.)</p>
+            <p class="last">A special variant is combining this with labels, and using <tt class="docutils literal">&#64;name:!</tt>
+            as filter entry. This toggles the enable/disable flag.</p>
+            </dd>
             <dt>del</dt>
             <dd>Remove the given filters from the video chain. Unlike in the other
             cases, the second parameter is a comma separated list of filter names
@@ -8292,12 +8305,24 @@
             before video is configured (can happen if the command is run immediately
             after opening a file and before a video frame is decoded), this check can't
             be run. Then it can happen that creating the video chain fails.</p>
-            <div class="admonition admonition-example-for-input-conf last">
+            <div class="admonition admonition-example-for-input-conf">
             <p class="first admonition-title">Example for input.conf</p>
             <ul class="last simple">
             <li><tt class="docutils literal">a vf set flip</tt> turn video upside-down on the <tt class="docutils literal">a</tt> key</li>
             <li><tt class="docutils literal">b vf set &quot;&quot;</tt> remove all video filters on <tt class="docutils literal">b</tt></li>
             <li><tt class="docutils literal">c vf toggle lavfi=gradfun</tt> toggle debanding on <tt class="docutils literal">c</tt></li>
+            </ul>
+            </div>
+            <div class="admonition admonition-example-how-to-toggle-disabled-filters-at-runtime last">
+            <p class="first admonition-title">Example how to toggle disabled filters at runtime</p>
+            <ul class="last simple">
+            <li>Add something <tt class="docutils literal"><span class="pre">vf-add=&#64;deband:!lavfi=[gradfun]</span></tt> to <tt class="docutils literal">mpv.conf</tt>. The
+            <tt class="docutils literal">&#64;deband:</tt> is the label, and <tt class="docutils literal">deband</tt> is an arbitrary, user-given
+            name for this filter entry. The <tt class="docutils literal">!</tt> before the filter name disables
+            the filter by default. Everything after this is the normal filter name
+            and the filter parameters.</li>
+            <li>Add <tt class="docutils literal">a vf toggle &#64;deband:!</tt> to <tt class="docutils literal">input.conf</tt>. This toggles the
+            &quot;disabled&quot; flag for the filter identified with <tt class="docutils literal">deband</tt>.</li>
             </ul>
             </div>
             </dd>
