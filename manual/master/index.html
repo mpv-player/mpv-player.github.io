@@ -448,7 +448,8 @@
             tree and play the longest title.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
-            <p>mpv uses a different default DVD library than MPlayer. MPlayer
+            <p>DVD library choices</p>
+            <p class="last">mpv uses a different default DVD library than MPlayer. MPlayer
             uses libdvdread by default, and mpv uses libdvdnav by default.
             Both libraries are developed in parallel, but libdvdnav is
             intended to support more sophisticated DVD features such as menus
@@ -459,7 +460,13 @@
             when using libdvdnav, in which playback gets stuck in a DVD menu
             stream. These problems are reported to go away when auto-selecting
             the title (<tt class="docutils literal"><span class="pre">dvd://</span></tt> rather than <tt class="docutils literal"><span class="pre">dvd://1</span></tt>) or when using
-            libdvdread (e.g. <tt class="docutils literal"><span class="pre">dvdread://0</span></tt>).</p>
+            libdvdread (e.g. <tt class="docutils literal"><span class="pre">dvdread://0</span></tt>). There are also outstanding bugs
+            in libdvdnav with seeking backwards and forwards in a video
+            stream. Specify <tt class="docutils literal"><span class="pre">dvdread://...</span></tt> to fix such problems.</p>
+            </div>
+            <div class="admonition note">
+            <p class="first admonition-title">Note</p>
+            <p>DVD subtitles</p>
             <p class="last">DVDs use image-based subtitles. Image subtitles are implemented as
             a bitmap video stream which can be superimposed over the main
             movie. mpv's subtitle styling and positioning options and keyboard
@@ -669,84 +676,103 @@
             </div>
             <div class="section" id="protocols">
             <h1>PROTOCOLS</h1>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">http://...</span></tt>, <tt class="docutils literal"><span class="pre">https://</span></tt>, ...</dt>
-            <dd><p class="first">Many network protocols are supported, but the protocol prefix must always
+            <p><tt class="docutils literal"><span class="pre">http://...</span></tt>, <tt class="docutils literal"><span class="pre">https://</span></tt>, ...</p>
+            <blockquote>
+            <p>Many network protocols are supported, but the protocol prefix must always
             be specified. mpv will never attempt to guess whether a filename is
             actually a network address. A protocol prefix is always required.</p>
             <p>Note that not all prefixes are documented here. Undocumented prefixes are
             either aliases to documented protocols, or are just redirections to
             protocols implemented and documented in FFmpeg.</p>
-            <p class="last"><tt class="docutils literal">data:</tt> is supported in FFmpeg (not in Libav), but needs to be in the
+            <p><tt class="docutils literal">data:</tt> is supported in FFmpeg (not in Libav), but needs to be in the
             format <tt class="docutils literal"><span class="pre">data://</span></tt>. This is done to avoid ambiguity with filenames. You
             can also prefix it with <tt class="docutils literal"><span class="pre">lavf://</span></tt> or <tt class="docutils literal"><span class="pre">ffmpeg://</span></tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">ytdl://...</span></tt></dt>
-            <dd><p class="first">By default, the youtube-dl hook script (enabled by default for mpv CLI)
+            </blockquote>
+            <p><tt class="docutils literal"><span class="pre">ytdl://...</span></tt></p>
+            <blockquote>
+            <p>By default, the youtube-dl hook script (enabled by default for mpv CLI)
             only looks at http URLs. Prefixing an URL with <tt class="docutils literal"><span class="pre">ytdl://</span></tt> forces it to
             be always processed by the script. This can also be used to invoke special
             youtube-dl functionality like playing a video by ID or invoking search.</p>
-            <p class="last">Keep in mind that you can't pass youtube-dl command line options by this,
+            <p>Keep in mind that you can't pass youtube-dl command line options by this,
             and you have to use <tt class="docutils literal"><span class="pre">--ytdl-raw-options</span></tt> instead.</p>
-            </dd>
-            <dt><tt class="docutils literal">-</tt></dt>
-            <dd>Play data from stdin.</dd>
-            <dt><tt class="docutils literal"><span class="pre">smb://PATH</span></tt></dt>
-            <dd>Play a path from  Samba share.</dd>
-            <dt><tt class="docutils literal"><span class="pre">bd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--bluray-device=PATH</span></tt></dt>
-            <dd>Play a Blu-ray disc. Currently, this does not accept ISO files. Instead,
+            </blockquote>
+            <p><tt class="docutils literal">-</tt></p>
+            <blockquote>
+            Play data from stdin.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">smb://PATH</span></tt></p>
+            <blockquote>
+            Play a path from  Samba share.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">bd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--bluray-device=PATH</span></tt></p>
+            <blockquote>
+            Play a Blu-ray disc. Currently, this does not accept ISO files. Instead,
             you must mount the ISO file as filesystem, and point <tt class="docutils literal"><span class="pre">--bluray-device</span></tt>
-            to the mounted directory directly.</dd>
-            <dt><tt class="docutils literal"><span class="pre">dvd://[title|[starttitle]-endtitle][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></dt>
-            <dd><p class="first">Play a DVD. DVD menus are not supported. If no title is given, the longest
+            to the mounted directory directly.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">dvd://[title|[starttitle]-endtitle][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
+            <blockquote>
+            <p>Play a DVD. DVD menus are not supported. If no title is given, the longest
             title is auto-selected.</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">dvdnav://</span></tt> is an old alias for <tt class="docutils literal"><span class="pre">dvd://</span></tt> and does exactly the same
+            <p><tt class="docutils literal"><span class="pre">dvdnav://</span></tt> is an old alias for <tt class="docutils literal"><span class="pre">dvd://</span></tt> and does exactly the same
             thing.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">dvdread://...:</span></tt></dt>
-            <dd>Play a DVD using the old libdvdread code. This is what MPlayer and older
-            mpv versions use for <tt class="docutils literal"><span class="pre">dvd://</span></tt>. Use is discouraged. It's provided only
-            for compatibility and for transition.</dd>
-            <dt><tt class="docutils literal"><span class="pre">tv://[channel][/input_id]</span></tt> <tt class="docutils literal"><span class="pre">--tv-...</span></tt></dt>
-            <dd>Analogue TV via V4L. Also useful for webcams. (Linux only.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">pvr://</span></tt> <tt class="docutils literal"><span class="pre">--pvr-...</span></tt></dt>
-            <dd>PVR. (Linux only.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">dvb://[cardnumber&#64;]channel</span></tt> <tt class="docutils literal"><span class="pre">--dvbin-...</span></tt></dt>
-            <dd>Digital TV via DVB. (Linux only.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">mf://[filemask|&#64;listfile]</span></tt> <tt class="docutils literal"><span class="pre">--mf-...</span></tt></dt>
-            <dd>Play a series of images as video.</dd>
-            <dt><tt class="docutils literal"><span class="pre">cdda://[device]</span></tt> <tt class="docutils literal"><span class="pre">--cdrom-device=PATH</span></tt> <tt class="docutils literal"><span class="pre">--cdda-...</span></tt></dt>
-            <dd>Play CD.</dd>
-            <dt><tt class="docutils literal"><span class="pre">lavf://...</span></tt></dt>
-            <dd>Access any FFmpeg/Libav libavformat protocol. Basically, this passed the
-            string after the <tt class="docutils literal">//</tt> directly to libavformat.</dd>
-            <dt><tt class="docutils literal"><span class="pre">av://type:options</span></tt></dt>
-            <dd><p class="first">This is intended for using libavdevice inputs. <tt class="docutils literal">type</tt> is the libavdevice
+            </blockquote>
+            <p><tt class="docutils literal"><span class="pre">dvdread://...:</span></tt></p>
+            <blockquote>
+            Play a DVD using the old libdvdread code. This is what MPlayer and
+            older mpv versions use for <tt class="docutils literal"><span class="pre">dvd://</span></tt>. Use is discouraged. It's
+            provided only for compatibility and for transition, and to work
+            around outstanding dvdnav bugs (see &quot;DVD library choices&quot; above).</blockquote>
+            <p><tt class="docutils literal"><span class="pre">tv://[channel][/input_id]</span></tt> <tt class="docutils literal"><span class="pre">--tv-...</span></tt></p>
+            <blockquote>
+            Analogue TV via V4L. Also useful for webcams. (Linux only.)</blockquote>
+            <p><tt class="docutils literal"><span class="pre">pvr://</span></tt> <tt class="docutils literal"><span class="pre">--pvr-...</span></tt></p>
+            <blockquote>
+            PVR. (Linux only.)</blockquote>
+            <p><tt class="docutils literal"><span class="pre">dvb://[cardnumber&#64;]channel</span></tt> <tt class="docutils literal"><span class="pre">--dvbin-...</span></tt></p>
+            <blockquote>
+            Digital TV via DVB. (Linux only.)</blockquote>
+            <p><tt class="docutils literal"><span class="pre">mf://[filemask|&#64;listfile]</span></tt> <tt class="docutils literal"><span class="pre">--mf-...</span></tt></p>
+            <blockquote>
+            Play a series of images as video.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">cdda://[device]</span></tt> <tt class="docutils literal"><span class="pre">--cdrom-device=PATH</span></tt> <tt class="docutils literal"><span class="pre">--cdda-...</span></tt></p>
+            <blockquote>
+            Play CD.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">lavf://...</span></tt></p>
+            <blockquote>
+            Access any FFmpeg/Libav libavformat protocol. Basically, this passed the
+            string after the <tt class="docutils literal">//</tt> directly to libavformat.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">av://type:options</span></tt></p>
+            <blockquote>
+            <p>This is intended for using libavdevice inputs. <tt class="docutils literal">type</tt> is the libavdevice
             demuxer name, and <tt class="docutils literal">options</tt> is the (pseudo-)filename passed to the
             demuxer.</p>
             <p>For example, <tt class="docutils literal">mpv <span class="pre">av://lavfi:mandelbrot</span></tt> makes use of the libavfilter
             wrapper included in libavdevice, and will use the <tt class="docutils literal">mandelbrot</tt> source
             filter to generate input data.</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">avdevice://</span></tt> is an alias.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">file://PATH</span></tt></dt>
-            <dd>A local path as URL. Might be useful in some special use-cases. Note that
+            <p><tt class="docutils literal"><span class="pre">avdevice://</span></tt> is an alias.</p>
+            </blockquote>
+            <p><tt class="docutils literal"><span class="pre">file://PATH</span></tt></p>
+            <blockquote>
+            A local path as URL. Might be useful in some special use-cases. Note that
             <tt class="docutils literal">PATH</tt> itself should start with a third <tt class="docutils literal">/</tt> to make the path an
-            absolute path.</dd>
-            <dt><tt class="docutils literal"><span class="pre">fd://123</span></tt></dt>
-            <dd>Read data from the given file descriptor (for example 123). This is similar
-            to piping data to stdin via <tt class="docutils literal">-</tt>, but can use an arbitrary file descriptor.</dd>
-            <dt><tt class="docutils literal"><span class="pre">edl://[edl</span> specification as in <span class="pre">edl-mpv.rst]</span></tt></dt>
-            <dd>Stitch together parts of multiple files and play them.</dd>
-            <dt><tt class="docutils literal"><span class="pre">null://</span></tt></dt>
-            <dd>Simulate an empty file. If opened for writing, it will discard all data.
+            absolute path.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">fd://123</span></tt></p>
+            <blockquote>
+            Read data from the given file descriptor (for example 123). This is similar
+            to piping data to stdin via <tt class="docutils literal">-</tt>, but can use an arbitrary file descriptor.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">edl://[edl</span> specification as in <span class="pre">edl-mpv.rst]</span></tt></p>
+            <blockquote>
+            Stitch together parts of multiple files and play them.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">null://</span></tt></p>
+            <blockquote>
+            Simulate an empty file. If opened for writing, it will discard all data.
             The <tt class="docutils literal">null</tt> demuxer will specifically pass autoprobing if this protocol
-            is used (while it's not automatically invoked for empty files).</dd>
-            <dt><tt class="docutils literal"><span class="pre">memory://data</span></tt></dt>
-            <dd>Use the <tt class="docutils literal">data</tt> part as source data.</dd>
-            <dt><tt class="docutils literal"><span class="pre">hex://data</span></tt></dt>
-            <dd>Like <tt class="docutils literal"><span class="pre">memory://</span></tt>, but the string is interpreted as hexdump.</dd>
-            </dl>
+            is used (while it's not automatically invoked for empty files).</blockquote>
+            <p><tt class="docutils literal"><span class="pre">memory://data</span></tt></p>
+            <blockquote>
+            Use the <tt class="docutils literal">data</tt> part as source data.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">hex://data</span></tt></p>
+            <blockquote>
+            Like <tt class="docutils literal"><span class="pre">memory://</span></tt>, but the string is interpreted as hexdump.</blockquote>
             </div>
             <div class="section" id="pseudo-gui-mode">
             <h1>PSEUDO GUI MODE</h1>
@@ -6614,31 +6640,6 @@
             the mixing matrix at runtime, without reinitializing the entire filter
             chain.</dd>
             </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">drc[=method:target]</span></tt></dt>
-            <dd><p class="first">Applies dynamic range compression. This maximizes the volume by compressing
-            the audio signal's dynamic range. (Formerly called <tt class="docutils literal">volnorm</tt>.)</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">&lt;method&gt;</tt></dt>
-            <dd><p class="first">Sets the used method.</p>
-            <dl class="last docutils">
-            <dt>1</dt>
-            <dd>Use a single sample to smooth the variations via the standard
-            weighted mean over past samples (default).</dd>
-            <dt>2</dt>
-            <dd>Use several samples to smooth the variations via the standard
-            weighted mean over past samples.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal">&lt;target&gt;</tt></dt>
-            <dd>Sets the target amplitude as a fraction of the maximum for the sample
-            type (default: 0.25).</dd>
-            </dl>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This filter can cause distortion with audio signals that have a very
-            large dynamic range.</p>
-            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">scaletempo[=option1:option2:...]</span></tt></dt>
             <dd><p class="first">Scales audio tempo without altering pitch, optionally synced to playback
