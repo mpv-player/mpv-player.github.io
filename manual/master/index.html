@@ -6787,6 +6787,9 @@
             <p>The general filter entry syntax is:</p>
             <blockquote>
             <tt class="docutils literal"><span class="pre">[&quot;&#64;&quot;&lt;label-name&gt;&quot;:&quot;]</span> <span class="pre">[&quot;!&quot;]</span> <span class="pre">&lt;filter-name&gt;</span> [ &quot;=&quot; <span class="pre">&lt;filter-parameter-list&gt;</span> ]</tt></blockquote>
+            <p>or for the special &quot;toggle&quot; syntax (see <tt class="docutils literal">vf</tt> command):</p>
+            <blockquote>
+            <tt class="docutils literal"><span class="pre">&quot;&#64;&quot;&lt;label-name&gt;</span></tt></blockquote>
             <p>and the <tt class="docutils literal"><span class="pre">filter-parameter-list</span></tt>:</p>
             <blockquote>
             <tt class="docutils literal"><span class="pre">&lt;filter-parameter&gt;</span> | <span class="pre">&lt;filter-parameter&gt;</span> &quot;,&quot; <span class="pre">&lt;filter-parameter-list&gt;</span></tt></blockquote>
@@ -8289,8 +8292,9 @@
             in the video chain. If yes, remove the filter. If no, add the filter.
             (If several filters are passed to the command, this is done for
             each filter.)</p>
-            <p class="last">A special variant is combining this with labels, and using <tt class="docutils literal">&#64;name:!</tt>
-            as filter entry. This toggles the enable/disable flag.</p>
+            <p class="last">A special variant is combining this with labels, and using <tt class="docutils literal">&#64;name</tt>
+            without filter name and parameters as filter entry. This toggles the
+            enable/disable flag.</p>
             </dd>
             <dt>del</dt>
             <dd>Remove the given filters from the video chain. Unlike in the other
@@ -8332,7 +8336,7 @@
             name for this filter entry. The <tt class="docutils literal">!</tt> before the filter name disables
             the filter by default. Everything after this is the normal filter name
             and the filter parameters.</li>
-            <li>Add <tt class="docutils literal">a vf toggle &#64;deband:!</tt> to <tt class="docutils literal">input.conf</tt>. This toggles the
+            <li>Add <tt class="docutils literal">a vf toggle &#64;deband</tt> to <tt class="docutils literal">input.conf</tt>. This toggles the
             &quot;disabled&quot; flag for the filter identified with <tt class="docutils literal">deband</tt>.</li>
             </ul>
             </div>
