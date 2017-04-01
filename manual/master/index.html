@@ -8616,8 +8616,10 @@
             <p>These prefixes are placed between key name and the actual command. Multiple
             prefixes can be specified. They are separated by whitespace.</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">osd-auto</span></tt> (default)</dt>
-            <dd>Use the default behavior for this command.</dd>
+            <dt><tt class="docutils literal"><span class="pre">osd-auto</span></tt></dt>
+            <dd>Use the default behavior for this command. This is the default for
+            <tt class="docutils literal">input.conf</tt> commands. Some libmpv/scripting/IPC APIs do not use this as
+            default, but use <tt class="docutils literal"><span class="pre">no-osd</span></tt> instead.</dd>
             <dt><tt class="docutils literal"><span class="pre">no-osd</span></tt></dt>
             <dd>Do not use any OSD for this command.</dd>
             <dt><tt class="docutils literal"><span class="pre">osd-bar</span></tt></dt>
@@ -8630,9 +8632,11 @@
             <dt><tt class="docutils literal"><span class="pre">osd-msg-bar</span></tt></dt>
             <dd>Combine osd-bar and osd-msg.</dd>
             <dt><tt class="docutils literal">raw</tt></dt>
-            <dd>Do not expand properties in string arguments. (Like <tt class="docutils literal"><span class="pre">&quot;${property-name}&quot;</span></tt>.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">expand-properties</span></tt> (default)</dt>
-            <dd>All string arguments are expanded as described in <a class="reference internal" href="#property-expansion">Property Expansion</a>.</dd>
+            <dd>Do not expand properties in string arguments. (Like <tt class="docutils literal"><span class="pre">&quot;${property-name}&quot;</span></tt>.)
+            This is the default for some libmpv/scripting/IPC APIs.</dd>
+            <dt><tt class="docutils literal"><span class="pre">expand-properties</span></tt></dt>
+            <dd>All string arguments are expanded as described in <a class="reference internal" href="#property-expansion">Property Expansion</a>.
+            This is the default for <tt class="docutils literal">input.conf</tt> commands.</dd>
             <dt><tt class="docutils literal">repeatable</tt></dt>
             <dd>For some commands, keeping a key pressed doesn't run the command repeatedly.
             This prefix forces enabling key repeat in any case.</dd>
@@ -8641,7 +8645,8 @@
             will support this (usually this is explicitly documented). Some commands
             are asynchronous by default (or rather, their effects might manifest
             after completion of the command). The semantics of this flag might change
-            in the future. Set it only</dd>
+            in the future. Set it only if you don't rely on the effects of this command
+            being fully realized when it returns.</dd>
             </dl>
             <p>All of the osd prefixes are still overridden by the global <tt class="docutils literal"><span class="pre">--osd-level</span></tt>
             settings.</p>
