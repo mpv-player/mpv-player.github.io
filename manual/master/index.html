@@ -8059,9 +8059,14 @@
             frame was dropped. This flag can be combined with the other flags,
             e.g. <tt class="docutils literal"><span class="pre">video+each-frame</span></tt>.</dd>
             </dl>
-            <p class="last">Older mpv versions required passing <tt class="docutils literal">single</tt> and <tt class="docutils literal"><span class="pre">each-frame</span></tt> as
+            <p>Older mpv versions required passing <tt class="docutils literal">single</tt> and <tt class="docutils literal"><span class="pre">each-frame</span></tt> as
             second argument (and did not have flags). This syntax is still understood,
             but deprecated and might be removed in the future.</p>
+            <p class="last">Setting the <tt class="docutils literal">async</tt> flag will make encoding and writing the actual image
+            file asynchronous in most cases. (<tt class="docutils literal"><span class="pre">each-frame</span></tt> mode ignores this flag
+            currently.) Requesting async screenshots too early or too often could lead
+            to the same filenames being chosen, and overwriting each others in undefined
+            order.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">screenshot-to-file</span> &quot;&lt;filename&gt;&quot; [subtitles|video|window]</tt></dt>
             <dd><p class="first">Take a screenshot and save it to a given file. The format of the file will
@@ -8069,8 +8074,10 @@
             behavior when the extension is missing or unknown is arbitrary).</p>
             <p>The second argument is like the first argument to <tt class="docutils literal">screenshot</tt>.</p>
             <p>If the file already exists, it's overwritten.</p>
-            <p class="last">Like all input command parameters, the filename is subject to property
+            <p>Like all input command parameters, the filename is subject to property
             expansion as described in <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
+            <p class="last">The <tt class="docutils literal">async</tt> flag has an effect on this command (see <tt class="docutils literal">screenshot</tt>
+            command).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-next</span> [weak|force]</tt></dt>
             <dd><p class="first">Go to the next entry on the playlist.</p>
@@ -8629,6 +8636,12 @@
             <dt><tt class="docutils literal">repeatable</tt></dt>
             <dd>For some commands, keeping a key pressed doesn't run the command repeatedly.
             This prefix forces enabling key repeat in any case.</dd>
+            <dt><tt class="docutils literal">async</tt></dt>
+            <dd>Allow asynchronous execution (if possible). Note that only a few commands
+            will support this (usually this is explicitly documented). Some commands
+            are asynchronous by default (or rather, their effects might manifest
+            after completion of the command). The semantics of this flag might change
+            in the future. Set it only</dd>
             </dl>
             <p>All of the osd prefixes are still overridden by the global <tt class="docutils literal"><span class="pre">--osd-level</span></tt>
             settings.</p>
