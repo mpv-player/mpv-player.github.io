@@ -6809,9 +6809,18 @@
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p>To get a full list of available video filters, see <tt class="docutils literal"><span class="pre">--vf=help</span></tt>.</p>
-            <p class="last">Also, keep in mind that most actual filters are available via the <tt class="docutils literal">lavfi</tt>
+            <p>Also, keep in mind that most actual filters are available via the <tt class="docutils literal">lavfi</tt>
             wrapper, which gives you access to most of libavfilter's filters. This
             includes all filters that have been ported from MPlayer to libavfilter.</p>
+            <p>Most filters are deprecated in some ways, unless they're only available
+            in mpv (such as filters which deal with mpv specifics, or which are
+            implemented in mpv only).</p>
+            <p class="last">If a filter is not builtin, the <tt class="docutils literal"><span class="pre">lavfi-bridge</span></tt> will be automatically
+            tried. Keep in mind that this filter does not support positional arguments
+            like <tt class="docutils literal"><span class="pre">--vf=name=arg1:arg2</span></tt>. Instead, you must use
+            <tt class="docutils literal"><span class="pre">--vf=name=arg1name=arg1value:...</span></tt>. This bridge also does not support
+            help output, and does not verify parameters before the filter is actually
+            used.</p>
             </div>
             <p>Video filters are managed in lists. There are a few commands to manage the
             filter list.</p>
