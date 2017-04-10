@@ -938,16 +938,6 @@
             speed higher than normal automatically inserts the <tt class="docutils literal">scaletempo</tt> audio
             filter.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|force|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--loop</span></tt></dt>
-            <dd><p class="first">Loops playback <tt class="docutils literal">N</tt> times. A value of <tt class="docutils literal">1</tt> plays it one time (default),
-            <tt class="docutils literal">2</tt> two times, etc. <tt class="docutils literal">inf</tt> means forever. <tt class="docutils literal">no</tt> is the same as <tt class="docutils literal">1</tt> and
-            disables looping. If several files are specified on command line, the
-            entire playlist is looped. <tt class="docutils literal"><span class="pre">--loop</span></tt> is the same as <tt class="docutils literal"><span class="pre">--loop=inf</span></tt>.</p>
-            <p class="last">The <tt class="docutils literal">force</tt> mode is like <tt class="docutils literal">inf</tt>, but does not skip playlist entries
-            which have been marked as failing. This means the player might waste CPU
-            time trying to loop a file that doesn't exist. But it might be useful for
-            playing webradios under very bad network conditions.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--pause</span></tt></dt>
             <dd>Start the player in paused state.</dd>
             <dt><tt class="docutils literal"><span class="pre">--shuffle</span></tt></dt>
@@ -1092,6 +1082,20 @@
             directory). Prefixing the filename with <tt class="docutils literal">./</tt> if it doesn't start with
             a <tt class="docutils literal">/</tt> will avoid this.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--loop-playlist=&lt;N|inf|force|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--loop-playlist</span></tt></dt>
+            <dd><p class="first">Loops playback <tt class="docutils literal">N</tt> times. A value of <tt class="docutils literal">1</tt> plays it one time (default),
+            <tt class="docutils literal">2</tt> two times, etc. <tt class="docutils literal">inf</tt> means forever. <tt class="docutils literal">no</tt> is the same as <tt class="docutils literal">1</tt> and
+            disables looping. If several files are specified on command line, the
+            entire playlist is looped. <tt class="docutils literal"><span class="pre">--loop-playlist</span></tt> is the same as
+            <tt class="docutils literal"><span class="pre">--loop-playlist=inf</span></tt>.</p>
+            <p class="last">The <tt class="docutils literal">force</tt> mode is like <tt class="docutils literal">inf</tt>, but does not skip playlist entries
+            which have been marked as failing. This means the player might waste CPU
+            time trying to loop a file that doesn't exist. But it might be useful for
+            playing webradios under very bad network conditions.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--loop</span></tt></dt>
+            <dd>Currently a deprecated alias to <tt class="docutils literal"><span class="pre">--loop-playlist</span></tt>. After a deprecation
+            period, it will be undeprecated, but changed to alias <tt class="docutils literal"><span class="pre">--loop-file</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--loop-file=&lt;N|inf|no&gt;</span></tt></dt>
             <dd><p class="first">Loop a single file N times. <tt class="docutils literal">inf</tt> means forever, <tt class="docutils literal">no</tt> means normal
             playback. For compatibility, <tt class="docutils literal"><span class="pre">--loop-file</span></tt> and <tt class="docutils literal"><span class="pre">--loop-file=yes</span></tt> are
