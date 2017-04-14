@@ -2836,6 +2836,8 @@
             there is not next file to be played (and <tt class="docutils literal"><span class="pre">--loop</span></tt> is not used).
             Instead, pause the player. When trying to seek beyond end of the file, the
             player will attempt to seek to the last frame.</p>
+            <p>Normally, this will act like <tt class="docutils literal">set pause yes</tt> on EOF, unless the
+            <tt class="docutils literal"><span class="pre">--keep-open-pause=no</span></tt> option is set.</p>
             <p>The following arguments can be given:</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -2868,6 +2870,10 @@
             file.mkv normally, then fail to open <tt class="docutils literal">/dev/null</tt>, then exit). (In
             mpv 0.8.0, <tt class="docutils literal">always</tt> was introduced, which restores the old behavior.)</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--keep-open-pause=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If set to <tt class="docutils literal">no</tt>, instead of pausing when <tt class="docutils literal"><span class="pre">--keep-open</span></tt> is active, just
+            stop at end of file and continue playing forward when you seek backwards
+            until end where it stops again. Default: <tt class="docutils literal">yes</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--image-display-duration=&lt;seconds|inf&gt;</span></tt></dt>
             <dd><p class="first">If the current file is an image, play the image for the given amount of
             seconds (default: 1). <tt class="docutils literal">inf</tt> means the file is kept open forever (until
