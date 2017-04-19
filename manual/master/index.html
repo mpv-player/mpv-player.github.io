@@ -9914,12 +9914,12 @@
             <div class="section" id="the-interface">
             <h3>The Interface</h3>
             <pre class="literal-block">
-            +---------+----------+----------------------------+-------------+
-            | pl prev | pl next  |  title                     |       cache |
-            +------+--+---+------+---------+-----------+------+-------+-----+
-            | play | skip | skip | time    |  seekbar  | time | audio | sub |
-            |      | back | frwd | elapsed |           | left |       |     |
-            +------+------+------+---------+-----------+------+-------+-----+
+            +---------+----------+------------------------------------------+----------+
+            | pl prev | pl next  |  title                                   |    cache |
+            +------+--+---+------+---------+-----------+------+-------+-----+-----+----+
+            | play | skip | skip | time    |  seekbar  | time | audio | sub | vol | fs |
+            |      | back | frwd | elapsed |           | left |       |     |     |    |
+            +------+------+------+---------+-----------+------+-------+-----+-----+----+
             </pre>
             <dl class="docutils">
             <dt>pl prev</dt>
@@ -10105,6 +10105,35 @@
             </tbody>
             </table>
             </dd>
+            <dt>vol</dt>
+            <dd><table border="1" class="first last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>toggle mute</td>
+            </tr>
+            <tr><td>mouse wheel</td>
+            <td>volume up/down</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt>fs</dt>
+            <dd><table border="1" class="first last docutils">
+            <colgroup>
+            <col width="21%" />
+            <col width="79%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>left-click</td>
+            <td>toggle fullscreen</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
             </dl>
             </div>
             <div class="section" id="key-bindings">
@@ -10251,6 +10280,13 @@
             <dt><tt class="docutils literal">visibility</tt></dt>
             <dd><p class="first">Default: auto (auto hide/show on mouse move)</p>
             <p class="last">Also supports <tt class="docutils literal">never</tt> and <tt class="docutils literal">always</tt></p>
+            </dd>
+            <dt><tt class="docutils literal">boxmaxchars</tt></dt>
+            <dd><p class="first">Default: 80</p>
+            <p class="last">Max chars for the osc title at the box layout. mpv does not measure the
+            text width on screen and so it needs to limit it by number of chars. The
+            default is conservative to allow wide fonts to be used without overflow.
+            However, with many common fonts a bigger number can be used. YMMV.</p>
             </dd>
             </dl>
             </div>
