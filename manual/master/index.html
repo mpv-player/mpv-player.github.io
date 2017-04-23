@@ -5608,9 +5608,6 @@
             <dd><p class="first">OSS audio output driver</p>
             <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--oss-device</span></tt></dt>
-            <dd>Sets the audio output device (default: <tt class="docutils literal">/dev/dsp</tt>).
-            Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--oss-mixer-device</span></tt></dt>
             <dd>Sets the audio mixer device (default: <tt class="docutils literal">/dev/mixer</tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">--oss-mixer-channel</span></tt></dt>
@@ -5663,11 +5660,6 @@
             system-wide audio settings. This is equivalent to changing the <tt class="docutils literal">Format</tt>
             setting in the <tt class="docutils literal">Audio Devices</tt> dialog in the <tt class="docutils literal">Audio MIDI Setup</tt>
             utility. Note that this does not affect the selected speaker setup.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--coreaudio-exclusive</span></tt></dt>
-            <dd>Deprecated, use <tt class="docutils literal"><span class="pre">--audio-exclusive</span></tt>.
-            Use exclusive mode access. This merely redirects to
-            <tt class="docutils literal">coreaudio_exclusive</tt>, but should be preferred over using that AO
-            directly.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">coreaudio_exclusive</tt> (Mac OS X only)</dt>
@@ -5685,11 +5677,9 @@
             <dd><p class="first">PulseAudio audio output driver</p>
             <p>The following global options are supported by this audio output:</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--pulse-host=&lt;host&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--pulse-sink=&lt;sink&gt;</span></tt></dt>
-            <dd>Specify the host and optionally output sink to use. An empty &lt;host&gt;
-            string uses a local connection, &quot;localhost&quot; uses network transfer
-            (most likely not what you want).
-            Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--pulse-host=&lt;host&gt;</span></tt></dt>
+            <dd>Specify the host to use. An empty &lt;host&gt; string uses a local connection,
+            &quot;localhost&quot; uses network transfer (most likely not what you want).</dd>
             <dt><tt class="docutils literal"><span class="pre">--pulse-buffer=&lt;1-2000|native&gt;</span></tt></dt>
             <dd>Set the audio buffer size in milliseconds. A higher value buffers
             more data, and has a lower probability of buffer underruns. A smaller
@@ -5777,24 +5767,12 @@
             </dd>
             <dt><tt class="docutils literal">rsound</tt></dt>
             <dd><p class="first">Audio output to an RSound daemon</p>
-            <div class="admonition note">
+            <div class="admonition note last">
             <p class="first admonition-title">Note</p>
             <p class="last">Completely useless, unless you intend to run RSound. Not to be
             confused with RoarAudio, which is something completely
             different.</p>
             </div>
-            <p>The following global options are supported by this audio output:</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--rsound-host=&lt;name/path&gt;</span></tt></dt>
-            <dd>Set the address of the server (default: localhost).  Can be either a
-            network hostname for TCP connections or a Unix domain socket path
-            starting with '/'.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--rsound-port=&lt;number&gt;</span></tt></dt>
-            <dd>Set the TCP port used for connecting to the server (default: 12345).
-            Not used if connecting to a Unix domain socket.</dd>
-            </dl>
-            <p class="last">These options are deprecated. If anyone cares enough, their functionality
-            can be added back using <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal">sndio</tt></dt>
             <dd><p class="first">Audio output to the OpenBSD sndio sound system</p>
@@ -5802,34 +5780,11 @@
             <p class="first admonition-title">Note</p>
             <p class="last">Experimental. There are known bugs and issues.</p>
             </div>
-            <p>(Note: only supports mono, stereo, 4.0, 5.1 and 7.1 channel
+            <p class="last">(Note: only supports mono, stereo, 4.0, 5.1 and 7.1 channel
             layouts.)</p>
-            <p>The following global options are supported by this audio output:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--ao-sndio-device=&lt;device&gt;</span></tt></dt>
-            <dd>sndio device to use (default: <tt class="docutils literal">$AUDIODEVICE</tt>, resp. <tt class="docutils literal">snd0</tt>).
-            Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</dd>
-            </dl>
             </dd>
             <dt><tt class="docutils literal">wasapi</tt></dt>
-            <dd><p class="first">Audio output to the Windows Audio Session API.</p>
-            <p>The following global options are supported by this audio output:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--ao-wasapi-exclusive</span></tt></dt>
-            <dd>Deprecated, use <tt class="docutils literal"><span class="pre">--audio-exclusive</span></tt>.
-            Requests exclusive, direct hardware access. By definition prevents
-            sound playback of any other program until mpv exits.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--ao-wasapi-device=&lt;id&gt;</span></tt></dt>
-            <dd><p class="first">Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt>.</p>
-            <p>Uses the requested endpoint instead of the system's default audio
-            endpoint. Both an ordinal number (0,1,2,...) and the GUID
-            String are valid; the GUID string is guaranteed to not change
-            unless the driver is uninstalled.</p>
-            <p class="last">Also supports searching active devices by human-readable name. If more
-            than one device matches the name, refuses loading it.</p>
-            </dd>
-            </dl>
-            </dd>
+            <dd>Audio output to the Windows Audio Session API.</dd>
             </dl>
             </div>
             <div class="section" id="video-output-drivers">
