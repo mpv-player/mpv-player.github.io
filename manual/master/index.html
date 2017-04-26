@@ -1954,6 +1954,21 @@
             treated as 0.</p>
             <p class="last">Since mpv 0.18.1, this always controls the internal mixer (aka &quot;softvol&quot;).</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--replaygain-track=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Adjust volume gain according to the track-gain replaygain value stored
+            in the file metadata.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--replaygain-album=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Like replaygain-track, but using the album-gain value instead.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--replaygain-preamp=&lt;db&gt;</span></tt></dt>
+            <dd>Pre-amplification gain in dB to apply to the selected replaygain gain
+            (default: 0).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--replaygain-clip=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Prevent clipping caused by replaygain by automatically lowering the
+            gain (default). Use <tt class="docutils literal"><span class="pre">--replaygain-clip=no</span></tt> to disable this.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--replaygain-fallback=&lt;db&gt;</span></tt></dt>
+            <dd>Gain in dB to apply if the file has no replay gain tags. This option
+            is always applied if the replaygain logic is somehow inactive. If this
+            is applied, no other replaygain options are applied.</dd>
             <dt><tt class="docutils literal"><span class="pre">--balance=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">How much left/right channels contribute to the audio. (The implementation
             of this feature is rather odd. It doesn't change the volumes of each
@@ -6538,6 +6553,8 @@
             can reduce the signal to noise ratio of the sound. In most cases it is
             best to use the <em>Master</em> volume control of your sound card or the volume
             knob on your amplifier.</p>
+            <p><em>WARNING</em>: This filter is deprecated. Use the top-level options like
+            <tt class="docutils literal"><span class="pre">--volume</span></tt> and <tt class="docutils literal"><span class="pre">--replaygain...</span></tt> instead.</p>
             <p><em>NOTE</em>: This filter is not reentrant and can therefore only be enabled
             once for every audio stream.</p>
             <dl class="docutils">
