@@ -5501,9 +5501,14 @@
             for scripts which want to set a title, without overriding the user's
             setting in <tt class="docutils literal"><span class="pre">--title</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--external-file=&lt;filename&gt;</span></tt></dt>
-            <dd>Add all tracks from the given file. Unlike <tt class="docutils literal"><span class="pre">--sub-file</span></tt> and
-            <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, this includes all tracks, and does not cause default
-            stream selection over the &quot;proper&quot; file.</dd>
+            <dd><p class="first">Load a file and add all of its tracks. This is useful to play different
+            files together (for example audio from one file, video from another), or
+            for advanced <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> used (like playing two video files at
+            the same time).</p>
+            <p class="last">Unlike <tt class="docutils literal"><span class="pre">--sub-file</span></tt> and <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, this includes all tracks, and
+            does not cause default stream selection over the &quot;proper&quot; file. This makes
+            it slightly less intrusive.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--autoload-files=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Automatically load/select external files (default: yes).</p>
             <p>If set to <tt class="docutils literal">no</tt>, then do not automatically load external files as specified
@@ -11153,11 +11158,19 @@
             <dd><p class="first">Watch a property for changes. If the given property is changed, then an
             event of type <tt class="docutils literal"><span class="pre">property-change</span></tt> will be generated</p>
             <p>Example:</p>
-            <pre class="last literal-block">
+            <pre class="literal-block">
             { &quot;command&quot;: [&quot;observe_property&quot;, 1, &quot;volume&quot;] }
             { &quot;error&quot;: &quot;success&quot; }
             { &quot;event&quot;: &quot;property-change&quot;, &quot;id&quot;: 1, &quot;data&quot;: 52.0, &quot;name&quot;: &quot;volume&quot; }
             </pre>
+            <div class="admonition warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">If the connection is closed, the IPC client is destroyed internally,
+            and the observed properties are unregistered. This happens for example
+            when sending commands to a socket with separate <tt class="docutils literal">socat</tt> invocations.
+            This can make it seem like property observation does not work. You must
+            keep the IPC connection open to make it work.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal">observe_property_string</tt></dt>
             <dd><p class="first">Like <tt class="docutils literal">observe_property</tt>, but the resulting data will always be a string.</p>
