@@ -6332,9 +6332,11 @@
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p>To get a full list of available audio filters, see <tt class="docutils literal"><span class="pre">--af=help</span></tt>.</p>
-            <p class="last">Also, keep in mind that most actual filters are available via the <tt class="docutils literal">lavfi</tt>
+            <p>Also, keep in mind that most actual filters are available via the <tt class="docutils literal">lavfi</tt>
             wrapper, which gives you access to most of libavfilter's filters. This
             includes all filters that have been ported from MPlayer to libavfilter.</p>
+            <p class="last">The <tt class="docutils literal"><span class="pre">--vf</span></tt> description describes how libavfilter can be used and how to
+            workaround deprecated mpv filters.</p>
             </div>
             <p>See <tt class="docutils literal"><span class="pre">--vf</span></tt> group of options for info on how <tt class="docutils literal"><span class="pre">--af-defaults</span></tt>, <tt class="docutils literal"><span class="pre">--af-add</span></tt>,
             <tt class="docutils literal"><span class="pre">--af-pre</span></tt>, <tt class="docutils literal"><span class="pre">--af-del</span></tt>, <tt class="docutils literal"><span class="pre">--af-clr</span></tt>, and possibly others work.</p>
@@ -6812,19 +6814,24 @@
             </dl>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
-            <p>To get a full list of available video filters, see <tt class="docutils literal"><span class="pre">--vf=help</span></tt>.</p>
+            <p>To get a full list of available video filters, see <tt class="docutils literal"><span class="pre">--vf=help</span></tt> and
+            <a class="reference external" href="http://ffmpeg.org/ffmpeg-filters.html">http://ffmpeg.org/ffmpeg-filters.html</a> .</p>
             <p>Also, keep in mind that most actual filters are available via the <tt class="docutils literal">lavfi</tt>
             wrapper, which gives you access to most of libavfilter's filters. This
             includes all filters that have been ported from MPlayer to libavfilter.</p>
-            <p>Most filters are deprecated in some ways, unless they're only available
+            <p>Most builtin filters are deprecated in some ways, unless they're only available
             in mpv (such as filters which deal with mpv specifics, or which are
             implemented in mpv only).</p>
-            <p class="last">If a filter is not builtin, the <tt class="docutils literal"><span class="pre">lavfi-bridge</span></tt> will be automatically
+            <p>If a filter is not builtin, the <tt class="docutils literal"><span class="pre">lavfi-bridge</span></tt> will be automatically
             tried. This bridge does not support help output, and does not verify
             parameters before the filter is actually used. Although the mpv syntax
             is rather similar to libavfilter's, it's not the same. (Which means not
             everything accepted by vf_lavfi's <tt class="docutils literal">graph</tt> option will be accepted by
             <tt class="docutils literal"><span class="pre">--vf</span></tt>.)</p>
+            <p class="last">You can also prefix the filter name with <tt class="docutils literal">lavfi-</tt> to force the wrapper.
+            This is helpful if the filter name collides with a deprecated mpv builtin
+            filter. For example <tt class="docutils literal"><span class="pre">--vf=lavfi-scale=args</span></tt> would use libavfilter's
+            <tt class="docutils literal">scale</tt> filter over mpv's deprecated builtin one.</p>
             </div>
             <p>Video filters are managed in lists. There are a few commands to manage the
             filter list.</p>
@@ -6848,7 +6855,7 @@
             <dd>Sets a named parameter to the given value. Use on and off or yes and no to
             set flag parameters.</dd>
             </dl>
-            <p>Available filters are:</p>
+            <p>Available mpv-only filters are:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">crop[=w:h:x:y]</span></tt></dt>
             <dd><p class="first">Crops the given part of the image and discards the rest. Useful to remove
