@@ -2250,7 +2250,7 @@
             <p>Changing styling and position does not work with all subtitles. Image-based
             subtitles (DVD, Bluray/PGS, DVB) cannot changed for fundamental reasons.
             Subtitles in ASS format are normally not changed intentionally, but
-            overriding them can be controlled with <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt>.</p>
+            overriding them can be controlled with <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt>.</p>
             <p class="last">Previously some options working on text subtitles were called
             <tt class="docutils literal"><span class="pre">--sub-text-*</span></tt>, they are now named <tt class="docutils literal"><span class="pre">--sub-*</span></tt>, and those specifically
             for ASS have been renamed from <tt class="docutils literal"><span class="pre">--ass-*</span></tt> to <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt>.
@@ -2318,8 +2318,8 @@
             option <tt class="docutils literal"><span class="pre">--sub-scale-by-window</span></tt> is that <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> still
             scales with the approximate window size, while the other option disables
             this scaling.</p>
-            <p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt> is
-            set high enough).</p>
+            <p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is set
+            high enough).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-ass-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Like <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt>, but affects subtitles in ASS format only.
@@ -2412,22 +2412,25 @@
             <p class="last">Using this option may lead to incorrect subtitle rendering.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--sub-ass-style-override=&lt;yes|no|force|signfs|strip&gt;</span></tt></dt>
-            <dd><p class="first">Control whether user style overrides should be applied.</p>
+            <dt><tt class="docutils literal"><span class="pre">--sub-ass-override=&lt;yes|no|force|scale|strip&gt;</span></tt></dt>
+            <dd><p class="first">Control whether user style overrides should be applied. Note that all of
+            these overrides try to be somewhat smart about figuring out whether or not
+            a subtitle is considered a &quot;sign&quot;.</p>
             <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Apply all the <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt> style override options. Changing the default
-            for any of these options can lead to incorrect subtitle rendering
-            (default).</td>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Render subtitles as specified by the subtitle scripts, without
+            overrides.</td>
             </tr>
-            <tr class="field"><th class="field-name">signfs:</th><td class="field-body">like <tt class="docutils literal">yes</tt>, but apply <tt class="docutils literal"><span class="pre">--sub-scale</span></tt> only to signs</td>
+            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Apply all the <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt> style override options. Changing the
+            default for any of these options can lead to incorrect subtitle
+            rendering (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">Render subtitles as forced by subtitle scripts.</td>
+            <tr class="field"><th class="field-name">force:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also force all <tt class="docutils literal"><span class="pre">--sub-*</span></tt> options. Can break
+            rendering easily.</td>
             </tr>
-            <tr class="field"><th class="field-name">force:</th><td class="field-body">Try to force the font style as defined by the <tt class="docutils literal"><span class="pre">--sub-*</span></tt>
-            options. Can break rendering easily.</td>
+            <tr class="field"><th class="field-name">scale:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also apply <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>.</td>
             </tr>
             <tr class="field"><th class="field-name">strip:</th><td class="field-body">Radically strip all ASS tags and styles from the subtitle. This
             is equivalent to the old <tt class="docutils literal"><span class="pre">--no-ass</span></tt> / <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> options.</td>
@@ -2443,7 +2446,7 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt></dt>
             <dd><p class="first">Enables placing toptitles and subtitles in black borders when they are
             available, if the subtitles are in a plain text format  (or ASS if
-            <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt> is set high enough).</p>
+            <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is set high enough).</p>
             <p>Default: yes.</p>
             <p class="last">Renamed from <tt class="docutils literal"><span class="pre">--sub-ass-use-margins</span></tt>. To place ASS subtitles in the borders
             too (like the old option did), also add <tt class="docutils literal"><span class="pre">--sub-ass-force-margins</span></tt>.</p>
@@ -2501,7 +2504,7 @@
             </table>
             <p class="last">Choosing anything other than <tt class="docutils literal">no</tt> will make the subtitle color depend on
             the video color space, and it's for example in theory not possible to reuse
-            a subtitle script with another video file. The <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt>
+            a subtitle script with another video file. The <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt>
             option doesn't affect how this option is interpreted.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--stretch-dvd-subs=&lt;yes|no&gt;</span></tt></dt>
@@ -2535,9 +2538,9 @@
             <dd><p class="first">Render ASS subtitles natively (enabled by default).</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
-            <p class="last">This has been deprecated by <tt class="docutils literal"><span class="pre">--sub-ass-style-override=strip</span></tt>. You also
+            <p class="last">This has been deprecated by <tt class="docutils literal"><span class="pre">--sub-ass-override=strip</span></tt>. You also
             may need <tt class="docutils literal"><span class="pre">--embeddedfonts=no</span></tt> to get the same behavior. Also,
-            using <tt class="docutils literal"><span class="pre">--sub-ass-style-override=force</span></tt> should give better results
+            using <tt class="docutils literal"><span class="pre">--sub-ass-override=style</span></tt> should give better results
             without breaking subtitles too much.</p>
             </div>
             <p>If <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> is specified, all tags and style declarations are
@@ -2771,7 +2774,7 @@
             as it is easier for the eyes.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-ass-justify=&lt;yes|no&gt;</span></tt></dt>
             <dd>Applies justification as defined by <tt class="docutils literal"><span class="pre">--sub-justify</span></tt> on ASS subtitles
-            if <tt class="docutils literal"><span class="pre">--sub-ass-style-override</span></tt> is not set to <tt class="docutils literal">no</tt>.
+            if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is not set to <tt class="docutils literal">no</tt>.
             Default: <tt class="docutils literal">no</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-shadow-color=&lt;color&gt;</span></tt></dt>
             <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text shadow.</dd>
