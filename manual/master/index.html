@@ -5204,13 +5204,27 @@
             display. Valid values are:</p>
             <dl class="last docutils">
             <dt>clip</dt>
-            <dd>Hard-clip any out-of-range values.</dd>
+            <dd>Hard-clip any out-of-range values. Use this when you care about
+            perfect color accuracy for in-range values at the cost of completely
+            distorting out-of-range values. Not generally recommended.</dd>
+            <dt>mobius</dt>
+            <dd>Generalization of Reinhard to a Möbius transform with linear section.
+            Smoothly maps out-of-range values while retaining contrast and colors
+            for in-range material as much as possible. Use this when you care about
+            color accuracy more than detail preservation. This is somewhere in
+            between <tt class="docutils literal">clip</tt> and <tt class="docutils literal">reinhard</tt>, depending on the value of
+            <tt class="docutils literal"><span class="pre">--tone-mapping-param</span></tt>. (default)</dd>
             <dt>reinhard</dt>
             <dd>Reinhard tone mapping algorithm. Very simple continuous curve.
-            Preserves dynamic range and peak but uses nonlinear contrast.</dd>
+            Preserves overall image brightness but uses nonlinear contrast, which
+            results in flattening of details and degradation in color accuracy.</dd>
             <dt>hable</dt>
-            <dd>Similar to <tt class="docutils literal">reinhard</tt> but preserves dark contrast better (slightly
-            sigmoidal). Developed by John Hable for use in video games. (default)</dd>
+            <dd>Similar to <tt class="docutils literal">reinhard</tt> but preserves both dark and bright details
+            better (slightly sigmoidal), at the cost of slightly darkening
+            everything. Developed by John Hable for use in video games. Use this
+            when you care about detail preservation more than color/brightness
+            accuracy. This is roughly equivalent to
+            <tt class="docutils literal"><span class="pre">--hdr-tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>.</dd>
             <dt>gamma</dt>
             <dd>Fits a logarithmic transfer between the tone curves.</dd>
             <dt>linear</dt>
@@ -5222,6 +5236,12 @@
             <dd><p class="first">Set tone mapping parameters. Ignored if the tone mapping algorithm is not
             tunable. This affects the following tone mapping algorithms:</p>
             <dl class="last docutils">
+            <dt>mobius</dt>
+            <dd>Specifies the transition point from linear to mobius transform. Every
+            value below this point is guaranteed to be mapped 1:1. The higher the
+            value, the more accurate the result will be, at the cost of losing
+            bright details. Defaults to 0.3, which due to the steep initial slope
+            still preserves in-range colors fairly accurately.</dd>
             <dt>reinhard</dt>
             <dd>Specifies the local contrast coefficient at the display peak. Defaults
             to 0.5, which means that in-gamut values will be about half as bright
