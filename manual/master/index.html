@@ -11049,6 +11049,240 @@
             </dl>
             </div>
             </div>
+            <div class="section" id="javascript">
+            <h1>JavaScript</h1>
+            <p>JavaScript support in mpv is near identical to its Lua support. Use this section
+            as reference on differences and availability of APIs, but otherwise you should
+            refer to the Lua documentation for API details and general scripting in mpv.</p>
+            <div class="section" id="id1">
+            <h2>Example</h2>
+            <p>JavaScript code which leaves fullscreen mode when the player is paused:</p>
+            <pre class="literal-block">
+            function on_pause_change(name, value) {
+                if (value == true)
+                    mp.set_property(&quot;fullscreen&quot;, &quot;no&quot;);
+            }
+            mp.observe_property(&quot;pause&quot;, &quot;bool&quot;, on_pause_change);
+            </pre>
+            </div>
+            <div class="section" id="similarities-with-lua">
+            <h2>Similarities with Lua</h2>
+            <p>mpv tries to load a script file as JavaScript if it has a <tt class="docutils literal">.js</tt> extension, but
+            otherwise, the documented Lua options, script directories, loading, etc apply to
+            JavaScript files too.</p>
+            <p>Script initialization and lifecycle is the same as with Lua, and most of the Lua
+            functions at the modules <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt> and <tt class="docutils literal">mp.msg</tt> are available to
+            JavaScript with identical APIs - including running commands, getting/setting
+            properties, registering events/key-bindings/property-changes/hooks, etc.</p>
+            </div>
+            <div class="section" id="differences-from-lua">
+            <h2>Differences from Lua</h2>
+            <p>No need to load modules. <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt> and <tt class="docutils literal">mp.msg</tt> are preloaded, and
+            you can use e.g. <tt class="docutils literal">var cwd = <span class="pre">mp.utils.getcwd();</span></tt> without prior setup.
+            <tt class="docutils literal">mp.options</tt> is currently not implemented, but <tt class="docutils literal"><span class="pre">mp.get_opt(...)</span></tt> is.</p>
+            <p>Errors are slightly different. Where the Lua APIs return <tt class="docutils literal">nil</tt> for error,
+            the JavaScript ones return <tt class="docutils literal">undefined</tt>. Where Lua returns <tt class="docutils literal">something, error</tt>
+            JavaScript returns only <tt class="docutils literal">something</tt> - and makes <tt class="docutils literal">error</tt> available via
+            <tt class="docutils literal">mp.last_error()</tt>. Note that only some of the functions have this additional
+            <tt class="docutils literal">error</tt> value - typically the same ones which have it in Lua.</p>
+            <p>Standard APIs are preferred. For instance <tt class="docutils literal">setTimeout</tt> and <tt class="docutils literal">JSON.stringify</tt>
+            are available, but <tt class="docutils literal">mp.add_timeout</tt> and <tt class="docutils literal">mp.utils.format_json</tt> are not.</p>
+            <p>No standard library. This means that interaction with anything outside of mpv is
+            limited to the available APIs, typically via <tt class="docutils literal">mp.utils</tt>. However, some file
+            functions were added, and CommonJS <tt class="docutils literal">require</tt> is available too - where the
+            loaded modules have the same privileges as normal scripts.</p>
+            </div>
+            <div class="section" id="language-features-ecmascript-5">
+            <h2>Language features - ECMAScript 5</h2>
+            <p>The scripting backend which mpv currently uses is MuJS - a compatible minimal
+            ES5 interpreter. As such, <tt class="docutils literal">String.substring</tt> is implemented for instance,
+            while the common but non-standard <tt class="docutils literal">String.substr</tt> is not. Please consult the
+            MuJS pages on language features and platform support - <a class="reference external" href="http://mujs.com">http://mujs.com</a> .</p>
+            </div>
+            <div class="section" id="unsupported-lua-apis-and-their-js-alternatives">
+            <h2>Unsupported Lua APIs and their JS alternatives</h2>
+            <p><tt class="docutils literal">mp.add_timeout(seconds, fn)</tt>  JS: <tt class="docutils literal">id = setTimeout(fn, ms)</tt></p>
+            <p><tt class="docutils literal">mp.add_periodic_timer(seconds, fn)</tt>  JS: <tt class="docutils literal">id = setInterval(fn, ms)</tt></p>
+            <p><tt class="docutils literal">mp.register_idle(fn)</tt>  JS: <tt class="docutils literal">id = setTimeout(fn)</tt></p>
+            <p><tt class="docutils literal">mp.unregister_idle(fn)</tt>  JS:  <tt class="docutils literal">clearTimeout(id)</tt></p>
+            <p><tt class="docutils literal">utils.parse_json(str [, trail])</tt>  JS: <tt class="docutils literal">JSON.parse(str)</tt></p>
+            <p><tt class="docutils literal">utils.format_json(v)</tt>  JS: <tt class="docutils literal">JSON.stringify(v)</tt></p>
+            <p><tt class="docutils literal">utils.to_string(v)</tt>  see <tt class="docutils literal">dump</tt> below.</p>
+            <p><tt class="docutils literal">mp.suspend()</tt> JS: none (deprecated).</p>
+            <p><tt class="docutils literal">mp.resume()</tt> JS: none (deprecated).</p>
+            <p><tt class="docutils literal">mp.resume_all()</tt> JS: none (deprecated).</p>
+            <p><tt class="docutils literal">mp.get_next_timeout()</tt> see event loop below.</p>
+            <p><tt class="docutils literal"><span class="pre">mp.dispatch_events([allow_wait])</span></tt> see event loop below.</p>
+            <p><tt class="docutils literal">mp.options</tt> module is not implemented currently for JS.</p>
+            </div>
+            <div class="section" id="scripting-apis-identical-to-lua">
+            <h2>Scripting APIs - identical to Lua</h2>
+            <p>(LE) - Last-Error, indicates that <tt class="docutils literal">mp.last_error()</tt> can be used after the
+            call to test for success (empty string) or failure (non empty reason string).
+            Otherwise, where the Lua APIs return <tt class="docutils literal">nil</tt> on error, JS returns <tt class="docutils literal">undefined</tt>.</p>
+            <p><tt class="docutils literal">mp.command(string)</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.commandv(arg1, arg2, <span class="pre">...)</span></tt> (LE)</p>
+            <p><tt class="docutils literal">mp.command_native(table [,def])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.get_property(name [,def])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.get_property_osd(name [,def])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.get_property_bool(name [,def])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.get_property_number(name [,def])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.get_property_native(name [,def])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.set_property(name, value)</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.set_property_bool(name, value)</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.set_property_number(name, value)</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.set_property_native(name, value)</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.get_time()</tt></p>
+            <p><tt class="docutils literal">mp.add_key_binding(key, name|fn [,fn <span class="pre">[,flags]])</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.add_forced_key_binding(...)</span></tt></p>
+            <p><tt class="docutils literal">mp.remove_key_binding(name)</tt></p>
+            <p><tt class="docutils literal">mp.register_event(name, fn)</tt></p>
+            <p><tt class="docutils literal">mp.unregister_event(fn)</tt></p>
+            <p><tt class="docutils literal">mp.observe_property(name, type, fn)</tt></p>
+            <p><tt class="docutils literal">mp.unobserve_property(fn)</tt></p>
+            <p><tt class="docutils literal">mp.get_opt(key)</tt></p>
+            <p><tt class="docutils literal">mp.get_script_name()</tt></p>
+            <p><tt class="docutils literal">mp.osd_message(text [,duration])</tt></p>
+            <p><tt class="docutils literal">mp.get_wakeup_pipe()</tt></p>
+            <p><tt class="docutils literal">mp.enable_messages(level)</tt></p>
+            <p><tt class="docutils literal">mp.register_script_message(name, fn)</tt></p>
+            <p><tt class="docutils literal">mp.unregister_script_message(name)</tt></p>
+            <p><tt class="docutils literal">mp.msg.log(level, <span class="pre">...)</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.msg.fatal(...)</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.msg.error(...)</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.msg.warn(...)</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.msg.info(...)</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.msg.verbose(...)</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.msg.debug(...)</span></tt></p>
+            <p><tt class="docutils literal">mp.utils.getcwd()</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.utils.readdir(path [, filter])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.utils.split_path(path)</tt></p>
+            <p><tt class="docutils literal">mp.utils.join_path(p1, p2)</tt></p>
+            <p><tt class="docutils literal">mp.utils.subprocess(t)</tt></p>
+            <p><tt class="docutils literal">mp.utils.subprocess_detached(t)</tt></p>
+            <p><tt class="docutils literal">mp.add_hook(type, priority, fn)</tt></p>
+            </div>
+            <div class="section" id="additional-utilities">
+            <h2>Additional utilities</h2>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">mp.last_error()</tt></dt>
+            <dd>If used after an API call which updates last error, returns an empty string
+            if the API call succeeded, or a non-empty error reason string otherwise.</dd>
+            <dt><tt class="docutils literal">Error.stack</tt> (string)</dt>
+            <dd>When using <tt class="docutils literal">try { ... } catch(e) { ... }</tt>, then <tt class="docutils literal">e.stack</tt> is the stack
+            trace of the error - if it was created using the <tt class="docutils literal"><span class="pre">Error(...)</span></tt> constructor.</dd>
+            <dt><tt class="docutils literal">print</tt> (global)</dt>
+            <dd>A convenient alias to <tt class="docutils literal">mp.msg.info</tt>.</dd>
+            <dt><tt class="docutils literal">dump</tt> (global)</dt>
+            <dd>Like <tt class="docutils literal">print</tt> but also expands objects and arrays recursively.</dd>
+            <dt><tt class="docutils literal">mp.utils.getenv(name)</tt></dt>
+            <dd>Returns the value of the host environment variable <tt class="docutils literal">name</tt>, or empty str.</dd>
+            <dt><tt class="docutils literal">mp.utils.get_user_path(path)</tt></dt>
+            <dd>Expands (mpv) meta paths like <tt class="docutils literal">~/x</tt>, <tt class="docutils literal"><span class="pre">~~/y</span></tt>, <tt class="docutils literal">~~desktop/z</tt> etc.
+            <tt class="docutils literal">read_file</tt>, <tt class="docutils literal">write_file</tt> and <tt class="docutils literal">require</tt> already use this internaly.</dd>
+            <dt><tt class="docutils literal">mp.utils.read_file(fname [,max])</tt></dt>
+            <dd>Returns the content of file <tt class="docutils literal">fname</tt> as string. If <tt class="docutils literal">max</tt> is provided and
+            not negative, limit the read to <tt class="docutils literal">max</tt> bytes.</dd>
+            <dt><tt class="docutils literal">mp.utils.write_file(fname, str)</tt></dt>
+            <dd>(Over)write file <tt class="docutils literal">fname</tt> with text content <tt class="docutils literal">str</tt>. <tt class="docutils literal">fname</tt> must be
+            prefixed with <tt class="docutils literal"><span class="pre">file://</span></tt> as simple protection against accidental arguments
+            switch, e.g. <tt class="docutils literal"><span class="pre">mp.utils.write_file(&quot;file://~/abc.txt&quot;,</span> &quot;hello world&quot;)</tt>.</dd>
+            </dl>
+            <p>Note: <tt class="docutils literal">read_file</tt> and <tt class="docutils literal">write_file</tt> throw on errors, allow text content only.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">mp.get_time_ms()</tt></dt>
+            <dd>Same as <tt class="docutils literal">mp.get_time()</tt> but in ms instead of seconds.</dd>
+            <dt><tt class="docutils literal">mp.get_script_file()</tt></dt>
+            <dd>Returns the file name of the current script.</dd>
+            <dt><tt class="docutils literal">exit()</tt> (global)</dt>
+            <dd>Make the script exit at the end of the current event loop iteration.
+            Note: please reomve added key bindings before calling <tt class="docutils literal">exit()</tt>.</dd>
+            <dt><tt class="docutils literal">mp.utils.compile_js(fname, content_str)</tt></dt>
+            <dd>Compiles the JS code <tt class="docutils literal">content_str</tt> as file name <tt class="docutils literal">fname</tt> (without loading
+            anything from the filesystem), and returns it as a function. Very similar
+            to a <tt class="docutils literal">Function</tt> constructor, but shows at stack traces as <tt class="docutils literal">fname</tt>.</dd>
+            </dl>
+            </div>
+            <div class="section" id="timers-global">
+            <h2>Timers (global)</h2>
+            <p>The standard HTML/node.js timers are available:</p>
+            <p><tt class="docutils literal">id = setTimeout(fn [,duration [,arg1 <span class="pre">[,arg2...]]])</span></tt></p>
+            <p><tt class="docutils literal">id = setTimeout(code_string [,duration])</tt></p>
+            <p><tt class="docutils literal">clearTimeout(id)</tt></p>
+            <p><tt class="docutils literal">id = setInterval(fn [,duration [,arg1 <span class="pre">[,arg2...]]])</span></tt></p>
+            <p><tt class="docutils literal">id = setInterval(code_string [,duration])</tt></p>
+            <p><tt class="docutils literal">clearInterval(id)</tt></p>
+            <p><tt class="docutils literal">setTimeout</tt> and <tt class="docutils literal">setInterval</tt> return id, and later call <tt class="docutils literal">fn</tt> (or execute
+            <tt class="docutils literal">code_string</tt>) after <tt class="docutils literal">duration</tt> ms. Interval also repeat every <tt class="docutils literal">duration</tt>.</p>
+            <p><tt class="docutils literal">duration</tt> has a minimum and default value of 0, <tt class="docutils literal">code_string</tt> is
+            a plain string which is evaluated as JS code, and <tt class="docutils literal">[,arg1 <span class="pre">[,arg2..]]</span></tt> are used
+            as arguments (if provided) when calling back <tt class="docutils literal">fn</tt>.</p>
+            <p>The <tt class="docutils literal"><span class="pre">clear...(id)</span></tt> functions cancel timer <tt class="docutils literal">id</tt>, and are irreversible.</p>
+            <p>Note: timers always call back asynchronously, e.g. <tt class="docutils literal">setTimeout(fn)</tt> will never
+            call <tt class="docutils literal">fn</tt> before returning. <tt class="docutils literal">fn</tt> will be called either at the end of this
+            event loop iteration or at a later event loop iteration. This is true also for
+            intervals - which also never call back twice at the same event loop iteration.</p>
+            <p>Additionally, timers are processed after the event queue is empty, so it's valid
+            to use <tt class="docutils literal">setTimeout(fn)</tt> instead of Lua's <tt class="docutils literal">mp.register_idle(fn)</tt>.</p>
+            </div>
+            <div class="section" id="commonjs-modules-and-require-id">
+            <h2>CommonJS modules and <tt class="docutils literal">require(id)</tt></h2>
+            <p>CommonJS Modules are a standard system where scripts can export common functions
+            for use by other scripts. A module is a script which adds properties (functions,
+            etc) to its invisible <tt class="docutils literal">exports</tt> object, which another script can access by
+            loading it with <tt class="docutils literal"><span class="pre">require(module-id)</span></tt> - which returns that <tt class="docutils literal">exports</tt> object.</p>
+            <p>Modules and <tt class="docutils literal">require</tt> are supported, standard compliant, and generally similar
+            to node.js. However, most node.js modules won't run due to missing modules such
+            as <tt class="docutils literal">fs</tt>, <tt class="docutils literal">process</tt>, etc, but some node.js modules with minimal dependencies
+            do work. In general, this is for mpv modules and not a node.js replacement.</p>
+            <p>A <tt class="docutils literal">.js</tt> file extension is always added to <tt class="docutils literal">id</tt>, e.g. <tt class="docutils literal"><span class="pre">require(&quot;./foo&quot;)</span></tt>
+            will load the file <tt class="docutils literal">./foo.js</tt> and return its <tt class="docutils literal">exports</tt> object.</p>
+            <p>An id is relative (to the script which <tt class="docutils literal">require</tt>'d it) if it starts with
+            <tt class="docutils literal">./</tt> or <tt class="docutils literal">../</tt>. Otherwise, it's considered a &quot;top-level id&quot; (CommonJS term).</p>
+            <p>Top level id is evaluated as absolute filesystem path if possible (e.g. <tt class="docutils literal">/x/y</tt>
+            or <tt class="docutils literal">~/x</tt>). Otherwise, it's searched at <tt class="docutils literal">scripts/modules.js/</tt> in mpv config
+            dirs - in normal config search order. E.g. <tt class="docutils literal"><span class="pre">require(&quot;x&quot;)</span></tt> is searched as file
+            <tt class="docutils literal">x.js</tt> at those dirs, and id <tt class="docutils literal">foo/x</tt> is searched as file <tt class="docutils literal">foo/x.js</tt>.</p>
+            <p>No <tt class="docutils literal">global</tt> variable, but a module's <tt class="docutils literal">this</tt> at its top lexical scope is the
+            global object - also in strict mode. If you have a module which needs <tt class="docutils literal">global</tt>
+            as the global object, you could do <tt class="docutils literal">this.global = this;</tt> before <tt class="docutils literal">require</tt>.</p>
+            <p>Functions and variables declared at a module don't pollute the global object.</p>
+            </div>
+            <div class="section" id="the-event-loop">
+            <h2>The event loop</h2>
+            <p>The event loop poll/dispatch mpv events as long as the queue is not empty, then
+            processes the timers, then waits for the next event, and repeats this forever.</p>
+            <p>You could put this code at your script to replace the built-in event loop, and
+            also print every event which mpv sends to your script:</p>
+            <pre class="literal-block">
+            function mp_event_loop() {
+                var wait = 0;
+                do {
+                    var e = mp.wait_event(wait);
+                    dump(e);  // there could be a lot of prints...
+                    if (e.event != &quot;none&quot;) {
+                        mp.dispatch_event(e);
+                        wait = 0;
+                    } else {
+                        wait = mp.process_timers() / 1000;
+                    }
+                } while (mp.keep_running);
+            }
+            </pre>
+            <p><tt class="docutils literal">mp_event_loop</tt> is a name which mpv tries to call after the script loads.
+            The internal implementation is similar to this (without <tt class="docutils literal">dump</tt> though..).</p>
+            <p><tt class="docutils literal">e = mp.wait_event(wait)</tt> returns when the next mpv event arrives, or after
+            <tt class="docutils literal">wait</tt> seconds if positive and no mpv events arrived. <tt class="docutils literal">wait</tt> value of 0
+            returns immediately (with <tt class="docutils literal">e.event == &quot;none&quot;</tt> if the queue is empty).</p>
+            <p><tt class="docutils literal">mp.dispatch_event(e)</tt> calls back the handlers registered for <tt class="docutils literal">e.event</tt>,
+            if there are such (event handlers, property observers, script messages, etc).</p>
+            <p><tt class="docutils literal">mp.process_timers()</tt> calls back the already-added, non-canceled due timers,
+            and returns the duration in ms till the next due timer (possibly 0), or -1 if
+            there are no pending timers. Must not be called recursively.</p>
+            <p>Note: <tt class="docutils literal">exit()</tt> is also registered for the <tt class="docutils literal">shutdown</tt> event, and its
+            implementation is a simple <tt class="docutils literal">mp.keep_running = false</tt>.</p>
+            </div>
+            </div>
             <div class="section" id="json-ipc">
             <h1>JSON IPC</h1>
             <p>mpv can be controlled by external programs using the JSON-based IPC protocol.
