@@ -5159,6 +5159,8 @@
             <dd>DCI-P3 (Digital Cinema Colorspace), SMPTE RP431-2</dd>
             <dt>v-gamut</dt>
             <dd>Panasonic V-Gamut (VARICAM) primaries</dd>
+            <dt>s-gamut</dt>
+            <dd>Sony S-Gamut (S-Log) primaries</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--target-trc=&lt;value&gt;</span></tt></dt>
@@ -5182,12 +5184,16 @@
             <dd>Pure power curve (gamma 2.8), also used for BT.470-BG</dd>
             <dt>prophoto</dt>
             <dd>ProPhoto RGB (ROMM)</dd>
-            <dt>st2084</dt>
-            <dd>SMPTE ST2084 (HDR) curve, PQ OETF</dd>
-            <dt>std-b67</dt>
-            <dd>ARIB STD-B67 (Hybrid Log-gamma) curve, also known as BBC/NHK HDR</dd>
+            <dt>pq</dt>
+            <dd>ITU-R BT.2100 PQ (Perceptual quantizer) curve, aka SMPTE ST2084</dd>
+            <dt>hlg</dt>
+            <dd>ITU-R BT.2100 HLG (Hybrid Log-gamma) curve, aka ARIB STD-B67</dd>
             <dt>v-log</dt>
             <dd>Panasonic V-Log (VARICAM) curve</dd>
+            <dt>s-log1</dt>
+            <dd>Sony S-Log1 curve</dd>
+            <dt>s-log2</dt>
+            <dd>Sony S-Log2 curve</dd>
             </dl>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
@@ -5198,12 +5204,6 @@
             formats for display.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--target-brightness=&lt;1..100000&gt;</span></tt></dt>
-            <dd>Specifies the display's approximate brightness in cd/m^2. When playing HDR
-            content on a SDR display (or SDR content on an HDR display), video colors
-            will be tone mapped to this target brightness using the algorithm specified
-            by <tt class="docutils literal"><span class="pre">--hdr-tone-mapping</span></tt>. The default of 250 cd/m^2 corresponds to a
-            typical consumer display.</dd>
             <dt><tt class="docutils literal"><span class="pre">--hdr-tone-mapping=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Specifies the algorithm used for tone-mapping HDR images onto the target
             display. Valid values are:</p>
@@ -7243,21 +7243,51 @@
             </tr>
             <tr class="field"><th class="field-name">prophoto:</th><td class="field-body">ProPhoto RGB (ROMM) curve</td>
             </tr>
-            <tr class="field"><th class="field-name">st2084:</th><td class="field-body">SMPTE ST2084 (HDR) curve</td>
+            <tr class="field"><th class="field-name">pq:</th><td class="field-body">ITU-R BT.2100 PQ (Perceptual quantizer) curve</td>
             </tr>
-            <tr class="field"><th class="field-name">std-b67:</th><td class="field-body">ARIB STD-B67 (Hybrid Log-gamma) curve</td>
+            <tr class="field"><th class="field-name">hlg:</th><td class="field-body">ITU-R BT.2100 HLG (Hybrid Log-gamma) curve</td>
             </tr>
             <tr class="field"><th class="field-name">v-log:</th><td class="field-body">Panasonic V-Log transfer curve</td>
+            </tr>
+            <tr class="field"><th class="field-name">s-log1:</th><td class="field-body">Sony S-Log1 transfer curve</td>
+            </tr>
+            <tr class="field"><th class="field-name">s-log2:</th><td class="field-body">Sony S-Log2 transfer curve</td>
             </tr>
             </tbody>
             </table>
             </dd>
-            <dt><tt class="docutils literal">&lt;peak&gt;</tt></dt>
-            <dd><p class="first">Reference peak illumination for the video file. This is mostly
-            interesting for HDR, but it can also be used tone map SDR content
-            to a darker or brighter exposure.</p>
-            <p class="last">The default of 0.0 will default to the display's reference brightness
-            for SDR and the source's reference brightness for HDR.</p>
+            <dt><tt class="docutils literal"><span class="pre">&lt;sig-peak&gt;</span></tt></dt>
+            <dd><p class="first">Reference peak illumination for the video file, relative to the
+            signal's reference white level. This is mostly interesting for HDR, but
+            it can also be used tone map SDR content to simulate a different
+            exposure. Normally inferred from tags such as MaxCLL or mastering
+            metadata.</p>
+            <p class="last">The default of 0.0 will default to the source's nominal peak luminance.</p>
+            </dd>
+            <dt><tt class="docutils literal">&lt;light&gt;</tt></dt>
+            <dd><blockquote class="first">
+            <p>Light type of the scene. This is mostly correctly inferred based on the
+            gamma function, but it can be useful to override this when viewing raw
+            camera footage (e.g. V-Log), which is normally scene-referred instead
+            of display-referred.</p>
+            <p>Available light types are:</p>
+            </blockquote>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">Automatic selection (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">display:</th><td class="field-body">Display-referred light (most content)</td>
+            </tr>
+            <tr class="field"><th class="field-name">hlg:</th><td class="field-body">Scene-referred using the HLG OOTF (e.g. HLG content)</td>
+            </tr>
+            <tr class="field"><th class="field-name">709-1886:</th><td class="field-body">Scene-referred using the BT709+BT1886 interaction</td>
+            </tr>
+            <tr class="field"><th class="field-name">gamma1.2:</th><td class="field-body">Scene-referred using a pure power OOTF (gamma=1.2)</td>
+            </tr>
+            </tbody>
+            </table>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;stereo-in&gt;</span></tt></dt>
             <dd>Set the stereo mode the video is assumed to be encoded in. Takes the
@@ -9173,10 +9203,10 @@
             <dd>The primaries in use as string. (Exact values subject to change.)</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/gamma</span></tt></dt>
             <dd>The gamma function in use as string. (Exact values subject to change.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">video-params/nom-peak</span></tt></dt>
-            <dd>The video encoding's nominal peak brightness as float.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/sig-peak</span></tt></dt>
             <dd>The video file's tagged signal peak as float.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-params/light</span></tt></dt>
+            <dd>The light type in use as a string. (Exact values subject to change.)</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/chroma-location</span></tt></dt>
             <dd>Chroma location as string. (Exact values subject to change.)</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/rotate</span></tt></dt>
@@ -9200,8 +9230,8 @@
                 &quot;colorlevels&quot;       MPV_FORMAT_STRING
                 &quot;primaries&quot;         MPV_FORMAT_STRING
                 &quot;gamma&quot;             MPV_FORMAT_STRING
-                &quot;nom-peak&quot;          MPV_FORMAT_DOUBLE
                 &quot;sig-peak&quot;          MPV_FORMAT_DOUBLE
+                &quot;light&quot;             MPV_FORMAT_STRING
                 &quot;chroma-location&quot;   MPV_FORMAT_STRING
                 &quot;rotate&quot;            MPV_FORMAT_INT64
                 &quot;stereo-in&quot;         MPV_FORMAT_STRING
