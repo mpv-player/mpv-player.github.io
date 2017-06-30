@@ -5713,6 +5713,14 @@
             system-wide audio settings. This is equivalent to changing the <tt class="docutils literal">Format</tt>
             setting in the <tt class="docutils literal">Audio Devices</tt> dialog in the <tt class="docutils literal">Audio MIDI Setup</tt>
             utility. Note that this does not affect the selected speaker setup.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--coreaudio-spdif-hack=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Try to pass through AC3/DTS data as PCM. This is useful for drivers
+            which do not report AC3 support. It converts the AC3 data to float,
+            and assumes the driver will do the inverse conversion, which means
+            a typical A/V receiver will pick it up as compressed IEC framed AC3
+            stream, ignoring that it's marked as PCM. This disables normal AC3
+            passthrough (even if the device reports it as supported). Use with
+            extreme care.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">coreaudio_exclusive</tt> (Mac OS X only)</dt>
