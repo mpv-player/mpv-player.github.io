@@ -426,6 +426,50 @@
             <tt class="docutils literal">file2.mkv</tt>, it is reset when advancing to <tt class="docutils literal">file3.mkv</tt>. This only affects
             file-local options. The option <tt class="docutils literal"><span class="pre">--a</span></tt> is never reset here.</p>
             </div>
+            <div class="section" id="list-options">
+            <h2>List Options</h2>
+            <p>Some options which store lists of option values can have action suffixes. For
+            example, you can set a <tt class="docutils literal">,</tt>-separated list of filters with <tt class="docutils literal"><span class="pre">--vf</span></tt>, but the
+            option also allows you to append filters with <tt class="docutils literal"><span class="pre">--vf-append</span></tt>.</p>
+            <p>Options for filenames do not use <tt class="docutils literal">,</tt> as separator, but <tt class="docutils literal">:</tt> (Unix) or <tt class="docutils literal">;</tt>
+            (Windows).</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="22%" />
+            <col width="78%" />
+            </colgroup>
+            <thead valign="bottom">
+            <tr><th class="head">Suffix</th>
+            <th class="head">Meaning</th>
+            </tr>
+            </thead>
+            <tbody valign="top">
+            <tr><td>-add</td>
+            <td>Append 1 or more items</td>
+            </tr>
+            <tr><td>-add-str</td>
+            <td>Append single item (avoids need for escaping)</td>
+            </tr>
+            <tr><td>-clr</td>
+            <td>Clear the option</td>
+            </tr>
+            <tr><td>-del</td>
+            <td>Delete an existing item by integer index</td>
+            </tr>
+            <tr><td>-pre</td>
+            <td>Prepend 1 or more items</td>
+            </tr>
+            <tr><td>-set</td>
+            <td>Set a list of items</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>Although some operations allow specifiying multiple <tt class="docutils literal">,</tt>-separated items, using
+            this is strongly discouraged and deprecated, except for <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
+            <p>Without suffix, the action taken is normally <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
+            <p>Some options (like <tt class="docutils literal"><span class="pre">--sub-file</span></tt>, <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-shader</span></tt>) append
+            one file per option use. Their default action is <tt class="docutils literal"><span class="pre">-add-str</span></tt>.</p>
+            </div>
             <div class="section" id="playing-dvds">
             <h2>Playing DVDs</h2>
             <p>DVDs can be played with the <tt class="docutils literal"><span class="pre">dvd://[title]</span></tt> syntax. The optional
@@ -2121,9 +2165,11 @@
             <p class="last">This option has no influence on files with normal video tracks.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-file=&lt;filename&gt;</span></tt></dt>
-            <dd>Play audio from an external file while viewing a video. Each use of this
+            <dd><p class="first">Play audio from an external file while viewing a video. Each use of this
             option will add a new audio track. The details are similar to how
-            <tt class="docutils literal"><span class="pre">--sub-file</span></tt> works.</dd>
+            <tt class="docutils literal"><span class="pre">--sub-file</span></tt> works.</p>
+            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-format=&lt;format&gt;</span></tt></dt>
             <dd>Select the sample format used for output from the audio filter layer to
             the sound card. The values that <tt class="docutils literal">&lt;format&gt;</tt> can adopt are listed below in
@@ -2200,14 +2246,16 @@
             </tr>
             <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all audio files containing media filename.</td>
             </tr>
-            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all audio files in the current and <tt class="docutils literal"><span class="pre">--audio-file-paths</span></tt>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all audio files in the current and <tt class="docutils literal"><span class="pre">--audio-file-path</span></tt>
             directories.</td>
             </tr>
             </tbody>
             </table>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-file-paths=&lt;path1:path2:...&gt;</span></tt></dt>
-            <dd>Equivalent to <tt class="docutils literal"><span class="pre">--sub-paths</span></tt> option, but for auto-loaded audio files.</dd>
+            <dd>Deprecated, use <tt class="docutils literal"><span class="pre">--audio-file-path</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-file-path=path1&gt;</span></tt></dt>
+            <dd>Equivalent to <tt class="docutils literal"><span class="pre">--sub-file-path</span></tt> option, but for auto-loaded audio files.</dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-client-name=&lt;name&gt;</span></tt></dt>
             <dd>The application name the player reports to the audio API. Can be useful
             if you want to force a different audio profile (e.g. with PulseAudio),
@@ -2266,11 +2314,12 @@
             <dd><p class="first">Add a subtitle file to the list of external subtitles.</p>
             <p>If you use <tt class="docutils literal"><span class="pre">--sub-file</span></tt> only once, this subtitle file is displayed by
             default.</p>
-            <p class="last">If <tt class="docutils literal"><span class="pre">--sub-file</span></tt> is used multiple times, the subtitle to use can be
+            <p>If <tt class="docutils literal"><span class="pre">--sub-file</span></tt> is used multiple times, the subtitle to use can be
             switched at runtime by cycling subtitle tracks. It's possible to show
             two subtitles at once: use <tt class="docutils literal"><span class="pre">--sid</span></tt> to select the first subtitle index,
             and <tt class="docutils literal"><span class="pre">--secondary-sid</span></tt> to select the second index. (The index is printed
             on the terminal output after the <tt class="docutils literal"><span class="pre">--sid=</span></tt> in the list of streams.)</p>
+            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--secondary-sid=&lt;ID|auto|no&gt;</span></tt></dt>
             <dd><p class="first">Select a secondary subtitle stream. This is similar to <tt class="docutils literal"><span class="pre">--sid</span></tt>. If a
@@ -2567,7 +2616,7 @@
             </tr>
             <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all subs containing media filename.</td>
             </tr>
-            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all subs in the current and <tt class="docutils literal"><span class="pre">--sub-paths</span></tt> directories.</td>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all subs in the current and <tt class="docutils literal"><span class="pre">--sub-file-path</span></tt> directories.</td>
             </tr>
             </tbody>
             </table>
@@ -2633,25 +2682,27 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-paths=&lt;path1:path2:...&gt;</span></tt></dt>
+            <dd>Deprecated, use <tt class="docutils literal"><span class="pre">--sub-file-path</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-file-path=path</span></tt></dt>
             <dd><p class="first">Specify extra directories to search for subtitles matching the video.
             Multiple directories can be separated by &quot;:&quot; (&quot;;&quot; on Windows).
             Paths can be relative or absolute. Relative paths are interpreted relative
             to video file directory.
             If the file is a URL, only absolute paths and <tt class="docutils literal">sub</tt> configuration
             subdirectory will be scanned.</p>
-            <div class="admonition admonition-example last">
+            <div class="admonition admonition-example">
             <p class="first admonition-title">Example</p>
             <p>Assuming that <tt class="docutils literal">/path/to/video/video.avi</tt> is played and
-            <tt class="docutils literal"><span class="pre">--sub-paths=sub:subtitles:/tmp/subs</span></tt> is specified, mpv searches for
-            subtitle files in these directories:</p>
+            <tt class="docutils literal"><span class="pre">--sub-file-path=sub</span> <span class="pre">--sub-file-path=subtitles</span></tt> is specified, mpv
+            searches for subtitle files in these directories:</p>
             <ul class="last simple">
             <li><tt class="docutils literal">/path/to/video/</tt></li>
             <li><tt class="docutils literal">/path/to/video/sub/</tt></li>
             <li><tt class="docutils literal">/path/to/video/subtitles/</tt></li>
-            <li><tt class="docutils literal">/tmp/subs/</tt></li>
             <li>the <tt class="docutils literal">sub</tt> configuration subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/sub/</span></tt>)</li>
             </ul>
             </div>
+            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-visibility</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-visibility</span></tt></dt>
             <dd>Can be used to disable display of subtitles, but still select and decode
@@ -4754,10 +4805,11 @@
             results, as can missing or incorrect display FPS information (see
             <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-shaders=&lt;files&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-shader=&lt;file&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
             which can be injected at almost arbitrary points in the rendering pipeline,
-            and access all previous intermediate textures.</p>
+            and access all previous intermediate textures. Each use of the option will
+            add another file to the internal list of shaders (see <a class="reference internal" href="#list-options">List Options</a>).</p>
             <div class="admonition admonition-warning">
             <p class="first admonition-title">Warning</p>
             <p class="last">The syntax is not stable yet and may change any time.</p>
@@ -4897,6 +4949,9 @@
             pass. When overwriting a texture marked <tt class="docutils literal">fixed</tt>, the WIDTH, HEIGHT and
             OFFSET must be left at their default values.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-shaders=&lt;files&gt;</span></tt></dt>
+            <dd>Deprecated option for <tt class="docutils literal"><span class="pre">--opengl-shader</span></tt>. Command line parsing behaves
+            slightly diffent. <tt class="docutils literal"><span class="pre">--opengl-shader-set</span></tt> gives exactly the same behavior.</dd>
             <dt><tt class="docutils literal"><span class="pre">--deband</span></tt></dt>
             <dd>Enable the debanding algorithm. This greatly reduces the amount of visible
             banding, blocking and other quantization artifacts, at the expensive of
@@ -5540,9 +5595,10 @@
             files together (for example audio from one file, video from another), or
             for advanced <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> used (like playing two video files at
             the same time).</p>
-            <p class="last">Unlike <tt class="docutils literal"><span class="pre">--sub-file</span></tt> and <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, this includes all tracks, and
+            <p>Unlike <tt class="docutils literal"><span class="pre">--sub-file</span></tt> and <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, this includes all tracks, and
             does not cause default stream selection over the &quot;proper&quot; file. This makes
             it slightly less intrusive.</p>
+            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--autoload-files=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Automatically load/select external files (default: yes).</p>
