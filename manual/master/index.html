@@ -4904,10 +4904,17 @@
             to texture coordinates)</dd>
             <dt>vec2 NAME_pt</dt>
             <dd>The (unrotated) size of a single pixel, range [0,1].</dd>
+            <dt>float NAME_mul</dt>
+            <dd>The coefficient that needs to be multiplied into the texture contents
+            in order to normalize it to the range [0,1].</dd>
             <dt>sampler NAME_raw</dt>
             <dd>The raw bound texture itself. The use of this should be avoided unless
             absolutely necessary.</dd>
             </dl>
+            <p>Normally, users should use either NAME_tex or NAME_texOff to read from the
+            texture. For some shaders however , it can be better for performance to do
+            custom sampling from NAME_raw, in which case care needs to be taken to
+            respect NAME_mul and NAME_rot.</p>
             <p>In addition to these parameters, the following uniforms are also globally
             available:</p>
             <dl class="docutils">
