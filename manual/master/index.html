@@ -1345,7 +1345,25 @@
             not just the one that the script is named after. This requires a recent
             version of youtube-dl to be installed on the system. (Enabled by default,
             except when the client API / libmpv is used.)</p>
-            <p class="last">If the script can't do anything with an URL, it will do nothing.</p>
+            <p>If the script can't do anything with an URL, it will do nothing.</p>
+            <p>The <cite>exclude</cite> script option accepts a comma-separated list of URL patterns
+            which mpv should not use with youtube-dl. The patterns are matched after
+            the <tt class="docutils literal"><span class="pre">http(s)://</span></tt> part of the URL.</p>
+            <p><tt class="docutils literal">^</tt> matches the beginning of the URL, <tt class="docutils literal">$</tt> matches its end, and you
+            should use <tt class="docutils literal">%</tt> before any of the characters <tt class="docutils literal"><span class="pre">^$()%,.[]*+-?</span></tt> to match
+            that character.</p>
+            <div class="admonition admonition-example">
+            <p class="first admonition-title">Example</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">--script-opts=ytdl_hook-exclude='^youtube%.com'</span></tt> will exclude any</dt>
+            <dd>URL that starts with <tt class="docutils literal"><span class="pre">http://youtube.com</span></tt> or
+            <tt class="docutils literal"><span class="pre">https://youtube.com</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--script-opts=ytdl_hook-exclude='%.mkv$,%.mp4$'</span></tt> will exclude any</dt>
+            <dd>URL that ends with <tt class="docutils literal">.mkv</tt> or <tt class="docutils literal">.mp4</tt>.</dd>
+            </dl>
+            </div>
+            <p class="last">See more <a href="#id2"><span class="problematic" id="id3">`lua patterns here`__</span></a>.
+            __ <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ytdl-format=&lt;best|worst|mp4|webm|...&gt;</span></tt></dt>
             <dd>Video format/quality that is directly passed to youtube-dl. The possible
@@ -11923,6 +11941,13 @@
             future.</p>
             <p>Note that mpv likes to mix <tt class="docutils literal">/</tt> and <tt class="docutils literal">\</tt> path separators for simplicity.
             kernel32.dll accepts this, but cmd.exe does not.</p>
+            </div>
+            <div class="system-messages section">
+            <h1>Docutils System Messages</h1>
+            <div class="system-message" id="id2">
+            <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">mpv/DOCS/man/mpv.rst</tt>); <em><a href="#id3">backlink</a></em></p>
+            Anonymous hyperlink mismatch: 1 references but 0 targets.
+            See &quot;backrefs&quot; attribute for IDs.</div>
             </div>
           </div>
         </div>
