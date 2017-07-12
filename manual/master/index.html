@@ -4668,12 +4668,16 @@
             set to 0, the kernel's preferred blur factor is used. Note that setting
             this too low (eg. 0.5) leads to bad results. It's generally recommended to
             stick to values between 0.8 and 1.2.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--scale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
-            <dd>Clamp the filter kernel's value range to [0-1]. This is especially useful
-            for <tt class="docutils literal"><span class="pre">--tscale</span></tt>, where it reduces excessive ringing artifacts in the
-            temporal domain (which typically manifest themselves as short flashes or
-            fringes of black, mostly around moving edges) in exchange for potentially
-            adding more blur.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--scale-clamp=&lt;0.0-1.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
+            <dd>Specifies a weight bias to multiply into negative coefficients. Specifying
+            <tt class="docutils literal"><span class="pre">--scale-clamp=1</span></tt> has the effect of removing negative weights completely,
+            thus effectively clamping the value range to [0-1]. Values between 0.0 and
+            1.0 can be specified to apply only a moderate diminishment of negative
+            weights. This is especially useful for <tt class="docutils literal"><span class="pre">--tscale</span></tt>, where it reduces
+            excessive ringing artifacts in the temporal domain (which typically
+            manifest themselves as short flashes or fringes of black, mostly around
+            moving edges) in exchange for potentially adding more blur. The default for
+            <tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt> is 1.0, the others default to 0.0.</dd>
             <dt><tt class="docutils literal"><span class="pre">--scale-cutoff=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-cutoff=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-cutoff=&lt;value&gt;</span></tt></dt>
             <dd>Cut off the filter kernel prematurely once the value range drops below
             this threshold. Doing so allows more aggressive pruning of skippable
