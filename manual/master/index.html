@@ -1656,17 +1656,13 @@
             </ul>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;hybrid|bitstream|container&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;bitstream|container&gt;</span></tt></dt>
             <dd><p class="first">This sets the default video aspect determination method (if the aspect is
             _not_ overridden by the user with <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> or others).</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">hybrid:</th><td class="field-body">Prefer the container aspect ratio. If the bitstream aspect
-            switches mid-stream, switch to preferring the bitstream aspect.
-            This was the default in older mpv and mplayer2. Deprecated.</td>
-            </tr>
             <tr class="field"><th class="field-name">container:</th><td class="field-body">Strictly prefer the container aspect ratio. This is apparently
             the default behavior with VLC, at least with Matroska. Note that
             if the container has no aspect ratio set, the behavior is the
@@ -1767,26 +1763,6 @@
             is deinterlacing disabled, but the <tt class="docutils literal">auto</tt> case is needed if <tt class="docutils literal">yadif</tt> was
             added to the filter chain manually with <tt class="docutils literal"><span class="pre">--vf</span></tt>. Then the core shouldn't
             disable deinterlacing just because the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> was not set.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--field-dominance=&lt;auto|top|bottom&gt;</span></tt></dt>
-            <dd><p class="first">Set first field for interlaced content.</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">(default) If the decoder does not export the appropriate
-            information, it falls back on <tt class="docutils literal">top</tt> (top field first).</td>
-            </tr>
-            <tr class="field"><th class="field-name">top:</th><td class="field-body">top field first</td>
-            </tr>
-            <tr class="field"><th class="field-name">bottom:</th><td class="field-body">bottom field first</td>
-            </tr>
-            </tbody>
-            </table>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">Setting either <tt class="docutils literal">top</tt> or <tt class="docutils literal">bottom</tt> will flag all frames as interlaced.</p>
-            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--frames=&lt;number&gt;</span></tt></dt>
             <dd><p class="first">Play/convert only first <tt class="docutils literal">&lt;number&gt;</tt> video frames, then quit.</p>
@@ -6303,7 +6279,7 @@
             <dt>no</dt>
             <dd>Don't allow deinterlacing (default for newer libva).</dd>
             <dt>first-field</dt>
-            <dd>Show only first field (going by <tt class="docutils literal"><span class="pre">--field-dominance</span></tt>).</dd>
+            <dd>Show only first field.</dd>
             <dt>bob</dt>
             <dd>bob deinterlacing (default for older libva).</dd>
             </dl>
@@ -7810,7 +7786,7 @@
             <dt>no</dt>
             <dd>Don't perform deinterlacing.</dd>
             <dt>first-field</dt>
-            <dd>Show only first field (going by <tt class="docutils literal"><span class="pre">--field-dominance</span></tt>).</dd>
+            <dd>Show only first field.</dd>
             <dt>bob</dt>
             <dd>bob deinterlacing (default).</dd>
             <dt>weave, motion-adaptive, motion-compensated</dt>
