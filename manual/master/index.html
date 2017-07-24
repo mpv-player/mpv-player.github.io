@@ -1826,6 +1826,23 @@
             <dd>Fallback to software decoding if the hardware-accelerated decoder fails
             (default: 3). If this is a number, then fallback will be triggered if
             N frames fail to decode in a row. 1 is equivalent to <tt class="docutils literal">yes</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-dr=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable direct rendering (default: no). If this is set to <tt class="docutils literal">yes</tt>, the
+            video will be decoded directly to GPU video memory (or staging buffers).
+            This can speed up video upload, and may help with large resolutions or
+            slow hardware. This works only with the following VOs:</p>
+            <blockquote>
+            <ul class="simple">
+            <li><tt class="docutils literal">opengl</tt>: requires at least OpenGL 4.4.</li>
+            </ul>
+            </blockquote>
+            <p>(In particular, this can't be made work with <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>.)</p>
+            <p>Using video filters of any kind that write to the image data (or output
+            newly allocated frames) will silently disable the DR code path.</p>
+            <p class="last">There are some corner cases that will result in undefined behavior (crashes
+            and other strange behavior) if this option is enabled. These are pending
+            towards being fixed properly at a later point.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-bitexact</span></tt></dt>
             <dd>Only use bit-exact algorithms in all decoding steps (for codec testing).</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-fast</span></tt> (MPEG-2, MPEG-4, and H.264 only)</dt>
