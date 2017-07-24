@@ -4891,6 +4891,16 @@
             <dd>Specifies how many components of this pass's output are relevant and
             should be stored in the texture, up to 4 (rgba). By default, this value
             is equal to the number of components in HOOKED.</dd>
+            <dt>COMPUTE bw bh</dt>
+            <dd>Specifies that this shader should be treated as a compute shader, with
+            the block size bw and bh. The compute shader will be dispatched with
+            however many blocks are necessary to completely tile over the output.
+            Compute shaders in mpv are treated similarly to fragment shaders, and
+            are still required to produce an output color. In addition, mpv
+            provides a special function NAME_map(id) to map from the global ID
+            space to the texture coordinates for all bound textures. The only real
+            difference is the fact that you can use shared memory inside compute
+            shaders.</dd>
             </dl>
             <p>Each bound texture (via <tt class="docutils literal">BIND</tt>) will make available the following
             definitions to that shader pass, where NAME is the name of the bound
@@ -5337,6 +5347,13 @@
             <dd>Specifies the scale factor to use while stretching. Defaults to 1.0.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt></dt>
+            <dd>Compute the HDR peak per-frame of relying on tagged metadata. These values
+            are averaged over local regions as well as over several frames to prevent
+            the value from jittering around too much. This option basically gives you
+            dynamic, per-scene tone mapping. Requires compute shaders, which is a
+            fairly recent OpenGL feature, and will probably also perform horribly on
+            some drivers, so enable at your own risk.</dd>
             <dt><tt class="docutils literal"><span class="pre">--tone-mapping-desaturate=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Apply desaturation for highlights that exceed this level of brightness. The
             higher the parameter, the more color information will be preserved. This
