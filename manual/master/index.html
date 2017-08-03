@@ -5338,9 +5338,11 @@
             formats for display.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--hdr-tone-mapping=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Specifies the algorithm used for tone-mapping HDR images onto the target
-            display. Valid values are:</p>
+            <dt><tt class="docutils literal"><span class="pre">--tone-mapping=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the algorithm used for tone-mapping images onto the target
+            display. This is relevant for both HDR-&gt;SDR conversion as well as gamut
+            reduction (e.g. playing back BT.2020 content on a standard gamut display).
+            Valid values are:</p>
             <dl class="last docutils">
             <dt>clip</dt>
             <dd>Hard-clip any out-of-range values. Use this when you care about
@@ -5359,10 +5361,10 @@
             results in flattening of details and degradation in color accuracy.</dd>
             <dt>hable</dt>
             <dd>Similar to <tt class="docutils literal">reinhard</tt> but preserves both dark and bright details
-            better (slightly sigmoidal), at the cost of slightly darkening
-            everything. Developed by John Hable for use in video games. Use this
-            when you care about detail preservation more than color/brightness
-            accuracy. This is roughly equivalent to
+            better (slightly sigmoidal), at the cost of slightly darkening /
+            desaturating everything. Developed by John Hable for use in video
+            games. Use this when you care about detail preservation more than
+            color/brightness accuracy. This is roughly equivalent to
             <tt class="docutils literal"><span class="pre">--hdr-tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>.</dd>
             <dt>gamma</dt>
             <dd>Fits a logarithmic transfer between the tone curves.</dd>
