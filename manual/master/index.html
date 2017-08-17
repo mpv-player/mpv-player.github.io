@@ -5787,11 +5787,13 @@
             for multiple filters, you need to use the <tt class="docutils literal">asplit</tt> filter. Multiple
             video or audio outputs are not possible, but you can use filters to merge
             them into one.</p>
-            <p>The complex filter cannot be changed yet during playback. It's also not
-            possible to change the tracks connected to the filter at runtime. Other
-            tracks, as long as they're not connected to the filter, and the
+            <p>It's not possible to change the tracks connected to the filter at runtime,
+            unless you explicitly change the <tt class="docutils literal"><span class="pre">lavfi-complex</span></tt> property and set new
+            track assignments. When the graph is changed, the track selection is changed
+            according to the used labels as well.</p>
+            <p>Other tracks, as long as they're not connected to the filter, and the
             corresponding output is not connected to the filter, can still be freely
-            changed.</p>
+            changed with the normal methods.</p>
             <p>Note that the normal filter chains (<tt class="docutils literal"><span class="pre">--af</span></tt>, <tt class="docutils literal"><span class="pre">--vf</span></tt>) are applied between
             the complex graphs (e.g. <tt class="docutils literal">ao</tt> label) and the actual output.</p>
             <div class="admonition admonition-examples">
