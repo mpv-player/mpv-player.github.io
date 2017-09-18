@@ -464,7 +464,7 @@
             </tr>
             </tbody>
             </table>
-            <p>Although some operations allow specifiying multiple <tt class="docutils literal">,</tt>-separated items, using
+            <p>Although some operations allow specifying multiple <tt class="docutils literal">,</tt>-separated items, using
             this is strongly discouraged and deprecated, except for <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
             <p>Without suffix, the action taken is normally <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
             <p>Some options (like <tt class="docutils literal"><span class="pre">--sub-file</span></tt>, <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-shader</span></tt>) are
@@ -742,9 +742,14 @@
             Play a path from  Samba share.</blockquote>
             <p><tt class="docutils literal"><span class="pre">bd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--bluray-device=PATH</span></tt></p>
             <blockquote>
-            Play a Blu-ray disc. Currently, this does not accept ISO files. Instead,
+            <p>Play a Blu-ray disc. Currently, this does not accept ISO files. Instead,
             you must mount the ISO file as filesystem, and point <tt class="docutils literal"><span class="pre">--bluray-device</span></tt>
-            to the mounted directory directly.</blockquote>
+            to the mounted directory directly.</p>
+            <p><tt class="docutils literal">title</tt> can be: <tt class="docutils literal">longest</tt> or <tt class="docutils literal">first</tt> (selects the default
+            playlist); <tt class="docutils literal"><span class="pre">mpls/&lt;number&gt;</span></tt> (selects &lt;number&gt;.mpls playlist);
+            <tt class="docutils literal">&lt;number&gt;</tt> (select playlist with the same index). You can list
+            the available playlists with <tt class="docutils literal"><span class="pre">--msg-level=bd=v</span></tt>.</p>
+            </blockquote>
             <p><tt class="docutils literal"><span class="pre">dvd://[title|[starttitle]-endtitle][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
             <blockquote>
             <p>Play a DVD. DVD menus are not supported. If no title is given, the longest
@@ -925,6 +930,17 @@
             Specify the edition (set of chapters) to use, where 0 is the first. If set
             to <tt class="docutils literal">auto</tt> (the default), mpv will choose the first edition declared as a
             default, or if there is no default, the first edition defined.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--track-auto-selection=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable the default track auto-selection (default: yes). Enabling this will
+            make the player select streams according to <tt class="docutils literal"><span class="pre">--aid</span></tt>, <tt class="docutils literal"><span class="pre">--alang</span></tt>, and
+            others. If it is disabled, no tracks are selected. In addition, the player
+            will not exit if no tracks are selected, and wait instead (this wait mode
+            is similar to pausing, but the pause option is not set).</p>
+            <p class="last">This is useful with <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt>: you can start playback in this
+            mode, and then set select tracks at runtime by setting the filter graph.
+            Note that if <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> is set before playback is started, the
+            referenced tracks are always selected.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="playback-control">
@@ -1133,17 +1149,15 @@
             time trying to loop a file that doesn't exist. But it might be useful for
             playing webradios under very bad network conditions.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--loop</span></tt></dt>
-            <dd>Currently a deprecated alias to <tt class="docutils literal"><span class="pre">--loop-playlist</span></tt>. After a deprecation
-            period, it will be undeprecated, but changed to alias <tt class="docutils literal"><span class="pre">--loop-file</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--loop-file=&lt;N|inf|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--loop-file=&lt;N|inf|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--loop=&lt;N|inf|no&gt;</span></tt></dt>
             <dd><p class="first">Loop a single file N times. <tt class="docutils literal">inf</tt> means forever, <tt class="docutils literal">no</tt> means normal
             playback. For compatibility, <tt class="docutils literal"><span class="pre">--loop-file</span></tt> and <tt class="docutils literal"><span class="pre">--loop-file=yes</span></tt> are
             also accepted, and are the same as <tt class="docutils literal"><span class="pre">--loop-file=inf</span></tt>.</p>
-            <p class="last">The difference to <tt class="docutils literal"><span class="pre">--loop-playlist</span></tt> is that this doesn't loop the playlist,
+            <p>The difference to <tt class="docutils literal"><span class="pre">--loop-playlist</span></tt> is that this doesn't loop the playlist,
             just the file itself. If the playlist contains only a single file, the
             difference between the two option is that this option performs a seek on
             loop, instead of reloading the file.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--loop</span></tt> is an alias for this option.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ab-loop-a=&lt;time&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--ab-loop-b=&lt;time&gt;</span></tt></dt>
             <dd><p class="first">Set loop points. If playback passes the <tt class="docutils literal">b</tt> timestamp, it will seek to
@@ -1542,7 +1556,8 @@
             <p>The <tt class="docutils literal"><span class="pre">...-copy</span></tt> modes (e.g. <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt>) allow you to use hardware
             decoding with any VO, backend or filter. Because these copy the decoded
             video back to system RAM, they're likely less efficient than the direct
-            modes (like e.g. <tt class="docutils literal">dxva2</tt>).</p>
+            modes (like e.g. <tt class="docutils literal">dxva2</tt>), and probably not more efficient than software
+            decoding except for some codecs (e.g. HEVC).</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">When using this switch, hardware decoding is still only done for some
@@ -1551,27 +1566,32 @@
             </div>
             <div class="admonition admonition-quality-reduction-with-hardware-decoding last">
             <p class="first admonition-title">Quality reduction with hardware decoding</p>
-            <p>Normally, hardware decoding does not reduce video quality (at least for
-            the codecs h264 and HEVC). However, due to restrictions in video output
-            APIs, there can be some loss, or blatantly incorrect results.</p>
+            <p>In theory, hardware decoding does not reduce video quality (at least
+            for the codecs h264 and HEVC). However, due to restrictions in video
+            output APIs, as well as bugs in the actual hardware decoders, there can
+            be some loss, or even blatantly incorrect results.</p>
             <p>In some cases, RGB conversion is forced, which means the RGB conversion
             is performed by the hardware decoding API, instead of the OpenGL code
-            used by <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. This means certain obscure colorspaces may
-            not display correctly, not certain filtering (such as debanding)
-            cannot be applied in an ideal way.</p>
+            used by <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. This means certain colorspaces may not display
+            correctly, and certain filtering (such as debanding) cannot be applied
+            in an ideal way. This will also usually force the use of low quality
+            chroma scalers instead of the one specified by <tt class="docutils literal"><span class="pre">--cscale</span></tt>. In other
+            cases, hardware decoding can also reduce the bit depth of the decoded
+            image, which can introduce banding or precision loss for 10-bit files.</p>
             <p><tt class="docutils literal">vdpau</tt> is usually safe. If deinterlacing enabled (or the <tt class="docutils literal">vdpaupp</tt>
             video filter is active in general), it forces RGB conversion. The latter
             currently does not treat certain colorspaces like BT.2020 correctly
             (which is mostly a mpv-specific restriction). The <tt class="docutils literal">vdpauprb</tt> video
             filter retrieves image data without RGB conversion and is safe (but
             precludes use of vdpau postprocessing).</p>
-            <p><tt class="docutils literal">vaapi</tt> is safe if the <tt class="docutils literal"><span class="pre">vaapi-egl</span></tt> backend is indicated in the logs.
-            If <tt class="docutils literal"><span class="pre">vaapi-glx</span></tt> is indicated, and the video colorspace is either BT.601
-            or BT.709, a forced but correct RGB conversion is performed. Otherwise,
-            the result will be incorrect.</p>
+            <p><tt class="docutils literal">vaapi</tt> is safe if the <tt class="docutils literal"><span class="pre">vaapi-egl</span></tt> backend is indicated in the
+            logs. If <tt class="docutils literal"><span class="pre">vaapi-glx</span></tt> is indicated, and the video colorspace is either
+            BT.601 or BT.709, a forced, low-quality but correct RGB conversion is
+            performed. Otherwise, the result will be totally incorrect.</p>
             <p><tt class="docutils literal">d3d11va</tt> is usually safe (if used with ANGLE builds that support
             <tt class="docutils literal">EGL_KHR_stream path</tt> - otherwise, it converts to RGB), except that
-            10 bit input (HEVC main 10 profiles) will be rounded down to 8 bits.</p>
+            10 bit input (HEVC main 10 profiles) will be rounded down to 8 bits,
+            which results in reduced quality.</p>
             <p><tt class="docutils literal">dxva2</tt> is not safe. It appears to always use BT.601 for forced RGB
             conversion, but actual behavior depends on the GPU drivers. Some drivers
             appear to convert to limited range RGB, which gives a faded appearance.
@@ -1580,15 +1600,26 @@
             completely ordinary video sources.</p>
             <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
             <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>.</p>
+            <p><tt class="docutils literal">cuda</tt> should be safe, but it has been reported to corrupt the
+            timestamps causing glitched, flashing frames on some files. It can also
+            sometimes cause massive framedrops for unknown reasons. Caution is
+            advised.</p>
             <p><tt class="docutils literal">crystalhd</tt> is not safe. It always converts to 4:2:2 YUV, which
             may be lossy, depending on how chroma sub-sampling is done during
             conversion. It also discards the top left pixel of each frame for
             some reason.</p>
             <p>All other methods, in particular the copy-back methods (like
-            <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> etc.) are either fully safe, or not worse than software
-            decoding.</p>
-            <p class="last">In particular, <tt class="docutils literal"><span class="pre">auto-copy</span></tt> will only select safe modes
-            (although potentially slower than other methods).</p>
+            <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> etc.) should hopefully be safe, although they can still
+            cause random decoding issues. At the very least, they shouldn't affect
+            the colors of the image.</p>
+            <p>In particular, <tt class="docutils literal"><span class="pre">auto-copy</span></tt> will only select &quot;safe&quot; modes
+            (although potentially slower than other methods), but there's still no
+            guarantee the chosen hardware decoder will actually work correctly.</p>
+            <p class="last">In general, it's very strongly advised to avoid hardware decoding
+            unless <strong>absolutely</strong> necessary, i.e. if your CPU is insufficient to
+            decode the file in questions. If you run into any weird decoding issues,
+            frame glitches or discoloration, and you have <tt class="docutils literal"><span class="pre">--hwdec</span></tt> turned on,
+            the first thing you should try is disabling it.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=&lt;name&gt;</span></tt></dt>
@@ -1656,17 +1687,13 @@
             </ul>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;hybrid|bitstream|container&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;bitstream|container&gt;</span></tt></dt>
             <dd><p class="first">This sets the default video aspect determination method (if the aspect is
             _not_ overridden by the user with <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> or others).</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">hybrid:</th><td class="field-body">Prefer the container aspect ratio. If the bitstream aspect
-            switches mid-stream, switch to preferring the bitstream aspect.
-            This was the default in older mpv and mplayer2. Deprecated.</td>
-            </tr>
             <tr class="field"><th class="field-name">container:</th><td class="field-body">Strictly prefer the container aspect ratio. This is apparently
             the default behavior with VLC, at least with Matroska. Note that
             if the container has no aspect ratio set, the behavior is the
@@ -1755,38 +1782,19 @@
             <p class="last">Works in <tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt> mode only.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--deinterlace=&lt;yes|no|auto&gt;</span></tt></dt>
-            <dd><p class="first">Enable or disable interlacing (default: auto, which usually means no).
+            <dt><tt class="docutils literal"><span class="pre">--deinterlace=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable or disable interlacing (default: no).
             Interlaced video shows ugly comb-like artifacts, which are visible on
             fast movement. Enabling this typically inserts the yadif video filter in
             order to deinterlace the video, or lets the video output apply deinterlacing
             if supported.</p>
             <p>This behaves exactly like the <tt class="docutils literal">deinterlace</tt> input property (usually
             mapped to <tt class="docutils literal">d</tt>).</p>
-            <p class="last"><tt class="docutils literal">auto</tt> is a technicality. Strictly speaking, the default for this option
-            is deinterlacing disabled, but the <tt class="docutils literal">auto</tt> case is needed if <tt class="docutils literal">yadif</tt> was
-            added to the filter chain manually with <tt class="docutils literal"><span class="pre">--vf</span></tt>. Then the core shouldn't
-            disable deinterlacing just because the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> was not set.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--field-dominance=&lt;auto|top|bottom&gt;</span></tt></dt>
-            <dd><p class="first">Set first field for interlaced content.</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">(default) If the decoder does not export the appropriate
-            information, it falls back on <tt class="docutils literal">top</tt> (top field first).</td>
-            </tr>
-            <tr class="field"><th class="field-name">top:</th><td class="field-body">top field first</td>
-            </tr>
-            <tr class="field"><th class="field-name">bottom:</th><td class="field-body">bottom field first</td>
-            </tr>
-            </tbody>
-            </table>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">Setting either <tt class="docutils literal">top</tt> or <tt class="docutils literal">bottom</tt> will flag all frames as interlaced.</p>
-            </div>
+            <p class="last">Keep in mind that this <strong>will</strong> conflict with manually inserted
+            deinterlacing filters, unless you take care. (Since mpv 0.27.0, even the
+            hardware deinterlace filters will conflict. Also since that version,
+            <tt class="docutils literal"><span class="pre">--deinterlace=auto</span></tt> was removed, which used to mean that the default
+            interlacing option of possibly inserted video filters was used.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--frames=&lt;number&gt;</span></tt></dt>
             <dd><p class="first">Play/convert only first <tt class="docutils literal">&lt;number&gt;</tt> video frames, then quit.</p>
@@ -1850,6 +1858,23 @@
             <dd>Fallback to software decoding if the hardware-accelerated decoder fails
             (default: 3). If this is a number, then fallback will be triggered if
             N frames fail to decode in a row. 1 is equivalent to <tt class="docutils literal">yes</tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-dr=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable direct rendering (default: no). If this is set to <tt class="docutils literal">yes</tt>, the
+            video will be decoded directly to GPU video memory (or staging buffers).
+            This can speed up video upload, and may help with large resolutions or
+            slow hardware. This works only with the following VOs:</p>
+            <blockquote>
+            <ul class="simple">
+            <li><tt class="docutils literal">opengl</tt>: requires at least OpenGL 4.4.</li>
+            </ul>
+            </blockquote>
+            <p>(In particular, this can't be made work with <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>.)</p>
+            <p>Using video filters of any kind that write to the image data (or output
+            newly allocated frames) will silently disable the DR code path.</p>
+            <p class="last">There are some corner cases that will result in undefined behavior (crashes
+            and other strange behavior) if this option is enabled. These are pending
+            towards being fixed properly at a later point.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-bitexact</span></tt></dt>
             <dd>Only use bit-exact algorithms in all decoding steps (for codec testing).</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-fast</span></tt> (MPEG-2, MPEG-4, and H.264 only)</dt>
@@ -2255,19 +2280,18 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-file-auto=&lt;no|exact|fuzzy|all&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--no-audio-file-auto</span></tt></dt>
             <dd><p class="first">Load additional audio files matching the video filename. The parameter
-            specifies how external audio files are matched. <tt class="docutils literal">exact</tt> is enabled by
-            default.</p>
+            specifies how external audio files are matched.</p>
             <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't automatically load external audio files.</td>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't automatically load external audio files (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with audio file extension (default).</td>
+            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with audio file extension.</td>
             </tr>
             <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all audio files containing media filename.</td>
             </tr>
-            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all audio files in the current and <tt class="docutils literal"><span class="pre">--audio-file-path</span></tt>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all audio files in the current and <tt class="docutils literal"><span class="pre">--audio-file-paths</span></tt>
             directories.</td>
             </tr>
             </tbody>
@@ -2635,7 +2659,7 @@
             </tr>
             <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all subs containing media filename.</td>
             </tr>
-            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all subs in the current and <tt class="docutils literal"><span class="pre">--sub-file-path</span></tt> directories.</td>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all subs in the current and <tt class="docutils literal"><span class="pre">--sub-file-paths</span></tt> directories.</td>
             </tr>
             </tbody>
             </table>
@@ -3248,6 +3272,9 @@
             On regular HiDPI resolutions the window opens with double the size but appears
             as having the same size as on none-HiDPI resolutions. This is the default OS X
             behavior.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--native-fs</span></tt>, <tt class="docutils literal"><span class="pre">--no-native-fs</span></tt></dt>
+            <dd>(OS X only)
+            Uses the native fullscreen mechanism of the OS (default: yes).</dd>
             <dt><tt class="docutils literal"><span class="pre">--monitorpixelaspect=&lt;ratio&gt;</span></tt></dt>
             <dd>Set the aspect of a single pixel of your monitor or TV screen (default:
             1). A value of 1 means square pixels (correct for (almost?) all LCDs). See
@@ -3686,7 +3713,7 @@
             driver. Necessary to use the OSC, or to select the buttons in DVD menus.
             Support depends on the VO in use.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-media-keys=&lt;yes|no&gt;</span></tt></dt>
-            <dd>(OS X only)
+            <dd>(OS X and Windows only)
             Enable/disable media keys support. Enabled by default (except for libmpv).</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-right-alt-gr</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-right-alt-gr</span></tt></dt>
             <dd>(Cocoa and Windows only)
@@ -4738,7 +4765,8 @@
             Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
             <dd>Scale in linear light. It should only be used with a
-            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision.</dd>
+            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision. This option
+            has no effect on HDR content.</dd>
             <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size when
             downscaling. Increases quality, but reduces performance while downscaling.</p>
@@ -4759,7 +4787,8 @@
             the video along the temporal axis. The filter used can be controlled using
             the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
             <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
-            more information.</p>
+            more information. It should also only be used with an <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt>
+            that has at least 16 bit precision.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
             <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
@@ -4853,22 +4882,53 @@
             
             ...
             </pre>
-            <p>Each block of metadata, along with the non-metadata lines after it, defines
-            a single pass. Each pass can set the following metadata:</p>
+            <p>Each section of metadata, along with the non-metadata lines after it,
+            defines a single block. There are currently two types of blocks, HOOKs and
+            TEXTUREs.</p>
+            <p>A <tt class="docutils literal">TEXTURE</tt> block can set the following options:</p>
             <dl class="docutils">
-            <dt>DESC &lt;title&gt;</dt>
-            <dd>User-friendly description of the pass. This is the name used when
-            representing this shader in the list of passes for property
-            <cite>vo-passes</cite>.</dd>
+            <dt>TEXTURE &lt;name&gt; (required)</dt>
+            <dd>The name of this texture. Hooks can then bind the texture under this
+            name using BIND. This must be the first option of the texture block.</dd>
+            <dt>SIZE &lt;width&gt; [&lt;height&gt;] [&lt;depth&gt;] (required)</dt>
+            <dd>The dimensions of the texture. The height and depth are optional. The
+            type of texture (1D, 2D or 3D) depends on the number of components
+            specified.</dd>
+            <dt>FORMAT &lt;name&gt; (required)</dt>
+            <dd><p class="first">The texture format for the samples. Supported texture formats are listed
+            in debug logging when the <tt class="docutils literal">opengl</tt> VO is initialized (look for
+            <tt class="docutils literal">Texture formats:</tt>). Usually, this follows OpenGL naming conventions.
+            For example, <tt class="docutils literal">rgb16</tt> provides 3 channels with normalized 16 bit
+            components. One oddity are float formats: for example, <tt class="docutils literal">rgba16f</tt> has
+            16 bit internal precision, but the texture data is provided as 32 bit
+            floats, and the driver converts the data on texture upload.</p>
+            <p class="last">Although format names follow a common naming convention, not all of them
+            are available on all hardware, drivers, GL versions, and so on.</p>
+            </dd>
+            <dt>FILTER &lt;LINEAR|NEAREST&gt;</dt>
+            <dd>The min/magnification filter used when sampling from this texture.</dd>
+            <dt>BORDER &lt;CLAMP|REPEAT|MIRROR&gt;</dt>
+            <dd>The border wrapping mode used when sampling from this texture.</dd>
+            </dl>
+            <p>Following the metadata is a string of bytes in hexadecimal notation that
+            define the raw texture data, corresponding to the format specified by
+            <cite>FORMAT</cite>, on a single line with no extra whitespace.</p>
+            <p>A <tt class="docutils literal">HOOK</tt> block can set the following options:</p>
+            <dl class="docutils">
             <dt>HOOK &lt;name&gt; (required)</dt>
             <dd>The texture which to hook into. May occur multiple times within a
             metadata block, up to a predetermined limit. See below for a list of
             hookable textures.</dd>
+            <dt>DESC &lt;title&gt;</dt>
+            <dd>User-friendly description of the pass. This is the name used when
+            representing this shader in the list of passes for property
+            <cite>vo-passes</cite>.</dd>
             <dt>BIND &lt;name&gt;</dt>
-            <dd>Loads a texture and makes it available to the pass, and sets up macros
-            to enable accessing it. See below for a list of set macros. By default,
-            no textures are bound. The special name HOOKED can be used to refer to
-            the texture that triggered this pass.</dd>
+            <dd>Loads a texture (either coming from mpv or from a <tt class="docutils literal">TEXTURE</tt> block)
+            and makes it available to the pass. When binding textures from mpv,
+            this will also set up macros to facilitate accessing it properly. See
+            below for a list. By default, no textures are bound. The special name
+            HOOKED can be used to refer to the texture that triggered this pass.</dd>
             <dt>SAVE &lt;name&gt;</dt>
             <dd>Gives the name of the texture to save the result of this pass into. By
             default, this is set to the special name HOOKED which has the effect of
@@ -4888,18 +4948,38 @@
             that a shader stage like this which has a dependency on an optional
             hook point can still cause that hook point to be saved, which has some
             minor overhead)</dd>
-            <dt>OFFSET ox oy</dt>
+            <dt>OFFSET &lt;ox&gt; &lt;oy&gt;</dt>
             <dd>Indicates a pixel shift (offset) introduced by this pass. These pixel
             offsets will be accumulated and corrected during the next scaling pass
             (<tt class="docutils literal">cscale</tt> or <tt class="docutils literal">scale</tt>). The default values are 0 0 which correspond
             to no shift. Note that offsets are ignored when not overwriting the
             hooked texture.</dd>
-            <dt>COMPONENTS n</dt>
+            <dt>COMPONENTS &lt;n&gt;</dt>
             <dd>Specifies how many components of this pass's output are relevant and
             should be stored in the texture, up to 4 (rgba). By default, this value
             is equal to the number of components in HOOKED.</dd>
+            <dt>COMPUTE &lt;bw&gt; &lt;bh&gt; [&lt;tw&gt; &lt;th&gt;]</dt>
+            <dd><p class="first">Specifies that this shader should be treated as a compute shader, with
+            the block size bw and bh. The compute shader will be dispatched with
+            however many blocks are necessary to completely tile over the output.
+            Within each block, there will bw tw*th threads, forming a single work
+            group. In other words: tw and th specify the work group size, which can
+            be different from the block size. So for example, a compute shader with
+            bw, bh = 32 and tw, th = 8 running on a 500x500 texture would dispatch
+            16x16 blocks (rounded up), each with 8x8 threads.</p>
+            <p class="last">Compute shaders in mpv are treated a bit different from fragment
+            shaders. Instead of defining a <tt class="docutils literal">vec4 hook</tt> that produces an output
+            sample, you directly define <tt class="docutils literal">void hook</tt> which writes to a fixed
+            writeonly image unit named <tt class="docutils literal">out_image</tt> (this is bound by mpv) using
+            <cite>imageStore</cite>. To help translate texture coordinates in the absence of
+            vertices, mpv provides a special function <tt class="docutils literal">NAME_map(id)</tt> to map from
+            the texel space of the output image to the texture coordinates for all
+            bound textures. In particular, <tt class="docutils literal">NAME_pos</tt> is equivalent to
+            <tt class="docutils literal">NAME_map(gl_GlobalInvocationID)</tt>, although using this only really
+            makes sense if (tw,th) == (bw,bh).</p>
+            </dd>
             </dl>
-            <p>Each bound texture (via <tt class="docutils literal">BIND</tt>) will make available the following
+            <p>Each bound mpv texture (via <tt class="docutils literal">BIND</tt>) will make available the following
             definitions to that shader pass, where NAME is the name of the bound
             texture:</p>
             <dl class="docutils">
@@ -5288,9 +5368,11 @@
             formats for display.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--hdr-tone-mapping=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Specifies the algorithm used for tone-mapping HDR images onto the target
-            display. Valid values are:</p>
+            <dt><tt class="docutils literal"><span class="pre">--tone-mapping=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Specifies the algorithm used for tone-mapping images onto the target
+            display. This is relevant for both HDR-&gt;SDR conversion as well as gamut
+            reduction (e.g. playing back BT.2020 content on a standard gamut display).
+            Valid values are:</p>
             <dl class="last docutils">
             <dt>clip</dt>
             <dd>Hard-clip any out-of-range values. Use this when you care about
@@ -5309,10 +5391,10 @@
             results in flattening of details and degradation in color accuracy.</dd>
             <dt>hable</dt>
             <dd>Similar to <tt class="docutils literal">reinhard</tt> but preserves both dark and bright details
-            better (slightly sigmoidal), at the cost of slightly darkening
-            everything. Developed by John Hable for use in video games. Use this
-            when you care about detail preservation more than color/brightness
-            accuracy. This is roughly equivalent to
+            better (slightly sigmoidal), at the cost of slightly darkening /
+            desaturating everything. Developed by John Hable for use in video
+            games. Use this when you care about detail preservation more than
+            color/brightness accuracy. This is roughly equivalent to
             <tt class="docutils literal"><span class="pre">--hdr-tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>.</dd>
             <dt>gamma</dt>
             <dd>Fits a logarithmic transfer between the tone curves.</dd>
@@ -5344,6 +5426,13 @@
             <dd>Specifies the scale factor to use while stretching. Defaults to 1.0.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt></dt>
+            <dd>Compute the HDR peak per-frame of relying on tagged metadata. These values
+            are averaged over local regions as well as over several frames to prevent
+            the value from jittering around too much. This option basically gives you
+            dynamic, per-scene tone mapping. Requires compute shaders, which is a
+            fairly recent OpenGL feature, and will probably also perform horribly on
+            some drivers, so enable at your own risk.</dd>
             <dt><tt class="docutils literal"><span class="pre">--tone-mapping-desaturate=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Apply desaturation for highlights that exceed this level of brightness. The
             higher the parameter, the more color information will be preserved. This
@@ -5353,6 +5442,22 @@
             <p class="last">The default of 2.0 is somewhat conservative and will mostly just apply to
             skies or directly sunlit surfaces. A setting of 0.0 disables this option.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--gamut-warning</span></tt></dt>
+            <dd>If enabled, mpv will mark all clipped/out-of-gamut pixels that exceed a
+            given threshold (currently hard-coded to 101%). The affected pixels will be
+            inverted to make them stand out. Note: This option applies after the
+            effects of all of mpv's color space transformation / tone mapping options,
+            so it's a good idea to combine this with <tt class="docutils literal"><span class="pre">--tone-mapping=clip</span></tt> and use
+            <tt class="docutils literal"><span class="pre">--target-gamut</span></tt> to set the gamut to simulate. For example,
+            <tt class="docutils literal"><span class="pre">--target-gamut=bt.709</span></tt> would make mpv highlight all pixels that exceed the
+            gamut of a standard gamut (sRGB) display. This option also does not work
+            well with ICC profiles, since the 3DLUTs are always generated against the
+            source color space and have chromatically-accurate clipping built in.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--use-embedded-icc-profile</span></tt></dt>
+            <dd>Load the embedded ICC profile contained in media files such as PNG images.
+            (Default: yes). Note that this option only works when also using a display
+            ICC profile (<tt class="docutils literal"><span class="pre">--icc-profile</span></tt> or <tt class="docutils literal"><span class="pre">--icc-profile-auto</span></tt>), and also
+            requires LittleCMS 2 support.</dd>
             <dt><tt class="docutils literal"><span class="pre">--icc-profile=&lt;file&gt;</span></tt></dt>
             <dd>Load an ICC profile and use it to transform video RGB to screen output.
             Needs LittleCMS 2 support compiled in. This option overrides the
@@ -5693,11 +5798,13 @@
             for multiple filters, you need to use the <tt class="docutils literal">asplit</tt> filter. Multiple
             video or audio outputs are not possible, but you can use filters to merge
             them into one.</p>
-            <p>The complex filter cannot be changed yet during playback. It's also not
-            possible to change the tracks connected to the filter at runtime. Other
-            tracks, as long as they're not connected to the filter, and the
+            <p>It's not possible to change the tracks connected to the filter at runtime,
+            unless you explicitly change the <tt class="docutils literal"><span class="pre">lavfi-complex</span></tt> property and set new
+            track assignments. When the graph is changed, the track selection is changed
+            according to the used labels as well.</p>
+            <p>Other tracks, as long as they're not connected to the filter, and the
             corresponding output is not connected to the filter, can still be freely
-            changed.</p>
+            changed with the normal methods.</p>
             <p>Note that the normal filter chains (<tt class="docutils literal"><span class="pre">--af</span></tt>, <tt class="docutils literal"><span class="pre">--vf</span></tt>) are applied between
             the complex graphs (e.g. <tt class="docutils literal">ao</tt> label) and the actual output.</p>
             <div class="admonition admonition-examples">
@@ -5932,7 +6039,8 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal">rsound</tt></dt>
-            <dd><p class="first">Audio output to an RSound daemon</p>
+            <dd><p class="first">Audio output to an RSound daemon. Use <tt class="docutils literal"><span class="pre">--audio-device=rsound/&lt;hostname&gt;</span></tt>
+            to set the host name (with <tt class="docutils literal">&lt;hostname&gt;</tt> replaced, without the <tt class="docutils literal">&lt; &gt;</tt>).</p>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
             <p class="last">Completely useless, unless you intend to run RSound. Not to be
@@ -6303,7 +6411,7 @@
             <dt>no</dt>
             <dd>Don't allow deinterlacing (default for newer libva).</dd>
             <dt>first-field</dt>
-            <dd>Show only first field (going by <tt class="docutils literal"><span class="pre">--field-dominance</span></tt>).</dd>
+            <dd>Show only first field.</dd>
             <dt>bob</dt>
             <dd>bob deinterlacing (default for older libva).</dd>
             </dl>
@@ -7414,6 +7522,25 @@
             <dd>Set the display aspect ratio of the video frame. This is a float,
             but values such as <tt class="docutils literal">[16:9]</tt> can be passed too (<tt class="docutils literal"><span class="pre">[...]</span></tt> for quoting
             to prevent the option parser from interpreting the <tt class="docutils literal">:</tt> character).</dd>
+            <dt><tt class="docutils literal"><span class="pre">&lt;spherical-type&gt;</span></tt></dt>
+            <dd><p class="first">Type of the spherical projection:</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">As indicated by the file (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">none:</th><td class="field-body">Normal video</td>
+            </tr>
+            <tr class="field"><th class="field-name">equirect:</th><td class="field-body">Equirectangular</td>
+            </tr>
+            <tr class="field"><th class="field-name">unknown:</th><td class="field-body">Unknown projection</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">&lt;spherical-yaw&gt;</span></tt>, <tt class="docutils literal"><span class="pre">&lt;spherical-pitch&gt;</span></tt>, <tt class="docutils literal"><span class="pre">&lt;spherical-roll&gt;</span></tt></dt>
+            <dd>Reference angle in degree, if spherical video is used.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">noformat[=fmt]</span></tt></dt>
@@ -7478,33 +7605,6 @@
             </dl>
             </div>
             </dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">eq[=gamma:contrast:brightness:saturation:rg:gg:bg:weight]</span></tt></dt>
-            <dd><p class="first">Software equalizer that uses lookup tables (slow), allowing gamma correction
-            in addition to simple brightness and contrast adjustment. The parameters are
-            given as floating point values.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;0.1-10&gt;</span></tt></dt>
-            <dd>initial gamma value (default: 1.0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;-2-2&gt;</span></tt></dt>
-            <dd>initial contrast, where negative values result in a negative image
-            (default: 1.0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;-1-1&gt;</span></tt></dt>
-            <dd>initial brightness (default: 0.0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;0-3&gt;</span></tt></dt>
-            <dd>initial saturation (default: 1.0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;0.1-10&gt;</span></tt></dt>
-            <dd>gamma value for the red component (default: 1.0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;0.1-10&gt;</span></tt></dt>
-            <dd>gamma value for the green component (default: 1.0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;0.1-10&gt;</span></tt></dt>
-            <dd>gamma value for the blue component (default: 1.0)</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;0-1&gt;</span></tt></dt>
-            <dd>The weight parameter can be used to reduce the effect of a high gamma
-            value on bright image areas, e.g. keep them from getting overamplified
-            and just plain white. A value of 0.0 turns the gamma correction all
-            the way down while 1.0 leaves it at its full strength (default: 1.0).</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">pullup[=jl:jr:jt:jb:sb:mp]</span></tt></dt>
@@ -7810,7 +7910,7 @@
             <dt>no</dt>
             <dd>Don't perform deinterlacing.</dd>
             <dt>first-field</dt>
-            <dd>Show only first field (going by <tt class="docutils literal"><span class="pre">--field-dominance</span></tt>).</dd>
+            <dd>Show only first field.</dd>
             <dt>bob</dt>
             <dd>bob deinterlacing (default).</dd>
             <dt>weave, motion-adaptive, motion-compensated</dt>
@@ -7869,8 +7969,7 @@
             <dd>Whether deinterlacing is enabled (default: no). If enabled, it will use
             the mode selected with <tt class="docutils literal"><span class="pre">deint-mode</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">deint-mode=&lt;first-field|bob|temporal|temporal-spatial&gt;</span></tt></dt>
-            <dd><p class="first">Select deinterlacing mode (default: temporal).
-            All modes respect <tt class="docutils literal"><span class="pre">--field-dominance</span></tt>.</p>
+            <dd><p class="first">Select deinterlacing mode (default: temporal).</p>
             <p>Note that there's currently a mechanism that allows the <tt class="docutils literal">vdpau</tt> VO to
             change the <tt class="docutils literal"><span class="pre">deint-mode</span></tt> of auto-inserted <tt class="docutils literal">vdpaupp</tt> filters. To avoid
             confusion, it's recommended not to use the <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> suboptions
@@ -8364,9 +8463,6 @@
             events that have already been displayed, or are within a short prefetch
             range.</p>
             </dd>
-            <dt><tt class="docutils literal">osd [&lt;level&gt;]</tt></dt>
-            <dd>Toggle OSD level. If <tt class="docutils literal">&lt;level&gt;</tt> is specified, set the OSD mode
-            (see <tt class="docutils literal"><span class="pre">--osd-level</span></tt> for valid values).</dd>
             <dt><tt class="docutils literal"><span class="pre">print-text</span> &quot;&lt;string&gt;&quot;</tt></dt>
             <dd>Print text to stdout. The string can contain properties (see
             <a class="reference internal" href="#property-expansion">Property Expansion</a>).</dd>
@@ -9908,19 +10004,11 @@
             loading time.)</p>
             <p class="last">Option changes at runtime are affected by this as well.</p>
             </dd>
-            <dt><tt class="docutils literal">deinterlace</tt></dt>
-            <dd>While video is active, this behaves differently from the option. It will
-            never return the <tt class="docutils literal">auto</tt> value (but the state as observed by the video
-            chain). If you set <tt class="docutils literal">auto</tt>, the property will set this as the option value,
-            and will return the actual video chain state as observed instead of auto.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt></dt>
             <dd>While video is active, always returns the effective aspect ratio. Setting
             a special value (like <tt class="docutils literal">no</tt>, values <tt class="docutils literal">&lt;= 0</tt>) will make the property
             set this as option, and return whatever actual aspect was derived from the
             option setting.</dd>
-            <dt><tt class="docutils literal">brightness</tt> (and other color options)</dt>
-            <dd>If <tt class="docutils literal"><span class="pre">--vo=xv</span></tt> is used, these properties may return the adapter's current
-            values instead of the option values.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
             <dd>If a VO is created, this will return either the actual display FPS, or
             an invalid value, instead of the option value.</dd>

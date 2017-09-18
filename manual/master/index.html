@@ -2280,15 +2280,14 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-file-auto=&lt;no|exact|fuzzy|all&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--no-audio-file-auto</span></tt></dt>
             <dd><p class="first">Load additional audio files matching the video filename. The parameter
-            specifies how external audio files are matched. <tt class="docutils literal">exact</tt> is enabled by
-            default.</p>
+            specifies how external audio files are matched.</p>
             <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't automatically load external audio files.</td>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't automatically load external audio files (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with audio file extension (default).</td>
+            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with audio file extension.</td>
             </tr>
             <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all audio files containing media filename.</td>
             </tr>
@@ -3200,50 +3199,6 @@
             <dd>Forcefully move mpv's video output window to default location whenever
             there is a change in video parameters, video stream or file. This used to
             be the default behavior. Currently only affects X11 VOs.</dd>
-            </dl>
-            <p><tt class="docutils literal"><span class="pre">--heartbeat-cmd=&lt;command&gt;</span></tt></p>
-            <blockquote>
-            <div class="admonition warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This option is redundant with Lua scripting. Further, it shouldn't be
-            needed for disabling screensaver anyway, since mpv will call
-            <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> when using X11 backend. As a consequence this
-            option has been deprecated with no direct replacement.</p>
-            </div>
-            <p>Command that is executed every 30 seconds during playback via <em>system()</em> -
-            i.e. using the shell. The time between the commands can be customized with
-            the <tt class="docutils literal"><span class="pre">--heartbeat-interval</span></tt> option. The command is not run while playback
-            is paused.</p>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">mpv uses this command without any checking. It is your responsibility to
-            ensure it does not cause security problems (e.g. make sure to use full
-            paths if &quot;.&quot; is in your path like on Windows). It also only works when
-            playing video (i.e. not with <tt class="docutils literal"><span class="pre">--no-video</span></tt> but works with
-            <tt class="docutils literal"><span class="pre">--vo=null</span></tt>).</p>
-            </div>
-            <p>This can be &quot;misused&quot; to disable screensavers that do not support the
-            proper X API (see also <tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt>). If you think this is too
-            complicated, ask the author of the screensaver program to support the
-            proper X APIs. Note that the <tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt> does not influence the
-            heartbeat code at all.</p>
-            <div class="admonition admonition-example-for-xscreensaver">
-            <p class="first admonition-title">Example for xscreensaver</p>
-            <p class="last"><tt class="docutils literal">mpv <span class="pre">--heartbeat-cmd=&quot;xscreensaver-command</span> <span class="pre">-deactivate&quot;</span> file</tt></p>
-            </div>
-            <div class="admonition admonition-example-for-gnome-screensaver">
-            <p class="first admonition-title">Example for GNOME screensaver</p>
-            <p class="last"><tt class="docutils literal">mpv <span class="pre">--heartbeat-cmd=&quot;gnome-screensaver-command</span> <span class="pre">--deactivate&quot;</span> file</tt></p>
-            </div>
-            </blockquote>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--heartbeat-interval=&lt;sec&gt;</span></tt></dt>
-            <dd><p class="first">Time between <tt class="docutils literal"><span class="pre">--heartbeat-cmd</span></tt> invocations in seconds (default: 30).</p>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This does not affect the normal screensaver operation in any way.</p>
-            </div>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>, <tt class="docutils literal"><span class="pre">--keepaspect</span></tt></dt>
             <dd><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> will always stretch the video to window size, and will
             disable the window manager hints that force the window aspect ratio.
@@ -5443,6 +5398,17 @@
             <p class="last">The default of 2.0 is somewhat conservative and will mostly just apply to
             skies or directly sunlit surfaces. A setting of 0.0 disables this option.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--gamut-warning</span></tt></dt>
+            <dd>If enabled, mpv will mark all clipped/out-of-gamut pixels that exceed a
+            given threshold (currently hard-coded to 101%). The affected pixels will be
+            inverted to make them stand out. Note: This option applies after the
+            effects of all of mpv's color space transformation / tone mapping options,
+            so it's a good idea to combine this with <tt class="docutils literal"><span class="pre">--tone-mapping=clip</span></tt> and use
+            <tt class="docutils literal"><span class="pre">--target-gamut</span></tt> to set the gamut to simulate. For example,
+            <tt class="docutils literal"><span class="pre">--target-gamut=bt.709</span></tt> would make mpv highlight all pixels that exceed the
+            gamut of a standard gamut (sRGB) display. This option also does not work
+            well with ICC profiles, since the 3DLUTs are always generated against the
+            source color space and have chromatically-accurate clipping built in.</dd>
             <dt><tt class="docutils literal"><span class="pre">--use-embedded-icc-profile</span></tt></dt>
             <dd>Load the embedded ICC profile contained in media files such as PNG images.
             (Default: yes). Note that this option only works when also using a display
