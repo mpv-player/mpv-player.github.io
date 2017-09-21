@@ -530,8 +530,8 @@
             <div class="admonition admonition-example-configuration-file">
             <p class="first admonition-title">Example configuration file</p>
             <pre class="last literal-block">
-            # Use opengl video output by default.
-            vo=opengl
+            # Use GPU-accelerated video output by default.
+            vo=gpu
             # Use quotes for text that can contain spaces:
             status-msg=&quot;Time: ${time-pos}&quot;
             </pre>
@@ -613,7 +613,7 @@
             [slow]
             profile-desc=&quot;some profile name&quot;
             # reference a builtin profile
-            profile=opengl-hq
+            profile=gpu-hq
             
             [fast]
             vo=vdpau
@@ -1488,37 +1488,37 @@
             </tr>
             <tr class="field"><th class="field-name">auto-copy:</th><td class="field-body">enable best hw decoder with copy-back (see below)</td>
             </tr>
-            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Linux only)</td>
+            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
+            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with Intel GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X 10.8 and up),
+            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (OS X 10.8 and up),
             or <tt class="docutils literal"><span class="pre">--vo=opengl-cb</span></tt> (iOS 9.0 and up)</td>
             </tr>
             <tr class="field"><th class="field-name" colspan="2">videotoolbox-copy:</th></tr>
             <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (OS X 10.8 or iOS 9.0 and up)</td>
             </tr>
-            <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> with <tt class="docutils literal"><span class="pre">--opengl-backend=angle</span></tt> or
-            <tt class="docutils literal"><span class="pre">--opengl-backend=dxinterop</span></tt> (Windows only)</td>
+            <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> or
+            <tt class="docutils literal"><span class="pre">--gpu-context=dxinterop</span></tt> (Windows only)</td>
             </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> with <tt class="docutils literal"><span class="pre">--opengl-backend=angle</span></tt>
+            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt>
             (Windows 8+ only)</td>
             </tr>
             <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows 8+ only)</td>
             </tr>
             <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">copies video back to system RAM (Android only)</td>
             </tr>
-            <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Raspberry Pi only - default if available)</td>
+            <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Raspberry Pi only - default if available)</td>
             </tr>
             <tr class="field"><th class="field-name">rpi-copy:</th><td class="field-body">copies video back to system RAM (Raspberry Pi only)</td>
             </tr>
-            <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Any platform CUDA is available)</td>
+            <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
             </tr>
@@ -1528,7 +1528,7 @@
             </table>
             <p><tt class="docutils literal">auto</tt> tries to automatically enable hardware decoding using the first
             available method. This still depends what VO you are using. For example,
-            if you are not using <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, vdpau decoding will
+            if you are not using <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt>, vdpau decoding will
             never be enabled. Also note that if the first found method doesn't actually
             work, it will always fall back to software decoding, instead of trying the
             next method (might matter on some Linux systems).</p>
@@ -1538,17 +1538,17 @@
             If none of these work, hardware decoding is disabled. This mode is always
             guaranteed to incur no additional loss compared to software decoding, and
             will allow CPU processing with video filters.</p>
-            <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, requires Mesa 11 and most
+            <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, requires Mesa 11 and most
             likely works with Intel GPUs only. It also requires the opengl EGL backend
             (automatically used if available). You can also try the old GLX backend by
-            forcing it with <tt class="docutils literal"><span class="pre">--opengl-backend=x11</span></tt>, but the vaapi/GLX interop is
+            forcing it with <tt class="docutils literal"><span class="pre">--gpu-context=x11</span></tt>, but the vaapi/GLX interop is
             said to be slower than <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>.</p>
             <p>The <tt class="docutils literal">cuda</tt> and <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> modes provides deinterlacing in the decoder
             which is useful as there is no other deinterlacing mechanism in the opengl
             output path. To use this deinterlacing you must pass the option:
             <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>.
             Pass <tt class="docutils literal">weave</tt> (or leave the option unset) to not attempt any
-            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred unless the <tt class="docutils literal">opengl</tt>
+            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred unless the <tt class="docutils literal">gpu</tt>
             vo is not being used or filters are required.</p>
             <p>Most video filters will not work with hardware decoding as they are
             primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
@@ -1571,8 +1571,8 @@
             output APIs, as well as bugs in the actual hardware decoders, there can
             be some loss, or even blatantly incorrect results.</p>
             <p>In some cases, RGB conversion is forced, which means the RGB conversion
-            is performed by the hardware decoding API, instead of the OpenGL code
-            used by <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. This means certain colorspaces may not display
+            is performed by the hardware decoding API, instead of the shaders
+            used by <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. This means certain colorspaces may not display
             correctly, and certain filtering (such as debanding) cannot be applied
             in an ideal way. This will also usually force the use of low quality
             chroma scalers instead of the one specified by <tt class="docutils literal"><span class="pre">--cscale</span></tt>. In other
@@ -1599,7 +1599,7 @@
             affect this additionally. This can give incorrect results even with
             completely ordinary video sources.</p>
             <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
-            <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>.</p>
+            <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>.</p>
             <p><tt class="docutils literal">cuda</tt> should be safe, but it has been reported to corrupt the
             timestamps causing glitched, flashing frames on some files. It can also
             sometimes cause massive framedrops for unknown reasons. Caution is
@@ -1623,11 +1623,11 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=&lt;name&gt;</span></tt></dt>
-            <dd><p class="first">This is useful for the <tt class="docutils literal">opengl</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for creating the
+            <dd><p class="first">This is useful for the <tt class="docutils literal">gpu</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for creating the
             hardware decoding OpenGL interop context, but without actually enabling
             hardware decoding itself (like <tt class="docutils literal"><span class="pre">--hwdec</span></tt> does).</p>
             <p>If set to an empty string (default), the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option is used.</p>
-            <p>For <tt class="docutils literal">opengl</tt>, if set, do not create the interop context on demand, but
+            <p>For <tt class="docutils literal">gpu</tt>, if set, do not create the interop context on demand, but
             when the VO is created.</p>
             <p>For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, if set, load the interop context as soon as the OpenGL
             context is created. Since <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> has no on-demand loading, this
@@ -1865,7 +1865,7 @@
             slow hardware. This works only with the following VOs:</p>
             <blockquote>
             <ul class="simple">
-            <li><tt class="docutils literal">opengl</tt>: requires at least OpenGL 4.4.</li>
+            <li><tt class="docutils literal">gpu</tt>: requires at least OpenGL 4.4.</li>
             </ul>
             </blockquote>
             <p>(In particular, this can't be made work with <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>.)</p>
@@ -3191,8 +3191,8 @@
             <dt><tt class="docutils literal"><span class="pre">--force-rgba-osd-rendering</span></tt></dt>
             <dd>Change how some video outputs render the OSD and text subtitles. This
             does not change appearance of the subtitles and only has performance
-            implications. For VOs which support native ASS rendering (like <tt class="docutils literal">vdpau</tt>,
-            <tt class="docutils literal">opengl</tt>, <tt class="docutils literal">direct3d</tt>), this can be slightly faster or slower,
+            implications. For VOs which support native ASS rendering (like <tt class="docutils literal">gpu</tt>,
+            <tt class="docutils literal">vdpau</tt>, <tt class="docutils literal">direct3d</tt>), this can be slightly faster or slower,
             depending on GPU drivers and hardware. For other VOs, this just makes
             rendering slower.</dd>
             <dt><tt class="docutils literal"><span class="pre">--force-window-position</span></tt></dt>
@@ -4563,9 +4563,9 @@
             ALSA device).</dd>
             </dl>
             </div>
-            <div class="section" id="opengl-renderer-options">
-            <h2>OpenGL renderer options</h2>
-            <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> and
+            <div class="section" id="gpu-renderer-options">
+            <h2>GPU renderer options</h2>
+            <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> and
             <tt class="docutils literal"><span class="pre">--vo=opengl-cb</span></tt> only, which are the only VOs that implement them.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--scale=&lt;filter&gt;</span></tt></dt>
@@ -4575,7 +4575,7 @@
             <dd>Bilinear hardware texture filtering (fastest, very low quality). This
             is the default for compatibility reasons.</dd>
             <dt><tt class="docutils literal">spline36</tt></dt>
-            <dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>.</dd>
+            <dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">gpu-hq</span></tt>.</dd>
             <dt><tt class="docutils literal">lanczos</tt></dt>
             <dd><p class="first">Lanczos scaling. Provides mid quality and speed. Generally worse than
             <tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image which is good
@@ -4721,7 +4721,7 @@
             Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
             <dd>Scale in linear light. It should only be used with a
-            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision. This option
+            <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> that has at least 16 bit precision. This option
             has no effect on HDR content.</dd>
             <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size when
@@ -4743,7 +4743,7 @@
             the video along the temporal axis. The filter used can be controlled using
             the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
             <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
-            more information. It should also only be used with an <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt>
+            more information. It should also only be used with an <tt class="docutils literal"><span class="pre">--fbo-format</span></tt>
             that has at least 16 bit precision.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
@@ -4800,10 +4800,10 @@
             <dd>Determines how often the dithering pattern is updated when
             <tt class="docutils literal"><span class="pre">--temporal-dither</span></tt> is in use. 1 (the default) will update on every video
             frame, 2 on every other frame, etc.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-debug</span></tt></dt>
-            <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also, request a
-            debug OpenGL context (which does nothing with current graphics drivers
-            as of this writing).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-debug</span></tt></dt>
+            <dd>Enables GPU debugging. What this means depends on the API type. For OpenGL,
+            it calls <tt class="docutils literal">glGetError()</tt>, and requests a debug context. For Vulkan, it
+            enables validation layers.</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-swapinterval=&lt;n&gt;</span></tt></dt>
             <dd><p class="first">Interval in displayed frames between two buffer swaps. 1 is equivalent to
             enable VSYNC, 0 to disable VSYNC. Defaults to 1 if not specified.</p>
@@ -4814,7 +4814,7 @@
             results, as can missing or incorrect display FPS information (see
             <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-shaders=&lt;file-list&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--glsl-shaders=&lt;file-list&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
             which can be injected at almost arbitrary points in the rendering pipeline,
             and access all previous intermediate textures. Each use of the option will
@@ -4852,7 +4852,7 @@
             specified.</dd>
             <dt>FORMAT &lt;name&gt; (required)</dt>
             <dd><p class="first">The texture format for the samples. Supported texture formats are listed
-            in debug logging when the <tt class="docutils literal">opengl</tt> VO is initialized (look for
+            in debug logging when the <tt class="docutils literal">gpu</tt> VO is initialized (look for
             <tt class="docutils literal">Texture formats:</tt>). Usually, this follows OpenGL naming conventions.
             For example, <tt class="docutils literal">rgb16</tt> provides 3 channels with normalized 16 bit
             components. One oddity are float formats: for example, <tt class="docutils literal">rgba16f</tt> has
@@ -4983,8 +4983,8 @@
             <dt>vec2 tex_offset</dt>
             <dd>Texture offset introduced by user shaders or options like panscan, video-align-x/y, video-pan-x/y.</dd>
             </dl>
-            <p>Internally, vo_opengl may generate any number of the following textures.
-            Whenever a texture is rendered and saved by vo_opengl, all of the passes
+            <p>Internally, vo_gpu may generate any number of the following textures.
+            Whenever a texture is rendered and saved by vo_gpu, all of the passes
             that have hooked into it will run, in the order they were added by the
             user. This is a list of the legal hook points:</p>
             <dl class="docutils">
@@ -5020,8 +5020,8 @@
             pass. When overwriting a texture marked <tt class="docutils literal">fixed</tt>, the WIDTH, HEIGHT and
             OFFSET must be left at their default values.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-shader=&lt;file&gt;</span></tt></dt>
-            <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--opengl-shaders-append</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--glsl-shader=&lt;file&gt;</span></tt></dt>
+            <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--glsl-shaders-append</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--deband</span></tt></dt>
             <dd>Enable the debanding algorithm. This greatly reduces the amount of visible
             banding, blocking and other quantization artifacts, at the expensive of
@@ -5064,23 +5064,15 @@
             alternatives like the <tt class="docutils literal">ewa_lanczossharp</tt> scale filter, or the
             <tt class="docutils literal"><span class="pre">--scale-blur</span></tt> option.</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-glfinish</span></tt></dt>
-            <dd>Call <tt class="docutils literal">glFinish()</tt> before and after swapping buffers (default: disabled).
-            Slower, but might improve results when doing framedropping. Can completely
-            ruin performance. The details depend entirely on the OpenGL driver.</dd>
+            <dd>Call <tt class="docutils literal">glFinish()</tt> before swapping buffers (default: disabled). Slower,
+            but might improve results when doing framedropping. Can completely ruin
+            performance. The details depend entirely on the OpenGL driver.</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-waitvsync</span></tt></dt>
             <dd><p class="first">Call <tt class="docutils literal">glXWaitVideoSyncSGI</tt> after each buffer swap (default: disabled).
             This may or may not help with video timing accuracy and frame drop. It's
             possible that this makes video output slower, or has no effect at all.</p>
             <p class="last">X11/GLX only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-vsync-fences=&lt;N&gt;</span></tt></dt>
-            <dd>Synchronize the CPU to the Nth past frame using the <tt class="docutils literal">GL_ARB_sync</tt>
-            extension. A value of 0 disables this behavior (default). A value of 1
-            means it will synchronize to the current frame after rendering it. Like
-            <tt class="docutils literal"><span class="pre">--glfinish</span></tt> and <tt class="docutils literal"><span class="pre">--waitvsync</span></tt>, this can lower or ruin performance. Its
-            advantage is that it can span multiple frames, and effectively limit the
-            number of frames the GPU queues ahead (which also has an influence on
-            vsync).</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-dwmflush=&lt;no|windowed|yes|auto&gt;</span></tt></dt>
             <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: auto). It
             also sets <tt class="docutils literal">SwapInterval(0)</tt> to ignore the OpenGL timing. Values are: no
@@ -5098,7 +5090,7 @@
             used to select a lower feature level, which is mainly useful for debugging.
             Note that OpenGL ES 3.0 is only supported at feature level 10_1 or higher.
             Most extended OpenGL features will not work at lower feature levels
-            (similar to <tt class="docutils literal"><span class="pre">--opengl-dumb-mode</span></tt>).</p>
+            (similar to <tt class="docutils literal"><span class="pre">--gpu-dumb-mode</span></tt>).</p>
             <p class="last">Windows with ANGLE only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--angle-d3d11-warp=&lt;yes|no|auto&gt;</span></tt></dt>
@@ -5132,13 +5124,6 @@
             effect.</p>
             <p class="last">Windows with ANGLE only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--angle-max-frame-latency=&lt;1-16&gt;</span></tt></dt>
-            <dd><p class="first">Sets the maximum number of frames that the system is allowed to queue for
-            rendering with the ANGLE backend (default: 3). Lower values should make
-            VSync timing more accurate, but a value of <tt class="docutils literal">1</tt> requires powerful
-            hardware, since the CPU will not be able to &quot;render ahead&quot; of the GPU.</p>
-            <p class="last">Windows with ANGLE only.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--angle-renderer=&lt;d3d9|d3d11|auto&gt;</span></tt></dt>
             <dd><p class="first">Forces a specific renderer when using the ANGLE backend (default: auto). In
             auto mode this will pick D3D11 for systems that support Direct3D 11 feature
@@ -5147,17 +5132,7 @@
             renderer, though <tt class="docutils literal"><span class="pre">--angle-renderer=d3d9</span></tt> may give slightly better
             performance on old hardware. Note that the D3D9 renderer only supports
             OpenGL ES 2.0, so most extended OpenGL features will not work if this
-            renderer is selected (similar to <tt class="docutils literal"><span class="pre">--opengl-dumb-mode</span></tt>).</p>
-            <p class="last">Windows with ANGLE only.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--angle-swapchain-length=&lt;2-16&gt;</span></tt></dt>
-            <dd><p class="first">Sets the number of buffers in the D3D11 presentation queue when using the
-            ANGLE backend (default: 6). At least 2 are required, since one is the back
-            buffer that mpv renders to and the other is the front buffer that is
-            presented by the DWM. Additional buffers can improve performance, because
-            for example, mpv will not have to wait on the DWM to release the front
-            buffer before rendering a new frame to it. For this reason, Microsoft
-            recommends at least 4.</p>
+            renderer is selected (similar to <tt class="docutils literal"><span class="pre">--gpu-dumb-mode</span></tt>).</p>
             <p class="last">Windows with ANGLE only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cocoa-force-dedicated-gpu=&lt;yes|no&gt;</span></tt></dt>
@@ -5165,12 +5140,19 @@
             (default: no)</p>
             <p class="last">OS X only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-sw</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--swapchain-depth=&lt;N&gt;</span></tt></dt>
+            <dd>Allow up to N in-flight frames. This essentially controls the frame
+            latency. Increasing the swapchain depth can improve pipelining and prevent
+            missed vsyncs, but increases visible latency. This option only mandates an
+            upper limit, the implementation can use a lower latency than requested
+            internally. A setting of 1 means that the VO will wait for every frame to
+            become visible before starting to render the next frame. (Default: 3)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-sw</span></tt></dt>
             <dd>Continue even if a software renderer is detected.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-backend=&lt;sys&gt;</span></tt></dt>
-            <dd><p class="first">The value <tt class="docutils literal">auto</tt> (the default) selects the windowing backend. You can
-            also pass <tt class="docutils literal">help</tt> to get a complete list of compiled in backends (sorted
-            by autoprobe order).</p>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-context=&lt;sys&gt;</span></tt></dt>
+            <dd><p class="first">The value <tt class="docutils literal">auto</tt> (the default) selects the GPU context. You can also pass
+            <tt class="docutils literal">help</tt> to get a complete list of compiled in backends (sorted by
+            autoprobe order).</p>
             <dl class="last docutils">
             <dt>auto</dt>
             <dd>auto-select (default)</dd>
@@ -5194,7 +5176,7 @@
             <dt>wayland</dt>
             <dd>Wayland/EGL</dd>
             <dt>drm</dt>
-            <dd>DRM/EGL (<tt class="docutils literal"><span class="pre">drm-egl</span></tt> is a deprecated alias)</dd>
+            <dd>DRM/EGL</dd>
             <dt>x11egl</dt>
             <dd>X11/EGL</dd>
             <dt>mali-fbdev</dt>
@@ -5206,48 +5188,61 @@
             be used automatically.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-es=&lt;mode&gt;</span></tt></dt>
-            <dd><p class="first">Select whether to use GLES:</p>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-api=&lt;type&gt;</span></tt></dt>
+            <dd><p class="first">Controls which type of graphics APIs will be accepted:</p>
             <dl class="last docutils">
-            <dt>yes</dt>
-            <dd>Try to prefer ES over Desktop GL</dd>
-            <dt>force2</dt>
-            <dd>Try to request a ES 2.0 context (the driver might ignore this)</dd>
-            <dt>no</dt>
-            <dd>Try to prefer desktop GL over ES</dd>
             <dt>auto</dt>
-            <dd>Use the default for each backend (default)</dd>
+            <dd>Use any available API (default)</dd>
+            <dt>opengl</dt>
+            <dd>Allow only OpenGL (requires OpenGL 2.1+ or GLES 2.0+)</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-fbo-format=&lt;fmt&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-es=&lt;mode&gt;</span></tt></dt>
+            <dd><p class="first">Controls which type of OpenGL context will be accepted:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Allow all types of OpenGL (default)</dd>
+            <dt>yes</dt>
+            <dd>Only allow GLES</dd>
+            <dt>no</dt>
+            <dd>Only allow desktop/core GL</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-restrict=&lt;version&gt;</span></tt></dt>
+            <dd>Restricts all OpenGL versions above a certain version. Versions are encoded
+            in hundreds, i.e. OpenGL 4.5 -&gt; 450. As an example, --opengl-restrict=300
+            would restrict OpenGL 3.0 and higher, effectively only allowing 2.x
+            contexts. Note that this only imposes a limit on context creation APIs, the
+            actual OpenGL context may still have a higher OpenGL version. (Default: 0)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--fbo-format=&lt;fmt&gt;</span></tt></dt>
             <dd>Selects the internal format of textures used for FBOs. The format can
             influence performance and quality of the video output. <tt class="docutils literal">fmt</tt> can be one
             of: rgb8, rgb10, rgb10_a2, rgb16, rgb16f, rgb32f, rgba12, rgba16, rgba16f,
             rgba32f. Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL, and rgba16f
             or rgb10_a2 on GLES (e.g. ANGLE), unless GL_EXT_texture_norm16 is
             available.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-gamma=&lt;0.1..2.0&gt;</span></tt></dt>
-            <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways (like
-            with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt> property),
-            the value is multiplied with the other gamma value.</p>
+            <dt><tt class="docutils literal"><span class="pre">--gamma-factor=&lt;0.1..2.0&gt;</span></tt></dt>
+            <dd><p class="first">Set an additional raw gamma factor (default: 1.0). If gamma is adjusted in
+            other ways (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the
+            <tt class="docutils literal">gamma</tt> property), the value is multiplied with the other gamma value.</p>
             <p>Recommended values based on the environmental brightness:</p>
             <dl class="docutils">
             <dt>1.0</dt>
-            <dd>Brightly illuminated (default)</dd>
-            <dt>0.9</dt>
-            <dd>Slightly dim</dd>
-            <dt>0.8</dt>
-            <dd>Pitch black room</dd>
+            <dd>Pitch black or dimly lit room (default)</dd>
+            <dt>1.1</dt>
+            <dd>Moderately lit room, home</dd>
+            <dt>1.2</dt>
+            <dd>Brightly illuminated room, office</dd>
             </dl>
-            <p class="last">NOTE: Typical movie content (Blu-ray etc.) already contains a gamma drop of
-            about 0.8, so specifying it here as well will result in even darker
-            image than intended!</p>
+            <p class="last">NOTE: This is based around the assumptions of typical movie content, which
+            contains an implicit end-to-end of about 0.8 from scene to display. For
+            bright environments it can be useful to cancel that out.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gamma-auto</span></tt></dt>
             <dd><p class="first">Automatically corrects the gamma value depending on ambient lighting
-            conditions (adding a gamma boost for dark rooms).</p>
-            <p>With ambient illuminance of 64lux, mpv will pick the 1.0 gamma value (no
-            boost), and slightly increase the boost up until 0.8 for 16lux.</p>
+            conditions (adding a gamma boost for bright rooms).</p>
+            <p>With ambient illuminance of 16 lux, mpv will pick the 1.0 gamma value (no
+            boost), and slightly increase the boost up until 1.2 for 256 lux.</p>
             <p class="last">NOTE: Only implemented on OS X.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
@@ -5459,7 +5454,7 @@
             <dd><p class="first">Blend subtitles directly onto upscaled video frames, before interpolation
             and/or color management (default: no). Enabling this causes subtitles to be
             affected by <tt class="docutils literal"><span class="pre">--icc-profile</span></tt>, <tt class="docutils literal"><span class="pre">--target-prim</span></tt>, <tt class="docutils literal"><span class="pre">--target-trc</span></tt>,
-            <tt class="docutils literal"><span class="pre">--interpolation</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-gamma</span></tt> and <tt class="docutils literal"><span class="pre">--post-shader</span></tt>. It also
+            <tt class="docutils literal"><span class="pre">--interpolation</span></tt>, <tt class="docutils literal"><span class="pre">--gpu-gamma</span></tt> and <tt class="docutils literal"><span class="pre">--post-shader</span></tt>. It also
             increases subtitle performance when using <tt class="docutils literal"><span class="pre">--interpolation</span></tt>.</p>
             <p>The downside of enabling this is that it restricts subtitles to the visible
             portion of the video, so you can't have subtitles exist in the black
@@ -5489,7 +5484,7 @@
             if the video contains alpha information (which is extremely rare). May
             not be supported on all platforms. If alpha framebuffers are
             unavailable, it silently falls back on a normal framebuffer. Note that
-            if you set the <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> option to a non-default value, a
+            if you set the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> option to a non-default value, a
             format with alpha must be specified, or this won't work.
             This does not work on X11 with EGL and Mesa (freedesktop bug 67676).</dd>
             <dt>no</dt>
@@ -5503,7 +5498,7 @@
             <dt><tt class="docutils literal"><span class="pre">--background=&lt;color&gt;</span></tt></dt>
             <dd>Color used to draw parts of the mpv window not covered by video. See
             <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-tex-pad-x</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-tex-pad-y</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-tex-pad-x</span></tt>, <tt class="docutils literal"><span class="pre">--gpu-tex-pad-y</span></tt></dt>
             <dd>Enlarge the video source textures by this many pixels. For debugging only
             (normally textures are sized exactly, but due to hardware decoding interop
             we may have to deal with additional padding, which can be tested with these
@@ -5515,8 +5510,8 @@
             the renderer is going to wait for a while after rendering, instead of
             flipping GL front and backbuffers immediately (i.e. it doesn't call it
             in display-sync mode).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-dumb-mode=&lt;yes|no|auto&gt;</span></tt></dt>
-            <dd><p class="first">This mode is extremely restricted, and will disable most extended OpenGL
+            <dt><tt class="docutils literal"><span class="pre">--gpu-dumb-mode=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">This mode is extremely restricted, and will disable most extended
             features. That includes high quality scalers and custom shaders!</p>
             <p>It is intended for hardware that does not support FBOs (including GLES,
             which supports it insufficiently), or to get some more performance out of
@@ -5526,15 +5521,14 @@
             if nothing uses features which require FBOs.</p>
             <p class="last">This option might be silently removed in the future.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-shader-cache-dir=&lt;dirname&gt;</span></tt></dt>
-            <dd><p class="first">Store and load compiled GL shaders in this directory. Normally, shader
-            compilation is very fast, so this is usually not needed. But some GL
-            implementations (notably ANGLE, the default on Windows) have relatively
-            slow shader compilation, and can cause startup delays.</p>
-            <p>NOTE: This is not cleaned automatically, so old, unused cache files may
+            <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache-dir=&lt;dirname&gt;</span></tt></dt>
+            <dd><p class="first">Store and load compiled GLSL shaders in this directory. Normally, shader
+            compilation is very fast, so this is usually not needed. It mostly matters
+            for GPU APIs that require internally recompiling shaders to other languages,
+            for example anything based on ANGLE or Vulkan. Enabling this can improve
+            startup performance on these platforms.</p>
+            <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
             stick around indefinitely.</p>
-            <p class="last">This option might be silently removed in the future, if ANGLE fixes shader
-            compilation speed.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cuda-decode-device=&lt;auto|0..&gt;</span></tt></dt>
             <dd><p class="first">Choose the GPU device used for decoding when using the <tt class="docutils literal">cuda</tt> hwdec.</p>
@@ -6030,7 +6024,7 @@
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
-            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, which is the default. All
+            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, which is the default. All
             other drivers are for compatibility or special purposes. If the default
             does not work, it will fallback to other drivers (in the same order as
             listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).</p>
@@ -6288,30 +6282,29 @@
             <dd>Always resize the backbuffer to window size.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">opengl</tt></dt>
-            <dd><p class="first">OpenGL video output driver. It supports extended scaling methods, dithering
-            and color management.</p>
-            <p>See <a class="reference internal" href="#opengl-renderer-options">OpenGL renderer options</a> for options specific to this VO.</p>
+            <dt><tt class="docutils literal">gpu</tt></dt>
+            <dd><p class="first">General purpose, customizable, GPU-accelerated video output driver. It
+            supports extended scaling methods, dithering, color management, custom
+            shaders, HDR, and more.</p>
+            <p>See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for options specific to this VO.</p>
             <p>By default, it tries to use fast and fail-safe settings. Use the
-            <tt class="docutils literal"><span class="pre">opengl-hq</span></tt> profile to use this driver with defaults set to high
-            quality rendering. (This profile is also the replacement for
-            <tt class="docutils literal"><span class="pre">--vo=opengl-hq</span></tt>.) The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=opengl-hq</span></tt>
-            and its contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=opengl-hq</span></tt>.</p>
-            <p>Requires at least OpenGL 2.1.</p>
-            <p>Some features are available with OpenGL 3 capable graphics drivers only
-            (or if the necessary extensions are available).</p>
-            <p>OpenGL ES 2.0 and 3.0 are supported as well.</p>
+            <tt class="docutils literal"><span class="pre">gpu-hq</span></tt> profile to use this driver with defaults set to high quality
+            rendering. The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=gpu-hq</span></tt> and its
+            contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=gpu-hq</span></tt>.</p>
+            <p>This VO abstracts over several possible graphics APIs and windowing
+            contexts, which can be influenced using the <tt class="docutils literal"><span class="pre">--gpu-api</span></tt> and
+            <tt class="docutils literal"><span class="pre">--gpu-context</span></tt> options.</p>
             <p>Hardware decoding over OpenGL-interop is supported to some degree. Note
             that in this mode, some corner case might not be gracefully handled, and
             color space conversion and chroma upsampling is generally in the hand of
             the hardware decoder APIs.</p>
-            <p class="last"><tt class="docutils literal">opengl</tt> makes use of FBOs by default. Sometimes you can achieve better
-            quality or performance by changing the <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> option to
+            <p class="last"><tt class="docutils literal">gpu</tt> makes use of FBOs by default. Sometimes you can achieve better
+            quality or performance by changing the <tt class="docutils literal"><span class="pre">--gpu-fbo-format</span></tt> option to
             <tt class="docutils literal">rgb16f</tt>, <tt class="docutils literal">rgb32f</tt> or <tt class="docutils literal">rgb</tt>. Known problems include Mesa/Intel not
             accepting <tt class="docutils literal">rgb16</tt>, Mesa sometimes not being compiled with float texture
             support, and some OS X setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
             with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try enabling the
-            <tt class="docutils literal"><span class="pre">--opengl-dumb-mode=yes</span></tt> option.</p>
+            <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> option.</p>
             </dd>
             <dt><tt class="docutils literal">sdl</tt></dt>
             <dd><p class="first">SDL 2.0+ Render video output driver, depending on system with or without
