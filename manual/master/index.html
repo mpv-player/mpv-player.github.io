@@ -4739,12 +4739,9 @@
             of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
             This was not required before mpv 0.14.0.</p>
             </div>
-            <p>This essentially attempts to interpolate the missing frames by convoluting
+            <p class="last">This essentially attempts to interpolate the missing frames by convoluting
             the video along the temporal axis. The filter used can be controlled using
             the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
-            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
-            more information. It should also only be used with an <tt class="docutils literal"><span class="pre">--fbo-format</span></tt>
-            that has at least 16 bit precision.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
             <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
@@ -4813,6 +4810,49 @@
             syncs to the right one. Compositing window managers can also lead to bad
             results, as can missing or incorrect display FPS information (see
             <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-swap-mode=&lt;mode&gt;</span></tt></dt>
+            <dd><p class="first">Controls the presentation mode of the vulkan swapchain. This is similar
+            to the <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> option.</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Use the preferred swapchain mode for the vulkan context. (Default)</dd>
+            <dt>fifo</dt>
+            <dd>Non-tearing, vsync blocked. Similar to &quot;VSync on&quot;.</dd>
+            <dt>fifo-relaxed</dt>
+            <dd>Tearing, vsync blocked. Late frames will tear instead of stuttering.</dd>
+            <dt>mailbox</dt>
+            <dd>Non-tearing, not vsync blocked. Similar to &quot;triple buffering&quot;.</dd>
+            <dt>immediate</dt>
+            <dd>Tearing, not vsync blocked. Similar to &quot;VSync off&quot;.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-queue-count=&lt;1..8&gt;</span></tt></dt>
+            <dd><p class="first">Controls the number of VkQueues used for rendering (limited by how many
+            your device supports). In theory, using more queues could enable some
+            parallelism between frames (when using a <tt class="docutils literal"><span class="pre">--swapchain-depth</span></tt> higher than
+            1). (Default: 1)</p>
+            <p class="last">NOTE: Setting this to a value higher than 1 may cause graphical corruption,
+            as mpv's vulkan implementation currently does not try and protect textures
+            against concurrent access.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--spirv-compiler=&lt;compiler&gt;</span></tt></dt>
+            <dd><p class="first">Controls which compiler is used to translate GLSL to SPIR-V. This is
+            (currently) only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=vulkan</span></tt>. The possible choices
+            are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Use the first available compiler. (Default)</dd>
+            <dt>shaderc</dt>
+            <dd>Use libshaderc, which is an API wrapper around glslang. This is
+            generally the most preferred, if available.</dd>
+            <dt>nvidia</dt>
+            <dd>Use nvidia's built-in compiler. Only works for nvidia GPUs. Can be
+            buggy, but also supports some features glslang does not. Only works
+            with vulkan. WARNING: Pretty buggy, handles push constants incorrectly
+            (this causes graphical corruption with e.g. <tt class="docutils literal"><span class="pre">--temporal-dither</span></tt>)! Use
+            only for testing.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--glsl-shaders=&lt;file-list&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
@@ -5169,12 +5209,12 @@
             on Nvidia and AMD. Newer Intel chips with the latest drivers may also
             work.</dd>
             <dt>x11</dt>
-            <dd>X11/GLX</dd>
+            <dd>X11/GLX, VK_KHR_xlib_surface</dd>
             <dt>x11probe</dt>
             <dd>For internal autoprobing, equivalent to <tt class="docutils literal">x11</tt> otherwise. Don't use
             directly, it could be removed without warning as autoprobing is changed.</dd>
             <dt>wayland</dt>
-            <dd>Wayland/EGL</dd>
+            <dd>Wayland/EGL, VK_KHR_wayland_surface</dd>
             <dt>drm</dt>
             <dd>DRM/EGL</dd>
             <dt>x11egl</dt>
@@ -5581,7 +5621,10 @@
             Media files must use constant framerate. Section-wise VFR might work as well
             with some container formats (but not e.g. mkv). If the sync code detects
             severe A/V desync, or the framerate cannot be detected, the player
-            automatically reverts to <tt class="docutils literal">audio</tt> mode for some time or permanently.</p>
+            automatically reverts to <tt class="docutils literal">audio</tt> mode for some time or permanently. These
+            modes also require a vsync blocked presentation mode. For OpenGL, this
+            translates to <tt class="docutils literal"><span class="pre">--opengl-swapinterval=1</span></tt>. For Vulkan, it translates to
+            <tt class="docutils literal"><span class="pre">--vulkan-swap-mode=fifo</span></tt> (or <tt class="docutils literal"><span class="pre">fifo-relaxed</span></tt>).</p>
             <p>The modes with <tt class="docutils literal">desync</tt> in their names do not attempt to keep audio/video
             in sync. They will slowly (or quickly) desync, until e.g. the next seek
             happens. These modes are meant for testing, not serious use.</p>
