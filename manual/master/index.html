@@ -1239,8 +1239,9 @@
             <dd>Print a list of the supported protocols.</dd>
             <dt><tt class="docutils literal"><span class="pre">--log-file=&lt;path&gt;</span></tt></dt>
             <dd>Opens the given path for writing, and print log messages to it. Existing
-            files will be truncated. The log level always corresponds to <tt class="docutils literal"><span class="pre">-v</span></tt>,
-            regardless of terminal verbosity levels.</dd>
+            files will be truncated. The log level is at least <tt class="docutils literal"><span class="pre">-v</span></tt>, but can be
+            raised via <tt class="docutils literal"><span class="pre">--msg-level</span></tt> (the option cannot lower it below the forced
+            minimum log level).</dd>
             <dt><tt class="docutils literal"><span class="pre">--config-dir=&lt;path&gt;</span></tt></dt>
             <dd><p class="first">Force a different configuration directory. If this is set, the given
             directory is used to load configuration files, and all other configuration
@@ -4057,6 +4058,7 @@
             <p>Run mpv with <tt class="docutils literal"><span class="pre">--msg-level=all=trace</span></tt> to see all messages mpv outputs. You
             can use the module names printed in the output (prefixed to each line in
             <tt class="docutils literal"><span class="pre">[...]</span></tt>) to limit the output to interesting modules.</p>
+            <p>This also affects <tt class="docutils literal"><span class="pre">--log-file</span></tt>, and in certain cases libmpv API logging.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Some messages are printed before the command line is parsed and are
