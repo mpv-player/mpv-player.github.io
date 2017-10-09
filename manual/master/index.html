@@ -1398,6 +1398,10 @@
             </ul>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--load-stats-overlay=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Enable the builtin script that shows useful playback information on a key
+            binding (default: yes). By default, the <tt class="docutils literal">i</tt> key is used (<tt class="docutils literal">I</tt> to make
+            the overlay permanent).</dd>
             <dt><tt class="docutils literal"><span class="pre">--player-operation-mode=&lt;cplayer|pseudo-gui&gt;</span></tt></dt>
             <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
             options are changed. This option should not normally be used directly, but
@@ -10555,6 +10559,165 @@
             </div>
             </div>
             </div>
+            <div class="section" id="stats">
+            <h1>STATS</h1>
+            <p>This builtin script displays information and statistics for the currently
+            played file. It is enabled by default if mpv was compiled with Lua support.
+            It can be disabled entirely using the <tt class="docutils literal"><span class="pre">--load-stats-overlay=no</span></tt> option.</p>
+            <div class="section" id="id1">
+            <h2>Usage</h2>
+            <p>The following key bindings are active by default unless something else is
+            already bound to them:</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="8%" />
+            <col width="92%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>i</td>
+            <td>Show stats for a fixed duration</td>
+            </tr>
+            <tr><td>I</td>
+            <td>Toggle stats (shown until toggled again)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>While the stats are visible on screen the following key bindings are active,
+            regardless of existing bindings. They allow you to switch between <em>pages</em> of
+            stats:</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="18%" />
+            <col width="82%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>1</td>
+            <td>Show usual stats</td>
+            </tr>
+            <tr><td>2</td>
+            <td>Show frame timings</td>
+            </tr>
+            </tbody>
+            </table>
+            <div class="section" id="font">
+            <h3>Font</h3>
+            <p>For optimal visual experience, a font with support for many font weights and
+            monospaced digits is recommended. By default, the open source font
+            <a class="reference external" href="https://github.com/adobe-fonts/source-sans-pro">Source Sans Pro</a> is used.</p>
+            </div>
+            </div>
+            <div class="section" id="id2">
+            <h2>Configuration</h2>
+            <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">lua-settings/stats.conf</span></tt>
+            placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
+            option. The configuration syntax is described in <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a>.</p>
+            <div class="section" id="id3">
+            <h3>Configurable Options</h3>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">key_oneshot</tt></dt>
+            <dd>Default: i</dd>
+            <dt><tt class="docutils literal">key_toggle</tt></dt>
+            <dd><p class="first">Default: I</p>
+            <p class="last">Key bindings to display stats.</p>
+            </dd>
+            <dt><tt class="docutils literal">key_page_1</tt></dt>
+            <dd>Default: 1</dd>
+            <dt><tt class="docutils literal">key_page_2</tt></dt>
+            <dd><p class="first">Default: 2</p>
+            <p class="last">Key bindings for page switching while stats are displayed.</p>
+            </dd>
+            <dt><tt class="docutils literal">duration</tt></dt>
+            <dd><p class="first">Default: 4</p>
+            <p class="last">How long the stats are shown in seconds (oneshot).</p>
+            </dd>
+            <dt><tt class="docutils literal">redraw_delay</tt></dt>
+            <dd><p class="first">Default: 1</p>
+            <p class="last">How long it takes to refresh the displayed stats in seconds (toggling).</p>
+            </dd>
+            <dt><tt class="docutils literal">persistent_overlay</tt></dt>
+            <dd><p class="first">Default: false</p>
+            <p class="last">When false, other scripts printing text to the screen can overwrite the
+            displayed stats. When true, displayed stats are persistently shown for the
+            respective duration. This can result in overlapping text when multiple
+            scripts decide to print text at the same time.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_perfdata</tt></dt>
+            <dd><p class="first">Default: true</p>
+            <p class="last">Show graphs for performance data (page 2).</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_vsync_ratio</tt></dt>
+            <dd>Default: true</dd>
+            <dt><tt class="docutils literal">plot_vsync_jitter</tt></dt>
+            <dd><p class="first">Default: true</p>
+            <p class="last">Show graphs for vsync and jitter values (page 1). Only when toggled.</p>
+            </dd>
+            <dt><tt class="docutils literal">flush_graph_data</tt></dt>
+            <dd><p class="first">Default: true</p>
+            <p class="last">Clear data buffers used for drawing graphs when toggling.</p>
+            </dd>
+            <dt><tt class="docutils literal">font</tt></dt>
+            <dd><p class="first">Default: Source Sans Pro</p>
+            <p class="last">Font name. Should support as many font weights as possible for optimal
+            visual experience.</p>
+            </dd>
+            <dt><tt class="docutils literal">font_mono</tt></dt>
+            <dd><p class="first">Default: Source Sans Pro</p>
+            <p class="last">Font name for parts where monospaced characters are necessary to align
+            text. Currently, monospaced digits are sufficient.</p>
+            </dd>
+            <dt><tt class="docutils literal">font_size</tt></dt>
+            <dd><p class="first">Default: 8</p>
+            <p class="last">Font size used to render text.</p>
+            </dd>
+            <dt><tt class="docutils literal">font_color</tt></dt>
+            <dd><p class="first">Default: FFFFFF</p>
+            <p class="last">Font color.</p>
+            </dd>
+            <dt><tt class="docutils literal">border_size</tt></dt>
+            <dd><p class="first">Default: 0.8</p>
+            <p class="last">Size of border drawn around the font.</p>
+            </dd>
+            <dt><tt class="docutils literal">border_color</tt></dt>
+            <dd><p class="first">Default: 262626</p>
+            <p class="last">Color of drawn border.</p>
+            </dd>
+            <dt><tt class="docutils literal">alpha</tt></dt>
+            <dd><p class="first">Default: 11</p>
+            <p class="last">Transparency for drawn text.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_bg_border_color</tt></dt>
+            <dd><p class="first">Default: 0000FF</p>
+            <p class="last">Border color used for drawing graphs.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_bg_color</tt></dt>
+            <dd><p class="first">Default: 262626</p>
+            <p class="last">Background color used for drawing graphs.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_color</tt></dt>
+            <dd><p class="first">Default: FFFFFF</p>
+            <p class="last">Color used for drawing graphs.</p>
+            </dd>
+            </dl>
+            <p>Note: colors are given as hexadecimal values and use ASS tag order: BBGGRR
+            (blue green red).</p>
+            </div>
+            <div class="section" id="different-key-bindings">
+            <h3>Different key bindings</h3>
+            <p>A different key binding can be defined with the aforementioned options
+            <tt class="docutils literal">key_oneshot</tt> and <tt class="docutils literal">key_toggle</tt> but also with commands in <tt class="docutils literal">input.conf</tt>,
+            for example:</p>
+            <pre class="literal-block">
+            e script-binding stats/display-stats
+            E script-binding stats/display-stats-toggle
+            </pre>
+            <p>Using <tt class="docutils literal">input.conf</tt>, it is also possible to directly display a certain page:</p>
+            <pre class="literal-block">
+            i script-binding stats/display-page-1
+            e script-binding stats/display-page-2
+            </pre>
+            </div>
+            </div>
+            </div>
             <div class="section" id="lua-scripting">
             <h1>LUA SCRIPTING</h1>
             <p>mpv can load Lua scripts. Scripts passed to the <tt class="docutils literal"><span class="pre">--script</span></tt> option, or found in
@@ -11275,7 +11438,7 @@
             <p>JavaScript support in mpv is near identical to its Lua support. Use this section
             as reference on differences and availability of APIs, but otherwise you should
             refer to the Lua documentation for API details and general scripting in mpv.</p>
-            <div class="section" id="id1">
+            <div class="section" id="id4">
             <h2>Example</h2>
             <p>JavaScript code which leaves fullscreen mode when the player is paused:</p>
             <pre class="literal-block">
