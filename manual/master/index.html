@@ -1513,7 +1513,10 @@
             </tr>
             <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows 8+ only)</td>
             </tr>
-            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">copies video back to system RAM (Android only)</td>
+            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> (Android only)</td>
+            </tr>
+            <tr class="field"><th class="field-name" colspan="2">mediacodec-copy:</th></tr>
+            <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back to system RAM (Android only)</td>
             </tr>
             <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Raspberry Pi only - default if available)</td>
             </tr>
@@ -3254,10 +3257,14 @@
             <p>On win32, the ID is interpreted as <tt class="docutils literal">HWND</tt>. Pass it as value cast to
             <tt class="docutils literal">intptr_t</tt>. mpv will create its own window, and set the wid window as
             parent, like with X11.</p>
-            <p class="last">On OSX/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
+            <p>On OSX/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
             to <tt class="docutils literal">intptr_t</tt>. mpv will create its own sub-view. Because OSX does not
             support window embedding of foreign processes, this works only with libmpv,
             and will crash when used from the command line.</p>
+            <p class="last">On Android, the ID is interpreted as <tt class="docutils literal">android.view.Surface</tt>. Pass it as a
+            value cast to <tt class="docutils literal">intptr_t</tt>. Use with <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> and
+            <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for direct rendering using MediaCodec, or with
+            <tt class="docutils literal"><span class="pre">--vo=gpu</span> <span class="pre">--gpu-context=android</span></tt> (with or without <tt class="docutils literal"><span class="pre">--hwdec=mediacodec-copy</span></tt>).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--no-window-dragging</span></tt></dt>
             <dd>Don't move the window when clicking on it and moving the mouse pointer.</dd>
@@ -5212,6 +5219,8 @@
             <dd>DRM/EGL</dd>
             <dt>x11egl</dt>
             <dd>X11/EGL</dd>
+            <dt>android</dt>
+            <dd>Android/EGL. Requires <tt class="docutils literal"><span class="pre">--wid</span></tt> be set to an <tt class="docutils literal">android.view.Surface</tt>.</dd>
             <dt>mali-fbdev</dt>
             <dd>Direct fbdev/EGL support on some ARM/MALI devices.</dd>
             <dt>vdpauglx</dt>
@@ -6544,6 +6553,16 @@
             <dd>Mode ID to use (resolution, bit depth and frame rate).
             (default: 0)</dd>
             </dl>
+            </dd>
+            <dt><tt class="docutils literal">mediacodec_embed</tt> (Android)</dt>
+            <dd><p class="first">Renders <tt class="docutils literal">IMGFMT_MEDIACODEC</tt> frames directly to an <tt class="docutils literal">android.view.Surface</tt>.
+            Requires <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for hardware decoding, along with
+            <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> and <tt class="docutils literal"><span class="pre">--wid=(intptr_t)(*android.view.Surface)</span></tt>.</p>
+            <p>Since this video output driver uses native decoding and rendering routines,
+            many of mpv's features (subtitle rendering, OSD/OSC, video filters, etc)
+            are not available with this driver.</p>
+            <p class="last">To use hardware decoding with <tt class="docutils literal"><span class="pre">--vo-gpu</span></tt> instead, use
+            <tt class="docutils literal"><span class="pre">--hwdec=mediacodec-copy</span></tt> along with <tt class="docutils literal"><span class="pre">--gpu-context=android</span></tt>.</p>
             </dd>
             </dl>
             </div>
