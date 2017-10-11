@@ -8977,8 +8977,8 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">file-size</span></tt></dt>
             <dd>Length in bytes of the source file/stream. (This is the same as
-            <tt class="docutils literal"><span class="pre">${stream-end}</span></tt>. For ordered chapters and such, the
-            size of the currently played segment is returned.)</dd>
+            <tt class="docutils literal"><span class="pre">${stream-end}</span></tt>. For segmented/multi-part files, this will return the
+            size of the main or manifest file, whatever it is.)</dd>
             <dt><tt class="docutils literal"><span class="pre">estimated-frame-count</span></tt></dt>
             <dd><p class="first">Total number of frames in current file.</p>
             <div class="admonition note last">
@@ -9016,8 +9016,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">stream-path</span></tt></dt>
             <dd>Filename (full path) of the stream layer filename. (This is probably
-            useless. It looks like this can be different from <tt class="docutils literal">path</tt> only when
-            using e.g. ordered chapters.)</dd>
+            useless and is almost never different from <tt class="docutils literal">path</tt>.)</dd>
             <dt><tt class="docutils literal"><span class="pre">stream-pos</span></tt></dt>
             <dd>Raw byte position in source stream. Technically, this returns the position
             of the most recent packet passed to a decoder.</dd>
@@ -9282,8 +9281,8 @@
             <dt><tt class="docutils literal">seeking</tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the player is currently seeking, or otherwise trying
             to restart playback. (It's possible that it returns <tt class="docutils literal">yes</tt> while a file
-            is loaded, or when switching ordered chapter segments. This is because
-            the same underlying code is used for seeking and resyncing.)</dd>
+            is loadedThis is because the same underlying code is used for seeking and
+            resyncing.)</dd>
             <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
             <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise.</p>
             <p class="last">This option is relatively useless. Before mpv 0.18.1, it could be used to
