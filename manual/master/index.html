@@ -1652,15 +1652,28 @@
             <p class="last">The old alias <tt class="docutils literal"><span class="pre">--hwdec-preload</span></tt> has different behavior if the option value
             is <tt class="docutils literal">no</tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--hwdec-image-format=&lt;name&gt;</span></tt></dt>
+            <dd><p class="first">Set the internal pixel format used by hardware decoding via <tt class="docutils literal"><span class="pre">--hwdec</span></tt>
+            (default <tt class="docutils literal">no</tt>). The special value <tt class="docutils literal">no</tt> selects an implementation
+            specific standard format. Most decoder implementations support only one
+            format, and will fail to initialize if the format is not supported.</p>
+            <p class="last">Some implementations might support multiple formats. In particular,
+            videotoolbox is known to require <tt class="docutils literal">uyvy422</tt> for good performance on some
+            older hardware. d3d11va can always use <tt class="docutils literal">yuv420p</tt>, which uses an opaque
+            format, with likely no advantages.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--videotoolbox-format=&lt;name&gt;</span></tt></dt>
-            <dd>Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
+            <dd><p class="first">Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
             choice of the format can influence performance considerably. On the other
             hand, there doesn't appear to be a good way to detect the best format for
             the given hardware. <tt class="docutils literal">nv12</tt>, the default, works better on modern hardware,
             while <tt class="docutils literal">uyvy422</tt> appears to be better for old hardware. <tt class="docutils literal">yuv420p</tt> also
             works.
             Since mpv 0.25.0, <tt class="docutils literal">no</tt> is an accepted value, which lets the decoder pick
-            the format on newer FFmpeg versions (will use <tt class="docutils literal">nv12</tt> on older versions).</dd>
+            the format on newer FFmpeg versions (will use <tt class="docutils literal">nv12</tt> on older versions).</p>
+            <p class="last">Deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> if you really need this. If both
+            are specified, <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> wins.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
             <dd><p class="first">Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
             video to make it fit a 4:3 display without black bands). The range
