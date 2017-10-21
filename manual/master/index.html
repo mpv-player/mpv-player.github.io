@@ -9297,6 +9297,21 @@
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-idle</span></tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the demuxer is idle, which means the demuxer cache is
             filled to the requested amount, and is currently not reading more data.</dd>
+            <dt><tt class="docutils literal"><span class="pre">demuxer-cache-state</span></tt></dt>
+            <dd><p class="first">Various undocumented things. Some fields are documented:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">demuxer-cache-state/seekable-start</span></tt>, <tt class="docutils literal"><span class="pre">demuxer-cache-state/seekable-end</span></tt></dt>
+            <dd>Seekable range within demuxer cache. Unavailable if not possible.</dd>
+            </dl>
+            <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+            or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+            the following contents:</p>
+            <pre class="last literal-block">
+            MPV_FORMAT_NODE_ARRAY
+                &quot;seekable-start&quot;    MPV_FORMAT_DOUBLE
+                &quot;seekable-end&quot;      MPV_FORMAT_DOUBLE
+            </pre>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-via-network</span></tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the stream demuxed via the main demuxer is most likely
             played via network. What constitutes &quot;network&quot; is not always clear, might
