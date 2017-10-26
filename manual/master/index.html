@@ -9305,18 +9305,22 @@
             <dd>Returns <tt class="docutils literal">yes</tt> if the demuxer is idle, which means the demuxer cache is
             filled to the requested amount, and is currently not reading more data.</dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-state</span></tt></dt>
-            <dd><p class="first">Various undocumented things. Some fields are documented:</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">demuxer-cache-state/seekable-start</span></tt>, <tt class="docutils literal"><span class="pre">demuxer-cache-state/seekable-end</span></tt></dt>
-            <dd>Seekable range within demuxer cache. Unavailable if not possible.</dd>
-            </dl>
+            <dd><p class="first">Various undocumented or half-documented things.</p>
+            <p>Each entry in <tt class="docutils literal"><span class="pre">seekable-ranges</span></tt> represents a region in the demuxer cache
+            that can be seeked to. If there are multiple demuxers active, this only
+            returns information about the &quot;main&quot; demuxer, but might be changed in
+            future to return unified information about all demuxers. There is currently
+            only at most 1 range. Should the player implement caching for multiple
+            ranges, the order of the ranges will be unspecified and arbitrary.</p>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
             <pre class="last literal-block">
-            MPV_FORMAT_NODE_ARRAY
-                &quot;seekable-start&quot;    MPV_FORMAT_DOUBLE
-                &quot;seekable-end&quot;      MPV_FORMAT_DOUBLE
+            MPV_FORMAT_NODE_MAP
+                &quot;seekable-ranges&quot;   MPV_FORMAT_NODE_ARRAY
+                    MPV_FORMAT_NODE_MAP
+                        &quot;start&quot;             MPV_FORMAT_DOUBLE
+                        &quot;end&quot;               MPV_FORMAT_DOUBLE
             </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-via-network</span></tt></dt>
