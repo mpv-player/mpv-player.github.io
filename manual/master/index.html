@@ -1514,8 +1514,8 @@
             </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt>
-            (Windows 8+ only)</td>
+            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt> or
+            <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> (Windows 8+ only)</td>
             </tr>
             <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows 8+ only)</td>
             </tr>
@@ -1531,6 +1531,10 @@
             <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
+            </tr>
+            <tr class="field"><th class="field-name">nvdec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
+            </tr>
+            <tr class="field"><th class="field-name">nvdec-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">crystalhd:</th><td class="field-body">copies video back to system RAM (Any platform supported by hardware)</td>
             </tr>
@@ -1559,6 +1563,11 @@
             Pass <tt class="docutils literal">weave</tt> (or leave the option unset) to not attempt any
             deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred unless the <tt class="docutils literal">gpu</tt>
             vo is not being used or filters are required.</p>
+            <p><tt class="docutils literal">nvdec</tt> is a newer implementation of CUVID/CUDA decoding, which uses the
+            FFmpeg decoders for file parsing. Experimental, is known not to correctly
+            check whether decoding is supported by the hardware at all. Deinterlacing
+            is not supported. Since this uses FFmpeg's codec parsers, it is expected
+            that this generally causes fewer issues than <tt class="docutils literal">cuda</tt>. Requires ffmpeg-mpv.</p>
             <p>Most video filters will not work with hardware decoding as they are
             primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
             <tt class="docutils literal">vdpaurb</tt> and <tt class="docutils literal">vavpp</tt>. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for more details.</p>
@@ -1597,10 +1606,11 @@
             logs. If <tt class="docutils literal"><span class="pre">vaapi-glx</span></tt> is indicated, and the video colorspace is either
             BT.601 or BT.709, a forced, low-quality but correct RGB conversion is
             performed. Otherwise, the result will be totally incorrect.</p>
-            <p><tt class="docutils literal">d3d11va</tt> is usually safe (if used with ANGLE builds that support
-            <tt class="docutils literal">EGL_KHR_stream path</tt> - otherwise, it converts to RGB), except that
-            10 bit input (HEVC main 10 profiles) will be rounded down to 8 bits,
-            which results in reduced quality.</p>
+            <p><tt class="docutils literal">d3d11va</tt> is safe when used with the <tt class="docutils literal">d3d11</tt> backend. If used with
+            <tt class="docutils literal">angle</tt> is it usually safe, except that 10 bit input (HEVC main 10
+            profiles) will be rounded down to 8 bits, which will result in reduced
+            quality. Also note that with very old ANGLE builds (without
+            <tt class="docutils literal">EGL_KHR_stream path</tt>,) all input will be converted to RGB.</p>
             <p><tt class="docutils literal">dxva2</tt> is not safe. It appears to always use BT.601 for forced RGB
             conversion, but actual behavior depends on the GPU drivers. Some drivers
             appear to convert to limited range RGB, which gives a faded appearance.
@@ -2022,11 +2032,11 @@
             <dt><tt class="docutils literal"><span class="pre">--audio-spdif=&lt;codecs&gt;</span></tt></dt>
             <dd><p class="first">List of codecs for which compressed audio passthrough should be used. This
             works for both classic S/PDIF and HDMI.</p>
-            <p>Possible codecs are <tt class="docutils literal">ac3</tt>, <tt class="docutils literal">dts</tt>, <tt class="docutils literal"><span class="pre">dts-hd</span></tt>. Multiple codecs can be
-            specified by separating them with <tt class="docutils literal">,</tt>. <tt class="docutils literal">dts</tt> refers to low bitrate DTS
-            core, while <tt class="docutils literal"><span class="pre">dts-hd</span></tt> refers to DTS MA (receiver and OS support varies).
-            If both <tt class="docutils literal">dts</tt> and <tt class="docutils literal"><span class="pre">dts-hd</span></tt> are specified, it behaves equivalent to
-            specifying <tt class="docutils literal"><span class="pre">dts-hd</span></tt> only.</p>
+            <p>Possible codecs are <tt class="docutils literal">ac3</tt>, <tt class="docutils literal">dts</tt>, <tt class="docutils literal"><span class="pre">dts-hd</span></tt>, <tt class="docutils literal">eac3</tt>, <tt class="docutils literal">truehd</tt>.
+            Multiple codecs can be specified by separating them with <tt class="docutils literal">,</tt>. <tt class="docutils literal">dts</tt>
+            refers to low bitrate DTS core, while <tt class="docutils literal"><span class="pre">dts-hd</span></tt> refers to DTS MA (receiver
+            and OS support varies). If both <tt class="docutils literal">dts</tt> and <tt class="docutils literal"><span class="pre">dts-hd</span></tt> are specified, it
+            behaves equivalent to specifying <tt class="docutils literal"><span class="pre">dts-hd</span></tt> only.</p>
             <p>In earlier mpv versions you could use <tt class="docutils literal"><span class="pre">--ad</span></tt> to force the spdif wrapper.
             This does not work anymore.</p>
             <div class="admonition admonition-warning last">
@@ -2200,7 +2210,11 @@
             happens because the decision whether to use decoder downmix happens long
             before the audio device is opened.</p>
             <p>If the channel layout of the media file (i.e. the decoder) and the AO's
-            channel layout don't match, mpv will attempt to insert a conversion filter.</p>
+            channel layout don't match, mpv will attempt to insert a conversion filter.
+            You may need to change the channel layout of the system mixer to achieve
+            your desired output as mpv does not have control over it. Another
+            work-around for this on some AOs is to use <tt class="docutils literal"><span class="pre">--audio-exclusive=yes</span></tt> to
+            circumvent the system mixer entirely.</p>
             <div class="admonition admonition-warning last">
             <p class="first admonition-title">Warning</p>
             <p>Using <tt class="docutils literal">auto</tt> can cause issues when using audio over HDMI. The OS will
@@ -2920,6 +2934,17 @@
             lower and upper case letters.</p>
             <p class="last">Default: <tt class="docutils literal">no</tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-create-cc-track=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">For every video stream, create a closed captions track (default: no). The
+            only purpose is to make the track available for selection at the start of
+            playback, instead of creating it lazily. This applies only to
+            <tt class="docutils literal">ATSC A53 Part 4 Closed Captions</tt> (displayed by mpv as subtitle tracks
+            using the codec <tt class="docutils literal">eia_608</tt>). The CC track is marked &quot;default&quot; and selected
+            according to the normal subtitle track selection rules. You can then use
+            <tt class="docutils literal"><span class="pre">--sid</span></tt> to explicitly select the correct track too.</p>
+            <p class="last">If the video stream contains no closed captions, or if no video is being
+            decoded, the CC track will remain empty and will not show any text.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="window">
@@ -3581,23 +3606,29 @@
             is useful only if the <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache</span></tt> option is enabled.
             Unlike the forward cache, there is no control how many seconds are actually
             cached - it will simply use as much memory this option allows. Setting this
-            option to 0 will strictly disable any back buffer.</p>
+            option to 0 will strictly disable any back buffer, but this will lead to
+            the situation that the forward seek range starts after the current playback
+            position (as it removes past packets that are seek points).</p>
             <p>Keep in mind that other buffers in the player (like decoders) will cause the
             demuxer to cache &quot;future&quot; frames in the back buffer, which can skew the
             impression about how much data the backbuffer contains.</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-seekable-cache=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">This controls whether seeking can use the demuxer cache (default: no). If
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-seekable-cache=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">This controls whether seeking can use the demuxer cache (default: auto). If
             enabled, short seek offsets will not trigger a low level demuxer seek
             (which means for example that slow network round trips or FFmpeg seek bugs
             can be avoided). If a seek cannot happen within the cached range, a low
-            level seek will be triggered. Seeking outside of the cache will always
-            discard the full cache.</p>
-            <p class="last">Keep in mind that some events can flush the cache or force a low level
-            seek anyway, such as switching tracks, or attmepting to seek before the
+            level seek will be triggered. Seeking outside of the cache will start a new
+            cached range, but can discard the old cache range if the demuxer exhibits
+            certain unsupported behavior.</p>
+            <p>Keep in mind that some events can flush the cache or force a low level
+            seek anyway, such as switching tracks, or attempting to seek before the
             start or after the end of the file. This option is experimental - thus
             disabled, and bugs are to be expected.</p>
+            <p class="last">The special value <tt class="docutils literal">auto</tt> means <tt class="docutils literal">yes</tt> in the same situation as
+            <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> is used (i.e. when the stream appears to be a network
+            stream or the stream cache is enabled).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-thread=&lt;yes|no&gt;</span></tt></dt>
             <dd>Run the demuxer in a separate thread, and let it prefetch a certain amount
@@ -4100,7 +4131,9 @@
             <dd>Disable colorful console output on terminals.</dd>
             <dt><tt class="docutils literal"><span class="pre">--msg-level=&lt;module1=level1,module2=level2,...&gt;</span></tt></dt>
             <dd><p class="first">Control verbosity directly for each module. The <tt class="docutils literal">all</tt> module changes the
-            verbosity of all the modules not explicitly specified on the command line.</p>
+            verbosity of all the modules. The verbosity changes from this option are
+            applied in order from left to right, and each item can override a previous
+            one.</p>
             <p>Run mpv with <tt class="docutils literal"><span class="pre">--msg-level=all=trace</span></tt> to see all messages mpv outputs. You
             can use the module names printed in the output (prefixed to each line in
             <tt class="docutils literal"><span class="pre">[...]</span></tt>) to limit the output to interesting modules.</p>
@@ -4460,7 +4493,7 @@
             <dt><tt class="docutils literal"><span class="pre">--cache-secs=&lt;seconds&gt;</span></tt></dt>
             <dd>How many seconds of audio/video to prefetch if the cache is active. This
             overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
-            is enabled and the value is larger. (Default: 10.)</dd>
+            is enabled and the value is larger. (Default: 120.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-pause</span></tt>, <tt class="docutils literal"><span class="pre">--no-cache-pause</span></tt></dt>
             <dd>Whether the player should automatically pause when the cache runs low,
             and unpause once more data is available (&quot;buffering&quot;).</dd>
@@ -4877,6 +4910,37 @@
             as mpv's vulkan implementation currently does not try and protect textures
             against concurrent access.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-warp=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd>Use WARP (Windows Advanced Rasterization Platform) with the D3D11 GPU
+            backend (default: auto). This is a high performance software renderer. By
+            default, it is only used when the system has no hardware adapters that
+            support D3D11. While the extended GPU features will work with WARP, they
+            can be very slow.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-feature-level=&lt;12_1|12_0|11_1|11_0|10_1|10_0|9_3|9_2|9_1&gt;</span></tt></dt>
+            <dd>Select a specific feature level when using the D3D11 GPU backend. By
+            default, the highest available feature level is used. This option can be
+            used to select a lower feature level, which is mainly useful for debugging.
+            Most extended GPU features will not work at 9_x feature levels.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-flip=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Enable flip-model presentation, which avoids unnecessarily copying the
+            backbuffer by sharing surfaces with the DWM (default: yes). This may cause
+            performance issues with older drivers. If flip-model presentation is not
+            supported (for example, on Windows 7 without the platform update), mpv will
+            automatically fall back to the older bitblt presentation model.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-sync-interval=&lt;0..4&gt;</span></tt></dt>
+            <dd>Schedule each frame to be presented for this number of VBlank intervals.
+            (default: 1) Setting to 1 will enable VSync, setting to 0 will disable it.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11va-zero-copy=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">By default, when using hardware decoding with <tt class="docutils literal"><span class="pre">--gpu-api=d3d11</span></tt>, the
+            video image will be copied (GPU-to-GPU) from the decoder surface to a
+            shader resource. Set this option to avoid that copy by sampling directly
+            from the decoder image. This may increase performance and reduce power
+            usage, but can cause the image to be sampled incorrectly on the bottom and
+            right edges due to padding, and may invoke driver bugs, since Direct3D 11
+            technically does not allow sampling from a decoder surface (though most
+            drivers support it.)</p>
+            <p class="last">Currently only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=d3d11</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--spirv-compiler=&lt;compiler&gt;</span></tt></dt>
             <dd><p class="first">Controls which compiler is used to translate GLSL to SPIR-V. This is
             (currently) only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=vulkan</span></tt>. The possible choices
@@ -5249,6 +5313,8 @@
             <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation. Works
             on Nvidia and AMD. Newer Intel chips with the latest drivers may also
             work.</dd>
+            <dt>d3d11</dt>
+            <dd>Win32, with native Direct3D 11 rendering.</dd>
             <dt>x11</dt>
             <dd>X11/GLX</dd>
             <dt>x11vk</dt>
@@ -5284,6 +5350,8 @@
             <dd>Allow only OpenGL (requires OpenGL 2.1+ or GLES 2.0+)</dd>
             <dt>vulkan</dt>
             <dd>Allow only Vulkan (requires a valid/working <tt class="docutils literal"><span class="pre">--spirv-compiler</span></tt>)</dd>
+            <dt>d3d11</dt>
+            <dd>Allow only <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt></dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-es=&lt;mode&gt;</span></tt></dt>
@@ -9309,19 +9377,40 @@
             <p>Each entry in <tt class="docutils literal"><span class="pre">seekable-ranges</span></tt> represents a region in the demuxer cache
             that can be seeked to. If there are multiple demuxers active, this only
             returns information about the &quot;main&quot; demuxer, but might be changed in
-            future to return unified information about all demuxers. There is currently
-            only at most 1 range. Should the player implement caching for multiple
-            ranges, the order of the ranges will be unspecified and arbitrary.</p>
+            future to return unified information about all demuxers. The ranges are in
+            arbitrary order. Often, ranges will overlap for a bit, before being joined.
+            In broken corner cases, ranges may overlap all over the place.</p>
+            <p>The end of a seek range is usually smaller than the value returned by the
+            <tt class="docutils literal"><span class="pre">demuxer-cache-time</span></tt> property, because that property returns the guessed
+            buffering amount, while the seek ranges represent the buffered data that
+            can actually be used for cached seeking.</p>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
-            <pre class="last literal-block">
+            <pre class="literal-block">
             MPV_FORMAT_NODE_MAP
                 &quot;seekable-ranges&quot;   MPV_FORMAT_NODE_ARRAY
                     MPV_FORMAT_NODE_MAP
                         &quot;start&quot;             MPV_FORMAT_DOUBLE
                         &quot;end&quot;               MPV_FORMAT_DOUBLE
             </pre>
+            <p>Other fields (might be changed or removed in the future):</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">eof</tt></dt>
+            <dd>True if the reader thread has hit the end of the file.</dd>
+            <dt><tt class="docutils literal">underrun</tt></dt>
+            <dd>True if the reader thread could not satisfy a decoder's request for a
+            new packet.</dd>
+            <dt><tt class="docutils literal">idle</tt></dt>
+            <dd>True if the thread is currently not reading.</dd>
+            <dt><tt class="docutils literal"><span class="pre">total-bytes</span></tt></dt>
+            <dd>Sum of packet bytes (plus some overhead estimation) of the entire packet
+            queue, including cached seekable ranges.</dd>
+            <dt><tt class="docutils literal"><span class="pre">fw-bytes</span></tt></dt>
+            <dd>Sum of packet bytes (plus some overhead estimation) of the readahead
+            packet queue (packets between current decoder reader positions and
+            demuxer position).</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-via-network</span></tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the stream demuxed via the main demuxer is most likely
