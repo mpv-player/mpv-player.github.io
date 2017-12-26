@@ -7707,9 +7707,34 @@
             container formats, e.g. AVI). In this mode, discontinuities are not fixed
             and all pts are passed through as-is. Never seek backwards or use multiple
             input files in this mode!</dd>
-            <dt><tt class="docutils literal"><span class="pre">--no-ometadata</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--no-ocopy-metadata</span></tt></dt>
             <dd>Turns off copying of metadata from input files to output files when
             encoding (which is enabled by default).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--oset-metadata=&lt;metadata-tag[,metadata-tag,...]&gt;</span></tt></dt>
+            <dd><p class="first">Specifies metadata to include in the output file.
+            Supported keys vary between output formats. For example, Matroska (MKV) and
+            FLAC allow almost arbitrary keys, while support in MP4 and MP3 is more
+            limited.</p>
+            <div class="admonition admonition-example last">
+            <p class="first admonition-title">Example</p>
+            <dl class="last docutils">
+            <dt>&quot;<tt class="docutils literal"><span class="pre">--oset-metadata=title=&quot;Output</span> <span class="pre">title&quot;,comment=&quot;Another</span> tag&quot;</tt>&quot;</dt>
+            <dd>adds a title and a comment to the output file.</dd>
+            </dl>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--oremove-metadata=&lt;metadata-tag[,metadata-tag,...]&gt;</span></tt></dt>
+            <dd><p class="first">Specifies metadata to exclude from the output file when copying from the
+            input file.</p>
+            <div class="admonition admonition-example last">
+            <p class="first admonition-title">Example</p>
+            <dl class="last docutils">
+            <dt>&quot;<tt class="docutils literal"><span class="pre">--oremove-metadata=comment,genre</span></tt>&quot;</dt>
+            <dd>excludes copying of the the comment and genre tags to the output
+            file.</dd>
+            </dl>
+            </div>
+            </dd>
             </dl>
             </div>
             <div class="section" id="command-interface">
