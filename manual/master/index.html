@@ -1978,6 +1978,18 @@
             supported depends on codec (default: 0). 0 means autodetect number of cores
             on the machine and use that, up to the maximum of 16. You can set more than
             16 threads manually.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-assume-old-x264=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Assume the video was encoded by an old, buggy x264 version (default: no).
+            Normally, this is autodetected by libavcodec. But if the bitstream contains
+            no x264 version info (or it was somehow skipped), and the stream was in fact
+            encoded by an old x264 version (build 150 or earlier), and if the stream
+            uses <tt class="docutils literal">4:4:4</tt> chroma, then libavcodec will by default show corrupted video.
+            This option sets the libavcodec <tt class="docutils literal">x264_build</tt> option to <tt class="docutils literal">150</tt>, which
+            means that if the stream contains no version info, or was not encoded by
+            x264 at all, it assumes it was encoded by the old version. Enabling this
+            option is pretty safe if you want your broken files to work, but in theory
+            this can break on streams not encoded by x264, or if a stream encoded by a
+            newer x264 version contains no version info.</dd>
             </dl>
             </div>
             <div class="section" id="audio">
@@ -5317,7 +5329,7 @@
             <p><tt class="docutils literal"><span class="pre">--android-surface-width=&lt;number&gt;</span></tt>
             <tt class="docutils literal"><span class="pre">--android-surface-height=&lt;number&gt;</span></tt></p>
             <div class="system-message">
-            <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">mpv/DOCS/man/options.rst</tt>, line 4746)</p>
+            <p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">mpv/DOCS/man/options.rst</tt>, line 4758)</p>
             Unexpected indentation.</div>
             <blockquote>
             <p>Set dimensions of the rendering surface used by the Android gpu context.
