@@ -8449,6 +8449,12 @@
             you could set per-file options with by setting the property
             <tt class="docutils literal"><span class="pre">file-local-options/&lt;option</span> name&gt;</tt>. The player will wait until all
             hooks are run.</dd>
+            <dt><tt class="docutils literal">on_load_fail</tt></dt>
+            <dd>Called after after a file has been opened, but failed to. This can be
+            used to provide a fallback in case native demuxers failed to recognize
+            the file, instead of always running before the native demuxers like
+            <tt class="docutils literal">on_load</tt>. Demux will only be retried if <tt class="docutils literal"><span class="pre">stream-open-filename</span></tt>
+            was changed.</dd>
             <dt><tt class="docutils literal">on_preloaded</tt></dt>
             <dd><p class="first">Called after a file has been opened, and before tracks are selected and
             decoders are created. This has some usefulness if an API users wants
