@@ -4518,9 +4518,30 @@
             is enabled and the value is larger. The default value is set to something
             very high, so the actually achieved readahead will usually be limited by
             the value of the <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> option.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--cache-pause</span></tt>, <tt class="docutils literal"><span class="pre">--no-cache-pause</span></tt></dt>
-            <dd>Whether the player should automatically pause when the cache runs low,
-            and unpause once more data is available (&quot;buffering&quot;).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cache-pause=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Whether the player should automatically pause when the cache runs out of
+            data and stalls decoding/playback (default: yes). If enabled, it will
+            pause and unpause once more data is available, aka &quot;buffering&quot;.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cache-pause-wait=&lt;seconds&gt;</span></tt></dt>
+            <dd>Number of seconds the packet cache should have buffered before starting
+            playback again if &quot;buffering&quot; was entered (default: 1). This can be used
+            to control how long the player rebuffers if <tt class="docutils literal"><span class="pre">--cache-pause</span></tt> is enabled,
+            and the demuxer underruns. If the given time is higher than the maximum
+            set with <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> or  <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt>, or prefetching
+            ends before that for some other reason (like file end), playback resumes
+            earlier.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cache-pause-initial=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enter &quot;buffering&quot; mode before starting playback (default: no). This can be
+            used to ensure playback starts smoothly, in exchange for waiting some time
+            to prefetch network data (as controlled by <tt class="docutils literal"><span class="pre">--cache-pause-wait</span></tt>). For
+            example, some common behavior is that playback starts, but network caches
+            immediately underrun when trying to decode more data as playback progresses.</p>
+            <p>Another thing that can happen is that the network prefetching is so CPU
+            demanding (due to demuxing in the background) that playback drops frames
+            at first. In these cases, it helps enabling this option, and setting
+            <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> and <tt class="docutils literal"><span class="pre">--cache-pause-wait</span></tt> to roughly the same value.</p>
+            <p class="last">This option also triggers when playback is restarted after seeking.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="network">
