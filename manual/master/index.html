@@ -6559,7 +6559,7 @@
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">This driver is for compatibility with crappy systems. You can
-            use vaapi hardware decoding with <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> too.</p>
+            use vaapi hardware decoding with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> too.</p>
             </div>
             <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
@@ -6670,7 +6670,7 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal">wayland</tt> (Wayland only)</dt>
-            <dd><p class="first">Wayland shared memory video output as fallback for <tt class="docutils literal">opengl</tt>.</p>
+            <dd><p class="first">Wayland shared memory video output as fallback for <tt class="docutils literal">gpu</tt>.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">This driver is for compatibility with systems that don't provide
@@ -6693,13 +6693,13 @@
             <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
             <dd><p class="first">For use with libmpv direct OpenGL embedding; useless in any other contexts.
             (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
-            <p class="last">This also supports many of the options the <tt class="docutils literal">opengl</tt> VO has.</p>
+            <p class="last">This also supports many of the options the <tt class="docutils literal">gpu</tt> VO has.</p>
             </dd>
             <dt><tt class="docutils literal">rpi</tt> (Raspberry Pi)</dt>
             <dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
-            <p>This is deprecated. Use <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> instead, which is the default and
+            <p>This is deprecated. Use <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> instead, which is the default and
             provides the same functionality. The <tt class="docutils literal">rpi</tt> VO will be removed in
-            mpv 0.23.0. Its functionality was folded into --vo=opengl, which now uses
+            mpv 0.23.0. Its functionality was folded into --vo=gpu, which now uses
             RPI hardware decoding by treating it as a hardware overlay (without applying
             GL filtering). Also to be changed in 0.23.0: the --fs flag will be reset to
             &quot;no&quot; by default (like on the other platforms).</p>
@@ -6726,7 +6726,7 @@
             <dd><p class="first">Video output driver using Kernel Mode Setting / Direct Rendering Manager.
             Should be used when one doesn't want to install full-blown graphical
             environment (e.g. no X). Does not support hardware acceleration (if you
-            need this, check the <tt class="docutils literal">drm</tt> backend for <tt class="docutils literal">opengl</tt> VO).</p>
+            need this, check the <tt class="docutils literal">drm</tt> backend for <tt class="docutils literal">gpu</tt> VO).</p>
             <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--drm-connector=[&lt;gpu_number&gt;.]&lt;name&gt;</span></tt></dt>
@@ -7101,7 +7101,7 @@
             BT.709 for HD video. (This is done by default.) Using incorrect color space
             results in slightly under or over saturated and shifted colors.</p>
             <p>These options are not always supported. Different video outputs provide
-            varying degrees of support. The <tt class="docutils literal">opengl</tt> and <tt class="docutils literal">vdpau</tt> video output
+            varying degrees of support. The <tt class="docutils literal">gpu</tt> and <tt class="docutils literal">vdpau</tt> video output
             drivers usually offer full support. The <tt class="docutils literal">xv</tt> output can set the color
             space if the system video driver supports it, but not input and output
             levels. The <tt class="docutils literal">scale</tt> video filter can configure color space and input
@@ -7158,7 +7158,7 @@
             in the file header, but when playing broken or mistagged files this can be
             used to override the setting.</p>
             <p>This option only affects video output drivers that perform color
-            management, for example <tt class="docutils literal">opengl</tt> with the <tt class="docutils literal"><span class="pre">target-prim</span></tt> or
+            management, for example <tt class="docutils literal">gpu</tt> with the <tt class="docutils literal"><span class="pre">target-prim</span></tt> or
             <tt class="docutils literal"><span class="pre">icc-profile</span></tt> suboptions set.</p>
             <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the video's
             primaries flag will be used. If that flag is unset, the color space will
@@ -7495,7 +7495,7 @@
             other userdata type will result in hard crashes.</p>
             </dd>
             <dt><tt class="docutils literal">vavpp</tt></dt>
-            <dd><p class="first">VA-AP-API video post processing. Works with <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>
+            <dd><p class="first">VA-AP-API video post processing. Works with <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> and <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>
             only. Currently deinterlaces. This filter is automatically inserted if
             deinterlacing is requested (either using the <tt class="docutils literal">d</tt> key, by default mapped to
             the command <tt class="docutils literal">cycle deinterlace</tt>, or the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> option).</p>
@@ -7547,12 +7547,12 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal">vdpaupp</tt></dt>
-            <dd><p class="first">VDPAU video post processing. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>
+            <dd><p class="first">VDPAU video post processing. Works with <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> and <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>
             only. This filter is automatically inserted if deinterlacing is requested
             (either using the <tt class="docutils literal">d</tt> key, by default mapped to the command
             <tt class="docutils literal">cycle deinterlace</tt>, or the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> option). When enabling
             deinterlacing, it is always preferred over software deinterlacer filters
-            if the <tt class="docutils literal">vdpau</tt> VO is used, and also if <tt class="docutils literal">opengl</tt> is used and hardware
+            if the <tt class="docutils literal">vdpau</tt> VO is used, and also if <tt class="docutils literal">gpu</tt> is used and hardware
             decoding was activated at least once (i.e. vdpau was loaded).</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">sharpen=&lt;-1-1&gt;</span></tt></dt>
@@ -9020,7 +9020,7 @@
             <dt><tt class="docutils literal"><span class="pre">hwdec-interop</span></tt></dt>
             <dd><p class="first">This returns the currently loaded hardware decoding/output interop driver.
             This is known only once the VO has opened (and possibly later). With some
-            VOs (like <tt class="docutils literal">opengl</tt>), this might be never known in advance, but only when
+            VOs (like <tt class="docutils literal">gpu</tt>), this might be never known in advance, but only when
             the decoder attempted to create the hw decoder successfully. (Using
             <tt class="docutils literal"><span class="pre">--gpu-hwdec-interop</span></tt> can load it eagerly.) If there are multiple
             drivers loaded, they will be separated by <tt class="docutils literal">,</tt>.</p>
