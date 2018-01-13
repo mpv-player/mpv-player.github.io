@@ -1369,8 +1369,7 @@
             <dd><p class="first">Enable the youtube-dl hook-script. It will look at the input URL, and will
             play the video located on the website. This works with many streaming sites,
             not just the one that the script is named after. This requires a recent
-            version of youtube-dl to be installed on the system. (Enabled by default,
-            except when the client API / libmpv is used.)</p>
+            version of youtube-dl to be installed on the system. (Enabled by default.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
             <p>The <cite>try_ytdl_first</cite> script option accepts a boolean 'yes' or 'no', and if
             'yes' will try parsing the URL with youtube-dl first, instead of the default
@@ -2243,14 +2242,6 @@
             want. For example, most A/V receivers connected via HDMI and that can
             do 7.1 would  be served by: <tt class="docutils literal"><span class="pre">--audio-channels=7.1,5.1,stereo</span></tt></p>
             </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--audio-normalize-downmix=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Enable/disable normalization if surround audio is downmixed to stereo
-            (default: no). If this is disabled, downmix can cause clipping. If it's
-            enabled, the output might be too silent. It depends on the source audio.</p>
-            <p>Technically, this changes the <tt class="docutils literal">normalize</tt> suboption of the
-            <tt class="docutils literal">lavrresample</tt> audio filter, which performs the downmixing.</p>
-            <p class="last">If downmix happens outside of mpv for some reason, this has no effect.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-display=&lt;no|attachment&gt;</span></tt></dt>
             <dd><p class="first">Setting this option to <tt class="docutils literal">attachment</tt> (default) will display image
@@ -4132,6 +4123,38 @@
             <dd>Software scaler chroma horizontal shifting. See <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sws-cvs=&lt;v&gt;</span></tt></dt>
             <dd>Software scaler chroma vertical shifting. See <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>.</dd>
+            </dl>
+            </div>
+            <div class="section" id="audio-resampler">
+            <h2>Audio Resampler</h2>
+            <p>This controls the default options of any resampling done by mpv (but not within
+            libavfilter, within the system audio API resampler, or any other places).</p>
+            <p>It also sets the defaults for the <tt class="docutils literal">lavrresample</tt> audio filter.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--audio-resample-filter-size=&lt;length&gt;</span></tt></dt>
+            <dd>Length of the filter with respect to the lower sampling rate. (default:
+            16)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-resample-phase-shift=&lt;count&gt;</span></tt></dt>
+            <dd>Log2 of the number of polyphase entries. (..., 10-&gt;1024, 11-&gt;2048,
+            12-&gt;4096, ...) (default: 10-&gt;1024)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-resample-cutoff=&lt;cutoff&gt;</span></tt></dt>
+            <dd>Cutoff frequency (0.0-1.0), default set depending upon filter length.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-resample-linear=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If set then filters will be linearly interpolated between polyphase
+            entries. (default: no)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-normalize-downmix=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable/disable normalization if surround audio is downmixed to stereo
+            (default: no). If this is disabled, downmix can cause clipping. If it's
+            enabled, the output might be too quiet. It depends on the source audio.</p>
+            <p>Technically, this changes the <tt class="docutils literal">normalize</tt> suboption of the
+            <tt class="docutils literal">lavrresample</tt> audio filter, which performs the downmixing.</p>
+            <p class="last">If downmix happens outside of mpv for some reason, or in the decoder
+            (decoder downmixing), or in the audio output (system mixer), this has no
+            effect.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-swresample-o=&lt;string&gt;</span></tt></dt>
+            <dd>Set AVOptions on the SwrContext or AVAudioResampleContext. These should
+            be documented by FFmpeg or Libav.</dd>
             </dl>
             </div>
             <div class="section" id="terminal">
@@ -6669,27 +6692,6 @@
             <dd>Specify the directory to save the image files to (default: <tt class="docutils literal">./</tt>).</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">wayland</tt> (Wayland only)</dt>
-            <dd><p class="first">Wayland shared memory video output as fallback for <tt class="docutils literal">gpu</tt>.</p>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This driver is for compatibility with systems that don't provide
-            working OpenGL drivers.</p>
-            </div>
-            <p>The following global options are supported by this video output:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--vo-wayland-alpha</span></tt></dt>
-            <dd>Use a buffer format that supports videos and images with alpha
-            information</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vo-wayland-rgb565</span></tt></dt>
-            <dd>Use RGB565 as buffer format. This format is implemented on most
-            platforms, especially on embedded where it is far more efficient then
-            RGB8888.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vo-wayland-triple-buffering</span></tt></dt>
-            <dd>Use 3 buffers instead of 2. This can lead to more fluid playback, but
-            uses more memory.</dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
             <dd><p class="first">For use with libmpv direct OpenGL embedding; useless in any other contexts.
             (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
@@ -6783,6 +6785,12 @@
             to change sample rate, sample format, or channel layout of the audio stream.
             This filter is automatically enabled if the audio output does not support
             the audio configuration of the file being played.</p>
+            <div class="admonition warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">Deprecated. Either use the <tt class="docutils literal"><span class="pre">--audio-resample-...</span></tt> options to customize
+            resampling, or the libavfilter <tt class="docutils literal"><span class="pre">--af=aresample</span></tt> filter, which has its
+            own options.</p>
+            </div>
             <p>It supports only the following sample formats: u8, s16, s32, float.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">filter-size=&lt;length&gt;</span></tt></dt>
