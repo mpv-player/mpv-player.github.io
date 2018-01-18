@@ -8224,19 +8224,20 @@
             <ul class="last simple">
             <li><tt class="docutils literal">a vf set flip</tt> turn video upside-down on the <tt class="docutils literal">a</tt> key</li>
             <li><tt class="docutils literal">b vf set &quot;&quot;</tt> remove all video filters on <tt class="docutils literal">b</tt></li>
-            <li><tt class="docutils literal">c vf toggle lavfi=gradfun</tt> toggle debanding on <tt class="docutils literal">c</tt></li>
+            <li><tt class="docutils literal">c vf toggle gradfun</tt> toggle debanding on <tt class="docutils literal">c</tt></li>
             </ul>
             </div>
             <div class="admonition admonition-example-how-to-toggle-disabled-filters-at-runtime last">
             <p class="first admonition-title">Example how to toggle disabled filters at runtime</p>
             <ul class="last simple">
-            <li>Add something <tt class="docutils literal"><span class="pre">vf-add=&#64;deband:!lavfi=[gradfun]</span></tt> to <tt class="docutils literal">mpv.conf</tt>. The
-            <tt class="docutils literal">&#64;deband:</tt> is the label, and <tt class="docutils literal">deband</tt> is an arbitrary, user-given
-            name for this filter entry. The <tt class="docutils literal">!</tt> before the filter name disables
-            the filter by default. Everything after this is the normal filter name
-            and the filter parameters.</li>
+            <li>Add something like <tt class="docutils literal"><span class="pre">vf-add=&#64;deband:!gradfun</span></tt> to <tt class="docutils literal">mpv.conf</tt>.
+            The <tt class="docutils literal">&#64;deband:</tt> is the label, an arbitrary, user-given name for this
+            filter entry. The <tt class="docutils literal">!</tt> before the filter name disables the filter by
+            default. Everything after this is the normal filter name and possibly
+            filter parameters, like in the normal <tt class="docutils literal"><span class="pre">--vf</span></tt> syntax.</li>
             <li>Add <tt class="docutils literal">a vf toggle &#64;deband</tt> to <tt class="docutils literal">input.conf</tt>. This toggles the
-            &quot;disabled&quot; flag for the filter identified with <tt class="docutils literal">deband</tt>.</li>
+            &quot;disabled&quot; flag for the filter with the label <tt class="docutils literal">deband</tt> when the
+            <tt class="docutils literal">a</tt> key is hit.</li>
             </ul>
             </div>
             </dd>
