@@ -462,6 +462,9 @@
             <tr><td>-set</td>
             <td>Set a list of items</td>
             </tr>
+            <tr><td>-toggle</td>
+            <td>Append an item, or remove if if it already exists</td>
+            </tr>
             </tbody>
             </table>
             <p>Although some operations allow specifying multiple <tt class="docutils literal">,</tt>-separated items, using
@@ -471,6 +474,8 @@
             aliases for the proper option with <tt class="docutils literal"><span class="pre">-append</span></tt> action. For example,
             <tt class="docutils literal"><span class="pre">--sub-file</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sub-files-append</span></tt>.</p>
             <p>Some options only support a subset of the above.</p>
+            <p>Options of this type can be changed at runtime using the <tt class="docutils literal"><span class="pre">change-list</span></tt>
+            command, which takes the suffix as separate operation parameter.</p>
             </div>
             <div class="section" id="playing-dvds">
             <h2>Playing DVDs</h2>
@@ -3607,7 +3612,7 @@
             <tt class="docutils literal"><span class="pre">--vd</span></tt> (but it does not accept decoder names).</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-rawvideo-size=&lt;value&gt;</span></tt></dt>
             <dd>Frame size in bytes when using <tt class="docutils literal"><span class="pre">--demuxer=rawvideo</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-max-bytes=&lt;bytes&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-max-bytes=&lt;bytesize&gt;</span></tt></dt>
             <dd><p class="first">This controls how much the demuxer is allowed to buffer ahead. The demuxer
             will normally try to read ahead as much as necessary, or as much is
             requested with <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt>. The option can be used to
@@ -3617,9 +3622,10 @@
             slightly overstepped due to technical reasons.)</p>
             <p>Set these limits higher if you get a packet queue overflow warning, and
             you think normal playback would be possible with a larger packet queue.</p>
-            <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range.</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range. <tt class="docutils literal">&lt;bytesize&gt;</tt> options
+            accept suffixes such as <tt class="docutils literal">KiB</tt> and <tt class="docutils literal">MiB</tt>.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-max-back-bytes=&lt;value&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-max-back-bytes=&lt;bytesize&gt;</span></tt></dt>
             <dd><p class="first">This controls how much past data the demuxer is allowed to preserve. This
             is useful only if the <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache</span></tt> option is enabled.
             Unlike the forward cache, there is no control how many seconds are actually
@@ -4614,9 +4620,20 @@
             <dt><tt class="docutils literal"><span class="pre">--referrer=&lt;string&gt;</span></tt></dt>
             <dd>Specify a referrer path or URL for HTTP requests.</dd>
             <dt><tt class="docutils literal"><span class="pre">--network-timeout=&lt;seconds&gt;</span></tt></dt>
-            <dd>Specify the network timeout in seconds. This affects at least HTTP. The
+            <dd><p class="first">Specify the network timeout in seconds. This affects at least HTTP. The
             special value 0 (default) uses the FFmpeg/Libav defaults. If a protocol
-            is used which does not support timeouts, this option is silently ignored.</dd>
+            is used which does not support timeouts, this option is silently ignored.</p>
+            <div class="admonition warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This breaks the RTSP protocol, because of inconsistent FFmpeg API
+            regarding its internal timeout option. Not only does the RTSP timeout
+            option accept different units (seconds instead of microseconds, causing
+            mpv to pass it huge values), it will also overflow FFmpeg internal
+            calculations. The worst is that merely setting the option will put RTSP
+            into listening mode, which breaks any client uses. Do not use this
+            option with RTSP URLs.</p>
+            </div>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--rtsp-transport=&lt;lavf|udp|tcp|http&gt;</span></tt></dt>
             <dd>Select RTSP transport method (default: tcp). This selects the underlying
             network transport when playing <tt class="docutils literal"><span class="pre">rtsp://...</span></tt> URLs. The value <tt class="docutils literal">lavf</tt>
@@ -8432,6 +8449,20 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">load-script</span> &quot;&lt;path&gt;&quot;</tt></dt>
             <dd>Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option.</dd>
+            <dt><tt class="docutils literal"><span class="pre">change-list</span> &quot;&lt;option&gt;&quot; &quot;&lt;operation&gt;&quot; &quot;&lt;value&gt;&quot;</tt></dt>
+            <dd><p class="first">This command changes list options as described in <a class="reference internal" href="#list-options">List Options</a>. The
+            <tt class="docutils literal">&lt;option&gt;</tt> parameter is the normal option name, while <tt class="docutils literal">&lt;operation&gt;</tt> is
+            the suffix or action used on the option.</p>
+            <p>Some operations take no value, but the command still requires the value
+            parameter. In these cases, the value must be an empty string.</p>
+            <div class="admonition admonition-example last">
+            <p class="first admonition-title">Example</p>
+            <p><tt class="docutils literal"><span class="pre">change-list</span> <span class="pre">glsl-shaders</span> append file.glsl</tt></p>
+            <p class="last">Add a filename to the <tt class="docutils literal"><span class="pre">glsl-shaders</span></tt> list. The command line
+            equivalent is <tt class="docutils literal"><span class="pre">--glsl-shaders-append=file.glsl</span></tt> or alternatively
+            <tt class="docutils literal"><span class="pre">--glsl-shader=file.glsl</span></tt>.</p>
+            </div>
+            </dd>
             </dl>
             <p>Undocumented commands: <tt class="docutils literal"><span class="pre">tv-last-channel</span></tt> (TV/DVB only),
             <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
