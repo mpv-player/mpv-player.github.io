@@ -3805,8 +3805,13 @@
             <dt><tt class="docutils literal"><span class="pre">--no-osd-bar</span></tt>, <tt class="docutils literal"><span class="pre">--osd-bar</span></tt></dt>
             <dd><p class="first">Disable display of the OSD bar.</p>
             <p class="last">You can configure this on a per-command basis in input.conf using <tt class="docutils literal">osd-</tt>
-            prefixes, see <tt class="docutils literal">Input command prefixes</tt>. If you want to disable the OSD
+            prefixes, see <tt class="docutils literal">Input Command Prefixes</tt>. If you want to disable the OSD
             completely, use <tt class="docutils literal"><span class="pre">--osd-level=0</span></tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-on-seek=&lt;no,bar,msg,msg-bar&gt;</span></tt></dt>
+            <dd><p class="first">Set what is displayed on the OSD during seeks. The default is <tt class="docutils literal">bar</tt>.</p>
+            <p class="last">You can configure this on a per-command basis in input.conf using <tt class="docutils literal">osd-</tt>
+            prefixes, see <tt class="docutils literal">Input Command Prefixes</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-duration=&lt;time&gt;</span></tt></dt>
             <dd>Set the duration of the OSD messages in ms (default: 1000).</dd>
@@ -3836,15 +3841,17 @@
             <dd><p class="first">Similar to <tt class="docutils literal"><span class="pre">--osd-msg1</span></tt>, but for OSD level 3. If this is an empty string
             (default), then the playback time, duration, and some more information is
             shown.</p>
-            <p>This is also used for the <tt class="docutils literal"><span class="pre">show-progress</span></tt> command (by default mapped to
-            <tt class="docutils literal">P</tt>), when toggling pause, and when seeking.</p>
+            <p>This is used for the <tt class="docutils literal"><span class="pre">show-progress</span></tt> command (by default mapped to <tt class="docutils literal">P</tt>),
+            and when seeking if enabled with <tt class="docutils literal"><span class="pre">--osd-on-seek</span></tt> or by <tt class="docutils literal">osd-</tt> prefixes
+            in input.conf (see <tt class="docutils literal">Input Command Prefixes</tt>).</p>
             <p class="last"><tt class="docutils literal"><span class="pre">--osd-status-msg</span></tt> is a legacy equivalent (but with a minor difference).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-status-msg=&lt;string&gt;</span></tt></dt>
             <dd><p class="first">Show a custom string during playback instead of the standard status text.
             This overrides the status text used for <tt class="docutils literal"><span class="pre">--osd-level=3</span></tt>, when using the
-            <tt class="docutils literal"><span class="pre">show-progress</span></tt> command (by default mapped to <tt class="docutils literal">P</tt>), when toggling pause,
-            and when seeking. Expands properties. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
+            <tt class="docutils literal"><span class="pre">show-progress</span></tt> command (by default mapped to <tt class="docutils literal">P</tt>), and when seeking if
+            enabled with <tt class="docutils literal"><span class="pre">--osd-on-seek</span></tt> or <tt class="docutils literal">osd-</tt> prefixes in input.conf (see
+            <tt class="docutils literal">Input Command Prefixes</tt>). Expands properties. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
             <p class="last">This option has been replaced with <tt class="docutils literal"><span class="pre">--osd-msg3</span></tt>. The only difference is
             that this option implicitly includes <tt class="docutils literal"><span class="pre">${osd-sym-cc}</span></tt>. This option is
             ignored if <tt class="docutils literal"><span class="pre">--osd-msg3</span></tt> is not empty.</p>
