@@ -6245,6 +6245,8 @@
             <dt><tt class="docutils literal"><span class="pre">--ao-null-channel-layouts</span></tt></dt>
             <dd>If not empty, this is a <tt class="docutils literal">,</tt> separated list of channel layouts the
             AO allows. This can be used to test channel layout selection.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--ao-null-format</span></tt></dt>
+            <dd>Force the audio output format the AO will accept. If unset accepts any.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">pcm</tt></dt>
@@ -6832,7 +6834,8 @@
             <dd>Do not detach if input and output audio format/rate/channels match.
             (If you just want to set defaults for this filter that will be used
             even by automatically inserted lavrresample instances, you should
-            prefer setting them with <tt class="docutils literal"><span class="pre">--af-defaults=lavrresample:...</span></tt>.)</dd>
+            prefer setting them with the <tt class="docutils literal"><span class="pre">--audio-resample-...</span></tt> options.) This
+            does not do anything anymore and the filter will never detach.</dd>
             <dt><tt class="docutils literal"><span class="pre">normalize=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd>Whether to normalize when remixing channel layouts (default: auto).
             <tt class="docutils literal">auto</tt> uses the value set by <tt class="docutils literal"><span class="pre">--audio-normalize-downmix</span></tt>.</dd>
@@ -6885,7 +6888,7 @@
             encoder, and using another codec will fail horribly.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">format=format:srate:channels:out-format:out-srate:out-channels</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">format=format:srate:channels:out-srate:out-channels</span></tt></dt>
             <dd><p class="first">Does not do any format conversion itself. Rather, it may cause the
             filter system to insert necessary conversion filters before or after this
             filter if needed. It is primarily useful for controlling the audio format
@@ -6911,7 +6914,6 @@
             <dd>Force mixing to a specific channel layout. See <tt class="docutils literal"><span class="pre">--audio-channels</span></tt> option
             for possible values.</dd>
             </dl>
-            <p><tt class="docutils literal"><span class="pre">&lt;out-format&gt;</span></tt></p>
             <p><tt class="docutils literal"><span class="pre">&lt;out-srate&gt;</span></tt></p>
             <p><tt class="docutils literal"><span class="pre">&lt;out-channels&gt;</span></tt></p>
             <p class="last"><em>NOTE</em>: this filter used to be named <tt class="docutils literal">force</tt>. The old <tt class="docutils literal">format</tt> filter
@@ -7129,9 +7131,6 @@
             <dl class="last docutils">
             <dt><tt class="docutils literal">&lt;fmt&gt;</tt></dt>
             <dd>Format name, e.g. rgb15, bgr24, 420p, etc. (default: don't change).</dd>
-            <dt><tt class="docutils literal">&lt;outfmt&gt;</tt></dt>
-            <dd>Format name that should be substituted for the output. If they do not
-            have the same bytes per pixel and chroma subsampling, it will fail.</dd>
             <dt><tt class="docutils literal">&lt;colormatrix&gt;</tt></dt>
             <dd><p class="first">Controls the YUV to RGB color space conversion when playing video. There
             are various standards. Normally, BT.601 should be used for SD video, and
