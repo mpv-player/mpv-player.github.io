@@ -1409,11 +1409,18 @@
             passed as a key-value pair. Options without argument must include <tt class="docutils literal">=</tt>.</p>
             <p>There is no sanity checking so it's possible to break things (i.e.
             passing invalid parameters to youtube-dl).</p>
+            <p>A proxy URL can be passed for youtube-dl to use it in parsing the website.
+            This is useful for geo-restricted URLs. After youtube-dl parsing, some
+            URLs also require a proxy for playback, so this can pass that proxy
+            information to mpv. Take note that SOCKS proxies aren't supported and
+            https URLs also bypass the proxy. This is a limitation in FFmpeg.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
             <ul class="last simple">
             <li><tt class="docutils literal"><span class="pre">--ytdl-raw-options=username=user,password=pass</span></tt></li>
             <li><tt class="docutils literal"><span class="pre">--ytdl-raw-options=force-ipv6=</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--ytdl-raw-options=proxy=[http://127.0.0.1:3128]</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--ytdl-raw-options-append=proxy=http://127.0.0.1:3128</span></tt></li>
             </ul>
             </div>
             </dd>
