@@ -4172,6 +4172,14 @@
             (decoder downmixing), or in the audio output (system mixer), this has no
             effect.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--audio-resample-max-output-size=&lt;length&gt;</span></tt></dt>
+            <dd><p class="first">Limit maximum size of audio frames filtered at once, in ms (default: 40).
+            The output size size is limited in order to make resample speed changes
+            react faster. This is necessary especially if decoders or filters output
+            very large frame sizes (like some lossless codecs or some DRC filters).
+            This option does not affect the resampling algorithm in any way.</p>
+            <p class="last">For testing/debugging only. Can be removed or changed any time.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-swresample-o=&lt;string&gt;</span></tt></dt>
             <dd>Set AVOptions on the SwrContext or AVAudioResampleContext. These should
             be documented by FFmpeg or Libav.</dd>
@@ -6798,7 +6806,8 @@
             syntax is:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--af=...</span></tt></dt>
-            <dd>Setup a chain of audio filters. See <tt class="docutils literal"><span class="pre">--vf</span></tt> for the syntax.</dd>
+            <dd>Setup a chain of audio filters. See <tt class="docutils literal"><span class="pre">--vf</span></tt> (<a class="reference internal" href="#video-filters">VIDEO FILTERS</a>) for the
+            full syntax.</dd>
             </dl>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
@@ -7044,8 +7053,10 @@
             </div>
             <div class="section" id="video-filters">
             <h1>VIDEO FILTERS</h1>
-            <p>Video filters allow you to modify the video stream and its properties. The
-            syntax is:</p>
+            <p>Video filters allow you to modify the video stream and its properties. All of
+            the information described in this section applies to audio filters as well
+            (generally using the prefix <tt class="docutils literal"><span class="pre">--af</span></tt> instead of <tt class="docutils literal"><span class="pre">--vf</span></tt>).</p>
+            <p>The exact syntax is:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--vf=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
             <dd><p class="first">Setup a chain of video filters. This consists on the filter name, and an
@@ -7077,11 +7088,17 @@
             historically) to specify filters and their parameters.</p>
             </dd>
             </dl>
+            <p>Filters can be manipulated at run time. You can use <tt class="docutils literal">&#64;</tt> labels as described
+            above in combination with the <tt class="docutils literal">vf</tt> command (see <a class="reference internal" href="#command-interface">COMMAND INTERFACE</a>) to get
+            more control over this. Initially disabled filters with <tt class="docutils literal">!</tt> are useful for
+            this as well.</p>
             <p>You can also set defaults for each filter. The defaults are applied before the
-            normal filter parameters.</p>
+            normal filter parameters. This is deprecated and never worked for the
+            libavfilter bridge.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--vf-defaults=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
-            <dd>Set defaults for each filter.</dd>
+            <dd>Set defaults for each filter. (Deprecated. <tt class="docutils literal"><span class="pre">--af-defaults</span></tt> is deprecated
+            as well.)</dd>
             </dl>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
@@ -7107,13 +7124,18 @@
             <p>Video filters are managed in lists. There are a few commands to manage the
             filter list.</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--vf-add=&lt;filter1[,filter2,...]&gt;</span></tt></dt>
-            <dd>Appends the filters given as arguments to the filter list.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vf-pre=&lt;filter1[,filter2,...]&gt;</span></tt></dt>
-            <dd>Prepends the filters given as arguments to the filter list.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vf-del=&lt;index1[,index2,...]&gt;</span></tt></dt>
-            <dd>Deletes the filters at the given indexes. Index numbers start at 0,
-            negative numbers address the end of the list (-1 is the last).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vf-add=filter</span></tt></dt>
+            <dd>Appends the filter given as arguments to the filter list. (Passing multiple
+            filters is currently still possible, but deprecated.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vf-pre=filter</span></tt></dt>
+            <dd>Prepends the filters given as arguments to the filter list. (Passing
+            multiple filters is currently still possible, but deprecated.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vf-del=filter</span></tt></dt>
+            <dd>Deletes the filter. The filter can even given the way it was added (filter
+            name and its full argument list), by label (prefixed with <tt class="docutils literal">&#64;</tt>), or as
+            index number. Index numbers start at 0, negative numbers address the end of
+            the list (-1 is the last). (Passing multiple filters is currently still
+            possible, but deprecated.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--vf-clr</span></tt></dt>
             <dd>Completely empties the filter list.</dd>
             </dl>
@@ -7122,9 +7144,6 @@
             <dt><tt class="docutils literal"><span class="pre">--vf=&lt;filter&gt;=help</span></tt></dt>
             <dd>Prints the parameter names and parameter value ranges for a particular
             filter.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vf=&lt;filter=named_parameter1=value1[:named_parameter2=value2:...]&gt;</span></tt></dt>
-            <dd>Sets a named parameter to the given value. Use on and off or yes and no to
-            set flag parameters.</dd>
             </dl>
             <p>Available mpv-only filters are:</p>
             <dl class="docutils">
@@ -9607,8 +9626,6 @@
             <dd><p class="first">List of decoders supported. This lists decoders which can be passed to
             <tt class="docutils literal"><span class="pre">--vd</span></tt> and <tt class="docutils literal"><span class="pre">--ad</span></tt>.</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal">family</tt></dt>
-            <dd>Decoder driver. Usually <tt class="docutils literal">lavc</tt> for libavcodec.</dd>
             <dt><tt class="docutils literal">codec</tt></dt>
             <dd>Canonical codec name, which identifies the format the decoder can
             handle.</dd>
@@ -9625,7 +9642,6 @@
             <pre class="last literal-block">
             MPV_FORMAT_NODE_ARRAY
                 MPV_FORMAT_NODE_MAP (for each decoder entry)
-                    &quot;family&quot;        MPV_FORMAT_STRING
                     &quot;codec&quot;         MPV_FORMAT_STRING
                     &quot;driver&quot;        MPV_FORMAT_STRING
                     &quot;description&quot;   MPV_FORMAT_STRING
