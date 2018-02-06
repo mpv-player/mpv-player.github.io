@@ -5626,7 +5626,7 @@
             for in-range material as much as possible. Use this when you care about
             color accuracy more than detail preservation. This is somewhere in
             between <tt class="docutils literal">clip</tt> and <tt class="docutils literal">reinhard</tt>, depending on the value of
-            <tt class="docutils literal"><span class="pre">--tone-mapping-param</span></tt>. (default)</dd>
+            <tt class="docutils literal"><span class="pre">--tone-mapping-param</span></tt>.</dd>
             <dt>reinhard</dt>
             <dd>Reinhard tone mapping algorithm. Very simple continuous curve.
             Preserves overall image brightness but uses nonlinear contrast, which
@@ -5637,7 +5637,9 @@
             desaturating everything. Developed by John Hable for use in video
             games. Use this when you care about detail preservation more than
             color/brightness accuracy. This is roughly equivalent to
-            <tt class="docutils literal"><span class="pre">--hdr-tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>.</dd>
+            <tt class="docutils literal"><span class="pre">--hdr-tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>. If possible,
+            you should also enable <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> for the best results.
+            (Default)</dd>
             <dt>gamma</dt>
             <dd>Fits a logarithmic transfer between the tone curves.</dd>
             <dt>linear</dt>
@@ -5668,13 +5670,15 @@
             <dd>Specifies the scale factor to use while stretching. Defaults to 1.0.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt></dt>
-            <dd>Compute the HDR peak per-frame of relying on tagged metadata. These values
-            are averaged over local regions as well as over several frames to prevent
-            the value from jittering around too much. This option basically gives you
-            dynamic, per-scene tone mapping. Requires compute shaders, which is a
-            fairly recent OpenGL feature, and will probably also perform horribly on
-            some drivers, so enable at your own risk.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--hdr-compute-peak=&lt;auto|yes|no&gt;</span></tt></dt>
+            <dd>Compute the HDR peak and frame average brightness per-frame instead of
+            relying on tagged metadata. These values are averaged over local regions as
+            well as over several frames to prevent the value from jittering around too
+            much. This option basically gives you dynamic, per-scene tone mapping.
+            Requires compute shaders, which is a fairly recent OpenGL feature, and will
+            probably also perform horribly on some drivers, so enable at your own risk.
+            The special value <tt class="docutils literal">auto</tt> (default) will enable HDR peak computation
+            automatically if compute shaders and SSBOs are supported.</dd>
             <dt><tt class="docutils literal"><span class="pre">--tone-mapping-desaturate=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Apply desaturation for highlights. The parameter essentially controls the
             steepness of the desaturation curve. The higher the parameter, the more
@@ -5682,8 +5686,9 @@
             unnaturally blown-out colors for super-highlights, by (smoothly) turning
             into white instead. This makes images feel more natural, at the cost of
             reducing information about out-of-range colors.</p>
-            <p class="last">The default of 1.0 provides a good balance that roughly matches the look
-            and feel of the ACES ODT curves. A setting of 0.0 disables this option.</p>
+            <p class="last">The default of 0.5 provides a good balance. This value is weaker than the
+            ACES ODT curves' recommendation, but works better for most content in
+            practice. A setting of 0.0 disables this option.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gamut-warning</span></tt></dt>
             <dd>If enabled, mpv will mark all clipped/out-of-gamut pixels that exceed a
