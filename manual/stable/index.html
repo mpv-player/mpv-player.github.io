@@ -467,7 +467,7 @@
             <p>Although some operations allow specifying multiple <tt class="docutils literal">,</tt>-separated items, using
             this is strongly discouraged and deprecated, except for <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
             <p>Without suffix, the action taken is normally <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
-            <p>Some options (like <tt class="docutils literal"><span class="pre">--sub-file</span></tt>, <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-shader</span></tt>) are
+            <p>Some options (like <tt class="docutils literal"><span class="pre">--sub-file</span></tt>, <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, <tt class="docutils literal"><span class="pre">--glsl-shader</span></tt>) are
             aliases for the proper option with <tt class="docutils literal"><span class="pre">-append</span></tt> action. For example,
             <tt class="docutils literal"><span class="pre">--sub-file</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sub-files-append</span></tt>.</p>
             </div>
@@ -530,8 +530,8 @@
             <div class="admonition admonition-example-configuration-file">
             <p class="first admonition-title">Example configuration file</p>
             <pre class="last literal-block">
-            # Use opengl video output by default.
-            vo=opengl
+            # Use GPU-accelerated video output by default.
+            vo=gpu
             # Use quotes for text that can contain spaces:
             status-msg=&quot;Time: ${time-pos}&quot;
             </pre>
@@ -613,7 +613,7 @@
             [slow]
             profile-desc=&quot;some profile name&quot;
             # reference a builtin profile
-            profile=opengl-hq
+            profile=gpu-hq
             
             [fast]
             vo=vdpau
@@ -707,8 +707,10 @@
             (<tt class="docutils literal"><span class="pre">drop-frame-count</span></tt> property.)</li>
             <li>Cache state, e.g. <tt class="docutils literal">Cache:&nbsp; 2s+134KB</tt>. Visible if the stream cache is enabled.
             The first value shows the amount of video buffered in the demuxer in seconds,
-            the second value shows <em>additional</em> data buffered in the stream cache in
-            kilobytes. (<tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> and <tt class="docutils literal"><span class="pre">cache-used</span></tt> properties.)</li>
+            the second value shows the sum of the demuxer forward cache size and the
+            <em>additional</em> data buffered in the stream cache in kilobytes.
+            (<tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt>, <tt class="docutils literal"><span class="pre">demuxer-cache-state</span></tt>, <tt class="docutils literal"><span class="pre">cache-used</span></tt>
+            properties.)</li>
             </ul>
             </div>
             <div class="section" id="protocols">
@@ -749,6 +751,7 @@
             playlist); <tt class="docutils literal"><span class="pre">mpls/&lt;number&gt;</span></tt> (selects &lt;number&gt;.mpls playlist);
             <tt class="docutils literal">&lt;number&gt;</tt> (select playlist with the same index). You can list
             the available playlists with <tt class="docutils literal"><span class="pre">--msg-level=bd=v</span></tt>.</p>
+            <p><tt class="docutils literal"><span class="pre">bluray://</span></tt> is an alias.</p>
             </blockquote>
             <p><tt class="docutils literal"><span class="pre">dvd://[title|[starttitle]-endtitle][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
             <blockquote>
@@ -893,6 +896,8 @@
             </ul>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vlang=&lt;...&gt;</span></tt></dt>
+            <dd>Equivalent to <tt class="docutils literal"><span class="pre">--alang</span></tt> and <tt class="docutils literal"><span class="pre">--slang</span></tt>, for video tracks.</dd>
             <dt><tt class="docutils literal"><span class="pre">--aid=&lt;ID|auto|no&gt;</span></tt></dt>
             <dd><p class="first">Select audio track. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables audio.
             See also <tt class="docutils literal"><span class="pre">--alang</span></tt>. mpv normally prints available audio tracks on the
@@ -921,9 +926,10 @@
             <dd><p class="first">Select audio/subtitle/video streams by the FFmpeg stream index. The FFmpeg
             stream index is relatively arbitrary, but useful when interacting with
             other software using FFmpeg (consider <tt class="docutils literal">ffprobe</tt>).</p>
-            <p class="last">Note that with external tracks (added with <tt class="docutils literal"><span class="pre">--sub-files</span></tt> and similar
+            <p>Note that with external tracks (added with <tt class="docutils literal"><span class="pre">--sub-files</span></tt> and similar
             options), there will be streams with duplicate IDs. In this case, the
             first stream in order is selected.</p>
+            <p class="last">Deprecated.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--edition=&lt;ID|auto&gt;</span></tt></dt>
             <dd>(Matroska files only)
@@ -954,6 +960,7 @@
             considered 0.)</p>
             <p><tt class="docutils literal">pp%</tt> seeks to percent position pp (0-100).</p>
             <p><tt class="docutils literal">#c</tt> seeks to chapter number c. (Chapters start from 1.)</p>
+            <p><tt class="docutils literal">none</tt> resets any previously set option (useful for libmpv).</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
@@ -979,8 +986,11 @@
             <dd>Stop at given absolute time. Use <tt class="docutils literal"><span class="pre">--length</span></tt> if the time should be relative
             to <tt class="docutils literal"><span class="pre">--start</span></tt>. See <tt class="docutils literal"><span class="pre">--start</span></tt> for valid option values and examples.</dd>
             <dt><tt class="docutils literal"><span class="pre">--length=&lt;relative</span> time&gt;</tt></dt>
-            <dd>Stop after a given time relative to the start time.
-            See <tt class="docutils literal"><span class="pre">--start</span></tt> for valid option values and examples.</dd>
+            <dd><p class="first">Stop after a given time relative to the start time.
+            See <tt class="docutils literal"><span class="pre">--start</span></tt> for valid option values and examples.</p>
+            <p class="last">If both <tt class="docutils literal"><span class="pre">--end</span></tt> and <tt class="docutils literal"><span class="pre">--length</span></tt> are provided, playback will stop when it
+            reaches either of the two endpoints.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--rebase-start-time=&lt;yes|no&gt;</span></tt></dt>
             <dd>Whether to move the file start time to <tt class="docutils literal">00:00:00</tt> (default: yes). This
             is less awkward for files which start at a random timestamp, such as
@@ -1163,8 +1173,9 @@
             <dd><p class="first">Set loop points. If playback passes the <tt class="docutils literal">b</tt> timestamp, it will seek to
             the <tt class="docutils literal">a</tt> timestamp. Seeking past the <tt class="docutils literal">b</tt> point doesn't loop (this is
             intentional).</p>
-            <p>If both options are set to <tt class="docutils literal">no</tt>, looping is disabled. Otherwise, the
-            start/end of the file is used if one of the options is set to <tt class="docutils literal">no</tt>.</p>
+            <p>If both options are set to <tt class="docutils literal">no</tt> or unset, looping is disabled.
+            Otherwise, the start/end of playback is used if one of the options
+            is set to <tt class="docutils literal">no</tt> or unset.</p>
             <p class="last">The loop-points can be adjusted at runtime with the corresponding
             properties. See also <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command.</p>
             </dd>
@@ -1198,11 +1209,10 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--stop-playback-on-init-failure=&lt;yes|no&gt;</span></tt></dt>
-            <dd>Stop playback if either audio or video fails to initialize. Currently,
-            the default behavior is <tt class="docutils literal">no</tt> for the command line player, but <tt class="docutils literal">yes</tt>
-            for libmpv. With <tt class="docutils literal">no</tt>, playback will continue in video-only or audio-only
-            mode if one of them fails. This doesn't affect playback of audio-only or
-            video-only files.</dd>
+            <dd>Stop playback if either audio or video fails to initialize (default: no).
+            With <tt class="docutils literal">no</tt>, playback will continue in video-only or audio-only mode if one
+            of them fails. This doesn't affect playback of audio-only or video-only
+            files.</dd>
             </dl>
             </div>
             <div class="section" id="program-behavior">
@@ -1239,8 +1249,9 @@
             <dd>Print a list of the supported protocols.</dd>
             <dt><tt class="docutils literal"><span class="pre">--log-file=&lt;path&gt;</span></tt></dt>
             <dd>Opens the given path for writing, and print log messages to it. Existing
-            files will be truncated. The log level always corresponds to <tt class="docutils literal"><span class="pre">-v</span></tt>,
-            regardless of terminal verbosity levels.</dd>
+            files will be truncated. The log level is at least <tt class="docutils literal"><span class="pre">-v</span> <span class="pre">-v</span></tt>, but
+            can be raised via <tt class="docutils literal"><span class="pre">--msg-level</span></tt> (the option cannot lower it below the
+            forced minimum log level).</dd>
             <dt><tt class="docutils literal"><span class="pre">--config-dir=&lt;path&gt;</span></tt></dt>
             <dd><p class="first">Force a different configuration directory. If this is set, the given
             directory is used to load configuration files, and all other configuration
@@ -1277,7 +1288,7 @@
             <dt><tt class="docutils literal"><span class="pre">--idle=&lt;no|yes|once&gt;</span></tt></dt>
             <dd><p class="first">Makes mpv wait idly instead of quitting when there is no file to play.
             Mostly useful in input mode, where mpv can be controlled through input
-            commands.</p>
+            commands. (Default: <tt class="docutils literal">no</tt>)</p>
             <p class="last"><tt class="docutils literal">once</tt> will only idle at start and let the player close once the
             first playlist has finished playing back.</p>
             </dd>
@@ -1341,7 +1352,8 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt></dt>
-            <dd>Ignore path (i.e. use filename only) when using watch later feature.</dd>
+            <dd>Ignore path (i.e. use filename only) when using watch later feature.
+            (Default: disabled)</dd>
             <dt><tt class="docutils literal"><span class="pre">--show-profile=&lt;profile&gt;</span></tt></dt>
             <dd>Show the description and content of a profile.</dd>
             <dt><tt class="docutils literal"><span class="pre">--use-filedir-conf</span></tt></dt>
@@ -1397,6 +1409,10 @@
             </ul>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--load-stats-overlay=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Enable the builtin script that shows useful playback information on a key
+            binding (default: yes). By default, the <tt class="docutils literal">i</tt> key is used (<tt class="docutils literal">I</tt> to make
+            the overlay permanent).</dd>
             <dt><tt class="docutils literal"><span class="pre">--player-operation-mode=&lt;cplayer|pseudo-gui&gt;</span></tt></dt>
             <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
             options are changed. This option should not normally be used directly, but
@@ -1488,68 +1504,78 @@
             </tr>
             <tr class="field"><th class="field-name">auto-copy:</th><td class="field-body">enable best hw decoder with copy-back (see below)</td>
             </tr>
-            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Linux only)</td>
+            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
+            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with Intel GPUs only)</td>
+            <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (OS X 10.8 and up),
+            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (OS X 10.8 and up),
             or <tt class="docutils literal"><span class="pre">--vo=opengl-cb</span></tt> (iOS 9.0 and up)</td>
             </tr>
             <tr class="field"><th class="field-name" colspan="2">videotoolbox-copy:</th></tr>
             <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (OS X 10.8 or iOS 9.0 and up)</td>
             </tr>
-            <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> with <tt class="docutils literal"><span class="pre">--opengl-backend=angle</span></tt> or
-            <tt class="docutils literal"><span class="pre">--opengl-backend=dxinterop</span></tt> (Windows only)</td>
+            <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> or
+            <tt class="docutils literal"><span class="pre">--gpu-context=dxinterop</span></tt> (Windows only)</td>
             </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> with <tt class="docutils literal"><span class="pre">--opengl-backend=angle</span></tt>
-            (Windows 8+ only)</td>
+            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt> or
+            <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> (Windows 8+ only)</td>
             </tr>
             <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows 8+ only)</td>
             </tr>
-            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">copies video back to system RAM (Android only)</td>
+            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> (Android only)</td>
             </tr>
-            <tr class="field"><th class="field-name">rpi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Raspberry Pi only - default if available)</td>
+            <tr class="field"><th class="field-name" colspan="2">mediacodec-copy:</th></tr>
+            <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back to system RAM (Android only)</td>
             </tr>
-            <tr class="field"><th class="field-name">rpi-copy:</th><td class="field-body">copies video back to system RAM (Raspberry Pi only)</td>
+            <tr class="field"><th class="field-name">mmal:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Raspberry Pi only - default if available)</td>
             </tr>
-            <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> (Any platform CUDA is available)</td>
+            <tr class="field"><th class="field-name">mmal-copy:</th><td class="field-body">copies video back to system RAM (Raspberry Pi only)</td>
+            </tr>
+            <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
             </tr>
+            <tr class="field"><th class="field-name">nvdec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
+            </tr>
+            <tr class="field"><th class="field-name">nvdec-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
+            </tr>
             <tr class="field"><th class="field-name">crystalhd:</th><td class="field-body">copies video back to system RAM (Any platform supported by hardware)</td>
+            </tr>
+            <tr class="field"><th class="field-name">rkmpp:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (some RockChip devices only)</td>
             </tr>
             </tbody>
             </table>
             <p><tt class="docutils literal">auto</tt> tries to automatically enable hardware decoding using the first
             available method. This still depends what VO you are using. For example,
-            if you are not using <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> or <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, vdpau decoding will
+            if you are not using <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt>, vdpau decoding will
             never be enabled. Also note that if the first found method doesn't actually
             work, it will always fall back to software decoding, instead of trying the
             next method (might matter on some Linux systems).</p>
             <p><tt class="docutils literal"><span class="pre">auto-copy</span></tt> selects only modes that copy the video data back to system
-            memory after decoding. Currently, this selects only one of the following
-            modes: <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>, <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt>, <tt class="docutils literal"><span class="pre">d3d11va-copy</span></tt>, <tt class="docutils literal">mediacodec</tt>.
+            memory after decoding. This selects modes like <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> (and so on).
             If none of these work, hardware decoding is disabled. This mode is always
             guaranteed to incur no additional loss compared to software decoding, and
             will allow CPU processing with video filters.</p>
-            <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, requires Mesa 11 and most
-            likely works with Intel GPUs only. It also requires the opengl EGL backend
-            (automatically used if available). You can also try the old GLX backend by
-            forcing it with <tt class="docutils literal"><span class="pre">--opengl-backend=x11</span></tt>, but the vaapi/GLX interop is
-            said to be slower than <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>.</p>
+            <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, requires Mesa 11 and most
+            likely works with Intel GPUs only. It also requires the opengl EGL backend.</p>
             <p>The <tt class="docutils literal">cuda</tt> and <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> modes provides deinterlacing in the decoder
             which is useful as there is no other deinterlacing mechanism in the opengl
             output path. To use this deinterlacing you must pass the option:
             <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>.
             Pass <tt class="docutils literal">weave</tt> (or leave the option unset) to not attempt any
-            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred unless the <tt class="docutils literal">opengl</tt>
+            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred unless the <tt class="docutils literal">gpu</tt>
             vo is not being used or filters are required.</p>
+            <p><tt class="docutils literal">nvdec</tt> is a newer implementation of CUVID/CUDA decoding, which uses the
+            FFmpeg decoders for file parsing. Experimental, is known not to correctly
+            check whether decoding is supported by the hardware at all. Deinterlacing
+            is not supported. Since this uses FFmpeg's codec parsers, it is expected
+            that this generally causes fewer issues than <tt class="docutils literal">cuda</tt>.</p>
             <p>Most video filters will not work with hardware decoding as they are
             primarily implemented on the CPU. Some exceptions are <tt class="docutils literal">vdpaupp</tt>,
             <tt class="docutils literal">vdpaurb</tt> and <tt class="docutils literal">vavpp</tt>. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for more details.</p>
@@ -1571,8 +1597,8 @@
             output APIs, as well as bugs in the actual hardware decoders, there can
             be some loss, or even blatantly incorrect results.</p>
             <p>In some cases, RGB conversion is forced, which means the RGB conversion
-            is performed by the hardware decoding API, instead of the OpenGL code
-            used by <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>. This means certain colorspaces may not display
+            is performed by the hardware decoding API, instead of the shaders
+            used by <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. This means certain colorspaces may not display
             correctly, and certain filtering (such as debanding) cannot be applied
             in an ideal way. This will also usually force the use of low quality
             chroma scalers instead of the one specified by <tt class="docutils literal"><span class="pre">--cscale</span></tt>. In other
@@ -1588,10 +1614,11 @@
             logs. If <tt class="docutils literal"><span class="pre">vaapi-glx</span></tt> is indicated, and the video colorspace is either
             BT.601 or BT.709, a forced, low-quality but correct RGB conversion is
             performed. Otherwise, the result will be totally incorrect.</p>
-            <p><tt class="docutils literal">d3d11va</tt> is usually safe (if used with ANGLE builds that support
-            <tt class="docutils literal">EGL_KHR_stream path</tt> - otherwise, it converts to RGB), except that
-            10 bit input (HEVC main 10 profiles) will be rounded down to 8 bits,
-            which results in reduced quality.</p>
+            <p><tt class="docutils literal">d3d11va</tt> is safe when used with the <tt class="docutils literal">d3d11</tt> backend. If used with
+            <tt class="docutils literal">angle</tt> is it usually safe, except that 10 bit input (HEVC main 10
+            profiles) will be rounded down to 8 bits, which will result in reduced
+            quality. Also note that with very old ANGLE builds (without
+            <tt class="docutils literal">EGL_KHR_stream path</tt>,) all input will be converted to RGB.</p>
             <p><tt class="docutils literal">dxva2</tt> is not safe. It appears to always use BT.601 for forced RGB
             conversion, but actual behavior depends on the GPU drivers. Some drivers
             appear to convert to limited range RGB, which gives a faded appearance.
@@ -1599,7 +1626,7 @@
             affect this additionally. This can give incorrect results even with
             completely ordinary video sources.</p>
             <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
-            <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>.</p>
+            <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>.</p>
             <p><tt class="docutils literal">cuda</tt> should be safe, but it has been reported to corrupt the
             timestamps causing glitched, flashing frames on some files. It can also
             sometimes cause massive framedrops for unknown reasons. Caution is
@@ -1622,38 +1649,49 @@
             the first thing you should try is disabling it.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=&lt;name&gt;</span></tt></dt>
-            <dd><p class="first">This is useful for the <tt class="docutils literal">opengl</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for creating the
-            hardware decoding OpenGL interop context, but without actually enabling
-            hardware decoding itself (like <tt class="docutils literal"><span class="pre">--hwdec</span></tt> does).</p>
-            <p>If set to an empty string (default), the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option is used.</p>
-            <p>For <tt class="docutils literal">opengl</tt>, if set, do not create the interop context on demand, but
-            when the VO is created.</p>
-            <p>For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, if set, load the interop context as soon as the OpenGL
-            context is created. Since <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> has no on-demand loading, this
-            allows enabling hardware decoding at runtime at all, without having
-            to temporarily set the <tt class="docutils literal">hwdec</tt> option just during OpenGL context
-            initialization with <tt class="docutils literal">mpv_opengl_cb_init_gl()</tt>.</p>
-            <p>See <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop=help</span></tt> for accepted values. This lists the
-            interop backend, with the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> alias after it in <tt class="docutils literal"><span class="pre">[...]</span></tt>. Consider
-            all values except the proper interop backend name, <tt class="docutils literal">auto</tt>, and <tt class="docutils literal">no</tt> as
-            silently deprecated and subject to change. Also, if you use this in
-            application code (e.g. via libmpv), any value other than <tt class="docutils literal">auto</tt> and <tt class="docutils literal">no</tt>
-            should be avoided, as backends can change.</p>
-            <p>Currently the option sets a single value. It is possible that the option
-            type changes to a list in the future.</p>
-            <p class="last">The old alias <tt class="docutils literal"><span class="pre">--hwdec-preload</span></tt> has different behavior if the option value
-            is <tt class="docutils literal">no</tt>.</p>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-hwdec-interop=&lt;auto|all|no|name&gt;</span></tt></dt>
+            <dd><p class="first">This option is for troubleshooting hwdec interop issues. Since it's a
+            debugging option, its semantics may change at any time.</p>
+            <p>This is useful for the <tt class="docutils literal">gpu</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for selecting which
+            hwdec interop context to use exactly. Effectively it also can be used
+            to block loading of certain backends.</p>
+            <p>If set to <tt class="docutils literal">auto</tt> (default), the behavior depends on the VO: for <tt class="docutils literal">gpu</tt>,
+            it does nothing, and the interop context is loaded on demand (when the
+            decoder probes for <tt class="docutils literal"><span class="pre">--hwdec</span></tt> support). For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, which has
+            has no on-demand loading, this is equivalent to <tt class="docutils literal">all</tt>.</p>
+            <p>The empty string is equivalent to <tt class="docutils literal">auto</tt>.</p>
+            <p>If set to <tt class="docutils literal">all</tt>, it attempts to load all interop contexts at GL context
+            creation time.</p>
+            <p>Other than that, a specific backend can be set, and the list of them can
+            be queried with <tt class="docutils literal">help</tt> (mpv CLI only).</p>
+            <p>Runtime changes to this are ignored (the current option value is used
+            whenever the renderer is created).</p>
+            <p class="last">The old aliases <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop</span></tt> and <tt class="docutils literal"><span class="pre">--hwdec-preload</span></tt> are
+            barely related to this anymore, but will be somewhat compatible in some
+            cases.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--hwdec-image-format=&lt;name&gt;</span></tt></dt>
+            <dd><p class="first">Set the internal pixel format used by hardware decoding via <tt class="docutils literal"><span class="pre">--hwdec</span></tt>
+            (default <tt class="docutils literal">no</tt>). The special value <tt class="docutils literal">no</tt> selects an implementation
+            specific standard format. Most decoder implementations support only one
+            format, and will fail to initialize if the format is not supported.</p>
+            <p class="last">Some implementations might support multiple formats. In particular,
+            videotoolbox is known to require <tt class="docutils literal">uyvy422</tt> for good performance on some
+            older hardware. d3d11va can always use <tt class="docutils literal">yuv420p</tt>, which uses an opaque
+            format, with likely no advantages.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--videotoolbox-format=&lt;name&gt;</span></tt></dt>
-            <dd>Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
+            <dd><p class="first">Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
             choice of the format can influence performance considerably. On the other
             hand, there doesn't appear to be a good way to detect the best format for
             the given hardware. <tt class="docutils literal">nv12</tt>, the default, works better on modern hardware,
             while <tt class="docutils literal">uyvy422</tt> appears to be better for old hardware. <tt class="docutils literal">yuv420p</tt> also
             works.
             Since mpv 0.25.0, <tt class="docutils literal">no</tt> is an accepted value, which lets the decoder pick
-            the format on newer FFmpeg versions (will use <tt class="docutils literal">nv12</tt> on older versions).</dd>
+            the format on newer FFmpeg versions (will use <tt class="docutils literal">nv12</tt> on older versions).</p>
+            <p class="last">Deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> if you really need this. If both
+            are specified, <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> wins.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
             <dd><p class="first">Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
             video to make it fit a 4:3 display without black bands). The range
@@ -1739,8 +1777,8 @@
             which means the value <tt class="docutils literal">0</tt> would rotate the video according to the
             rotation metadata.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--video-stereo-mode=&lt;no|mode&gt;</span></tt></dt>
-            <dd><p class="first">Set the stereo 3D output mode (default: <tt class="docutils literal">mono</tt>). This is done by inserting
-            the <tt class="docutils literal">stereo3d</tt> conversion filter.</p>
+            <dd><p class="first">Set the stereo 3D output mode (default: <tt class="docutils literal">mono</tt>). This is mostly broken and
+            thus deprecated.</p>
             <p>The pseudo-mode <tt class="docutils literal">no</tt> disables automatic conversion completely.</p>
             <p>The mode <tt class="docutils literal">mono</tt> is an alias to <tt class="docutils literal">ml</tt>, which refers to the left frame in
             2D. This is the default, which means mpv will try to show 3D movies in 2D,
@@ -1865,7 +1903,7 @@
             slow hardware. This works only with the following VOs:</p>
             <blockquote>
             <ul class="simple">
-            <li><tt class="docutils literal">opengl</tt>: requires at least OpenGL 4.4.</li>
+            <li><tt class="docutils literal">gpu</tt>: requires at least OpenGL 4.4.</li>
             </ul>
             </blockquote>
             <p>(In particular, this can't be made work with <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>.)</p>
@@ -2000,11 +2038,11 @@
             <dt><tt class="docutils literal"><span class="pre">--audio-spdif=&lt;codecs&gt;</span></tt></dt>
             <dd><p class="first">List of codecs for which compressed audio passthrough should be used. This
             works for both classic S/PDIF and HDMI.</p>
-            <p>Possible codecs are <tt class="docutils literal">ac3</tt>, <tt class="docutils literal">dts</tt>, <tt class="docutils literal"><span class="pre">dts-hd</span></tt>. Multiple codecs can be
-            specified by separating them with <tt class="docutils literal">,</tt>. <tt class="docutils literal">dts</tt> refers to low bitrate DTS
-            core, while <tt class="docutils literal"><span class="pre">dts-hd</span></tt> refers to DTS MA (receiver and OS support varies).
-            If both <tt class="docutils literal">dts</tt> and <tt class="docutils literal"><span class="pre">dts-hd</span></tt> are specified, it behaves equivalent to
-            specifying <tt class="docutils literal"><span class="pre">dts-hd</span></tt> only.</p>
+            <p>Possible codecs are <tt class="docutils literal">ac3</tt>, <tt class="docutils literal">dts</tt>, <tt class="docutils literal"><span class="pre">dts-hd</span></tt>, <tt class="docutils literal">eac3</tt>, <tt class="docutils literal">truehd</tt>.
+            Multiple codecs can be specified by separating them with <tt class="docutils literal">,</tt>. <tt class="docutils literal">dts</tt>
+            refers to low bitrate DTS core, while <tt class="docutils literal"><span class="pre">dts-hd</span></tt> refers to DTS MA (receiver
+            and OS support varies). If both <tt class="docutils literal">dts</tt> and <tt class="docutils literal"><span class="pre">dts-hd</span></tt> are specified, it
+            behaves equivalent to specifying <tt class="docutils literal"><span class="pre">dts-hd</span></tt> only.</p>
             <p>In earlier mpv versions you could use <tt class="docutils literal"><span class="pre">--ad</span></tt> to force the spdif wrapper.
             This does not work anymore.</p>
             <div class="admonition admonition-warning last">
@@ -2059,13 +2097,6 @@
             <dd>Gain in dB to apply if the file has no replay gain tags. This option
             is always applied if the replaygain logic is somehow inactive. If this
             is applied, no other replaygain options are applied.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--balance=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">How much left/right channels contribute to the audio. (The implementation
-            of this feature is rather odd. It doesn't change the volumes of each
-            channel, but instead sets up a pan matrix to mix the left and right
-            channels.)</p>
-            <p class="last">Deprecated.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-delay=&lt;sec&gt;</span></tt></dt>
             <dd>Audio delay in seconds (positive or negative float value). Positive values
             delay the audio, and negative values delay the video.</dd>
@@ -2178,7 +2209,11 @@
             happens because the decision whether to use decoder downmix happens long
             before the audio device is opened.</p>
             <p>If the channel layout of the media file (i.e. the decoder) and the AO's
-            channel layout don't match, mpv will attempt to insert a conversion filter.</p>
+            channel layout don't match, mpv will attempt to insert a conversion filter.
+            You may need to change the channel layout of the system mixer to achieve
+            your desired output as mpv does not have control over it. Another
+            work-around for this on some AOs is to use <tt class="docutils literal"><span class="pre">--audio-exclusive=yes</span></tt> to
+            circumvent the system mixer entirely.</p>
             <div class="admonition admonition-warning last">
             <p class="first admonition-title">Warning</p>
             <p>Using <tt class="docutils literal">auto</tt> can cause issues when using audio over HDMI. The OS will
@@ -2353,7 +2388,7 @@
             printed by <tt class="docutils literal"><span class="pre">--sub-demuxer=help</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-delay=&lt;sec&gt;</span></tt></dt>
             <dd>Delays subtitles by <tt class="docutils literal">&lt;sec&gt;</tt> seconds. Can be negative.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--sub-files=&lt;file-list&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-files=&lt;file-list&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--sub-file=&lt;filename&gt;</span></tt></dt>
             <dd><p class="first">Add a subtitle file to the list of external subtitles.</p>
             <p>If you use <tt class="docutils literal"><span class="pre">--sub-file</span></tt> only once, this subtitle file is displayed by
             default.</p>
@@ -2362,7 +2397,11 @@
             two subtitles at once: use <tt class="docutils literal"><span class="pre">--sid</span></tt> to select the first subtitle index,
             and <tt class="docutils literal"><span class="pre">--secondary-sid</span></tt> to select the second index. (The index is printed
             on the terminal output after the <tt class="docutils literal"><span class="pre">--sid=</span></tt> in the list of streams.)</p>
-            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--sub-files</span></tt> is a list option (see <a class="reference internal" href="#list-options">List Options</a>  for details), and
+            can take multiple file names separated by <tt class="docutils literal">:</tt> (Unix) or <tt class="docutils literal">;</tt> (Windows),
+            while  <tt class="docutils literal"><span class="pre">--sub-file</span></tt> takes a single filename, but can be used multiple
+            times to add multiple files. Technically, <tt class="docutils literal"><span class="pre">--sub-file</span></tt> is a CLI/config
+            file only alias for  <tt class="docutils literal"><span class="pre">--sub-files-append</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--secondary-sid=&lt;ID|auto|no&gt;</span></tt></dt>
             <dd><p class="first">Select a secondary subtitle stream. This is similar to <tt class="docutils literal"><span class="pre">--sid</span></tt>. If a
@@ -2898,6 +2937,17 @@
             lower and upper case letters.</p>
             <p class="last">Default: <tt class="docutils literal">no</tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-create-cc-track=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">For every video stream, create a closed captions track (default: no). The
+            only purpose is to make the track available for selection at the start of
+            playback, instead of creating it lazily. This applies only to
+            <tt class="docutils literal">ATSC A53 Part 4 Closed Captions</tt> (displayed by mpv as subtitle tracks
+            using the codec <tt class="docutils literal">eia_608</tt>). The CC track is marked &quot;default&quot; and selected
+            according to the normal subtitle track selection rules. You can then use
+            <tt class="docutils literal"><span class="pre">--sid</span></tt> to explicitly select the correct track too.</p>
+            <p class="last">If the video stream contains no closed captions, or if no video is being
+            decoded, the CC track will remain empty and will not show any text.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="window">
@@ -2999,8 +3049,14 @@
             and no audio. The player may recognize certain non-images as images, for
             example if <tt class="docutils literal"><span class="pre">--length</span></tt> is used to reduce the length to 1 frame, or if
             you seek to the last frame.</p>
-            <p class="last">This option does not affect the framerate used for <tt class="docutils literal"><span class="pre">mf://</span></tt> or
+            <p>This option does not affect the framerate used for <tt class="docutils literal"><span class="pre">mf://</span></tt> or
             <tt class="docutils literal"><span class="pre">--merge-files</span></tt>. For that, use <tt class="docutils literal"><span class="pre">--mf-fps</span></tt> instead.</p>
+            <p class="last">Setting <tt class="docutils literal"><span class="pre">--image-display-duration</span></tt> hides the OSC and does not track
+            playback time on the command-line output, and also does not duplicate
+            the image frame when encoding. To force the player into &quot;dumb mode&quot;
+            and actually count out seconds, or to duplicate the image when
+            encoding, you need to use <tt class="docutils literal"><span class="pre">--demuxer=lavf</span> <span class="pre">--demuxer-lavf-o=loop=1</span></tt>,
+            and use <tt class="docutils literal"><span class="pre">--length</span></tt> or <tt class="docutils literal"><span class="pre">--frames</span></tt> to stop after a particular time.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--force-window=&lt;yes|no|immediate&gt;</span></tt></dt>
             <dd><p class="first">Create a video output window even if there is no video. This can be useful
@@ -3191,58 +3247,14 @@
             <dt><tt class="docutils literal"><span class="pre">--force-rgba-osd-rendering</span></tt></dt>
             <dd>Change how some video outputs render the OSD and text subtitles. This
             does not change appearance of the subtitles and only has performance
-            implications. For VOs which support native ASS rendering (like <tt class="docutils literal">vdpau</tt>,
-            <tt class="docutils literal">opengl</tt>, <tt class="docutils literal">direct3d</tt>), this can be slightly faster or slower,
+            implications. For VOs which support native ASS rendering (like <tt class="docutils literal">gpu</tt>,
+            <tt class="docutils literal">vdpau</tt>, <tt class="docutils literal">direct3d</tt>), this can be slightly faster or slower,
             depending on GPU drivers and hardware. For other VOs, this just makes
             rendering slower.</dd>
             <dt><tt class="docutils literal"><span class="pre">--force-window-position</span></tt></dt>
             <dd>Forcefully move mpv's video output window to default location whenever
             there is a change in video parameters, video stream or file. This used to
             be the default behavior. Currently only affects X11 VOs.</dd>
-            </dl>
-            <p><tt class="docutils literal"><span class="pre">--heartbeat-cmd=&lt;command&gt;</span></tt></p>
-            <blockquote>
-            <div class="admonition warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This option is redundant with Lua scripting. Further, it shouldn't be
-            needed for disabling screensaver anyway, since mpv will call
-            <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> when using X11 backend. As a consequence this
-            option has been deprecated with no direct replacement.</p>
-            </div>
-            <p>Command that is executed every 30 seconds during playback via <em>system()</em> -
-            i.e. using the shell. The time between the commands can be customized with
-            the <tt class="docutils literal"><span class="pre">--heartbeat-interval</span></tt> option. The command is not run while playback
-            is paused.</p>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">mpv uses this command without any checking. It is your responsibility to
-            ensure it does not cause security problems (e.g. make sure to use full
-            paths if &quot;.&quot; is in your path like on Windows). It also only works when
-            playing video (i.e. not with <tt class="docutils literal"><span class="pre">--no-video</span></tt> but works with
-            <tt class="docutils literal"><span class="pre">--vo=null</span></tt>).</p>
-            </div>
-            <p>This can be &quot;misused&quot; to disable screensavers that do not support the
-            proper X API (see also <tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt>). If you think this is too
-            complicated, ask the author of the screensaver program to support the
-            proper X APIs. Note that the <tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt> does not influence the
-            heartbeat code at all.</p>
-            <div class="admonition admonition-example-for-xscreensaver">
-            <p class="first admonition-title">Example for xscreensaver</p>
-            <p class="last"><tt class="docutils literal">mpv <span class="pre">--heartbeat-cmd=&quot;xscreensaver-command</span> <span class="pre">-deactivate&quot;</span> file</tt></p>
-            </div>
-            <div class="admonition admonition-example-for-gnome-screensaver">
-            <p class="first admonition-title">Example for GNOME screensaver</p>
-            <p class="last"><tt class="docutils literal">mpv <span class="pre">--heartbeat-cmd=&quot;gnome-screensaver-command</span> <span class="pre">--deactivate&quot;</span> file</tt></p>
-            </div>
-            </blockquote>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--heartbeat-interval=&lt;sec&gt;</span></tt></dt>
-            <dd><p class="first">Time between <tt class="docutils literal"><span class="pre">--heartbeat-cmd</span></tt> invocations in seconds (default: 30).</p>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This does not affect the normal screensaver operation in any way.</p>
-            </div>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>, <tt class="docutils literal"><span class="pre">--keepaspect</span></tt></dt>
             <dd><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> will always stretch the video to window size, and will
             disable the window manager hints that force the window aspect ratio.
@@ -3300,10 +3312,14 @@
             <p>On win32, the ID is interpreted as <tt class="docutils literal">HWND</tt>. Pass it as value cast to
             <tt class="docutils literal">intptr_t</tt>. mpv will create its own window, and set the wid window as
             parent, like with X11.</p>
-            <p class="last">On OSX/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
+            <p>On OSX/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
             to <tt class="docutils literal">intptr_t</tt>. mpv will create its own sub-view. Because OSX does not
             support window embedding of foreign processes, this works only with libmpv,
             and will crash when used from the command line.</p>
+            <p class="last">On Android, the ID is interpreted as <tt class="docutils literal">android.view.Surface</tt>. Pass it as a
+            value cast to <tt class="docutils literal">intptr_t</tt>. Use with <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> and
+            <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for direct rendering using MediaCodec, or with
+            <tt class="docutils literal"><span class="pre">--vo=gpu</span> <span class="pre">--gpu-context=android</span></tt> (with or without <tt class="docutils literal"><span class="pre">--hwdec=mediacodec-copy</span></tt>).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--no-window-dragging</span></tt></dt>
             <dd>Don't move the window when clicking on it and moving the mouse pointer.</dd>
@@ -3594,11 +3610,35 @@
             you think normal playback would be possible with a larger packet queue.</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-max-packets=&lt;packets&gt;</span></tt></dt>
-            <dd>Quite similar <tt class="docutils literal"><span class="pre">--demuxer-max-bytes=&lt;bytes&gt;</span></tt>. Deprecated, because the
-            other option does basically the same job. Since mpv 0.25.0, the code
-            tries to account for per-packet overhead, which is why this option becomes
-            rather pointless.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-max-back-bytes=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">This controls how much past data the demuxer is allowed to preserve. This
+            is useful only if the <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache</span></tt> option is enabled.
+            Unlike the forward cache, there is no control how many seconds are actually
+            cached - it will simply use as much memory this option allows. Setting this
+            option to 0 will strictly disable any back buffer, but this will lead to
+            the situation that the forward seek range starts after the current playback
+            position (as it removes past packets that are seek points).</p>
+            <p>Keep in mind that other buffers in the player (like decoders) will cause the
+            demuxer to cache &quot;future&quot; frames in the back buffer, which can skew the
+            impression about how much data the backbuffer contains.</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-seekable-cache=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">This controls whether seeking can use the demuxer cache (default: auto). If
+            enabled, short seek offsets will not trigger a low level demuxer seek
+            (which means for example that slow network round trips or FFmpeg seek bugs
+            can be avoided). If a seek cannot happen within the cached range, a low
+            level seek will be triggered. Seeking outside of the cache will start a new
+            cached range, but can discard the old cache range if the demuxer exhibits
+            certain unsupported behavior.</p>
+            <p>Keep in mind that some events can flush the cache or force a low level
+            seek anyway, such as switching tracks, or attempting to seek before the
+            start or after the end of the file. This option is experimental - thus
+            disabled, and bugs are to be expected.</p>
+            <p class="last">The special value <tt class="docutils literal">auto</tt> means <tt class="docutils literal">yes</tt> in the same situation as
+            <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> is used (i.e. when the stream appears to be a network
+            stream or the stream cache is enabled).</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-thread=&lt;yes|no&gt;</span></tt></dt>
             <dd>Run the demuxer in a separate thread, and let it prefetch a certain amount
             of packets (default: yes). Having this enabled may lead to smoother
@@ -4100,10 +4140,13 @@
             <dd>Disable colorful console output on terminals.</dd>
             <dt><tt class="docutils literal"><span class="pre">--msg-level=&lt;module1=level1,module2=level2,...&gt;</span></tt></dt>
             <dd><p class="first">Control verbosity directly for each module. The <tt class="docutils literal">all</tt> module changes the
-            verbosity of all the modules not explicitly specified on the command line.</p>
+            verbosity of all the modules. The verbosity changes from this option are
+            applied in order from left to right, and each item can override a previous
+            one.</p>
             <p>Run mpv with <tt class="docutils literal"><span class="pre">--msg-level=all=trace</span></tt> to see all messages mpv outputs. You
             can use the module names printed in the output (prefixed to each line in
             <tt class="docutils literal"><span class="pre">[...]</span></tt>) to limit the output to interesting modules.</p>
+            <p>This also affects <tt class="docutils literal"><span class="pre">--log-file</span></tt>, and in certain cases libmpv API logging.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Some messages are printed before the command line is parsed and are
@@ -4389,7 +4432,7 @@
             between readahead and backbuffer sizes.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-default=&lt;kBytes|no&gt;</span></tt></dt>
-            <dd>Set the size of the cache in kilobytes (default: 75000 KB). Using <tt class="docutils literal">no</tt>
+            <dd>Set the size of the cache in kilobytes (default: 10000 KB). Using <tt class="docutils literal">no</tt>
             will not automatically enable the cache e.g. when playing from a network
             stream. Note that using <tt class="docutils literal"><span class="pre">--cache</span></tt> will always override this option.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-initial=&lt;kBytes&gt;</span></tt></dt>
@@ -4407,7 +4450,7 @@
             This option allows control over this.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-backbuffer=&lt;kBytes&gt;</span></tt></dt>
-            <dd>Size of the cache back buffer (default: 75000 KB). This will add to the total
+            <dd>Size of the cache back buffer (default: 10000 KB). This will add to the total
             cache size, and reserved the amount for seeking back. The reserved amount
             will not be used for readahead, and instead preserves already read data to
             enable fast seeking back.</dd>
@@ -4459,7 +4502,9 @@
             <dt><tt class="docutils literal"><span class="pre">--cache-secs=&lt;seconds&gt;</span></tt></dt>
             <dd>How many seconds of audio/video to prefetch if the cache is active. This
             overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
-            is enabled and the value is larger. (Default: 10.)</dd>
+            is enabled and the value is larger. The default value is set to something
+            very high, so the actually achieved readahead will usually be limited by
+            the value of the <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> option.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-pause</span></tt>, <tt class="docutils literal"><span class="pre">--no-cache-pause</span></tt></dt>
             <dd>Whether the player should automatically pause when the cache runs low,
             and unpause once more data is available (&quot;buffering&quot;).</dd>
@@ -4607,9 +4652,9 @@
             ALSA device).</dd>
             </dl>
             </div>
-            <div class="section" id="opengl-renderer-options">
-            <h2>OpenGL renderer options</h2>
-            <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt> and
+            <div class="section" id="gpu-renderer-options">
+            <h2>GPU renderer options</h2>
+            <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> and
             <tt class="docutils literal"><span class="pre">--vo=opengl-cb</span></tt> only, which are the only VOs that implement them.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--scale=&lt;filter&gt;</span></tt></dt>
@@ -4619,7 +4664,7 @@
             <dd>Bilinear hardware texture filtering (fastest, very low quality). This
             is the default for compatibility reasons.</dd>
             <dt><tt class="docutils literal">spline36</tt></dt>
-            <dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">opengl-hq</span></tt>.</dd>
+            <dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">gpu-hq</span></tt>.</dd>
             <dt><tt class="docutils literal">lanczos</tt></dt>
             <dd><p class="first">Lanczos scaling. Provides mid quality and speed. Generally worse than
             <tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image which is good
@@ -4669,9 +4714,11 @@
             used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
             <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
             get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
-            <p class="last">Note that the maximum supported filter radius is currently 3, due to
-            limitations in the number of video textures that can be loaded
-            simultaneously.</p>
+            <p class="last">Common <tt class="docutils literal"><span class="pre">--tscale</span></tt> choices include <tt class="docutils literal">oversample</tt>, <tt class="docutils literal">linear</tt>,
+            <tt class="docutils literal">catmull_rom</tt>, <tt class="docutils literal">mitchell</tt>, <tt class="docutils literal">gaussian</tt>, or <tt class="docutils literal">bicubic</tt>. These are
+            listed in increasing order of smoothness/blurriness, with <tt class="docutils literal">bicubic</tt>
+            being the smoothest/blurriest and <tt class="docutils literal">oversample</tt> being the sharpest/least
+            smooth.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param2=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Set filter parameters. Ignored if the filter is not tunable. Currently,
@@ -4765,7 +4812,7 @@
             Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--linear-scaling</span></tt></dt>
             <dd>Scale in linear light. It should only be used with a
-            <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> that has at least 16 bit precision. This option
+            <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> that has at least 16 bit precision. This option
             has no effect on HDR content.</dd>
             <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size when
@@ -4783,12 +4830,9 @@
             of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.
             This was not required before mpv 0.14.0.</p>
             </div>
-            <p>This essentially attempts to interpolate the missing frames by convoluting
+            <p class="last">This essentially attempts to interpolate the missing frames by convoluting
             the video along the temporal axis. The filter used can be controlled using
             the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
-            <p class="last">Note that this relies on vsync to work, see <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> for
-            more information. It should also only be used with an <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt>
-            that has at least 16 bit precision.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
             <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
@@ -4844,10 +4888,10 @@
             <dd>Determines how often the dithering pattern is updated when
             <tt class="docutils literal"><span class="pre">--temporal-dither</span></tt> is in use. 1 (the default) will update on every video
             frame, 2 on every other frame, etc.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-debug</span></tt></dt>
-            <dd>Check for OpenGL errors, i.e. call <tt class="docutils literal">glGetError()</tt>. Also, request a
-            debug OpenGL context (which does nothing with current graphics drivers
-            as of this writing).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-debug</span></tt></dt>
+            <dd>Enables GPU debugging. What this means depends on the API type. For OpenGL,
+            it calls <tt class="docutils literal">glGetError()</tt>, and requests a debug context. For Vulkan, it
+            enables validation layers.</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-swapinterval=&lt;n&gt;</span></tt></dt>
             <dd><p class="first">Interval in displayed frames between two buffer swaps. 1 is equivalent to
             enable VSYNC, 0 to disable VSYNC. Defaults to 1 if not specified.</p>
@@ -4858,7 +4902,79 @@
             results, as can missing or incorrect display FPS information (see
             <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-shaders=&lt;file-list&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-swap-mode=&lt;mode&gt;</span></tt></dt>
+            <dd><p class="first">Controls the presentation mode of the vulkan swapchain. This is similar
+            to the <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> option.</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Use the preferred swapchain mode for the vulkan context. (Default)</dd>
+            <dt>fifo</dt>
+            <dd>Non-tearing, vsync blocked. Similar to &quot;VSync on&quot;.</dd>
+            <dt>fifo-relaxed</dt>
+            <dd>Tearing, vsync blocked. Late frames will tear instead of stuttering.</dd>
+            <dt>mailbox</dt>
+            <dd>Non-tearing, not vsync blocked. Similar to &quot;triple buffering&quot;.</dd>
+            <dt>immediate</dt>
+            <dd>Tearing, not vsync blocked. Similar to &quot;VSync off&quot;.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-queue-count=&lt;1..8&gt;</span></tt></dt>
+            <dd><p class="first">Controls the number of VkQueues used for rendering (limited by how many
+            your device supports). In theory, using more queues could enable some
+            parallelism between frames (when using a <tt class="docutils literal"><span class="pre">--swapchain-depth</span></tt> higher than
+            1). (Default: 1)</p>
+            <p class="last">NOTE: Setting this to a value higher than 1 may cause graphical corruption,
+            as mpv's vulkan implementation currently does not try and protect textures
+            against concurrent access.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-warp=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd>Use WARP (Windows Advanced Rasterization Platform) with the D3D11 GPU
+            backend (default: auto). This is a high performance software renderer. By
+            default, it is only used when the system has no hardware adapters that
+            support D3D11. While the extended GPU features will work with WARP, they
+            can be very slow.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-feature-level=&lt;12_1|12_0|11_1|11_0|10_1|10_0|9_3|9_2|9_1&gt;</span></tt></dt>
+            <dd>Select a specific feature level when using the D3D11 GPU backend. By
+            default, the highest available feature level is used. This option can be
+            used to select a lower feature level, which is mainly useful for debugging.
+            Most extended GPU features will not work at 9_x feature levels.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-flip=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Enable flip-model presentation, which avoids unnecessarily copying the
+            backbuffer by sharing surfaces with the DWM (default: yes). This may cause
+            performance issues with older drivers. If flip-model presentation is not
+            supported (for example, on Windows 7 without the platform update), mpv will
+            automatically fall back to the older bitblt presentation model.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11-sync-interval=&lt;0..4&gt;</span></tt></dt>
+            <dd>Schedule each frame to be presented for this number of VBlank intervals.
+            (default: 1) Setting to 1 will enable VSync, setting to 0 will disable it.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--d3d11va-zero-copy=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">By default, when using hardware decoding with <tt class="docutils literal"><span class="pre">--gpu-api=d3d11</span></tt>, the
+            video image will be copied (GPU-to-GPU) from the decoder surface to a
+            shader resource. Set this option to avoid that copy by sampling directly
+            from the decoder image. This may increase performance and reduce power
+            usage, but can cause the image to be sampled incorrectly on the bottom and
+            right edges due to padding, and may invoke driver bugs, since Direct3D 11
+            technically does not allow sampling from a decoder surface (though most
+            drivers support it.)</p>
+            <p class="last">Currently only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=d3d11</span></tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--spirv-compiler=&lt;compiler&gt;</span></tt></dt>
+            <dd><p class="first">Controls which compiler is used to translate GLSL to SPIR-V. This is
+            (currently) only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=vulkan</span></tt>. The possible choices
+            are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Use the first available compiler. (Default)</dd>
+            <dt>shaderc</dt>
+            <dd>Use libshaderc, which is an API wrapper around glslang. This is
+            generally the most preferred, if available.</dd>
+            <dt>nvidia</dt>
+            <dd>Use nvidia's built-in compiler. Only works for nvidia GPUs. Can be
+            buggy, but also supports some features glslang does not. Only works
+            with vulkan.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--glsl-shaders=&lt;file-list&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
             which can be injected at almost arbitrary points in the rendering pipeline,
             and access all previous intermediate textures. Each use of the option will
@@ -4896,7 +5012,7 @@
             specified.</dd>
             <dt>FORMAT &lt;name&gt; (required)</dt>
             <dd><p class="first">The texture format for the samples. Supported texture formats are listed
-            in debug logging when the <tt class="docutils literal">opengl</tt> VO is initialized (look for
+            in debug logging when the <tt class="docutils literal">gpu</tt> VO is initialized (look for
             <tt class="docutils literal">Texture formats:</tt>). Usually, this follows OpenGL naming conventions.
             For example, <tt class="docutils literal">rgb16</tt> provides 3 channels with normalized 16 bit
             components. One oddity are float formats: for example, <tt class="docutils literal">rgba16f</tt> has
@@ -5027,8 +5143,8 @@
             <dt>vec2 tex_offset</dt>
             <dd>Texture offset introduced by user shaders or options like panscan, video-align-x/y, video-pan-x/y.</dd>
             </dl>
-            <p>Internally, vo_opengl may generate any number of the following textures.
-            Whenever a texture is rendered and saved by vo_opengl, all of the passes
+            <p>Internally, vo_gpu may generate any number of the following textures.
+            Whenever a texture is rendered and saved by vo_gpu, all of the passes
             that have hooked into it will run, in the order they were added by the
             user. This is a list of the legal hook points:</p>
             <dl class="docutils">
@@ -5064,8 +5180,8 @@
             pass. When overwriting a texture marked <tt class="docutils literal">fixed</tt>, the WIDTH, HEIGHT and
             OFFSET must be left at their default values.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-shader=&lt;file&gt;</span></tt></dt>
-            <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--opengl-shaders-append</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--glsl-shader=&lt;file&gt;</span></tt></dt>
+            <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--glsl-shaders-append</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--deband</span></tt></dt>
             <dd>Enable the debanding algorithm. This greatly reduces the amount of visible
             banding, blocking and other quantization artifacts, at the expensive of
@@ -5108,23 +5224,15 @@
             alternatives like the <tt class="docutils literal">ewa_lanczossharp</tt> scale filter, or the
             <tt class="docutils literal"><span class="pre">--scale-blur</span></tt> option.</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-glfinish</span></tt></dt>
-            <dd>Call <tt class="docutils literal">glFinish()</tt> before and after swapping buffers (default: disabled).
-            Slower, but might improve results when doing framedropping. Can completely
-            ruin performance. The details depend entirely on the OpenGL driver.</dd>
+            <dd>Call <tt class="docutils literal">glFinish()</tt> before swapping buffers (default: disabled). Slower,
+            but might improve results when doing framedropping. Can completely ruin
+            performance. The details depend entirely on the OpenGL driver.</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-waitvsync</span></tt></dt>
             <dd><p class="first">Call <tt class="docutils literal">glXWaitVideoSyncSGI</tt> after each buffer swap (default: disabled).
             This may or may not help with video timing accuracy and frame drop. It's
             possible that this makes video output slower, or has no effect at all.</p>
             <p class="last">X11/GLX only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-vsync-fences=&lt;N&gt;</span></tt></dt>
-            <dd>Synchronize the CPU to the Nth past frame using the <tt class="docutils literal">GL_ARB_sync</tt>
-            extension. A value of 0 disables this behavior (default). A value of 1
-            means it will synchronize to the current frame after rendering it. Like
-            <tt class="docutils literal"><span class="pre">--glfinish</span></tt> and <tt class="docutils literal"><span class="pre">--waitvsync</span></tt>, this can lower or ruin performance. Its
-            advantage is that it can span multiple frames, and effectively limit the
-            number of frames the GPU queues ahead (which also has an influence on
-            vsync).</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-dwmflush=&lt;no|windowed|yes|auto&gt;</span></tt></dt>
             <dd><p class="first">Calls <tt class="docutils literal">DwmFlush</tt> after swapping buffers on Windows (default: auto). It
             also sets <tt class="docutils literal">SwapInterval(0)</tt> to ignore the OpenGL timing. Values are: no
@@ -5142,7 +5250,7 @@
             used to select a lower feature level, which is mainly useful for debugging.
             Note that OpenGL ES 3.0 is only supported at feature level 10_1 or higher.
             Most extended OpenGL features will not work at lower feature levels
-            (similar to <tt class="docutils literal"><span class="pre">--opengl-dumb-mode</span></tt>).</p>
+            (similar to <tt class="docutils literal"><span class="pre">--gpu-dumb-mode</span></tt>).</p>
             <p class="last">Windows with ANGLE only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--angle-d3d11-warp=&lt;yes|no|auto&gt;</span></tt></dt>
@@ -5176,13 +5284,6 @@
             effect.</p>
             <p class="last">Windows with ANGLE only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--angle-max-frame-latency=&lt;1-16&gt;</span></tt></dt>
-            <dd><p class="first">Sets the maximum number of frames that the system is allowed to queue for
-            rendering with the ANGLE backend (default: 3). Lower values should make
-            VSync timing more accurate, but a value of <tt class="docutils literal">1</tt> requires powerful
-            hardware, since the CPU will not be able to &quot;render ahead&quot; of the GPU.</p>
-            <p class="last">Windows with ANGLE only.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--angle-renderer=&lt;d3d9|d3d11|auto&gt;</span></tt></dt>
             <dd><p class="first">Forces a specific renderer when using the ANGLE backend (default: auto). In
             auto mode this will pick D3D11 for systems that support Direct3D 11 feature
@@ -5191,17 +5292,7 @@
             renderer, though <tt class="docutils literal"><span class="pre">--angle-renderer=d3d9</span></tt> may give slightly better
             performance on old hardware. Note that the D3D9 renderer only supports
             OpenGL ES 2.0, so most extended OpenGL features will not work if this
-            renderer is selected (similar to <tt class="docutils literal"><span class="pre">--opengl-dumb-mode</span></tt>).</p>
-            <p class="last">Windows with ANGLE only.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--angle-swapchain-length=&lt;2-16&gt;</span></tt></dt>
-            <dd><p class="first">Sets the number of buffers in the D3D11 presentation queue when using the
-            ANGLE backend (default: 6). At least 2 are required, since one is the back
-            buffer that mpv renders to and the other is the front buffer that is
-            presented by the DWM. Additional buffers can improve performance, because
-            for example, mpv will not have to wait on the DWM to release the front
-            buffer before rendering a new frame to it. For this reason, Microsoft
-            recommends at least 4.</p>
+            renderer is selected (similar to <tt class="docutils literal"><span class="pre">--gpu-dumb-mode</span></tt>).</p>
             <p class="last">Windows with ANGLE only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cocoa-force-dedicated-gpu=&lt;yes|no&gt;</span></tt></dt>
@@ -5209,12 +5300,19 @@
             (default: no)</p>
             <p class="last">OS X only.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-sw</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--swapchain-depth=&lt;N&gt;</span></tt></dt>
+            <dd>Allow up to N in-flight frames. This essentially controls the frame
+            latency. Increasing the swapchain depth can improve pipelining and prevent
+            missed vsyncs, but increases visible latency. This option only mandates an
+            upper limit, the implementation can use a lower latency than requested
+            internally. A setting of 1 means that the VO will wait for every frame to
+            become visible before starting to render the next frame. (Default: 3)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-sw</span></tt></dt>
             <dd>Continue even if a software renderer is detected.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-backend=&lt;sys&gt;</span></tt></dt>
-            <dd><p class="first">The value <tt class="docutils literal">auto</tt> (the default) selects the windowing backend. You can
-            also pass <tt class="docutils literal">help</tt> to get a complete list of compiled in backends (sorted
-            by autoprobe order).</p>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-context=&lt;sys&gt;</span></tt></dt>
+            <dd><p class="first">The value <tt class="docutils literal">auto</tt> (the default) selects the GPU context. You can also pass
+            <tt class="docutils literal">help</tt> to get a complete list of compiled in backends (sorted by
+            autoprobe order).</p>
             <dl class="last docutils">
             <dt>auto</dt>
             <dd>auto-select (default)</dd>
@@ -5222,6 +5320,8 @@
             <dd>Cocoa/OS X</dd>
             <dt>win</dt>
             <dd>Win32/WGL</dd>
+            <dt>winvk</dt>
+            <dd>VK_KHR_win32_surface</dd>
             <dt>angle</dt>
             <dd>Direct3D11 through the OpenGL ES translation layer ANGLE. This supports
             almost everything the <tt class="docutils literal">win</tt> backend does (if the ANGLE build is new
@@ -5230,17 +5330,25 @@
             <dd>Win32, using WGL for rendering and Direct3D 9Ex for presentation. Works
             on Nvidia and AMD. Newer Intel chips with the latest drivers may also
             work.</dd>
+            <dt>d3d11</dt>
+            <dd>Win32, with native Direct3D 11 rendering.</dd>
             <dt>x11</dt>
             <dd>X11/GLX</dd>
+            <dt>x11vk</dt>
+            <dd>VK_KHR_xlib_surface</dd>
             <dt>x11probe</dt>
             <dd>For internal autoprobing, equivalent to <tt class="docutils literal">x11</tt> otherwise. Don't use
             directly, it could be removed without warning as autoprobing is changed.</dd>
             <dt>wayland</dt>
             <dd>Wayland/EGL</dd>
+            <dt>waylandvk</dt>
+            <dd>VK_KHR_wayland_surface</dd>
             <dt>drm</dt>
-            <dd>DRM/EGL (<tt class="docutils literal"><span class="pre">drm-egl</span></tt> is a deprecated alias)</dd>
+            <dd>DRM/EGL</dd>
             <dt>x11egl</dt>
             <dd>X11/EGL</dd>
+            <dt>android</dt>
+            <dd>Android/EGL. Requires <tt class="docutils literal"><span class="pre">--wid</span></tt> be set to an <tt class="docutils literal">android.view.Surface</tt>.</dd>
             <dt>mali-fbdev</dt>
             <dd>Direct fbdev/EGL support on some ARM/MALI devices.</dd>
             <dt>vdpauglx</dt>
@@ -5250,48 +5358,65 @@
             be used automatically.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-es=&lt;mode&gt;</span></tt></dt>
-            <dd><p class="first">Select whether to use GLES:</p>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-api=&lt;type&gt;</span></tt></dt>
+            <dd><p class="first">Controls which type of graphics APIs will be accepted:</p>
             <dl class="last docutils">
-            <dt>yes</dt>
-            <dd>Try to prefer ES over Desktop GL</dd>
-            <dt>force2</dt>
-            <dd>Try to request a ES 2.0 context (the driver might ignore this)</dd>
-            <dt>no</dt>
-            <dd>Try to prefer desktop GL over ES</dd>
             <dt>auto</dt>
-            <dd>Use the default for each backend (default)</dd>
+            <dd>Use any available API (default)</dd>
+            <dt>opengl</dt>
+            <dd>Allow only OpenGL (requires OpenGL 2.1+ or GLES 2.0+)</dd>
+            <dt>vulkan</dt>
+            <dd>Allow only Vulkan (requires a valid/working <tt class="docutils literal"><span class="pre">--spirv-compiler</span></tt>)</dd>
+            <dt>d3d11</dt>
+            <dd>Allow only <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt></dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-fbo-format=&lt;fmt&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-es=&lt;mode&gt;</span></tt></dt>
+            <dd><p class="first">Controls which type of OpenGL context will be accepted:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Allow all types of OpenGL (default)</dd>
+            <dt>yes</dt>
+            <dd>Only allow GLES</dd>
+            <dt>no</dt>
+            <dd>Only allow desktop/core GL</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--opengl-restrict=&lt;version&gt;</span></tt></dt>
+            <dd>Restricts all OpenGL versions above a certain version. Versions are encoded
+            in hundreds, i.e. OpenGL 4.5 -&gt; 450. As an example, --opengl-restrict=300
+            would restrict OpenGL 3.0 and higher, effectively only allowing 2.x
+            contexts. Note that this only imposes a limit on context creation APIs, the
+            actual OpenGL context may still have a higher OpenGL version. (Default: 0)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--fbo-format=&lt;fmt&gt;</span></tt></dt>
             <dd>Selects the internal format of textures used for FBOs. The format can
             influence performance and quality of the video output. <tt class="docutils literal">fmt</tt> can be one
             of: rgb8, rgb10, rgb10_a2, rgb16, rgb16f, rgb32f, rgba12, rgba16, rgba16f,
-            rgba32f. Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL, and rgba16f
-            or rgb10_a2 on GLES (e.g. ANGLE), unless GL_EXT_texture_norm16 is
-            available.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-gamma=&lt;0.1..2.0&gt;</span></tt></dt>
-            <dd><p class="first">Set a gamma value (default: 1.0). If gamma is adjusted in other ways (like
-            with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the <tt class="docutils literal">gamma</tt> property),
-            the value is multiplied with the other gamma value.</p>
+            rgba16hf, rgba32f. Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL,
+            and rgba16f or rgb10_a2 on GLES (e.g. ANGLE), unless GL_EXT_texture_norm16
+            is available.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--gamma-factor=&lt;0.1..2.0&gt;</span></tt></dt>
+            <dd><p class="first">Set an additional raw gamma factor (default: 1.0). If gamma is adjusted in
+            other ways (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the
+            <tt class="docutils literal">gamma</tt> property), the value is multiplied with the other gamma value.</p>
             <p>Recommended values based on the environmental brightness:</p>
             <dl class="docutils">
             <dt>1.0</dt>
-            <dd>Brightly illuminated (default)</dd>
-            <dt>0.9</dt>
-            <dd>Slightly dim</dd>
-            <dt>0.8</dt>
-            <dd>Pitch black room</dd>
+            <dd>Pitch black or dimly lit room (default)</dd>
+            <dt>1.1</dt>
+            <dd>Moderately lit room, home</dd>
+            <dt>1.2</dt>
+            <dd>Brightly illuminated room, office</dd>
             </dl>
-            <p class="last">NOTE: Typical movie content (Blu-ray etc.) already contains a gamma drop of
-            about 0.8, so specifying it here as well will result in even darker
-            image than intended!</p>
+            <p class="last">NOTE: This is based around the assumptions of typical movie content, which
+            contains an implicit end-to-end of about 0.8 from scene to display. For
+            bright environments it can be useful to cancel that out.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gamma-auto</span></tt></dt>
             <dd><p class="first">Automatically corrects the gamma value depending on ambient lighting
-            conditions (adding a gamma boost for dark rooms).</p>
-            <p>With ambient illuminance of 64lux, mpv will pick the 1.0 gamma value (no
-            boost), and slightly increase the boost up until 0.8 for 16lux.</p>
+            conditions (adding a gamma boost for bright rooms).</p>
+            <p>With ambient illuminance of 16 lux, mpv will pick the 1.0 gamma value (no
+            boost), and slightly increase the boost up until 1.2 for 256 lux.</p>
             <p class="last">NOTE: Only implemented on OS X.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
@@ -5434,13 +5559,14 @@
             fairly recent OpenGL feature, and will probably also perform horribly on
             some drivers, so enable at your own risk.</dd>
             <dt><tt class="docutils literal"><span class="pre">--tone-mapping-desaturate=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">Apply desaturation for highlights that exceed this level of brightness. The
-            higher the parameter, the more color information will be preserved. This
-            setting helps prevent unnaturally blown-out colors for super-highlights, by
-            (smoothly) turning into white instead. This makes images feel more natural,
-            at the cost of reducing information about out-of-range colors.</p>
-            <p class="last">The default of 2.0 is somewhat conservative and will mostly just apply to
-            skies or directly sunlit surfaces. A setting of 0.0 disables this option.</p>
+            <dd><p class="first">Apply desaturation for highlights. The parameter essentially controls the
+            steepness of the desaturation curve. The higher the parameter, the more
+            aggressively colors will be desaturated. This setting helps prevent
+            unnaturally blown-out colors for super-highlights, by (smoothly) turning
+            into white instead. This makes images feel more natural, at the cost of
+            reducing information about out-of-range colors.</p>
+            <p class="last">The default of 1.0 provides a good balance that roughly matches the look
+            and feel of the ACES ODT curves. A setting of 0.0 disables this option.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gamut-warning</span></tt></dt>
             <dd>If enabled, mpv will mark all clipped/out-of-gamut pixels that exceed a
@@ -5448,8 +5574,8 @@
             inverted to make them stand out. Note: This option applies after the
             effects of all of mpv's color space transformation / tone mapping options,
             so it's a good idea to combine this with <tt class="docutils literal"><span class="pre">--tone-mapping=clip</span></tt> and use
-            <tt class="docutils literal"><span class="pre">--target-gamut</span></tt> to set the gamut to simulate. For example,
-            <tt class="docutils literal"><span class="pre">--target-gamut=bt.709</span></tt> would make mpv highlight all pixels that exceed the
+            <tt class="docutils literal"><span class="pre">--target-prim</span></tt> to set the gamut to simulate. For example,
+            <tt class="docutils literal"><span class="pre">--target-prim=bt.709</span></tt> would make mpv highlight all pixels that exceed the
             gamut of a standard gamut (sRGB) display. This option also does not work
             well with ICC profiles, since the 3DLUTs are always generated against the
             source color space and have chromatically-accurate clipping built in.</dd>
@@ -5503,7 +5629,7 @@
             <dd><p class="first">Blend subtitles directly onto upscaled video frames, before interpolation
             and/or color management (default: no). Enabling this causes subtitles to be
             affected by <tt class="docutils literal"><span class="pre">--icc-profile</span></tt>, <tt class="docutils literal"><span class="pre">--target-prim</span></tt>, <tt class="docutils literal"><span class="pre">--target-trc</span></tt>,
-            <tt class="docutils literal"><span class="pre">--interpolation</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-gamma</span></tt> and <tt class="docutils literal"><span class="pre">--post-shader</span></tt>. It also
+            <tt class="docutils literal"><span class="pre">--interpolation</span></tt>, <tt class="docutils literal"><span class="pre">--gamma-factor</span></tt> and <tt class="docutils literal"><span class="pre">--glsl-shaders</span></tt>. It also
             increases subtitle performance when using <tt class="docutils literal"><span class="pre">--interpolation</span></tt>.</p>
             <p>The downside of enabling this is that it restricts subtitles to the visible
             portion of the video, so you can't have subtitles exist in the black
@@ -5533,7 +5659,7 @@
             if the video contains alpha information (which is extremely rare). May
             not be supported on all platforms. If alpha framebuffers are
             unavailable, it silently falls back on a normal framebuffer. Note that
-            if you set the <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> option to a non-default value, a
+            if you set the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> option to a non-default value, a
             format with alpha must be specified, or this won't work.
             This does not work on X11 with EGL and Mesa (freedesktop bug 67676).</dd>
             <dt>no</dt>
@@ -5547,7 +5673,7 @@
             <dt><tt class="docutils literal"><span class="pre">--background=&lt;color&gt;</span></tt></dt>
             <dd>Color used to draw parts of the mpv window not covered by video. See
             <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-tex-pad-x</span></tt>, <tt class="docutils literal"><span class="pre">--opengl-tex-pad-y</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-tex-pad-x</span></tt>, <tt class="docutils literal"><span class="pre">--gpu-tex-pad-y</span></tt></dt>
             <dd>Enlarge the video source textures by this many pixels. For debugging only
             (normally textures are sized exactly, but due to hardware decoding interop
             we may have to deal with additional padding, which can be tested with these
@@ -5559,8 +5685,8 @@
             the renderer is going to wait for a while after rendering, instead of
             flipping GL front and backbuffers immediately (i.e. it doesn't call it
             in display-sync mode).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-dumb-mode=&lt;yes|no|auto&gt;</span></tt></dt>
-            <dd><p class="first">This mode is extremely restricted, and will disable most extended OpenGL
+            <dt><tt class="docutils literal"><span class="pre">--gpu-dumb-mode=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">This mode is extremely restricted, and will disable most extended
             features. That includes high quality scalers and custom shaders!</p>
             <p>It is intended for hardware that does not support FBOs (including GLES,
             which supports it insufficiently), or to get some more performance out of
@@ -5570,15 +5696,14 @@
             if nothing uses features which require FBOs.</p>
             <p class="last">This option might be silently removed in the future.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-shader-cache-dir=&lt;dirname&gt;</span></tt></dt>
-            <dd><p class="first">Store and load compiled GL shaders in this directory. Normally, shader
-            compilation is very fast, so this is usually not needed. But some GL
-            implementations (notably ANGLE, the default on Windows) have relatively
-            slow shader compilation, and can cause startup delays.</p>
-            <p>NOTE: This is not cleaned automatically, so old, unused cache files may
+            <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache-dir=&lt;dirname&gt;</span></tt></dt>
+            <dd><p class="first">Store and load compiled GLSL shaders in this directory. Normally, shader
+            compilation is very fast, so this is usually not needed. It mostly matters
+            for GPU APIs that require internally recompiling shaders to other languages,
+            for example anything based on ANGLE or Vulkan. Enabling this can improve
+            startup performance on these platforms.</p>
+            <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
             stick around indefinitely.</p>
-            <p class="last">This option might be silently removed in the future, if ANGLE fixes shader
-            compilation speed.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cuda-decode-device=&lt;auto|0..&gt;</span></tt></dt>
             <dd><p class="first">Choose the GPU device used for decoding when using the <tt class="docutils literal">cuda</tt> hwdec.</p>
@@ -5631,7 +5756,10 @@
             Media files must use constant framerate. Section-wise VFR might work as well
             with some container formats (but not e.g. mkv). If the sync code detects
             severe A/V desync, or the framerate cannot be detected, the player
-            automatically reverts to <tt class="docutils literal">audio</tt> mode for some time or permanently.</p>
+            automatically reverts to <tt class="docutils literal">audio</tt> mode for some time or permanently. These
+            modes also require a vsync blocked presentation mode. For OpenGL, this
+            translates to <tt class="docutils literal"><span class="pre">--opengl-swapinterval=1</span></tt>. For Vulkan, it translates to
+            <tt class="docutils literal"><span class="pre">--vulkan-swap-mode=fifo</span></tt> (or <tt class="docutils literal"><span class="pre">fifo-relaxed</span></tt>).</p>
             <p>The modes with <tt class="docutils literal">desync</tt> in their names do not attempt to keep audio/video
             in sync. They will slowly (or quickly) desync, until e.g. the next seek
             happens. These modes are meant for testing, not serious use.</p>
@@ -5810,9 +5938,6 @@
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [ao] [t] ; [t] aphasemeter [vo]'</tt>
-            Play audio track 1, and visualize it as video using the <tt class="docutils literal">aphasemeter</tt>
-            filter.</li>
             <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> [aid2] amix [ao]'</tt>
             Play audio track 1 and 2 at the same time.</li>
             <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[vid1]</span> [vid2] vstack [vo]'</tt>
@@ -5820,13 +5945,11 @@
             both tracks need to have the same width, or filter initialization
             will fail (you can add <tt class="docutils literal">scale</tt> filters before the <tt class="docutils literal">vstack</tt> filter
             to fix the size).</li>
-            <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [ao] [t] ; [t] aphasemeter [t2] ; [vid1] [t2] overlay [vo]'</tt>
-            Play audio track 1, and overlay its visualization over video track 1.</li>
             <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [t1] [ao] ; [t1] showvolume [t2] ; [vid1] [t2] overlay [vo]'</tt>
             Play audio track 1, and overlay the measured volume for each speaker
             over video track 1.</li>
             <li><tt class="docutils literal"><span class="pre">null://</span> <span class="pre">--lavfi-complex='life</span> [vo]'</tt>
-            Conways' Life Game.</li>
+            A libavfilter source-only filter (Conways' Life Game).</li>
             </ul>
             </div>
             <p class="last">See the FFmpeg libavfilter documentation for details on the available
@@ -6074,7 +6197,7 @@
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
-            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=opengl</span></tt>, which is the default. All
+            <p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, which is the default. All
             other drivers are for compatibility or special purposes. If the default
             does not work, it will fallback to other drivers (in the same order as
             listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).</p>
@@ -6332,30 +6455,29 @@
             <dd>Always resize the backbuffer to window size.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">opengl</tt></dt>
-            <dd><p class="first">OpenGL video output driver. It supports extended scaling methods, dithering
-            and color management.</p>
-            <p>See <a class="reference internal" href="#opengl-renderer-options">OpenGL renderer options</a> for options specific to this VO.</p>
+            <dt><tt class="docutils literal">gpu</tt></dt>
+            <dd><p class="first">General purpose, customizable, GPU-accelerated video output driver. It
+            supports extended scaling methods, dithering, color management, custom
+            shaders, HDR, and more.</p>
+            <p>See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for options specific to this VO.</p>
             <p>By default, it tries to use fast and fail-safe settings. Use the
-            <tt class="docutils literal"><span class="pre">opengl-hq</span></tt> profile to use this driver with defaults set to high
-            quality rendering. (This profile is also the replacement for
-            <tt class="docutils literal"><span class="pre">--vo=opengl-hq</span></tt>.) The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=opengl-hq</span></tt>
-            and its contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=opengl-hq</span></tt>.</p>
-            <p>Requires at least OpenGL 2.1.</p>
-            <p>Some features are available with OpenGL 3 capable graphics drivers only
-            (or if the necessary extensions are available).</p>
-            <p>OpenGL ES 2.0 and 3.0 are supported as well.</p>
+            <tt class="docutils literal"><span class="pre">gpu-hq</span></tt> profile to use this driver with defaults set to high quality
+            rendering. The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=gpu-hq</span></tt> and its
+            contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=gpu-hq</span></tt>.</p>
+            <p>This VO abstracts over several possible graphics APIs and windowing
+            contexts, which can be influenced using the <tt class="docutils literal"><span class="pre">--gpu-api</span></tt> and
+            <tt class="docutils literal"><span class="pre">--gpu-context</span></tt> options.</p>
             <p>Hardware decoding over OpenGL-interop is supported to some degree. Note
             that in this mode, some corner case might not be gracefully handled, and
             color space conversion and chroma upsampling is generally in the hand of
             the hardware decoder APIs.</p>
-            <p class="last"><tt class="docutils literal">opengl</tt> makes use of FBOs by default. Sometimes you can achieve better
-            quality or performance by changing the <tt class="docutils literal"><span class="pre">--opengl-fbo-format</span></tt> option to
+            <p class="last"><tt class="docutils literal">gpu</tt> makes use of FBOs by default. Sometimes you can achieve better
+            quality or performance by changing the <tt class="docutils literal"><span class="pre">--gpu-fbo-format</span></tt> option to
             <tt class="docutils literal">rgb16f</tt>, <tt class="docutils literal">rgb32f</tt> or <tt class="docutils literal">rgb</tt>. Known problems include Mesa/Intel not
             accepting <tt class="docutils literal">rgb16</tt>, Mesa sometimes not being compiled with float texture
             support, and some OS X setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
             with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try enabling the
-            <tt class="docutils literal"><span class="pre">--opengl-dumb-mode=yes</span></tt> option.</p>
+            <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> option.</p>
             </dd>
             <dt><tt class="docutils literal">sdl</tt></dt>
             <dd><p class="first">SDL 2.0+ Render video output driver, depending on system with or without
@@ -6561,7 +6683,21 @@
             <dt><tt class="docutils literal"><span class="pre">--drm-mode=&lt;number&gt;</span></tt></dt>
             <dd>Mode ID to use (resolution, bit depth and frame rate).
             (default: 0)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--drm-overlay=&lt;number&gt;</span></tt></dt>
+            <dd>Select the DRM overlay index to use.
+            Overlay index is zero based, and related to crtc.
+            (default: 0)</dd>
             </dl>
+            </dd>
+            <dt><tt class="docutils literal">mediacodec_embed</tt> (Android)</dt>
+            <dd><p class="first">Renders <tt class="docutils literal">IMGFMT_MEDIACODEC</tt> frames directly to an <tt class="docutils literal">android.view.Surface</tt>.
+            Requires <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for hardware decoding, along with
+            <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> and <tt class="docutils literal"><span class="pre">--wid=(intptr_t)(*android.view.Surface)</span></tt>.</p>
+            <p>Since this video output driver uses native decoding and rendering routines,
+            many of mpv's features (subtitle rendering, OSD/OSC, video filters, etc)
+            are not available with this driver.</p>
+            <p class="last">To use hardware decoding with <tt class="docutils literal"><span class="pre">--vo-gpu</span></tt> instead, use
+            <tt class="docutils literal"><span class="pre">--hwdec=mediacodec-copy</span></tt> along with <tt class="docutils literal"><span class="pre">--gpu-context=android</span></tt>.</p>
             </dd>
             </dl>
             </div>
@@ -6661,113 +6797,6 @@
             encoder, and using another codec will fail horribly.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">equalizer=g1:g2:g3:...:g10</span></tt></dt>
-            <dd><p class="first">10 octave band graphic equalizer, implemented using 10 IIR band-pass
-            filters. This means that it works regardless of what type of audio is
-            being played back. The center frequencies for the 10 bands are:</p>
-            <table border="1" class="docutils">
-            <colgroup>
-            <col width="23%" />
-            <col width="77%" />
-            </colgroup>
-            <thead valign="bottom">
-            <tr><th class="head">No.</th>
-            <th class="head">frequency</th>
-            </tr>
-            </thead>
-            <tbody valign="top">
-            <tr><td>0</td>
-            <td>31.25  Hz</td>
-            </tr>
-            <tr><td>1</td>
-            <td>62.50  Hz</td>
-            </tr>
-            <tr><td>2</td>
-            <td>125.00  Hz</td>
-            </tr>
-            <tr><td>3</td>
-            <td>250.00  Hz</td>
-            </tr>
-            <tr><td>4</td>
-            <td>500.00  Hz</td>
-            </tr>
-            <tr><td>5</td>
-            <td>1.00 kHz</td>
-            </tr>
-            <tr><td>6</td>
-            <td>2.00 kHz</td>
-            </tr>
-            <tr><td>7</td>
-            <td>4.00 kHz</td>
-            </tr>
-            <tr><td>8</td>
-            <td>8.00 kHz</td>
-            </tr>
-            <tr><td>9</td>
-            <td>16.00 kHz</td>
-            </tr>
-            </tbody>
-            </table>
-            <p>If the sample rate of the sound being played is lower than the center
-            frequency for a frequency band, then that band will be disabled. A known
-            bug with this filter is that the characteristics for the uppermost band
-            are not completely symmetric if the sample rate is close to the center
-            frequency of that band. This problem can be worked around by upsampling
-            the sound using a resampling filter before it reaches this filter.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;g1&gt;:&lt;g2&gt;:&lt;g3&gt;:...:&lt;g10&gt;</span></tt></dt>
-            <dd>floating point numbers representing the gain in dB for each frequency
-            band (-12-12)</dd>
-            </dl>
-            <div class="admonition admonition-example last">
-            <p class="first admonition-title">Example</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">mpv <span class="pre">--af=equalizer=11:11:10:5:0:-12:0:5:12:12</span> media.avi</tt></dt>
-            <dd>Would amplify the sound in the upper and lower frequency region
-            while canceling it almost completely around 1 kHz.</dd>
-            </dl>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">channels=nch[:routes]</span></tt></dt>
-            <dd><p class="first">Can be used for adding, removing, routing and copying audio channels. If
-            only <tt class="docutils literal">&lt;nch&gt;</tt> is given, the default routing is used. It works as follows:
-            If the number of output channels is greater than the number of input
-            channels, empty channels are inserted (except when mixing from mono to
-            stereo; then the mono channel is duplicated). If the number of output
-            channels is less than the number of input channels, the exceeding
-            channels are truncated.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">&lt;nch&gt;</tt></dt>
-            <dd>number of output channels (1-8)</dd>
-            <dt><tt class="docutils literal">&lt;routes&gt;</tt></dt>
-            <dd>List of <tt class="docutils literal">,</tt> separated routes, in the form <tt class="docutils literal"><span class="pre">from1-to1,from2-to2,...</span></tt>.
-            Each pair defines where to route each channel. There can be at most
-            8 routes. Without this argument, the default routing is used. Since
-            <tt class="docutils literal">,</tt> is also used to separate filters, you must quote this argument
-            with <tt class="docutils literal"><span class="pre">[...]</span></tt> or similar.</dd>
-            </dl>
-            <div class="admonition admonition-examples">
-            <p class="first admonition-title">Examples</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">mpv <span class="pre">--af=channels=4:[0-1,1-0,2-2,3-3]</span> media.avi</tt></dt>
-            <dd>Would change the number of channels to 4 and set up 4 routes that
-            swap channel 0 and channel 1 and leave channel 2 and 3 intact.
-            Observe that if media containing two channels were played back,
-            channels 2 and 3 would contain silence but 0 and 1 would still be
-            swapped.</dd>
-            <dt><tt class="docutils literal">mpv <span class="pre">--af=channels=6:[0-0,0-1,0-2,0-3]</span> media.avi</tt></dt>
-            <dd>Would change the number of channels to 6 and set up 4 routes that
-            copy channel 0 to channels 0 to 3. Channel 4 and 5 will contain
-            silence.</dd>
-            </dl>
-            </div>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">You should probably not use this filter. If you want to change the
-            output channel layout, try the <tt class="docutils literal">format</tt> filter, which can make mpv
-            automatically up- and downmix standard channel layouts.</p>
-            </div>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">format=format:srate:channels:out-format:out-srate:out-channels</span></tt></dt>
             <dd><p class="first">Does not do any format conversion itself. Rather, it may cause the
             filter system to insert necessary conversion filters before or after this
@@ -6800,110 +6829,6 @@
             <p class="last"><em>NOTE</em>: this filter used to be named <tt class="docutils literal">force</tt>. The old <tt class="docutils literal">format</tt> filter
             used to do conversion itself, unlike this one which lets the filter system
             handle the conversion.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">volume[=&lt;volumedb&gt;[:...]]</span></tt></dt>
-            <dd><p class="first">Implements software volume control. Use this filter with caution since it
-            can reduce the signal to noise ratio of the sound. In most cases it is
-            best to use the <em>Master</em> volume control of your sound card or the volume
-            knob on your amplifier.</p>
-            <p><em>WARNING</em>: This filter is deprecated. Use the top-level options like
-            <tt class="docutils literal"><span class="pre">--volume</span></tt> and <tt class="docutils literal"><span class="pre">--replaygain...</span></tt> instead.</p>
-            <p><em>NOTE</em>: This filter is not reentrant and can therefore only be enabled
-            once for every audio stream.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">&lt;volumedb&gt;</tt></dt>
-            <dd>Sets the desired gain in dB for all channels in the stream from -200 dB
-            to +60 dB, where -200 dB mutes the sound completely and +60 dB equals a
-            gain of 1000 (default: 0).</dd>
-            <dt><tt class="docutils literal"><span class="pre">replaygain-track</span></tt></dt>
-            <dd>Adjust volume gain according to the track-gain replaygain value stored
-            in the file metadata.</dd>
-            <dt><tt class="docutils literal"><span class="pre">replaygain-album</span></tt></dt>
-            <dd>Like replaygain-track, but using the album-gain value instead.</dd>
-            <dt><tt class="docutils literal"><span class="pre">replaygain-preamp</span></tt></dt>
-            <dd>Pre-amplification gain in dB to apply to the selected replaygain gain
-            (default: 0).</dd>
-            <dt><tt class="docutils literal"><span class="pre">replaygain-clip=yes|no</span></tt></dt>
-            <dd>Prevent clipping caused by replaygain by automatically lowering the
-            gain (default). Use <tt class="docutils literal"><span class="pre">replaygain-clip=no</span></tt> to disable this.</dd>
-            <dt><tt class="docutils literal"><span class="pre">replaygain-fallback</span></tt></dt>
-            <dd>Gain in dB to apply if the file has no replay gain tags. This option
-            is always applied if the replaygain logic is somehow inactive. If this
-            is applied, no other replaygain options are applied.</dd>
-            <dt><tt class="docutils literal">softclip</tt></dt>
-            <dd><p class="first">Turns soft clipping on. Soft-clipping can make the
-            sound more smooth if very high volume levels are used. Enable this
-            option if the dynamic range of the loudspeakers is very low.</p>
-            <p class="last"><em>WARNING</em>: This feature creates distortion and should be considered a
-            last resort.</p>
-            </dd>
-            <dt><tt class="docutils literal">s16</tt></dt>
-            <dd>Force S16 sample format if set. Lower quality, but might be faster
-            in some situations.</dd>
-            <dt><tt class="docutils literal">detach</tt></dt>
-            <dd>Remove the filter if the volume is not changed at audio filter config
-            time. Useful with replaygain: if the current file has no replaygain
-            tags, then the filter will be removed if this option is enabled.
-            (If <tt class="docutils literal"><span class="pre">--softvol=yes</span></tt> is used and the player volume controls are used
-            during playback, a different volume filter will be inserted.)</dd>
-            </dl>
-            <div class="admonition admonition-example last">
-            <p class="first admonition-title">Example</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">mpv <span class="pre">--af=volume=10.1</span> media.avi</tt></dt>
-            <dd>Would amplify the sound by 10.1 dB and hard-clip if the sound level
-            is too high.</dd>
-            </dl>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">pan=n:[&lt;matrix&gt;]</span></tt></dt>
-            <dd><p class="first">Mixes channels arbitrarily. Basically a combination of the volume and the
-            channels filter that can be used to down-mix many channels to only a few,
-            e.g. stereo to mono, or vary the &quot;width&quot; of the center speaker in a
-            surround sound system. This filter is hard to use, and will require some
-            tinkering before the desired result is obtained. The number of options for
-            this filter depends on the number of output channels. An example how to
-            downmix a six-channel file to two channels with this filter can be found
-            in the examples section near the end.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">&lt;n&gt;</tt></dt>
-            <dd>Number of output channels (1-8).</dd>
-            <dt><tt class="docutils literal">&lt;matrix&gt;</tt></dt>
-            <dd>A list of values <tt class="docutils literal"><span class="pre">[L00,L01,L02,...,L10,L11,L12,...,Ln0,Ln1,Ln2,...]</span></tt>,
-            where each element <tt class="docutils literal">Lij</tt> means how much of input channel i is mixed
-            into output channel j (range 0-1). So in principle you first have n
-            numbers saying what to do with the first input channel, then n numbers
-            that act on the second input channel etc. If you do not specify any
-            numbers for some input channels, 0 is assumed.
-            Note that the values are separated by <tt class="docutils literal">,</tt>, which is already used
-            by the option parser to separate filters. This is why you must quote
-            the value list with <tt class="docutils literal"><span class="pre">[...]</span></tt> or similar.</dd>
-            </dl>
-            <div class="admonition admonition-examples">
-            <p class="first admonition-title">Examples</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">mpv <span class="pre">--af=pan=1:[0.5,0.5]</span> media.avi</tt></dt>
-            <dd>Would downmix from stereo to mono.</dd>
-            <dt><tt class="docutils literal">mpv <span class="pre">--af=pan=3:[1,0,0.5,0,1,0.5]</span> media.avi</tt></dt>
-            <dd>Would give 3 channel output leaving channels 0 and 1 intact, and mix
-            channels 0 and 1 into output channel 2 (which could be sent to a
-            subwoofer for example).</dd>
-            </dl>
-            </div>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">If you just want to force remixing to a certain output channel layout,
-            it is easier to use the <tt class="docutils literal">format</tt> filter. For example,
-            <tt class="docutils literal">mpv <span class="pre">'--af=format=channels=5.1'</span> <span class="pre">'--audio-channels=5.1'</span></tt> would always force
-            remixing audio to 5.1 and output it like this.</p>
-            </div>
-            <p>This filter supports the following <tt class="docutils literal"><span class="pre">af-command</span></tt> commands:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">set-matrix</span></tt></dt>
-            <dd>Set the <tt class="docutils literal">&lt;matrix&gt;</tt> argument dynamically. This can be used to change
-            the mixing matrix at runtime, without reinitializing the entire filter
-            chain.</dd>
-            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">scaletempo[=option1:option2:...]</span></tt></dt>
             <dd><p class="first">Scales audio tempo without altering pitch, optionally synced to playback
@@ -7101,219 +7026,6 @@
             </dl>
             <p>Available mpv-only filters are:</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">crop[=w:h:x:y]</span></tt></dt>
-            <dd><p class="first">Crops the given part of the image and discards the rest. Useful to remove
-            black bands from widescreen videos.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;w&gt;,&lt;h&gt;</span></tt></dt>
-            <dd>Cropped width and height, defaults to original width and height.</dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;x&gt;,&lt;y&gt;</span></tt></dt>
-            <dd>Position of the cropped picture, defaults to center.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">expand[=w:h:x:y:aspect:round]</span></tt></dt>
-            <dd><p class="first">Expands (not scales) video resolution to the given value and places the
-            unscaled original at coordinates x, y.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;w&gt;,&lt;h&gt;</span></tt></dt>
-            <dd><p class="first">Expanded width,height (default: original width,height). Negative
-            values for w and h are treated as offsets to the original size.</p>
-            <div class="admonition admonition-example last">
-            <p class="first admonition-title">Example</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">expand=0:-50:0:0</span></tt></dt>
-            <dd>Adds a 50 pixel border to the bottom of the picture.</dd>
-            </dl>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;x&gt;,&lt;y&gt;</span></tt></dt>
-            <dd>position of original image on the expanded image (default: center)</dd>
-            <dt><tt class="docutils literal">&lt;aspect&gt;</tt></dt>
-            <dd><p class="first">Expands to fit an aspect instead of a resolution (default: 0).</p>
-            <div class="admonition admonition-example last">
-            <p class="first admonition-title">Example</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">expand=800::::4/3</span></tt></dt>
-            <dd>Expands to 800x600, unless the source is higher resolution, in
-            which case it expands to fill a 4/3 aspect.</dd>
-            </dl>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">&lt;round&gt;</tt></dt>
-            <dd>Rounds up to make both width and height divisible by &lt;r&gt; (default: 1).</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal">flip</tt></dt>
-            <dd>Flips the image upside down.</dd>
-            <dt><tt class="docutils literal">mirror</tt></dt>
-            <dd>Mirrors the image on the Y axis.</dd>
-            <dt><tt class="docutils literal"><span class="pre">rotate[=0|90|180|270]</span></tt></dt>
-            <dd>Rotates the image by a multiple of 90 degrees clock-wise.</dd>
-            <dt><tt class="docutils literal"><span class="pre">scale[=w:h:param:param2:chr-drop:noup:arnd</span></tt></dt>
-            <dd><p class="first">Scales the image with the software scaler (slow) and performs a YUV&lt;-&gt;RGB
-            color space conversion (see also <tt class="docutils literal"><span class="pre">--sws</span></tt>).</p>
-            <p>All parameters are optional.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;w&gt;:&lt;h&gt;</span></tt></dt>
-            <dd><p class="first">scaled width/height (default: original width/height)</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">0:</th><td class="field-body">scaled d_width/d_height</td>
-            </tr>
-            <tr class="field"><th class="field-name">-1:</th><td class="field-body">original width/height</td>
-            </tr>
-            <tr class="field"><th class="field-name">-2:</th><td class="field-body">Calculate w/h using the other dimension and the prescaled
-            aspect ratio.</td>
-            </tr>
-            <tr class="field"><th class="field-name">-3:</th><td class="field-body">Calculate w/h using the other dimension and the original
-            aspect ratio.</td>
-            </tr>
-            <tr class="field"><th class="field-name">-(n+8):</th><td class="field-body">Like -n above, but rounding the dimension to the closest
-            multiple of 16.</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;param&gt;[:&lt;param2&gt;]</span></tt> (see also <tt class="docutils literal"><span class="pre">--sws</span></tt>)</dt>
-            <dd><p class="first">Set some scaling parameters depending on the type of scaler selected
-            with <tt class="docutils literal"><span class="pre">--sws</span></tt>:</p>
-            <pre class="last literal-block">
-            --sws=2 (bicubic):  B (blurring) and C (ringing)
-                0.00:0.60 default
-                0.00:0.75 VirtualDub's &quot;precise bicubic&quot;
-                0.00:0.50 Catmull-Rom spline
-                0.33:0.33 Mitchell-Netravali spline
-                1.00:0.00 cubic B-spline
-            
-            --sws=7 (Gaussian): sharpness (0 (soft) - 100 (sharp))
-            
-            --sws=9 (Lanczos):  filter length (1-10)
-            </pre>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;chr-drop&gt;</span></tt></dt>
-            <dd><p class="first">chroma skipping</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">0:</th><td class="field-body">Use all available input lines for chroma (default).</td>
-            </tr>
-            <tr class="field"><th class="field-name">1:</th><td class="field-body">Use only every 2. input line for chroma.</td>
-            </tr>
-            <tr class="field"><th class="field-name">2:</th><td class="field-body">Use only every 4. input line for chroma.</td>
-            </tr>
-            <tr class="field"><th class="field-name">3:</th><td class="field-body">Use only every 8. input line for chroma.</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal">&lt;noup&gt;</tt></dt>
-            <dd><p class="first">Disallow upscaling past the original dimensions.</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">0:</th><td class="field-body">Allow upscaling (default).</td>
-            </tr>
-            <tr class="field"><th class="field-name">1:</th><td class="field-body">Disallow upscaling if one dimension exceeds its original value.</td>
-            </tr>
-            <tr class="field"><th class="field-name">2:</th><td class="field-body">Disallow upscaling if both dimensions exceed their original values.</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal">&lt;arnd&gt;</tt></dt>
-            <dd><p class="first">Accurate rounding for the vertical scaler, which may be faster or
-            slower than the default rounding.</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">Disable accurate rounding (default).</td>
-            </tr>
-            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Enable accurate rounding.</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">dsize[=w:h:aspect-method:r:aspect]</span></tt></dt>
-            <dd><p class="first">Changes the intended display aspect at an arbitrary point in the
-            filter chain. Aspect can be given as a fraction (4/3) or floating point
-            number (1.33). Note that this filter does <em>not</em> do any scaling itself; it
-            just affects what later scalers (software or hardware) will do when
-            auto-scaling to the correct aspect.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">&lt;w&gt;,&lt;h&gt;</span></tt></dt>
-            <dd><p class="first">New aspect ratio given by a display width and height. Unlike older mpv
-            versions or MPlayer, this does not set the display size.</p>
-            <p>Can also be these special values:</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">0:</th><td class="field-body">original display width and height</td>
-            </tr>
-            <tr class="field"><th class="field-name">-1:</th><td class="field-body">original video width and height (default)</td>
-            </tr>
-            <tr class="field"><th class="field-name">-2:</th><td class="field-body">Calculate w/h using the other dimension and the original display
-            aspect ratio.</td>
-            </tr>
-            <tr class="field"><th class="field-name">-3:</th><td class="field-body">Calculate w/h using the other dimension and the original video
-            aspect ratio.</td>
-            </tr>
-            </tbody>
-            </table>
-            <div class="admonition admonition-example last">
-            <p class="first admonition-title">Example</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">dsize=800:-2</span></tt></dt>
-            <dd>Specifies a display resolution of 800x600 for a 4/3 aspect
-            video, or 800x450 for a 16/9 aspect video.</dd>
-            </dl>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;aspect-method&gt;</span></tt></dt>
-            <dd><p class="first">Modifies width and height according to original aspect ratios.</p>
-            <table class="docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">-1:</th><td class="field-body">Ignore original aspect ratio (default).</td>
-            </tr>
-            <tr class="field"><th class="field-name">0:</th><td class="field-body">Keep display aspect ratio by using <tt class="docutils literal">&lt;w&gt;</tt> and <tt class="docutils literal">&lt;h&gt;</tt> as maximum
-            resolution.</td>
-            </tr>
-            <tr class="field"><th class="field-name">1:</th><td class="field-body">Keep display aspect ratio by using <tt class="docutils literal">&lt;w&gt;</tt> and <tt class="docutils literal">&lt;h&gt;</tt> as minimum
-            resolution.</td>
-            </tr>
-            <tr class="field"><th class="field-name">2:</th><td class="field-body">Keep video aspect ratio by using <tt class="docutils literal">&lt;w&gt;</tt> and <tt class="docutils literal">&lt;h&gt;</tt> as maximum
-            resolution.</td>
-            </tr>
-            <tr class="field"><th class="field-name">3:</th><td class="field-body">Keep video aspect ratio by using <tt class="docutils literal">&lt;w&gt;</tt> and <tt class="docutils literal">&lt;h&gt;</tt> as minimum
-            resolution.</td>
-            </tr>
-            </tbody>
-            </table>
-            <div class="admonition admonition-example last">
-            <p class="first admonition-title">Example</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">dsize=800:600:0</tt></dt>
-            <dd>Specifies a display resolution of at most 800x600, or smaller,
-            in order to keep aspect.</dd>
-            </dl>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal">&lt;r&gt;</tt></dt>
-            <dd>Rounds up to make both width and height divisible by <tt class="docutils literal">&lt;r&gt;</tt>
-            (default: 1).</dd>
-            <dt><tt class="docutils literal">&lt;aspect&gt;</tt></dt>
-            <dd>Force an aspect ratio.</dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">format=fmt=&lt;value&gt;:colormatrix=&lt;value&gt;:...</span></tt></dt>
             <dd><p class="first">Restricts the color space for the next filter without doing any conversion.
             Use together with the scale filter for a real conversion.</p>
@@ -7543,19 +7255,6 @@
             <dd>Reference angle in degree, if spherical video is used.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">noformat[=fmt]</span></tt></dt>
-            <dd><p class="first">Restricts the color space for the next filter without doing any conversion.
-            Unlike the format filter, this will allow any color space except the one
-            you specify.</p>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">For a list of available formats, see <tt class="docutils literal">noformat=fmt=help</tt>.</p>
-            </div>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">&lt;fmt&gt;</tt></dt>
-            <dd>Format name, e.g. rgb15, bgr24, 420p, etc. (default: 420p).</dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">lavfi=graph[:sws-flags[:o=opts]]</span></tt></dt>
             <dd><p class="first">Filter video using FFmpeg's libavfilter.</p>
             <dl class="last docutils">
@@ -7568,12 +7267,15 @@
             <p class="first admonition-title">Warning</p>
             <p class="last">If you want to use the full filter syntax with this option, you have
             to quote the filter graph in order to prevent mpv's syntax and the
-            filter graph syntax from clashing.</p>
+            filter graph syntax from clashing. To prevent a quoting and escaping
+            mess, consider using <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> if you know which video
+            track you want to use from the input file. (There is only one video
+            track for nearly all video files anyway.)</p>
             </div>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">-vf</span> <span class="pre">lavfi=[gradfun=20:30,vflip]</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vf=lavfi=[gradfun=20:30,vflip]</span></tt></dt>
             <dd><tt class="docutils literal">gradfun</tt> filter with nonsense parameters, followed by a
             <tt class="docutils literal">vflip</tt> filter. (This demonstrates how libavfilter takes a
             graph and not just a single filter.) The filter graph string is
@@ -7607,80 +7309,6 @@
             </dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">pullup[=jl:jr:jt:jb:sb:mp]</span></tt></dt>
-            <dd><p class="first">Pulldown reversal (inverse telecine) filter, capable of handling mixed
-            hard-telecine, 24000/1001 fps progressive, and 30000/1001 fps progressive
-            content. The <tt class="docutils literal">pullup</tt> filter makes use of future context in making its
-            decisions. It is stateless in the sense that it does not lock onto a pattern
-            to follow, but it instead looks forward to the following fields in order to
-            identify matches and rebuild progressive frames.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">jl</tt>, <tt class="docutils literal">jr</tt>, <tt class="docutils literal">jt</tt>, and <tt class="docutils literal">jb</tt></dt>
-            <dd>These options set the amount of &quot;junk&quot; to ignore at the left, right,
-            top, and bottom of the image, respectively. Left/right are in units of
-            8 pixels, while top/bottom are in units of 2 lines. The default is 8
-            pixels on each side.</dd>
-            <dt><tt class="docutils literal">sb</tt> (strict breaks)</dt>
-            <dd>Setting this option to 1 will reduce the chances of <tt class="docutils literal">pullup</tt>
-            generating an occasional mismatched frame, but it may also cause an
-            excessive number of frames to be dropped during high motion sequences.
-            Conversely, setting it to -1 will make <tt class="docutils literal">pullup</tt> match fields more
-            easily. This may help process video with slight blurring between the
-            fields, but may also cause interlaced frames in the output.</dd>
-            <dt><tt class="docutils literal">mp</tt> (metric plane)</dt>
-            <dd>This option may be set to <tt class="docutils literal">u</tt> or <tt class="docutils literal">v</tt> to use a chroma plane instead of the
-            luma plane for doing <tt class="docutils literal">pullup</tt>'s computations. This may improve accuracy
-            on very clean source material, but more likely will decrease accuracy,
-            especially if there is chroma noise (rainbow effect) or any grayscale
-            video. The main purpose of setting <tt class="docutils literal">mp</tt> to a chroma plane is to reduce
-            CPU load and make pullup usable in realtime on slow machines.</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">yadif=[mode:interlaced-only]</span></tt></dt>
-            <dd><p class="first">Yet another deinterlacing filter</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal">&lt;mode&gt;</tt></dt>
-            <dd><table class="first last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">frame:</th><td class="field-body">Output 1 frame for each frame.</td>
-            </tr>
-            <tr class="field"><th class="field-name">field:</th><td class="field-body">Output 1 frame for each field (default).</td>
-            </tr>
-            <tr class="field"><th class="field-name" colspan="2">frame-nospatial:</th></tr>
-            <tr class="field"><td>&nbsp;</td><td class="field-body">Like <tt class="docutils literal">frame</tt> but skips spatial interlacing check.</td>
-            </tr>
-            <tr class="field"><th class="field-name" colspan="2">field-nospatial:</th></tr>
-            <tr class="field"><td>&nbsp;</td><td class="field-body">Like <tt class="docutils literal">field</tt> but skips spatial interlacing check.</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">&lt;interlaced-only&gt;</span></tt></dt>
-            <dd><table class="first last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">Deinterlace all frames.</td>
-            </tr>
-            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Only deinterlace frames marked as interlaced (default).</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            </dl>
-            <p>This filter is automatically inserted when using the <tt class="docutils literal">d</tt> key (or any
-            other key that toggles the <tt class="docutils literal">deinterlace</tt> property or when using the
-            <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> switch), assuming the video output does not have native
-            deinterlacing support.</p>
-            <p>If you just want to set the default mode, put this filter and its options
-            into <tt class="docutils literal"><span class="pre">--vf-defaults</span></tt> instead, and enable deinterlacing with <tt class="docutils literal">d</tt> or
-            <tt class="docutils literal"><span class="pre">--deinterlace</span></tt>.</p>
-            <p class="last">Also, note that the <tt class="docutils literal">d</tt> key is stupid enough to insert a deinterlacer twice
-            when inserting yadif with <tt class="docutils literal"><span class="pre">--vf</span></tt>, so using the above methods is
-            recommended.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">sub=[=bottom-margin:top-margin]</span></tt></dt>
             <dd><p class="first">Moves subtitle rendering to an arbitrary point in the filter chain, or force
             subtitle rendering in the video filter as opposed to using video output OSD
@@ -7701,94 +7329,6 @@
             settings.</dd>
             </dl>
             </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">stereo3d[=in:out]</span></tt></dt>
-            <dd><p class="first">Stereo3d converts between different stereoscopic image formats.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">&lt;in&gt;</tt></dt>
-            <dd><p class="first">Stereoscopic image format of input. Possible values:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">sbsl</tt> or <tt class="docutils literal">side_by_side_left_first</tt></dt>
-            <dd>side by side parallel (left eye left, right eye right)</dd>
-            <dt><tt class="docutils literal">sbsr</tt> or <tt class="docutils literal">side_by_side_right_first</tt></dt>
-            <dd>side by side crosseye (right eye left, left eye right)</dd>
-            <dt><tt class="docutils literal">abl</tt> or <tt class="docutils literal">above_below_left_first</tt></dt>
-            <dd>above-below (left eye above, right eye below)</dd>
-            <dt><tt class="docutils literal">abr</tt> or <tt class="docutils literal">above_below_right_first</tt></dt>
-            <dd>above-below (right eye above, left eye below)</dd>
-            <dt><tt class="docutils literal">ab2l</tt> or <tt class="docutils literal">above_below_half_height_left_first</tt></dt>
-            <dd>above-below with half height resolution (left eye above, right eye
-            below)</dd>
-            <dt><tt class="docutils literal">ab2r</tt> or <tt class="docutils literal">above_below_half_height_right_first</tt></dt>
-            <dd>above-below with half height resolution (right eye above, left eye
-            below)</dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal">&lt;out&gt;</tt></dt>
-            <dd><p class="first">Stereoscopic image format of output. Possible values are all the input
-            formats as well as:</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">arcg</tt> or <tt class="docutils literal">anaglyph_red_cyan_gray</tt></dt>
-            <dd>anaglyph red/cyan gray (red filter on left eye, cyan filter on
-            right eye)</dd>
-            <dt><tt class="docutils literal">arch</tt> or <tt class="docutils literal">anaglyph_red_cyan_half_color</tt></dt>
-            <dd>anaglyph red/cyan half colored (red filter on left eye, cyan filter
-            on right eye)</dd>
-            <dt><tt class="docutils literal">arcc</tt> or <tt class="docutils literal">anaglyph_red_cyan_color</tt></dt>
-            <dd>anaglyph red/cyan color (red filter on left eye, cyan filter on
-            right eye)</dd>
-            <dt><tt class="docutils literal">arcd</tt> or <tt class="docutils literal">anaglyph_red_cyan_dubois</tt></dt>
-            <dd>anaglyph red/cyan color optimized with the least-squares
-            projection of Dubois (red filter on left eye, cyan filter on right
-            eye)</dd>
-            <dt><tt class="docutils literal">agmg</tt> or <tt class="docutils literal">anaglyph_green_magenta_gray</tt></dt>
-            <dd>anaglyph green/magenta gray (green filter on left eye, magenta
-            filter on right eye)</dd>
-            <dt><tt class="docutils literal">agmh</tt> or <tt class="docutils literal">anaglyph_green_magenta_half_color</tt></dt>
-            <dd>anaglyph green/magenta half colored (green filter on left eye,
-            magenta filter on right eye)</dd>
-            <dt><tt class="docutils literal">agmc</tt> or <tt class="docutils literal">anaglyph_green_magenta_color</tt></dt>
-            <dd>anaglyph green/magenta colored (green filter on left eye, magenta
-            filter on right eye)</dd>
-            <dt><tt class="docutils literal">aybg</tt> or <tt class="docutils literal">anaglyph_yellow_blue_gray</tt></dt>
-            <dd>anaglyph yellow/blue gray (yellow filter on left eye, blue filter
-            on right eye)</dd>
-            <dt><tt class="docutils literal">aybh</tt> or <tt class="docutils literal">anaglyph_yellow_blue_half_color</tt></dt>
-            <dd>anaglyph yellow/blue half colored (yellow filter on left eye, blue
-            filter on right eye)</dd>
-            <dt><tt class="docutils literal">aybc</tt> or <tt class="docutils literal">anaglyph_yellow_blue_color</tt></dt>
-            <dd>anaglyph yellow/blue colored (yellow filter on left eye, blue
-            filter on right eye)</dd>
-            <dt><tt class="docutils literal">irl</tt> or <tt class="docutils literal">interleave_rows_left_first</tt></dt>
-            <dd>Interleaved rows (left eye has top row, right eye starts on next
-            row)</dd>
-            <dt><tt class="docutils literal">irr</tt> or <tt class="docutils literal">interleave_rows_right_first</tt></dt>
-            <dd>Interleaved rows (right eye has top row, left eye starts on next
-            row)</dd>
-            <dt><tt class="docutils literal">ml</tt> or <tt class="docutils literal">mono_left</tt></dt>
-            <dd>mono output (left eye only)</dd>
-            <dt><tt class="docutils literal">mr</tt> or <tt class="docutils literal">mono_right</tt></dt>
-            <dd>mono output (right eye only)</dd>
-            </dl>
-            </dd>
-            </dl>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">gradfun[=strength[:radius|:size=&lt;size&gt;]]</span></tt></dt>
-            <dd><p class="first">Fix the banding artifacts that are sometimes introduced into nearly flat
-            regions by truncation to 8-bit color depth. Interpolates the gradients that
-            should go where the bands are, and dithers them.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal">&lt;strength&gt;</tt></dt>
-            <dd>Maximum amount by which the filter will change any one pixel. Also the
-            threshold for detecting nearly flat regions (default: 1.5).</dd>
-            <dt><tt class="docutils literal">&lt;radius&gt;</tt></dt>
-            <dd>Neighborhood to fit the gradient to. Larger radius makes for smoother
-            gradients, but also prevents the filter from modifying pixels near
-            detailed regions (default: disabled).</dd>
-            <dt><tt class="docutils literal">&lt;size&gt;</tt></dt>
-            <dd>size of the filter in percent of the image diagonal size. This is
-            used to calculate the final radius size (default: 1).</dd>
-            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vapoursynth=file:buffered-frames:concurrent-frames</span></tt></dt>
             <dd><p class="first">Loads a VapourSynth filter script. This is intended for streamed
@@ -8022,11 +7562,6 @@
             a video processor usually supports all modes or none.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">buffer=&lt;num&gt;</span></tt></dt>
-            <dd>Buffer <tt class="docutils literal">&lt;num&gt;</tt> frames in the filter chain. This filter is probably pretty
-            useless, except for debugging. (Note that this won't help to smooth out
-            latencies with decoding, because the filter will never output a frame if
-            the buffer isn't full, except on EOF.)</dd>
             </dl>
             </div>
             <div class="section" id="encoding">
@@ -8972,8 +8507,8 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">file-size</span></tt></dt>
             <dd>Length in bytes of the source file/stream. (This is the same as
-            <tt class="docutils literal"><span class="pre">${stream-end}</span></tt>. For ordered chapters and such, the
-            size of the currently played segment is returned.)</dd>
+            <tt class="docutils literal"><span class="pre">${stream-end}</span></tt>. For segmented/multi-part files, this will return the
+            size of the main or manifest file, whatever it is.)</dd>
             <dt><tt class="docutils literal"><span class="pre">estimated-frame-count</span></tt></dt>
             <dd><p class="first">Total number of frames in current file.</p>
             <div class="admonition note last">
@@ -9011,8 +8546,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">stream-path</span></tt></dt>
             <dd>Filename (full path) of the stream layer filename. (This is probably
-            useless. It looks like this can be different from <tt class="docutils literal">path</tt> only when
-            using e.g. ordered chapters.)</dd>
+            useless and is almost never different from <tt class="docutils literal">path</tt>.)</dd>
             <dt><tt class="docutils literal"><span class="pre">stream-pos</span></tt></dt>
             <dd>Raw byte position in source stream. Technically, this returns the position
             of the most recent packet passed to a decoder.</dd>
@@ -9254,6 +8788,49 @@
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-idle</span></tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the demuxer is idle, which means the demuxer cache is
             filled to the requested amount, and is currently not reading more data.</dd>
+            <dt><tt class="docutils literal"><span class="pre">demuxer-cache-state</span></tt></dt>
+            <dd><p class="first">Various undocumented or half-documented things.</p>
+            <p>Each entry in <tt class="docutils literal"><span class="pre">seekable-ranges</span></tt> represents a region in the demuxer cache
+            that can be seeked to. If there are multiple demuxers active, this only
+            returns information about the &quot;main&quot; demuxer, but might be changed in
+            future to return unified information about all demuxers. The ranges are in
+            arbitrary order. Often, ranges will overlap for a bit, before being joined.
+            In broken corner cases, ranges may overlap all over the place.</p>
+            <p>The end of a seek range is usually smaller than the value returned by the
+            <tt class="docutils literal"><span class="pre">demuxer-cache-time</span></tt> property, because that property returns the guessed
+            buffering amount, while the seek ranges represent the buffered data that
+            can actually be used for cached seeking.</p>
+            <p><tt class="docutils literal"><span class="pre">fw-bytes</span></tt> is the number of bytes of packets buffered in the range
+            starting from the current decoding position.</p>
+            <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+            or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+            the following contents:</p>
+            <pre class="literal-block">
+            MPV_FORMAT_NODE_MAP
+                &quot;seekable-ranges&quot;   MPV_FORMAT_NODE_ARRAY
+                    MPV_FORMAT_NODE_MAP
+                        &quot;start&quot;             MPV_FORMAT_DOUBLE
+                        &quot;end&quot;               MPV_FORMAT_DOUBLE
+                &quot;fw-bytes&quot;          MPV_FORMAT_INT64
+            </pre>
+            <p>Other fields (might be changed or removed in the future):</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">eof</tt></dt>
+            <dd>True if the reader thread has hit the end of the file.</dd>
+            <dt><tt class="docutils literal">underrun</tt></dt>
+            <dd>True if the reader thread could not satisfy a decoder's request for a
+            new packet.</dd>
+            <dt><tt class="docutils literal">idle</tt></dt>
+            <dd>True if the thread is currently not reading.</dd>
+            <dt><tt class="docutils literal"><span class="pre">total-bytes</span></tt></dt>
+            <dd>Sum of packet bytes (plus some overhead estimation) of the entire packet
+            queue, including cached seekable ranges.</dd>
+            <dt><tt class="docutils literal"><span class="pre">fw-bytes</span></tt></dt>
+            <dd>Sum of packet bytes (plus some overhead estimation) of the readahead
+            packet queue (packets between current decoder reader positions and
+            demuxer position).</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-via-network</span></tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the stream demuxed via the main demuxer is most likely
             played via network. What constitutes &quot;network&quot; is not always clear, might
@@ -9277,8 +8854,8 @@
             <dt><tt class="docutils literal">seeking</tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the player is currently seeking, or otherwise trying
             to restart playback. (It's possible that it returns <tt class="docutils literal">yes</tt> while a file
-            is loaded, or when switching ordered chapter segments. This is because
-            the same underlying code is used for seeking and resyncing.)</dd>
+            is loadedThis is because the same underlying code is used for seeking and
+            resyncing.)</dd>
             <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
             <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise.</p>
             <p class="last">This option is relatively useless. Before mpv 0.18.1, it could be used to
@@ -9358,15 +8935,13 @@
             This is known only once the VO has opened (and possibly later). With some
             VOs (like <tt class="docutils literal">opengl</tt>), this might be never known in advance, but only when
             the decoder attempted to create the hw decoder successfully. (Using
-            <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop</span></tt> can load it eagerly.) If there are multiple
+            <tt class="docutils literal"><span class="pre">--gpu-hwdec-interop</span></tt> can load it eagerly.) If there are multiple
             drivers loaded, they will be separated by <tt class="docutils literal">,</tt>.</p>
             <p>If no VO is active or no interop driver is known, this property is
             unavailable.</p>
-            <p>This does not necessarily use the same values as <tt class="docutils literal">hwdec</tt>. There can be
+            <p class="last">This does not necessarily use the same values as <tt class="docutils literal">hwdec</tt>. There can be
             multiple interop drivers for the same hardware decoder, depending on
             platform and VO.</p>
-            <p class="last">This is somewhat similar to the <tt class="docutils literal"><span class="pre">--opengl-hwdec-interop</span></tt> option, but
-            it returns the actually loaded backend, not the value of this option.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">video-format</span></tt></dt>
             <dd>Video format as string.</dd>
@@ -9875,9 +9450,6 @@
             <dd>Current video output driver (name as used with <tt class="docutils literal"><span class="pre">--vo</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">current-ao</span></tt></dt>
             <dd>Current audio output driver (name as used with <tt class="docutils literal"><span class="pre">--ao</span></tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">audio-out-detected-device</span></tt></dt>
-            <dd>Return the audio device selected by the AO driver (only implemented for
-            some drivers: currently only <tt class="docutils literal">coreaudio</tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
             <dd>Return the working directory of the mpv process. Can be useful for JSON IPC
             users, because the command line player usually works with relative paths.</dd>
@@ -10557,6 +10129,165 @@
             </div>
             </div>
             </div>
+            <div class="section" id="stats">
+            <h1>STATS</h1>
+            <p>This builtin script displays information and statistics for the currently
+            played file. It is enabled by default if mpv was compiled with Lua support.
+            It can be disabled entirely using the <tt class="docutils literal"><span class="pre">--load-stats-overlay=no</span></tt> option.</p>
+            <div class="section" id="id1">
+            <h2>Usage</h2>
+            <p>The following key bindings are active by default unless something else is
+            already bound to them:</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="8%" />
+            <col width="92%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>i</td>
+            <td>Show stats for a fixed duration</td>
+            </tr>
+            <tr><td>I</td>
+            <td>Toggle stats (shown until toggled again)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>While the stats are visible on screen the following key bindings are active,
+            regardless of existing bindings. They allow you to switch between <em>pages</em> of
+            stats:</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="18%" />
+            <col width="82%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>1</td>
+            <td>Show usual stats</td>
+            </tr>
+            <tr><td>2</td>
+            <td>Show frame timings</td>
+            </tr>
+            </tbody>
+            </table>
+            <div class="section" id="font">
+            <h3>Font</h3>
+            <p>For optimal visual experience, a font with support for many font weights and
+            monospaced digits is recommended. By default, the open source font
+            <a class="reference external" href="https://github.com/adobe-fonts/source-sans-pro">Source Sans Pro</a> is used.</p>
+            </div>
+            </div>
+            <div class="section" id="id2">
+            <h2>Configuration</h2>
+            <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">lua-settings/stats.conf</span></tt>
+            placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
+            option. The configuration syntax is described in <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a>.</p>
+            <div class="section" id="id3">
+            <h3>Configurable Options</h3>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">key_oneshot</tt></dt>
+            <dd>Default: i</dd>
+            <dt><tt class="docutils literal">key_toggle</tt></dt>
+            <dd><p class="first">Default: I</p>
+            <p class="last">Key bindings to display stats.</p>
+            </dd>
+            <dt><tt class="docutils literal">key_page_1</tt></dt>
+            <dd>Default: 1</dd>
+            <dt><tt class="docutils literal">key_page_2</tt></dt>
+            <dd><p class="first">Default: 2</p>
+            <p class="last">Key bindings for page switching while stats are displayed.</p>
+            </dd>
+            <dt><tt class="docutils literal">duration</tt></dt>
+            <dd><p class="first">Default: 4</p>
+            <p class="last">How long the stats are shown in seconds (oneshot).</p>
+            </dd>
+            <dt><tt class="docutils literal">redraw_delay</tt></dt>
+            <dd><p class="first">Default: 1</p>
+            <p class="last">How long it takes to refresh the displayed stats in seconds (toggling).</p>
+            </dd>
+            <dt><tt class="docutils literal">persistent_overlay</tt></dt>
+            <dd><p class="first">Default: no</p>
+            <p class="last">When <cite>no</cite>, other scripts printing text to the screen can overwrite the
+            displayed stats. When <cite>yes</cite>, displayed stats are persistently shown for the
+            respective duration. This can result in overlapping text when multiple
+            scripts decide to print text at the same time.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_perfdata</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Show graphs for performance data (page 2).</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_vsync_ratio</tt></dt>
+            <dd>Default: yes</dd>
+            <dt><tt class="docutils literal">plot_vsync_jitter</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Show graphs for vsync and jitter values (page 1). Only when toggled.</p>
+            </dd>
+            <dt><tt class="docutils literal">flush_graph_data</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Clear data buffers used for drawing graphs when toggling.</p>
+            </dd>
+            <dt><tt class="docutils literal">font</tt></dt>
+            <dd><p class="first">Default: Source Sans Pro</p>
+            <p class="last">Font name. Should support as many font weights as possible for optimal
+            visual experience.</p>
+            </dd>
+            <dt><tt class="docutils literal">font_mono</tt></dt>
+            <dd><p class="first">Default: Source Sans Pro</p>
+            <p class="last">Font name for parts where monospaced characters are necessary to align
+            text. Currently, monospaced digits are sufficient.</p>
+            </dd>
+            <dt><tt class="docutils literal">font_size</tt></dt>
+            <dd><p class="first">Default: 8</p>
+            <p class="last">Font size used to render text.</p>
+            </dd>
+            <dt><tt class="docutils literal">font_color</tt></dt>
+            <dd><p class="first">Default: FFFFFF</p>
+            <p class="last">Font color.</p>
+            </dd>
+            <dt><tt class="docutils literal">border_size</tt></dt>
+            <dd><p class="first">Default: 0.8</p>
+            <p class="last">Size of border drawn around the font.</p>
+            </dd>
+            <dt><tt class="docutils literal">border_color</tt></dt>
+            <dd><p class="first">Default: 262626</p>
+            <p class="last">Color of drawn border.</p>
+            </dd>
+            <dt><tt class="docutils literal">alpha</tt></dt>
+            <dd><p class="first">Default: 11</p>
+            <p class="last">Transparency for drawn text.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_bg_border_color</tt></dt>
+            <dd><p class="first">Default: 0000FF</p>
+            <p class="last">Border color used for drawing graphs.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_bg_color</tt></dt>
+            <dd><p class="first">Default: 262626</p>
+            <p class="last">Background color used for drawing graphs.</p>
+            </dd>
+            <dt><tt class="docutils literal">plot_color</tt></dt>
+            <dd><p class="first">Default: FFFFFF</p>
+            <p class="last">Color used for drawing graphs.</p>
+            </dd>
+            </dl>
+            <p>Note: colors are given as hexadecimal values and use ASS tag order: BBGGRR
+            (blue green red).</p>
+            </div>
+            <div class="section" id="different-key-bindings">
+            <h3>Different key bindings</h3>
+            <p>A different key binding can be defined with the aforementioned options
+            <tt class="docutils literal">key_oneshot</tt> and <tt class="docutils literal">key_toggle</tt> but also with commands in <tt class="docutils literal">input.conf</tt>,
+            for example:</p>
+            <pre class="literal-block">
+            e script-binding stats/display-stats
+            E script-binding stats/display-stats-toggle
+            </pre>
+            <p>Using <tt class="docutils literal">input.conf</tt>, it is also possible to directly display a certain page:</p>
+            <pre class="literal-block">
+            i script-binding stats/display-page-1
+            e script-binding stats/display-page-2
+            </pre>
+            </div>
+            </div>
+            </div>
             <div class="section" id="lua-scripting">
             <h1>LUA SCRIPTING</h1>
             <p>mpv can load Lua scripts. Scripts passed to the <tt class="docutils literal"><span class="pre">--script</span></tt> option, or found in
@@ -10590,7 +10321,10 @@
             its own thread. Your script is first run &quot;as is&quot;, and once that is done, the event loop
             is entered. This event loop will dispatch events received by mpv and call your
             own event handlers which you have registered with <tt class="docutils literal">mp.register_event</tt>, or
-            timers added with <tt class="docutils literal">mp.add_timeout</tt> or similar.</p>
+            timers added with <tt class="docutils literal">mp.add_timeout</tt> or similar. Note that since the
+            script starts execution concurrently with player initialization, some properties
+            may not be populated with meaningful values until the relevant subsystems have
+            initialized.</p>
             <p>When the player quits, all scripts will be asked to terminate. This happens via
             a <tt class="docutils literal">shutdown</tt> event, which by default will make the event loop return. If your
             script got into an endless loop, mpv will probably behave fine during playback,
@@ -10971,14 +10705,15 @@
             <dl class="docutils">
             <dt><tt class="docutils literal">msg.log(level, <span class="pre">...)</span></tt></dt>
             <dd><p class="first">The level parameter is the message priority. It's a string and one of
-            <tt class="docutils literal">fatal</tt>, <tt class="docutils literal">error</tt>, <tt class="docutils literal">warn</tt>, <tt class="docutils literal">info</tt>, <tt class="docutils literal">v</tt>, <tt class="docutils literal">debug</tt>. The user's
-            settings will determine which of these messages will be visible. Normally,
-            all messages are visible, except <tt class="docutils literal">v</tt> and <tt class="docutils literal">debug</tt>.</p>
+            <tt class="docutils literal">fatal</tt>, <tt class="docutils literal">error</tt>, <tt class="docutils literal">warn</tt>, <tt class="docutils literal">info</tt>, <tt class="docutils literal">v</tt>, <tt class="docutils literal">debug</tt>, <tt class="docutils literal">trace</tt>. The
+            user's settings will determine which of these messages will be
+            visible. Normally, all messages are visible, except <tt class="docutils literal">v</tt>, <tt class="docutils literal">debug</tt> and
+            <tt class="docutils literal">trace</tt>.</p>
             <p>The parameters after that are all converted to strings. Spaces are inserted
             to separate multiple parameters.</p>
             <p class="last">You don't need to add newlines.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">msg.fatal(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.error(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.warn(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.info(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.verbose(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.debug(...)</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">msg.fatal(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.error(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.warn(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.info(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.verbose(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.debug(...)</span></tt>, <tt class="docutils literal"><span class="pre">msg.trace(...)</span></tt></dt>
             <dd>All of these are shortcuts and equivalent to the corresponding
             <tt class="docutils literal">msg.log(level, <span class="pre">...)</span></tt> call.</dd>
             </dl>
@@ -11062,6 +10797,35 @@
             </dl>
             </blockquote>
             <p class="last">On error, <tt class="docutils literal">nil, error</tt> is returned.</p>
+            </dd>
+            <dt><tt class="docutils literal">utils.file_info(path)</tt></dt>
+            <dd><p class="first">Stats the given path for information and returns a table with the
+            following entries:</p>
+            <blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">mode</tt></dt>
+            <dd>protection bits (on Windows, always 755 (octal) for directories
+            and 644 (octal) for files)</dd>
+            <dt><tt class="docutils literal">size</tt></dt>
+            <dd>size in bytes</dd>
+            <dt><tt class="docutils literal">atime</tt></dt>
+            <dd>time of last access</dd>
+            <dt><tt class="docutils literal">mtime</tt></dt>
+            <dd>time of last modification</dd>
+            <dt><tt class="docutils literal">ctime</tt></dt>
+            <dd>time of last metadata change (Linux) / time of creation (Windows)</dd>
+            <dt><tt class="docutils literal">is_file</tt></dt>
+            <dd>Whether <tt class="docutils literal">path</tt> is a regular file (boolean)</dd>
+            <dt><tt class="docutils literal">is_dir</tt></dt>
+            <dd>Whether <tt class="docutils literal">path</tt> is a directory (boolean)</dd>
+            </dl>
+            </blockquote>
+            <p><tt class="docutils literal">mode</tt> and <tt class="docutils literal">size</tt> are integers.
+            Timestamps (<tt class="docutils literal">atime</tt>, <tt class="docutils literal">mtime</tt> and <tt class="docutils literal">ctime</tt>) are integer seconds since
+            the Unix epoch (Unix time).
+            The booleans <tt class="docutils literal">is_file</tt> and <tt class="docutils literal">is_dir</tt> are provided as a convenience;
+            they can be and are derived from <tt class="docutils literal">mode</tt>.</p>
+            <p class="last">On error (eg. path does not exist), <tt class="docutils literal">nil, error</tt> is returned.</p>
             </dd>
             <dt><tt class="docutils literal">utils.split_path(path)</tt></dt>
             <dd>Split a path into directory component and filename component, and return
@@ -11277,7 +11041,7 @@
             <p>JavaScript support in mpv is near identical to its Lua support. Use this section
             as reference on differences and availability of APIs, but otherwise you should
             refer to the Lua documentation for API details and general scripting in mpv.</p>
-            <div class="section" id="id1">
+            <div class="section" id="id4">
             <h2>Example</h2>
             <p>JavaScript code which leaves fullscreen mode when the player is paused:</p>
             <pre class="literal-block">
@@ -11377,8 +11141,10 @@
             <p><tt class="docutils literal"><span class="pre">mp.msg.info(...)</span></tt></p>
             <p><tt class="docutils literal"><span class="pre">mp.msg.verbose(...)</span></tt></p>
             <p><tt class="docutils literal"><span class="pre">mp.msg.debug(...)</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">mp.msg.trace(...)</span></tt></p>
             <p><tt class="docutils literal">mp.utils.getcwd()</tt> (LE)</p>
             <p><tt class="docutils literal">mp.utils.readdir(path [, filter])</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.utils.file_info(path)</tt> (LE)</p>
             <p><tt class="docutils literal">mp.utils.split_path(path)</tt></p>
             <p><tt class="docutils literal">mp.utils.join_path(p1, p2)</tt></p>
             <p><tt class="docutils literal">mp.utils.subprocess(t)</tt></p>
@@ -11420,7 +11186,7 @@
             <dd>Returns the file name of the current script.</dd>
             <dt><tt class="docutils literal">exit()</tt> (global)</dt>
             <dd>Make the script exit at the end of the current event loop iteration.
-            Note: please reomve added key bindings before calling <tt class="docutils literal">exit()</tt>.</dd>
+            Note: please remove added key bindings before calling <tt class="docutils literal">exit()</tt>.</dd>
             <dt><tt class="docutils literal">mp.utils.compile_js(fname, content_str)</tt></dt>
             <dd>Compiles the JS code <tt class="docutils literal">content_str</tt> as file name <tt class="docutils literal">fname</tt> (without loading
             anything from the filesystem), and returns it as a function. Very similar
