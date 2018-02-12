@@ -5438,7 +5438,7 @@
             <dt>auto</dt>
             <dd>auto-select (default)</dd>
             <dt>cocoa</dt>
-            <dd>Cocoa/OS X</dd>
+            <dd>Cocoa/OS X (deprecated, use --vo=opengl-cb instead)</dd>
             <dt>win</dt>
             <dd>Win32/WGL</dd>
             <dt>winvk</dt>
@@ -5805,12 +5805,15 @@
             we may have to deal with additional padding, which can be tested with these
             options). Could be removed any time.</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-early-flush=&lt;yes|no|auto&gt;</span></tt></dt>
-            <dd>Call <tt class="docutils literal">glFlush()</tt> after rendering a frame and before attempting to display
+            <dd><p class="first">Call <tt class="docutils literal">glFlush()</tt> after rendering a frame and before attempting to display
             it (default: auto). Can fix stuttering in some cases, in other cases
             probably causes it. The <tt class="docutils literal">auto</tt> mode will call <tt class="docutils literal">glFlush()</tt> only if
             the renderer is going to wait for a while after rendering, instead of
             flipping GL front and backbuffers immediately (i.e. it doesn't call it
-            in display-sync mode).</dd>
+            in display-sync mode).</p>
+            <p class="last">On OSX this is always deactivated because it only causes performance
+            problems and other regressions.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--gpu-dumb-mode=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd><p class="first">This mode is extremely restricted, and will disable most extended
             features. That includes high quality scalers and custom shaders!</p>
@@ -6743,7 +6746,9 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
-            <dd><p class="first">For use with libmpv direct OpenGL embedding; useless in any other contexts.
+            <dd><p class="first">For use with libmpv direct OpenGL embedding. As a special case, on OS X it
+            is used like a normal VO within mpv (cocoa-cb). Otherwise useless in any
+            other contexts.
             (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
             <p class="last">This also supports many of the options the <tt class="docutils literal">gpu</tt> VO has.</p>
             </dd>
