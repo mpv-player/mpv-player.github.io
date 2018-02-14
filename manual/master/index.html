@@ -186,9 +186,11 @@
             <dd>Activate/deactivate deinterlacer.</dd>
             <dt>A</dt>
             <dd>Cycle aspect ratio override.</dd>
+            <dt>Ctrl h</dt>
+            <dd>Toggle hardware video decoding on/off.</dd>
             </dl>
             <p>(The following keys are valid only when using a video output that supports the
-            corresponding adjustment, or the software equalizer (<tt class="docutils literal"><span class="pre">--vf=eq</span></tt>).)</p>
+            corresponding adjustment.)</p>
             <dl class="docutils">
             <dt>1 and 2</dt>
             <dd>Adjust contrast.</dd>
@@ -1847,11 +1849,12 @@
             if supported.</p>
             <p>This behaves exactly like the <tt class="docutils literal">deinterlace</tt> input property (usually
             mapped to <tt class="docutils literal">d</tt>).</p>
-            <p class="last">Keep in mind that this <strong>will</strong> conflict with manually inserted
+            <p>Keep in mind that this <strong>will</strong> conflict with manually inserted
             deinterlacing filters, unless you take care. (Since mpv 0.27.0, even the
             hardware deinterlace filters will conflict. Also since that version,
             <tt class="docutils literal"><span class="pre">--deinterlace=auto</span></tt> was removed, which used to mean that the default
             interlacing option of possibly inserted video filters was used.)</p>
+            <p class="last">Note that this will make video look worse if it's not actually interlaced.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--frames=&lt;number&gt;</span></tt></dt>
             <dd><p class="first">Play/convert only first <tt class="docutils literal">&lt;number&gt;</tt> video frames, then quit.</p>
@@ -7581,10 +7584,14 @@
             <dl class="last docutils">
             <dt>no</dt>
             <dd>Don't perform deinterlacing.</dd>
+            <dt>auto</dt>
+            <dd>Select the best quality deinterlacing algorithm (default). This
+            goes by the order of the options as documented, with
+            <tt class="docutils literal"><span class="pre">motion-compensated</span></tt> being considered best quality.</dd>
             <dt>first-field</dt>
             <dd>Show only first field.</dd>
             <dt>bob</dt>
-            <dd>bob deinterlacing (default).</dd>
+            <dd>bob deinterlacing.</dd>
             <dt>weave, motion-adaptive, motion-compensated</dt>
             <dd>Advanced deinterlacing algorithms. Whether these actually work
             depends on the GPU hardware, the GPU drivers, driver bugs, and
@@ -7596,9 +7603,9 @@
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
-            <tr class="field"><th class="field-name">no:</th><td class="field-body">Deinterlace all frames.</td>
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Deinterlace all frames (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Only deinterlace frames marked as interlaced (default).</td>
+            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Only deinterlace frames marked as interlaced.</td>
             </tr>
             </tbody>
             </table>
@@ -7667,7 +7674,7 @@
             <dd>Try to apply inverse telecine, needs motion adaptive temporal
             deinterlacing.</dd>
             <dt><tt class="docutils literal"><span class="pre">interlaced-only=&lt;yes|no&gt;</span></tt></dt>
-            <dd>If <tt class="docutils literal">yes</tt> (default), only deinterlace frames marked as interlaced.</dd>
+            <dd>If <tt class="docutils literal">yes</tt>, only deinterlace frames marked as interlaced (default: no).</dd>
             <dt><tt class="docutils literal"><span class="pre">hqscaling=&lt;0-9&gt;</span></tt></dt>
             <dd><dl class="first last docutils">
             <dt>0</dt>
@@ -7685,7 +7692,7 @@
             <dt><tt class="docutils literal"><span class="pre">deint=&lt;yes|no&gt;</span></tt></dt>
             <dd>Whether deinterlacing is enabled (default: no).</dd>
             <dt><tt class="docutils literal"><span class="pre">interlaced-only=&lt;yes|no&gt;</span></tt></dt>
-            <dd>If <tt class="docutils literal">yes</tt> (default), only deinterlace frames marked as interlaced.</dd>
+            <dd>If <tt class="docutils literal">yes</tt>, only deinterlace frames marked as interlaced (default: no).</dd>
             <dt><tt class="docutils literal"><span class="pre">mode=&lt;blend|bob|adaptive|mocomp|ivctc|none&gt;</span></tt></dt>
             <dd>Tries to select a video processor with the given processing capability.
             If a video processor supports multiple capabilities, it is not clear
