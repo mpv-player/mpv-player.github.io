@@ -5430,6 +5430,39 @@
             (default: no)</p>
             <p class="last">OS X only.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--macos-title-bar-style=&lt;dark|ultradark|light|mediumlight|auto&gt;</span></tt></dt>
+            <dd><p class="first">Sets the styling of the title bar (default: dark).
+            OS X and cocoa-cb only</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">dark:</th><td class="field-body">Dark title bar with vibrancy, a subtle blurring effect that
+            dynamically blends the background (Video) into the title bar.</td>
+            </tr>
+            <tr class="field"><th class="field-name">ultradark:</th><td class="field-body">Darker title bar with vibrancy (like QuickTime Player).</td>
+            </tr>
+            <tr class="field"><th class="field-name">light:</th><td class="field-body">Bright title bar with vibrancy.</td>
+            </tr>
+            <tr class="field"><th class="field-name">mediumlight:</th><td class="field-body">Less bright title bar with vibrancy.</td>
+            </tr>
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">Detects the system settings and sets the title bar styling
+            appropriately, either ultradark or mediumlight.</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--macos-fs-animation-duration=&lt;default|0-1000&gt;</span></tt></dt>
+            <dd>Sets the fullscreen resize animation duration in ms (default: default).
+            The default value is slightly less than the system's animation duration
+            (500ms) to prevent some problems when the end of an async animation happens
+            at the same time as the end of the system wide fullscreen animation. Setting
+            anything higher than 500ms will only prematurely cancel the resize animation
+            after the system wide animation ended. The upper limit is still set at
+            1000ms since it's possible that Apple or the user changes the system
+            defaults. Anything higher than 1000ms though seems too long and shouldn't be
+            set anyway.
+            OS X and cocoa-cb only</dd>
             <dt><tt class="docutils literal"><span class="pre">--android-surface-size=&lt;WxH&gt;</span></tt></dt>
             <dd><p class="first">Set dimensions of the rendering surface used by the Android gpu context.
             Needs to be set by the embedding application if the dimensions change during
@@ -5763,8 +5796,10 @@
             <dt><tt class="docutils literal"><span class="pre">--icc-profile-auto</span></tt></dt>
             <dd><p class="first">Automatically select the ICC display profile currently specified by the
             display settings of the operating system.</p>
-            <p class="last">NOTE: On Windows, the default profile must be an ICC profile. WCS profiles
+            <p>NOTE: On Windows, the default profile must be an ICC profile. WCS profiles
             are not supported.</p>
+            <p class="last">Applications using libmpv with the render API need to provide the ICC
+            profile via <tt class="docutils literal">MPV_RENDER_PARAM_ICC_PROFILE</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--icc-cache-dir=&lt;dirname&gt;</span></tt></dt>
             <dd><p class="first">Store and load the 3D LUTs created from the ICC profile in this directory.
@@ -6791,12 +6826,13 @@
             <dd>Specify the directory to save the image files to (default: <tt class="docutils literal">./</tt>).</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">opengl-cb</span></tt></dt>
-            <dd><p class="first">For use with libmpv direct OpenGL embedding. As a special case, on OS X it
+            <dt><tt class="docutils literal">libmpv</tt></dt>
+            <dd><p class="first">For use with libmpv direct embedding. As a special case, on OS X it
             is used like a normal VO within mpv (cocoa-cb). Otherwise useless in any
             other contexts.
-            (See <tt class="docutils literal">&lt;mpv/opengl_cb.h&gt;</tt>.)</p>
-            <p class="last">This also supports many of the options the <tt class="docutils literal">gpu</tt> VO has.</p>
+            (See <tt class="docutils literal">&lt;mpv/render.h&gt;</tt>.)</p>
+            <p class="last">This also supports many of the options the <tt class="docutils literal">gpu</tt> VO has, depending on the
+            backend.</p>
             </dd>
             <dt><tt class="docutils literal">rpi</tt> (Raspberry Pi)</dt>
             <dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
