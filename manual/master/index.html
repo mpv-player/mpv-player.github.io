@@ -607,6 +607,10 @@
             description (shown by <tt class="docutils literal"><span class="pre">--profile=help</span></tt>) can be defined with the
             <tt class="docutils literal"><span class="pre">profile-desc</span></tt> option. To end the profile, start another one or use the
             profile name <tt class="docutils literal">default</tt> to continue with normal options.</p>
+            <p>You can list profiles with <tt class="docutils literal"><span class="pre">--profile=help</span></tt>, and show the contents of a
+            profile with <tt class="docutils literal"><span class="pre">--show-profile=&lt;name&gt;</span></tt> (replace <tt class="docutils literal">&lt;name&gt;</tt> with the profile
+            name). You can apply profiles on start with the <tt class="docutils literal"><span class="pre">--profile=&lt;name&gt;</span></tt> option,
+            or at runtime with the <tt class="docutils literal"><span class="pre">apply-profile</span> &lt;name&gt;</tt> command.</p>
             <div class="admonition admonition-example-mpv-config-file-with-profiles">
             <p class="first admonition-title">Example mpv config file with profiles</p>
             <pre class="last literal-block">
@@ -719,6 +723,37 @@
             <em>additional</em> data buffered in the stream cache in kilobytes.
             (<tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt>, <tt class="docutils literal"><span class="pre">demuxer-cache-state</span></tt>, <tt class="docutils literal"><span class="pre">cache-used</span></tt>
             properties.)</li>
+            </ul>
+            </div>
+            <div class="section" id="low-latency-playback">
+            <h1>LOW LATENCY PLAYBACK</h1>
+            <p>mpv is optimized for normal video playback, meaning it actually tries to buffer
+            as much data as it seems to make sense. This will increase latency. Reducing
+            latency is possible only by specifically disabling features which increase
+            latency.</p>
+            <p>The builtin <tt class="docutils literal"><span class="pre">low-latency</span></tt> profile tries to apply some of the options which can
+            reduce latency. You can use  <tt class="docutils literal"><span class="pre">--profile=low-latency</span></tt> to apply all of them. You
+            can list the contents with <tt class="docutils literal"><span class="pre">--show-profile=low-latency</span></tt> (some of the options
+            are quite obscure, and may change every mpv release).</p>
+            <p>Be aware that some of the options can reduce playback quality.</p>
+            <p>Most latency is actually caused by inconvenient timing behavior. You can disable
+            this with <tt class="docutils literal"><span class="pre">--untimed</span></tt>, but it will likely break, unless the stream has no
+            audio, and the input feeds data to the player at a constant rate.</p>
+            <p>Another common problem is with MJPEG streams. These do not signal the correct
+            framerate. Using <tt class="docutils literal"><span class="pre">--untimed</span></tt> or <tt class="docutils literal"><span class="pre">--no-correct-pts</span> <span class="pre">--fps=60</span></tt> might help.</p>
+            <p>For livestreams, data can build up due to pausing the stream, due to slightly
+            lower playback rate, or &quot;buffering&quot; pauses. If the demuxer cache is enabled,
+            these can be skipped manually. The experimental <tt class="docutils literal"><span class="pre">drop-buffers</span></tt> command can
+            be used to discard any buffered data, though it's very disruptive.</p>
+            <p>In some cases, manually tuning TCP buffer sizes and such can help to reduce
+            latency.</p>
+            <p>Additional options that can be tried:</p>
+            <ul class="simple">
+            <li><tt class="docutils literal"><span class="pre">--opengl-glfinish=yes</span></tt>, can reduce buffering in the graphics driver</li>
+            <li><tt class="docutils literal"><span class="pre">--opengl-swapinterval=0</span></tt>, same</li>
+            <li><tt class="docutils literal"><span class="pre">--vo=xv</span></tt>, same</li>
+            <li>without audio <tt class="docutils literal"><span class="pre">--framedrop=no</span> <span class="pre">--speed=1.01</span></tt> may help for live sources
+            (results can be mixed)</li>
             </ul>
             </div>
             <div class="section" id="protocols">
@@ -1509,6 +1544,25 @@
             <p class="last"><tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> has its own code for the <tt class="docutils literal">vo</tt> framedrop mode. Slight
             differences to other VOs are possible.</p>
             </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-latency-hacks=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable some things which tend to reduce video latency by 1 or 2 frames
+            (default: no). Note that this option might be removed without notice once
+            the player's timing code does not inherently need to do these things
+            anymore.</p>
+            <p>This does:</p>
+            <ul class="last simple">
+            <li>Use the demuxer reported FPS for frame dropping. This avoids that the
+            player needs to decode 1 frame in advance, lowering total latency in
+            effect. This also means that if the demuxer reported FPS is wrong, or
+            the video filter chain changes FPS (e.g. deinterlacing), then it could
+            drop too many or not enough frames.</li>
+            <li>Disable waiting for the first video frame. Normally the player waits for
+            the first video frame to be fully rendered before starting playback
+            properly. Some VOs will lazily initialize stuff when rendering the first
+            frame, so if this is not done, there is some likeliness that the VO has
+            to drop some frames if rendering the first frame takes longer than needed.</li>
+            </ul>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--display-fps=&lt;fps&gt;</span></tt></dt>
             <dd><p class="first">Set the display FPS used with the <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> modes. By
@@ -3498,13 +3552,16 @@
             some checks. Give the demuxer name as printed by <tt class="docutils literal"><span class="pre">--demuxer=help</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-analyzeduration=&lt;value&gt;</span></tt></dt>
             <dd>Maximum length in seconds to analyze the stream properties.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-probe-info=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-probe-info=&lt;yes|no|auto|nostreams&gt;</span></tt></dt>
             <dd><p class="first">Whether to probe stream information (default: auto). Technically, this
             controls whether libavformat's <tt class="docutils literal">avformat_find_stream_info()</tt> function
             is called. Usually it's safer to call it, but it can also make startup
             slower.</p>
-            <p class="last">The <tt class="docutils literal">auto</tt> choice (the default) tries to skip this for a few know-safe
+            <p>The <tt class="docutils literal">auto</tt> choice (the default) tries to skip this for a few know-safe
             whitelisted formats, while calling it for everything else.</p>
+            <p class="last">The <tt class="docutils literal">nostreams</tt> choice only calls it if and only if the file seems to
+            contain no streams after opening (helpful in cases when calling the function
+            is needed to detect streams at all, such as with FLV files).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-probescore=&lt;1-100&gt;</span></tt></dt>
             <dd>Minimum required libavformat probe score. Lower values will require
