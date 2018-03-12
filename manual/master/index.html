@@ -99,12 +99,24 @@
             <dt>Ctrl+LEFT and Ctrl+RIGHT</dt>
             <dd>Seek to the previous/next subtitle. Subject to some restrictions and
             might not always work; see <tt class="docutils literal"><span class="pre">sub-seek</span></tt> command.</dd>
+            <dt>Ctrl+Shift+Left and Ctrl+Shift+Right</dt>
+            <dd>Adjust subtitle delay so that the next or previous subtitle is displayed
+            now. This is especially useful to sync subtitles to audio.</dd>
             <dt>[ and ]</dt>
             <dd>Decrease/increase current playback speed by 10%.</dd>
             <dt>{ and }</dt>
             <dd>Halve/double current playback speed.</dd>
             <dt>BACKSPACE</dt>
             <dd>Reset playback speed to normal.</dd>
+            <dt>Shift+BACKSPACE</dt>
+            <dd>Undo the last seek. This works only if the playlist entry was not changed.
+            Hitting it a second time will go back to the original position.
+            See <tt class="docutils literal"><span class="pre">revert-seek</span></tt> command for details.</dd>
+            <dt>Shift+Ctrl+BACKSPACE</dt>
+            <dd>Mark the current position. This will then be used by <tt class="docutils literal">Shift+BACKSPACE</tt>
+            as revert position (once you seek back, the marker will be reset). You can
+            use this to seek around in the file and then return to the exact position
+            where you left off.</dd>
             <dt>&lt; and &gt;</dt>
             <dd>Go backward/forward in the playlist.</dd>
             <dt>ENTER</dt>
@@ -140,8 +152,9 @@
             <dd>Exit fullscreen mode.</dd>
             <dt>T</dt>
             <dd>Toggle stay-on-top (see also <tt class="docutils literal"><span class="pre">--ontop</span></tt>).</dd>
-            <dt>w and e</dt>
-            <dd>Decrease/increase pan-and-scan range.</dd>
+            <dt>w and W</dt>
+            <dd>Decrease/increase pan-and-scan range. The <tt class="docutils literal">e</tt> key does the same as
+            <tt class="docutils literal">W</tt> currently, but use is discouraged.</dd>
             <dt>o (also P)</dt>
             <dd>Show progression bar, elapsed time and total duration on the OSD.</dd>
             <dt>O</dt>
@@ -150,8 +163,9 @@
             <dd>Toggle subtitle visibility.</dd>
             <dt>j and J</dt>
             <dd>Cycle through the available subtitles.</dd>
-            <dt>x and z</dt>
-            <dd>Adjust subtitle delay by +/- 0.1 seconds.</dd>
+            <dt>z and Z</dt>
+            <dd>Adjust subtitle delay by +/- 0.1 seconds. The <tt class="docutils literal">x</tt> key does the same as
+            <tt class="docutils literal">Z</tt> currently, but use is discouraged.</dd>
             <dt>l</dt>
             <dd>Set/clear A-B loop points. See <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command for details.</dd>
             <dt>L</dt>
@@ -165,8 +179,9 @@
             <dt>V</dt>
             <dd>Toggle subtitle VSFilter aspect compatibility mode. See
             <tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-aspect-compat</span></tt> for more info.</dd>
-            <dt>r and t</dt>
-            <dd>Move subtitles up/down.</dd>
+            <dt>r and R</dt>
+            <dd>Move subtitles up/down. The <tt class="docutils literal">t</tt> key does the same as <tt class="docutils literal">R</tt> currently, but
+            use is discouraged.</dd>
             <dt>s</dt>
             <dd>Take a screenshot.</dd>
             <dt>S</dt>
@@ -188,6 +203,18 @@
             <dd>Cycle aspect ratio override.</dd>
             <dt>Ctrl h</dt>
             <dd>Toggle hardware video decoding on/off.</dd>
+            <dt>Alt+LEFT, Alt+RIGHT, Alt+UP, Alt+DOWN</dt>
+            <dd>Move the video rectangle (panning).</dd>
+            <dt>Alt + and Alt -</dt>
+            <dd>Combining <tt class="docutils literal">Alt</tt> with the <tt class="docutils literal">+</tt> or <tt class="docutils literal">-</tt> keys changes video zoom.</dd>
+            <dt>Alt+BACKSPACE</dt>
+            <dd>Reset the pan/zoom settings.</dd>
+            <dt>F9</dt>
+            <dd>Show the playlist and the current position in it (useful only if a UI window
+            is used, broken on the terminal).</dd>
+            <dt>F10</dt>
+            <dd>Show the list of audio and subtitle streams (useful only if a UI window  is
+            used, broken on the terminal).</dd>
             </dl>
             <p>(The following keys are valid only when using a video output that supports the
             corresponding adjustment.)</p>
@@ -9371,10 +9398,12 @@
             redrawing and frame display being somewhat disconnected, and you might
             have to pause and force a redraw.</p>
             <p>Sub-properties:</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">video-frame-info/picture-type</span></tt>
-            <tt class="docutils literal"><span class="pre">video-frame-info/interlaced</span></tt>
-            <tt class="docutils literal"><span class="pre">video-frame-info/tff</span></tt>
-            <tt class="docutils literal"><span class="pre">video-frame-info/repeat</span></tt></p>
+            <pre class="last literal-block">
+            video-frame-info/picture-type
+            video-frame-info/interlaced
+            video-frame-info/tff
+            video-frame-info/repeat
+            </pre>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">container-fps</span></tt></dt>
             <dd><p class="first">Container FPS. This can easily contain bogus values. For videos that use
