@@ -2125,7 +2125,9 @@
             <p>While the option normally takes one of the strings as indicated by the
             methods above, you can also force the device for most AOs by building it
             manually. For example <tt class="docutils literal">name/foobar</tt> forces the AO <tt class="docutils literal">name</tt> to use the
-            device <tt class="docutils literal">foobar</tt>.</p>
+            device <tt class="docutils literal">foobar</tt>. However, the <tt class="docutils literal"><span class="pre">--ao</span></tt> option will strictly force a
+            specific AO. To avoid confusion, don't use <tt class="docutils literal"><span class="pre">--ao</span></tt> and <tt class="docutils literal"><span class="pre">--audio-device</span></tt>
+            together.</p>
             <div class="admonition admonition-example-for-alsa last">
             <p class="first admonition-title">Example for ALSA</p>
             <p>MPlayer and mplayer2 required you to replace any ',' with '.' and
@@ -6035,6 +6037,24 @@
             sync offsets occur, they will only take about 1 or 2 seconds to settle
             out. This delay in reaction time to sudden A/V offsets should be the only
             side effect of turning this option on, for all sound drivers.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-timing-offset=&lt;seconds&gt;</span></tt></dt>
+            <dd><p class="first">Control how long before video display target time the frame should be
+            rendered (default: 0.050). If a video frame should be displayed at a
+            certain time, the VO will start rendering the frame earlier, and then will
+            perform a blocking wait until the display time, and only then &quot;swap&quot; the
+            frame to display. The rendering cannot start before the previous frame is
+            displayed, so this value is implicitly limited by the video framerate. With
+            normal video frame rates, the default value will ensure that rendering is
+            always immediately started after the previous frame was displayed. On the
+            other hand, setting a too high value can reduce responsiveness with low
+            FPS value.</p>
+            <p>For client API users using the render API (or the deprecated <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>
+            API), this option is interesting, because you can stop the render API
+            from limiting your FPS (see <tt class="docutils literal">mpv_render_context_render()</tt> documentation).</p>
+            <p class="last">This applies only to audio timing modes (e.g. <tt class="docutils literal"><span class="pre">--video-sync=audio</span></tt>). In
+            other modes (<tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt>), video timing relies on vsync
+            blocking, and this option is not used.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-sync=&lt;audio|...&gt;</span></tt></dt>
             <dd><p class="first">How the player synchronizes audio and video.</p>
             <p>If you use this option, you usually want to set it to <tt class="docutils literal"><span class="pre">display-resample</span></tt>
