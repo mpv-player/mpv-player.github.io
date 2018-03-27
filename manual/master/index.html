@@ -6259,7 +6259,9 @@
             Stack video track 1 and 2 and play them at the same time. Note that
             both tracks need to have the same width, or filter initialization
             will fail (you can add <tt class="docutils literal">scale</tt> filters before the <tt class="docutils literal">vstack</tt> filter
-            to fix the size).</li>
+            to fix the size).
+            To load a video track from another file, you can use
+            <tt class="docutils literal"><span class="pre">--external-file=other.mkv</span></tt>.</li>
             <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [t1] [ao] ; [t1] showvolume [t2] ; [vid1] [t2] overlay [vo]'</tt>
             Play audio track 1, and overlay the measured volume for each speaker
             over video track 1.</li>
@@ -8721,39 +8723,8 @@
             and obscure way to handle events that require stricter coordination. There are
             no API stability guarantees made. Not following the protocol exactly can make
             the player freeze randomly. Basically, nobody should use this API.</p>
-            <p>There are two special commands involved. Also, the client must listen for
-            client messages (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt> in the C API).</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">hook-add</span> <span class="pre">&lt;hook-name&gt;</span> &lt;id&gt; &lt;priority&gt;</tt></dt>
-            <dd><p class="first">Subscribe to the hook identified by the first argument (basically, the
-            name of event). The <tt class="docutils literal">id</tt> argument is an arbitrary integer chosen by the
-            user. <tt class="docutils literal">priority</tt> is used to sort all hook handlers globally across all
-            clients. Each client can register multiple hook handlers (even for the
-            same hook-name). Once the hook is registered, it cannot be unregistered.</p>
-            <p>When a specific event happens, all registered handlers are run serially.
-            This uses a protocol every client has to follow explicitly. When a hook
-            handler is run, a client message (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt>) is sent to
-            the client which registered the hook. This message has the following
-            arguments:</p>
-            <ol class="arabic simple">
-            <li>the string <tt class="docutils literal">hook_run</tt></li>
-            <li>the <tt class="docutils literal">id</tt> argument the hook was registered with as string (this can be
-            used to correctly handle multiple hooks registered by the same client,
-            as long as the <tt class="docutils literal">id</tt> argument is unique in the client)</li>
-            <li>something undefined, used by the hook mechanism to track hook execution
-            (currently, it's the hook-name, but this might change without warning)</li>
-            </ol>
-            <p>Upon receiving this message, the client can handle the event. While doing
-            this, the player core will still react to requests, but playback will
-            typically be stopped.</p>
-            <p class="last">When the client is done, it must continue the core's hook execution by
-            running the <tt class="docutils literal"><span class="pre">hook-ack</span></tt> command.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">hook-ack</span> &lt;string&gt;</tt></dt>
-            <dd>Run the next hook in the global chain of hooks. The argument is the 3rd
-            argument of the client message that starts hook execution for the
-            current client.</dd>
-            </dl>
+            <p>The C API is described in the header files. The Lua API is described in the
+            Lua section.</p>
             <p>The following hooks are currently defined:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">on_load</tt></dt>
@@ -8783,6 +8754,45 @@
             <dt><tt class="docutils literal">on_unload</tt></dt>
             <dd>Run before closing a file, and before actually uninitializing
             everything. It's not possible to resume playback in this state.</dd>
+            </dl>
+            </div>
+            <div class="section" id="legacy-hook-api">
+            <h3>Legacy hook API</h3>
+            <div class="admonition warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">The legacy API is deprecated and will be removed soon.</p>
+            </div>
+            <p>There are two special commands involved. Also, the client must listen for
+            client messages (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt> in the C API).</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">hook-add</span> <span class="pre">&lt;hook-name&gt;</span> &lt;id&gt; &lt;priority&gt;</tt></dt>
+            <dd><p class="first">Subscribe to the hook identified by the first argument (basically, the
+            name of event). The <tt class="docutils literal">id</tt> argument is an arbitrary integer chosen by the
+            user. <tt class="docutils literal">priority</tt> is used to sort all hook handlers globally across all
+            clients. Each client can register multiple hook handlers (even for the
+            same hook-name). Once the hook is registered, it cannot be unregistered.</p>
+            <p>When a specific event happens, all registered handlers are run serially.
+            This uses a protocol every client has to follow explicitly. When a hook
+            handler is run, a client message (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt>) is sent to
+            the client which registered the hook. This message has the following
+            arguments:</p>
+            <ol class="arabic simple">
+            <li>the string <tt class="docutils literal">hook_run</tt></li>
+            <li>the <tt class="docutils literal">id</tt> argument the hook was registered with as string (this can be
+            used to correctly handle multiple hooks registered by the same client,
+            as long as the <tt class="docutils literal">id</tt> argument is unique in the client)</li>
+            <li>something undefined, used by the hook mechanism to track hook execution</li>
+            </ol>
+            <p>Upon receiving this message, the client can handle the event. While doing
+            this, the player core will still react to requests, but playback will
+            typically be stopped.</p>
+            <p class="last">When the client is done, it must continue the core's hook execution by
+            running the <tt class="docutils literal"><span class="pre">hook-ack</span></tt> command.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">hook-ack</span> &lt;string&gt;</tt></dt>
+            <dd>Run the next hook in the global chain of hooks. The argument is the 3rd
+            argument of the client message that starts hook execution for the
+            current client.</dd>
             </dl>
             </div>
             </div>
@@ -11045,7 +11055,7 @@
             with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.get_wakeup_pipe()</tt></dt>
             <dd>Calls <tt class="docutils literal">mpv_get_wakeup_pipe()</tt> and returns the read end of the wakeup
-            pipe. (See <tt class="docutils literal">client.h</tt> for details.)</dd>
+            pipe. This is deprecated, but still works. (See <tt class="docutils literal">client.h</tt> for details.)</dd>
             <dt><tt class="docutils literal">mp.get_next_timeout()</tt></dt>
             <dd>Return the relative time in seconds when the next timer (<tt class="docutils literal">mp.add_timeout</tt>
             and similar) expires. If there is no timer, return <tt class="docutils literal">nil</tt>.</dd>
