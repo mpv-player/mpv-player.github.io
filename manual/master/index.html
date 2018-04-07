@@ -10360,7 +10360,7 @@
             <div class="section" id="configuration">
             <h2>Configuration</h2>
             <p>The OSC offers limited configuration through a config file
-            <tt class="docutils literal"><span class="pre">lua-settings/osc.conf</span></tt> placed in mpv's user dir and through the
+            <tt class="docutils literal"><span class="pre">script-opts/osc.conf</span></tt> placed in mpv's user dir and through the
             <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line option. Options provided through the command-line
             will override those from the config file.</p>
             <div class="section" id="config-syntax">
@@ -10581,7 +10581,7 @@
             </div>
             <div class="section" id="id2">
             <h2>Configuration</h2>
-            <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">lua-settings/stats.conf</span></tt>
+            <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/stats.conf</span></tt>
             placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
             option. The configuration syntax is described in <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a>.</p>
             <div class="section" id="id3">
@@ -11148,7 +11148,7 @@
             read_options(options, &quot;myscript&quot;)
             print(options.optionA)
             </pre>
-            <p>The config file will be stored in <tt class="docutils literal"><span class="pre">lua-settings/identifier.conf</span></tt> in mpv's user
+            <p>The config file will be stored in <tt class="docutils literal"><span class="pre">script-opts/identifier.conf</span></tt> in mpv's user
             folder. Comment lines can be started with # and stray spaces are not removed.
             Boolean values will be represented with yes/no.</p>
             <p>Example config:</p>
@@ -11464,15 +11464,15 @@
             otherwise, the documented Lua options, script directories, loading, etc apply to
             JavaScript files too.</p>
             <p>Script initialization and lifecycle is the same as with Lua, and most of the Lua
-            functions at the modules <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt> and <tt class="docutils literal">mp.msg</tt> are available to
-            JavaScript with identical APIs - including running commands, getting/setting
-            properties, registering events/key-bindings/property-changes/hooks, etc.</p>
+            functions at the modules <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt>, <tt class="docutils literal">mp.msg</tt> and <tt class="docutils literal">mp.options</tt> are
+            available to JavaScript with identical APIs - including running commands,
+            getting/setting properties, registering events/key-bindings/hooks, etc.</p>
             </div>
             <div class="section" id="differences-from-lua">
             <h2>Differences from Lua</h2>
-            <p>No need to load modules. <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt> and <tt class="docutils literal">mp.msg</tt> are preloaded, and
-            you can use e.g. <tt class="docutils literal">var cwd = <span class="pre">mp.utils.getcwd();</span></tt> without prior setup.
-            <tt class="docutils literal">mp.options</tt> is currently not implemented, but <tt class="docutils literal"><span class="pre">mp.get_opt(...)</span></tt> is.</p>
+            <p>No need to load modules. <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt>,  <tt class="docutils literal">mp.msg</tt> and <tt class="docutils literal">mp.options</tt>
+            are preloaded, and you can use e.g. <tt class="docutils literal">var cwd = <span class="pre">mp.utils.getcwd();</span></tt> without
+            prior setup.</p>
             <p>Errors are slightly different. Where the Lua APIs return <tt class="docutils literal">nil</tt> for error,
             the JavaScript ones return <tt class="docutils literal">undefined</tt>. Where Lua returns <tt class="docutils literal">something, error</tt>
             JavaScript returns only <tt class="docutils literal">something</tt> - and makes <tt class="docutils literal">error</tt> available via
@@ -11496,8 +11496,6 @@
             <h2>Unsupported Lua APIs and their JS alternatives</h2>
             <p><tt class="docutils literal">mp.add_timeout(seconds, fn)</tt>  JS: <tt class="docutils literal">id = setTimeout(fn, ms)</tt></p>
             <p><tt class="docutils literal">mp.add_periodic_timer(seconds, fn)</tt>  JS: <tt class="docutils literal">id = setInterval(fn, ms)</tt></p>
-            <p><tt class="docutils literal">mp.register_idle(fn)</tt>  JS: <tt class="docutils literal">id = setTimeout(fn)</tt></p>
-            <p><tt class="docutils literal">mp.unregister_idle(fn)</tt>  JS:  <tt class="docutils literal">clearTimeout(id)</tt></p>
             <p><tt class="docutils literal">utils.parse_json(str [, trail])</tt>  JS: <tt class="docutils literal">JSON.parse(str)</tt></p>
             <p><tt class="docutils literal">utils.format_json(v)</tt>  JS: <tt class="docutils literal">JSON.stringify(v)</tt></p>
             <p><tt class="docutils literal">utils.to_string(v)</tt>  see <tt class="docutils literal">dump</tt> below.</p>
@@ -11506,7 +11504,6 @@
             <p><tt class="docutils literal">mp.resume_all()</tt> JS: none (deprecated).</p>
             <p><tt class="docutils literal">mp.get_next_timeout()</tt> see event loop below.</p>
             <p><tt class="docutils literal"><span class="pre">mp.dispatch_events([allow_wait])</span></tt> see event loop below.</p>
-            <p><tt class="docutils literal">mp.options</tt> module is not implemented currently for JS.</p>
             </div>
             <div class="section" id="scripting-apis-identical-to-lua">
             <h2>Scripting APIs - identical to Lua</h2>
@@ -11537,6 +11534,8 @@
             <p><tt class="docutils literal">mp.get_script_name()</tt></p>
             <p><tt class="docutils literal">mp.osd_message(text [,duration])</tt></p>
             <p><tt class="docutils literal">mp.get_wakeup_pipe()</tt></p>
+            <p><tt class="docutils literal">mp.register_idle(fn)</tt></p>
+            <p><tt class="docutils literal">mp.unregister_idle(fn)</tt></p>
             <p><tt class="docutils literal">mp.enable_messages(level)</tt></p>
             <p><tt class="docutils literal">mp.register_script_message(name, fn)</tt></p>
             <p><tt class="docutils literal">mp.unregister_script_message(name)</tt></p>
@@ -11557,6 +11556,7 @@
             <p><tt class="docutils literal">mp.utils.subprocess_detached(t)</tt></p>
             <p><tt class="docutils literal">mp.utils.getpid()</tt> (LE)</p>
             <p><tt class="docutils literal">mp.add_hook(type, priority, fn)</tt></p>
+            <p><tt class="docutils literal">mp.options.read_options(obj [, identifier])</tt> (types: string/boolean/number)</p>
             </div>
             <div class="section" id="additional-utilities">
             <h2>Additional utilities</h2>
@@ -11620,7 +11620,7 @@
             event loop iteration or at a later event loop iteration. This is true also for
             intervals - which also never call back twice at the same event loop iteration.</p>
             <p>Additionally, timers are processed after the event queue is empty, so it's valid
-            to use <tt class="docutils literal">setTimeout(fn)</tt> instead of Lua's <tt class="docutils literal">mp.register_idle(fn)</tt>.</p>
+            to use <tt class="docutils literal">setTimeout(fn)</tt> as a one-time idle observer.</p>
             </div>
             <div class="section" id="commonjs-modules-and-require-id">
             <h2>CommonJS modules and <tt class="docutils literal">require(id)</tt></h2>
@@ -11662,6 +11662,10 @@
                         wait = 0;
                     } else {
                         wait = mp.process_timers() / 1000;
+                        if (wait != 0) {
+                            mp.notify_idle_observers();
+                            wait = mp.peek_timers_wait() / 1000;
+                        }
                     }
                 } while (mp.keep_running);
             }
@@ -11676,6 +11680,11 @@
             <p><tt class="docutils literal">mp.process_timers()</tt> calls back the already-added, non-canceled due timers,
             and returns the duration in ms till the next due timer (possibly 0), or -1 if
             there are no pending timers. Must not be called recursively.</p>
+            <p><tt class="docutils literal">mp.notify_idle_observers()</tt> calls back the idle observers, which we do when
+            we're about to sleep (wait != 0), but the observers may add timers or take
+            non-negligible duration to complete, so we re-calculate <tt class="docutils literal">wait</tt> afterwards.</p>
+            <p><tt class="docutils literal">mp.peek_timers_wait()</tt> returns the same values as <tt class="docutils literal">mp.process_timers()</tt>
+            but without doing anything. Invalid result if called from a timer callback.</p>
             <p>Note: <tt class="docutils literal">exit()</tt> is also registered for the <tt class="docutils literal">shutdown</tt> event, and its
             implementation is a simple <tt class="docutils literal">mp.keep_running = false</tt>.</p>
             </div>
@@ -12161,7 +12170,7 @@
             <tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt> option, and the player will
             add the media filename to the contents of the resume config file.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/lua-settings/osc.conf</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/script-opts/osc.conf</span></tt></dt>
             <dd><p class="first">This is loaded by the OSC script. See the <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a> docs
             for details.</p>
             <p class="last">Other files in this directory are specific to the corresponding scripts
