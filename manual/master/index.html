@@ -1806,6 +1806,17 @@
             <p class="last">Deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> if you really need this. If both
             are specified, <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> wins.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--cuda-decode-device=&lt;auto|0..&gt;</span></tt></dt>
+            <dd><p class="first">Choose the GPU device used for decoding when using the <tt class="docutils literal">cuda</tt> hwdec.</p>
+            <p>By default, the device that is being used to provide OpenGL output will
+            also be used for decoding (and in the vast majority of cases, only one
+            GPU will be present).</p>
+            <p class="last">Note that when using the <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> hwdec, a different option must be
+            passed: <tt class="docutils literal"><span class="pre">--vd-lavc-o=gpu=&lt;0..&gt;</span></tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vaapi-device=&lt;device</span> file&gt;</tt></dt>
+            <dd>Choose the DRM device for <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>. This should be the path to a
+            DRM device file. (Default: <tt class="docutils literal">/dev/dri/renderD128</tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
             <dd><p class="first">Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
             video to make it fit a 4:3 display without black bands). The range
@@ -6000,14 +6011,6 @@
             startup performance on these platforms.</p>
             <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
             stick around indefinitely.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--cuda-decode-device=&lt;auto|0..&gt;</span></tt></dt>
-            <dd><p class="first">Choose the GPU device used for decoding when using the <tt class="docutils literal">cuda</tt> hwdec.</p>
-            <p>By default, the device that is being used to provide OpenGL output will
-            also be used for decoding (and in the vast majority of cases, only one
-            GPU will be present).</p>
-            <p class="last">Note that when using the <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> hwdec, a different option must be
-            passed: <tt class="docutils literal"><span class="pre">--vd-lavc-o=gpu=&lt;0..&gt;</span></tt>.</p>
             </dd>
             </dl>
             </div>
