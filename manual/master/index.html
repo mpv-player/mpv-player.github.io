@@ -6382,12 +6382,20 @@
             <dd>Native Mac OS X audio output driver using direct device access and
             exclusive mode (bypasses the sound server).</dd>
             <dt><tt class="docutils literal">openal</tt></dt>
-            <dd><p class="first">Experimental OpenAL audio output driver</p>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This driver is not very useful. Playing multi-channel audio with
-            it is slow.</p>
-            </div>
+            <dd><p class="first">OpenAL audio output driver</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">--openal-num-buffers=&lt;2-128&gt;</span></tt></dt>
+            <dd>Specify the number of audio buffers to use. Lower values are better for
+            lower CPU usage. Default: 4.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--openal-num-samples=&lt;256-32768&gt;</span></tt></dt>
+            <dd>Specify the number of complete samples to use for each buffer. Higher
+            values are better for lower CPU usage. Default: 8192.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--openal-direct-channels=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Enable OpenAL Soft's direct channel extension when available to avoid
+            tinting the sound with ambisonics or HRTF.
+            Channels are dropped when when they are not available as downmixing
+            will be disabled. Default: no.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal">pulse</tt></dt>
             <dd><p class="first">PulseAudio audio output driver</p>
