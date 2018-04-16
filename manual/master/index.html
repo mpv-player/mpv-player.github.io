@@ -2415,9 +2415,10 @@
             changes, the audio device is closed and reopened. This means that
             you will normally get gapless audio with files that were encoded
             using the same settings, but might not be gapless in other cases.
-            (Unlike with <tt class="docutils literal">yes</tt>, you don't have to worry about corner cases
-            like the first file setting a very low quality output format, and
-            ruining the playback of higher quality files that follow.)</td>
+            The exact conditions under which the audio device is kept open is
+            an implementation detail, and can change from version to version.
+            Currently, the device is kept even if the sample format changes,
+            but the sample formats are convertible.</td>
             </tr>
             </tbody>
             </table>
@@ -4865,6 +4866,18 @@
             this case you should always force the same layout with <tt class="docutils literal"><span class="pre">--audio-channels</span></tt>,
             or it will work only for files which use the layout implicit to your
             ALSA device).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-buffer-time=&lt;microseconds&gt;</span></tt></dt>
+            <dd><p class="first">Set the requested buffer time in microseconds. A value of 0 skips requesting
+            anything from the ALSA API. This and the <tt class="docutils literal"><span class="pre">--alsa-periods</span></tt> option uses the
+            ALSA <tt class="docutils literal">near</tt> functions to set the requested parameters. If doing so results
+            in an empty configuration set, setting these parameters is skipped.</p>
+            <p class="last">Both options control the buffer size. A low buffer size can lead to higher
+            CPU usage and audio dropouts, while a high buffer size can lead to higher
+            latency in volume changes and other filtering.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--alsa-periods=&lt;number&gt;</span></tt></dt>
+            <dd>Number of periods requested from the ALSA API. See <tt class="docutils literal"><span class="pre">--alsa-buffer-time</span></tt>
+            for further remarks.</dd>
             </dl>
             </div>
             <div class="section" id="gpu-renderer-options">
@@ -6408,7 +6421,7 @@
             <dd>Set the audio buffer size in milliseconds. A higher value buffers
             more data, and has a lower probability of buffer underruns. A smaller
             value makes the audio stream react faster, e.g. to playback speed
-            changes. Default: 250.</dd>
+            changes.</dd>
             <dt><tt class="docutils literal"><span class="pre">--pulse-latency-hacks=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Enable hacks to workaround PulseAudio timing bugs (default: no). If
             enabled, mpv will do elaborate latency calculations on its own. If
@@ -7271,6 +7284,18 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">o=&lt;string&gt;</span></tt></dt>
             <dd>AVOptions.</dd>
+            <dt><tt class="docutils literal"><span class="pre">fix-pts=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Determine PTS based on sample count (default: no). If this is enabled,
+            the player won't rely on libavfilter passing through PTS accurately.
+            Instead, it pass a sample count as PTS to libavfilter, and compute the
+            PTS used by mpv based on that and the input PTS. This helps with filters
+            which output a recomputed PTS instead of the original PTS (including
+            filters which require the PTS to start at 0). mpv normally expects
+            filters to not touch the PTS (or only to the extent of changing frame
+            boundaries), so this is not the default, but it will be needed to use
+            broken filters. In practice, these broken filters will either cause slow
+            A/V desync over time (with some files), or break playback completely if
+            you seek or start playback from the middle of a file.</dd>
             </dl>
             </dd>
             </dl>
