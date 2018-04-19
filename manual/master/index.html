@@ -8733,7 +8733,9 @@
             merely sets all option values listed within the profile.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">load-script</span> &quot;&lt;path&gt;&quot;</tt></dt>
-            <dd>Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option.</dd>
+            <dd>Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option. Whether this waits for
+            the script to finish initialization or not changed multiple times, and the
+            future behavior is left undefined.</dd>
             <dt><tt class="docutils literal"><span class="pre">change-list</span> &quot;&lt;option&gt;&quot; &quot;&lt;operation&gt;&quot; &quot;&lt;value&gt;&quot;</tt></dt>
             <dd><p class="first">This command changes list options as described in <a class="reference internal" href="#list-options">List Options</a>. The
             <tt class="docutils literal">&lt;option&gt;</tt> parameter is the normal option name, while <tt class="docutils literal">&lt;operation&gt;</tt> is
@@ -10781,7 +10783,10 @@
             (and <tt class="docutils literal">mp_event_loop</tt> is called), or the script calls <tt class="docutils literal">mp_event_loop</tt> or
             <tt class="docutils literal">mp.dispatch_events</tt> directly. This is done to make it possible for a script
             to fully setup event handlers etc. before playback actually starts. In older
-            mpv versions, this happened asynchronously.</p>
+            mpv versions, this happened asynchronously. With mpv 0.29.0, this changes
+            slightly, and it merely waits for scripts to be loaded in this manner before
+            starting playback as part of the player initialization phase. Scripts run though
+            initialization in parallel. This might change again.</p>
             </div>
             <div class="section" id="mp-functions">
             <h2>mp functions</h2>
