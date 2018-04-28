@@ -2023,21 +2023,19 @@
             (default: 3). If this is a number, then fallback will be triggered if
             N frames fail to decode in a row. 1 is equivalent to <tt class="docutils literal">yes</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-dr=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Enable direct rendering (default: no). If this is set to <tt class="docutils literal">yes</tt>, the
+            <dd><p class="first">Enable direct rendering (default: yes). If this is set to <tt class="docutils literal">yes</tt>, the
             video will be decoded directly to GPU video memory (or staging buffers).
             This can speed up video upload, and may help with large resolutions or
             slow hardware. This works only with the following VOs:</p>
             <blockquote>
             <ul class="simple">
-            <li><tt class="docutils literal">gpu</tt>: requires at least OpenGL 4.4.</li>
+            <li><tt class="docutils literal">gpu</tt>: requires at least OpenGL 4.4 or Vulkan.</li>
             </ul>
             </blockquote>
-            <p>(In particular, this can't be made work with <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>.)</p>
-            <p>Using video filters of any kind that write to the image data (or output
+            <p>(In particular, this can't be made work with <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, but the libmpv
+            render API has optional support.)</p>
+            <p class="last">Using video filters of any kind that write to the image data (or output
             newly allocated frames) will silently disable the DR code path.</p>
-            <p class="last">There are some corner cases that will result in undefined behavior (crashes
-            and other strange behavior) if this option is enabled. These are pending
-            towards being fixed properly at a later point.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-bitexact</span></tt></dt>
             <dd>Only use bit-exact algorithms in all decoding steps (for codec testing).</dd>
@@ -3120,7 +3118,7 @@
             depending on what the user provided with the <tt class="docutils literal">screen</tt> option.</p>
             <div class="admonition admonition-note-x11">
             <p class="first admonition-title">Note (X11)</p>
-            <p class="last">This option does works properly only with window managers which
+            <p class="last">This option works properly only with window managers which
             understand the EWMH <tt class="docutils literal">_NET_WM_FULLSCREEN_MONITORS</tt> hint.</p>
             </div>
             <div class="admonition admonition-note-os-x">
@@ -7943,9 +7941,8 @@
             <dd>Enables encoding mode and specifies the output file name.</dd>
             <dt><tt class="docutils literal"><span class="pre">--of=&lt;format&gt;</span></tt></dt>
             <dd>Specifies the output format (overrides autodetection by the file name
-            extension of the file specified by <tt class="docutils literal"><span class="pre">-o</span></tt>). This can be a comma separated
-            list of possible formats to try. See <tt class="docutils literal"><span class="pre">--of=help</span></tt> for a full list of
-            supported formats.</dd>
+            extension of the file specified by <tt class="docutils literal"><span class="pre">-o</span></tt>). See <tt class="docutils literal"><span class="pre">--of=help</span></tt> for a full
+            list of supported formats.</dd>
             <dt><tt class="docutils literal"><span class="pre">--ofopts=&lt;options&gt;</span></tt></dt>
             <dd><p class="first">Specifies the output format options for libavformat.
             See <tt class="docutils literal"><span class="pre">--ofopts=help</span></tt> for a full list of supported options.</p>
@@ -7985,9 +7982,8 @@
             around this, use a high-fps time base using <tt class="docutils literal"><span class="pre">--ofps</span></tt> and absolutely
             avoid <tt class="docutils literal"><span class="pre">--oautofps</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--oac=&lt;codec&gt;</span></tt></dt>
-            <dd>Specifies the output audio codec. This can be a comma separated list of
-            possible codecs to try. See <tt class="docutils literal"><span class="pre">--oac=help</span></tt> for a full list of supported
-            codecs.</dd>
+            <dd>Specifies the output audio codec. See <tt class="docutils literal"><span class="pre">--oac=help</span></tt> for a full list of
+            supported codecs.</dd>
             <dt><tt class="docutils literal"><span class="pre">--oaoffset=&lt;value&gt;</span></tt></dt>
             <dd>Shifts audio data by the given time (in seconds) by adding/removing
             samples at the start. Deprecated.</dd>
@@ -8019,9 +8015,8 @@
             <dd>Force the audio stream to become the first stream in the output.
             By default, the order is unspecified. Deprecated.</dd>
             <dt><tt class="docutils literal"><span class="pre">--ovc=&lt;codec&gt;</span></tt></dt>
-            <dd>Specifies the output video codec. This can be a comma separated list of
-            possible codecs to try. See <tt class="docutils literal"><span class="pre">--ovc=help</span></tt> for a full list of supported
-            codecs.</dd>
+            <dd>Specifies the output video codec. See <tt class="docutils literal"><span class="pre">--ovc=help</span></tt> for a full list of
+            supported codecs.</dd>
             <dt><tt class="docutils literal"><span class="pre">--ovoffset=&lt;value&gt;</span></tt></dt>
             <dd>Shifts video data by the given time (in seconds) by shifting the pts
             values. Deprecated.</dd>
@@ -8545,18 +8540,13 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">cycle-values</span> <span class="pre">[&quot;!reverse&quot;]</span> &lt;property&gt; &quot;&lt;value1&gt;&quot; &quot;&lt;value2&gt;&quot; ...</tt></dt>
             <dd><p class="first">Cycle through a list of values. Each invocation of the command will set the
-            given property to the next value in the list. The command maintains an
-            internal counter which value to pick next, and which is initially 0. It is
-            reset to 0 once the last value is reached.</p>
-            <p>The internal counter is associated using the property name and the value
-            list. If multiple commands (bound to different keys) use the same name
-            and value list, they will share the internal counter.</p>
-            <p>The special argument <tt class="docutils literal">!reverse</tt> can be used to cycle the value list in
-            reverse. Compared with a command that just lists the value in reverse, this
-            command will actually share the internal counter with the forward-cycling
-            key binding (as long as the rest of the arguments are the same).</p>
-            <p class="last">Note that there is a static limit of (as of this writing) 10 arguments
-            (this limit could be raised on demand).</p>
+            given property to the next value in the list. The command will use the
+            current value of the property/option, and use it to determine the current
+            position in the list of values. Once it has found it, it will set the
+            next value in the list (wrapping around to the first item if needed).</p>
+            <p class="last">The special argument <tt class="docutils literal">!reverse</tt> can be used to cycle the value list in
+            reverse. The only advantage is that you don't need to reverse the value
+            list yourself when adding a second key binding for cycling backwards.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">enable-section</span> &quot;&lt;section&gt;&quot; [flags]</tt></dt>
             <dd><p class="first">Enable all key bindings in the named input section.</p>
