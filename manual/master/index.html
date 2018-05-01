@@ -1003,15 +1003,6 @@
             streamed with youtube-dl, because it saves bandwidth. This is done by
             setting the ytdl_format to &quot;bestaudio/best&quot; in the ytdl_hook.lua script.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ff-aid=&lt;ID|auto|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--ff-sid=&lt;ID|auto|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--ff-vid=&lt;ID|auto|no&gt;</span></tt></dt>
-            <dd><p class="first">Select audio/subtitle/video streams by the FFmpeg stream index. The FFmpeg
-            stream index is relatively arbitrary, but useful when interacting with
-            other software using FFmpeg (consider <tt class="docutils literal">ffprobe</tt>).</p>
-            <p>Note that with external tracks (added with <tt class="docutils literal"><span class="pre">--sub-files</span></tt> and similar
-            options), there will be streams with duplicate IDs. In this case, the
-            first stream in order is selected.</p>
-            <p class="last">Deprecated.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--edition=&lt;ID|auto&gt;</span></tt></dt>
             <dd>(Matroska files only)
             Specify the edition (set of chapters) to use, where 0 is the first. If set
@@ -1793,18 +1784,6 @@
             videotoolbox is known to require <tt class="docutils literal">uyvy422</tt> for good performance on some
             older hardware. d3d11va can always use <tt class="docutils literal">yuv420p</tt>, which uses an opaque
             format, with likely no advantages.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--videotoolbox-format=&lt;name&gt;</span></tt></dt>
-            <dd><p class="first">Set the internal pixel format used by <tt class="docutils literal"><span class="pre">--hwdec=videotoolbox</span></tt> on OSX. The
-            choice of the format can influence performance considerably. On the other
-            hand, there doesn't appear to be a good way to detect the best format for
-            the given hardware. <tt class="docutils literal">nv12</tt>, the default, works better on modern hardware,
-            while <tt class="docutils literal">uyvy422</tt> appears to be better for old hardware. <tt class="docutils literal">yuv420p</tt> also
-            works.
-            Since mpv 0.25.0, <tt class="docutils literal">no</tt> is an accepted value, which lets the decoder pick
-            the format on newer FFmpeg versions (will use <tt class="docutils literal">nv12</tt> on older versions).</p>
-            <p class="last">Deprecated. Use <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> if you really need this. If both
-            are specified, <tt class="docutils literal"><span class="pre">--hwdec-image-format</span></tt> wins.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cuda-decode-device=&lt;auto|0..&gt;</span></tt></dt>
             <dd><p class="first">Choose the GPU device used for decoding when using the <tt class="docutils literal">cuda</tt> hwdec.</p>
