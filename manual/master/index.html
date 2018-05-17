@@ -5400,7 +5400,7 @@
             <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--glsl-shaders-append</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--deband</span></tt></dt>
             <dd>Enable the debanding algorithm. This greatly reduces the amount of visible
-            banding, blocking and other quantization artifacts, at the expensive of
+            banding, blocking and other quantization artifacts, at the expense of
             very slightly blurring some of the finest details. In practice, it's
             virtually always an improvement - the only reason to disable it would be
             for performance.</dd>
@@ -5680,7 +5680,9 @@
             are:</p>
             <dl class="last docutils">
             <dt>auto</dt>
-            <dd>Disable any adaptation (default)</dd>
+            <dd>Disable any adaptation, except for atypical color spaces. Specifically,
+            wide/unusual gamuts get automatically adapted to BT.709, while standard
+            gamut (i.e. BT.601 and BT.709) content is not touched. (default)</dd>
             <dt>bt.470m</dt>
             <dd>ITU-R BT.470 M</dd>
             <dt>bt.601-525</dt>
@@ -5713,7 +5715,9 @@
             Valid values are:</p>
             <dl class="docutils">
             <dt>auto</dt>
-            <dd>Disable any adaptation (default)</dd>
+            <dd>Disable any adaptation, except for atypical transfers. Specifically,
+            HDR or linear light source material gets automatically converted to
+            gamma 2.2, while SDR content is not touched. (default)</dd>
             <dt>bt.1886</dt>
             <dd>ITU-R BT.1886 curve (assuming infinite contrast)</dd>
             <dt>srgb</dt>
