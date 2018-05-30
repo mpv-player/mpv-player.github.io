@@ -884,7 +884,9 @@
             <p><tt class="docutils literal"><span class="pre">fd://123</span></tt></p>
             <blockquote>
             Read data from the given file descriptor (for example 123). This is similar
-            to piping data to stdin via <tt class="docutils literal">-</tt>, but can use an arbitrary file descriptor.</blockquote>
+            to piping data to stdin via <tt class="docutils literal">-</tt>, but can use an arbitrary file descriptor.
+            mpv may modify some file descriptor properties when the stream layer &quot;opens&quot;
+            it.</blockquote>
             <p><tt class="docutils literal"><span class="pre">fdclose://123</span></tt></p>
             <blockquote>
             Like <tt class="docutils literal"><span class="pre">fd://</span></tt>, but the file descriptor is closed after use. When using this
@@ -1915,8 +1917,8 @@
             determined using a fixed framerate value (either using the <tt class="docutils literal"><span class="pre">--fps</span></tt>
             option, or using file information). Sometimes, files with very broken
             timestamps can be played somewhat well in this mode. Note that video
-            filters, subtitle rendering and audio synchronization can be completely
-            broken in this mode.</dd>
+            filters, subtitle rendering, seeking (including hr-seeks and backstepping),
+            and audio synchronization can be completely broken in this mode.</dd>
             <dt><tt class="docutils literal"><span class="pre">--fps=&lt;float&gt;</span></tt></dt>
             <dd><p class="first">Override video framerate. Useful if the original value is wrong or missing.</p>
             <div class="admonition note last">
@@ -3407,8 +3409,7 @@
             startup and turns it on again on exit (default: yes). The screensaver is
             always re-enabled when the player is paused.</p>
             <p class="last">This is not supported on all video outputs or platforms. Sometimes it is
-            implemented, but does not work (known to happen with GNOME). You might be
-            able to work around this using <tt class="docutils literal"><span class="pre">--heartbeat-cmd</span></tt> instead.</p>
+            implemented, but does not work (especially with Linux &quot;desktops&quot;).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--wid=&lt;ID&gt;</span></tt></dt>
             <dd><p class="first">This tells mpv to attach to an existing window. If a VO is selected that
@@ -3600,11 +3601,6 @@
             by explicitly checking for them. Most of these compensate for weird or
             imperfect behavior from libavformat demuxers. Passing <tt class="docutils literal">no</tt> disables
             these. For debugging and testing only.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-genpts-mode=&lt;no|lavf&gt;</span></tt></dt>
-            <dd>Mode for deriving missing packet PTS values from packet DTS. <tt class="docutils literal">lavf</tt>
-            enables libavformat's <tt class="docutils literal">genpts</tt> option. <tt class="docutils literal">no</tt> disables it. This used
-            to be enabled by default, but then it was deemed as not needed anymore.
-            Enabling this might help with timestamp problems, or make them worse.</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-o=&lt;key&gt;=&lt;value&gt;[,&lt;key&gt;=&lt;value&gt;[,...]]</span></tt></dt>
             <dd><p class="first">Pass AVOptions to libavformat demuxer.</p>
             <p>Note, a patch to make the <em>o=</em> unneeded and pass all unknown options
@@ -3754,10 +3750,13 @@
             stream or the stream cache is enabled).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-thread=&lt;yes|no&gt;</span></tt></dt>
-            <dd>Run the demuxer in a separate thread, and let it prefetch a certain amount
-            of packets (default: yes). Having this enabled may lead to smoother
-            playback, but on the other hand can add delays to seeking or track
-            switching.</dd>
+            <dd><p class="first">Run the demuxer in a separate thread, and let it prefetch a certain amount
+            of packets (default: yes). Having this enabled leads to smoother playback,
+            enables features like prefetching, and prevents that stuck network freezes
+            the player. On the other hand, it can add overhead, or the background
+            prefetching can hog CPU resources.</p>
+            <p class="last">Disabling this option is not recommended. Use it for debugging only.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-readahead-secs=&lt;seconds&gt;</span></tt></dt>
             <dd><p class="first">If <tt class="docutils literal"><span class="pre">--demuxer-thread</span></tt> is enabled, this controls how much the demuxer
             should buffer ahead in seconds (default: 1). As long as no packet has
@@ -4721,6 +4720,12 @@
             </pre>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--http-proxy=&lt;proxy&gt;</span></tt></dt>
+            <dd>URL of the HTTP/HTTPS proxy. If this is set, the <tt class="docutils literal">http_proxy</tt> environment
+            is ignored. The <tt class="docutils literal">no_proxy</tt> environment variable is still respected. This
+            option is silently ignored if it does not start with <tt class="docutils literal"><span class="pre">http://</span></tt>. Proxies
+            are not used for https URLs. Setting this option does not try to make the
+            ytdl script use the proxy.</dd>
             <dt><tt class="docutils literal"><span class="pre">--tls-ca-file=&lt;filename&gt;</span></tt></dt>
             <dd>Certificate authority database file for use with TLS. (Silently fails with
             older FFmpeg or Libav versions.)</dd>
@@ -11814,13 +11819,7 @@
             </pre>
             </dd>
             <dt><tt class="docutils literal">set_property_string</tt></dt>
-            <dd><p class="first">Like <tt class="docutils literal">set_property</tt>, but the argument value must be passed as string.</p>
-            <p>Example:</p>
-            <pre class="last literal-block">
-            { &quot;command&quot;: [&quot;set_property_string&quot;, &quot;pause&quot;, &quot;yes&quot;] }
-            { &quot;error&quot;: &quot;success&quot; }
-            </pre>
-            </dd>
+            <dd>Alias for <tt class="docutils literal">set_property</tt>. Both commands accept native values and strings.</dd>
             <dt><tt class="docutils literal">observe_property</tt></dt>
             <dd><p class="first">Watch a property for changes. If the given property is changed, then an
             event of type <tt class="docutils literal"><span class="pre">property-change</span></tt> will be generated</p>
