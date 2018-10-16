@@ -209,12 +209,16 @@
             <dd>Combining <tt class="docutils literal">Alt</tt> with the <tt class="docutils literal">+</tt> or <tt class="docutils literal">-</tt> keys changes video zoom.</dd>
             <dt>Alt+BACKSPACE</dt>
             <dd>Reset the pan/zoom settings.</dd>
-            <dt>F9</dt>
+            <dt>F8</dt>
             <dd>Show the playlist and the current position in it (useful only if a UI window
             is used, broken on the terminal).</dd>
-            <dt>F10</dt>
+            <dt>F9</dt>
             <dd>Show the list of audio and subtitle streams (useful only if a UI window  is
             used, broken on the terminal).</dd>
+            <dt>i and I</dt>
+            <dd>Show/toggle an overlay displaying statistics about the currently playing
+            file such as codec, framerate, number of dropped frames and so on. See
+            <a class="reference internal" href="#stats">STATS</a> for more information.</dd>
             </dl>
             <p>(The following keys are valid only when using a video output that supports the
             corresponding adjustment.)</p>
@@ -1444,16 +1448,13 @@
             not just the one that the script is named after. This requires a recent
             version of youtube-dl to be installed on the system. (Enabled by default.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
-            <p>The <cite>try_ytdl_first</cite> script option accepts a boolean 'yes' or 'no', and if
+            <p>The <tt class="docutils literal">try_ytdl_first</tt> script option accepts a boolean 'yes' or 'no', and if
             'yes' will try parsing the URL with youtube-dl first, instead of the default
             where it's only after mpv failed to open it. This mostly depends on whether
             most of your URLs need youtube-dl parsing.</p>
-            <p>The <cite>exclude</cite> script option accepts a <tt class="docutils literal">|</tt>-separated list of URL patterns
+            <p>The <tt class="docutils literal">exclude</tt> script option accepts a <tt class="docutils literal">|</tt>-separated list of URL patterns
             which mpv should not use with youtube-dl. The patterns are matched after
             the <tt class="docutils literal"><span class="pre">http(s)://</span></tt> part of the URL.</p>
-            <p>The <cite>use_manifests</cite> script option makes mpv use the master manifest URL for
-            formats like HLS and DASH, if available, allowing for video/audio selection
-            in runtime. It's disabled (&quot;no&quot;) by default for performance reasons.</p>
             <p><tt class="docutils literal">^</tt> matches the beginning of the URL, <tt class="docutils literal">$</tt> matches its end, and you
             should use <tt class="docutils literal">%</tt> before any of the characters <tt class="docutils literal"><span class="pre">^$()%|,.[]*+-?</span></tt> to match
             that character.</p>
@@ -1467,7 +1468,10 @@
             will exclude any URL that ends with <tt class="docutils literal">.mkv</tt> or <tt class="docutils literal">.mp4</tt>.</li>
             </ul>
             </div>
-            <p class="last">See more lua patterns here: <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
+            <p>See more lua patterns here: <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
+            <p class="last">The <tt class="docutils literal">use_manifests</tt> script option makes mpv use the master manifest URL for
+            formats like HLS and DASH, if available, allowing for video/audio selection
+            in runtime. It's disabled (&quot;no&quot;) by default for performance reasons.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ytdl-format=&lt;best|worst|mp4|webm|...&gt;</span></tt></dt>
             <dd>Video format/quality that is directly passed to youtube-dl. The possible
@@ -5521,6 +5525,14 @@
             (default: no)</p>
             <p class="last">OS X only.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--cocoa-cb-sw-renderer=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">Use the Apple Software Renderer when using cocoa-cb (default: auto). If set
+            to <tt class="docutils literal">no</tt> the software renderer is never used and instead fails when a the
+            usual pixel format could not be created, <tt class="docutils literal">yes</tt> will always only use the
+            software renderer, and <tt class="docutils literal">auto</tt> only falls back to the software renderer
+            when the usual pixel format couldn't be created.</p>
+            <p class="last">OS X only.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--macos-title-bar-style=&lt;dark|ultradark|light|mediumlight|auto&gt;</span></tt></dt>
             <dd><p class="first">Sets the styling of the title bar (default: dark).
             OS X and cocoa-cb only</p>
@@ -5649,12 +5661,15 @@
             contexts. Note that this only imposes a limit on context creation APIs, the
             actual OpenGL context may still have a higher OpenGL version. (Default: 0)</dd>
             <dt><tt class="docutils literal"><span class="pre">--fbo-format=&lt;fmt&gt;</span></tt></dt>
-            <dd>Selects the internal format of textures used for FBOs. The format can
+            <dd><p class="first">Selects the internal format of textures used for FBOs. The format can
             influence performance and quality of the video output. <tt class="docutils literal">fmt</tt> can be one
             of: rgb8, rgb10, rgb10_a2, rgb16, rgb16f, rgb32f, rgba12, rgba16, rgba16f,
-            rgba16hf, rgba32f. Default: <tt class="docutils literal">auto</tt>, which maps to rgba16 on desktop GL,
-            and rgba16f or rgb10_a2 on GLES (e.g. ANGLE), unless GL_EXT_texture_norm16
-            is available.</dd>
+            rgba16hf, rgba32f.</p>
+            <p class="last">Default: <tt class="docutils literal">auto</tt>, which first attempts to utilize 16bit float
+            (rgba16f, rgba16hf), and falls back to rgba16 if those are not available.
+            Finally, attempts to utilize rgb10_a2 or rgba8 if all of the previous formats
+            are not available.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--gamma-factor=&lt;0.1..2.0&gt;</span></tt></dt>
             <dd><p class="first">Set an additional raw gamma factor (default: 1.0). If gamma is adjusted in
             other ways (like with the <tt class="docutils literal"><span class="pre">--gamma</span></tt> option or key bindings and the
@@ -5815,7 +5830,7 @@
             desaturating everything. Developed by John Hable for use in video
             games. Use this when you care about detail preservation more than
             color/brightness accuracy. This is roughly equivalent to
-            <tt class="docutils literal"><span class="pre">--hdr-tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>. If possible,
+            <tt class="docutils literal"><span class="pre">--tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>. If possible,
             you should also enable <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> for the best results.
             (Default)</dd>
             <dt>gamma</dt>
@@ -7005,7 +7020,7 @@
             This option only has effect when using the drm_prime renderer (which
             supports several layers) together with <tt class="docutils literal">vo=gpu</tt> and <tt class="docutils literal"><span class="pre">gpu-context=drm</span></tt>.
             (default: first overlay plane)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--drm-format=&lt;xrgb8888,xrgb2101010&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--drm-format=&lt;xrgb8888|xrgb2101010&gt;</span></tt></dt>
             <dd><p class="first">Select the DRM format to use (default: xrgb8888). This allows you to
             choose the bit depth of the DRM mode. xrgb8888 is your usual 24 bit per
             pixel/8 bits per channel packed RGB format with 8 bits of padding.
@@ -7313,7 +7328,7 @@
             <p>Before the filter name, a label can be specified with <tt class="docutils literal">&#64;name:</tt>, where
             name is an arbitrary user-given name, which identifies the filter. This
             is only needed if you want to toggle the filter at runtime.</p>
-            <p>A <tt class="docutils literal">!</tt> before the filter name means the filter is enabled by default. It
+            <p>A <tt class="docutils literal">!</tt> before the filter name means the filter is disabled by default. It
             will be skipped on filter creation. This is also useful for runtime filter
             toggling.</p>
             <p>See the <tt class="docutils literal">vf</tt> command (and <tt class="docutils literal">toggle</tt> sub-command) for further explanations
@@ -8351,7 +8366,7 @@
             <dt><tt class="docutils literal"><span class="pre">print-text</span> &quot;&lt;string&gt;&quot;</tt></dt>
             <dd>Print text to stdout. The string can contain properties (see
             <a class="reference internal" href="#property-expansion">Property Expansion</a>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">show-text</span> &quot;&lt;string&gt;&quot; <span class="pre">[&lt;duration&gt;|-</span> <span class="pre">[&lt;level&gt;]]</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">show-text</span> &quot;&lt;string&gt;&quot; <span class="pre">[&lt;duration&gt;|-1</span> <span class="pre">[&lt;level&gt;]]</span></tt></dt>
             <dd><p class="first">Show text on the OSD. The string can contain properties, which are expanded
             as described in <a class="reference internal" href="#property-expansion">Property Expansion</a>. This can be used to show playback
             time, filename, and so on.</p>
