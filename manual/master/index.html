@@ -10733,9 +10733,13 @@
             </dd>
             <dt><tt class="docutils literal">seekbarstyle</tt></dt>
             <dd><p class="first">Default: bar</p>
-            <p class="last">Sets the style of the seekbar, slider (diamond marker), knob (circle
-            marker with guide), or bar (fill).
-            Default pre-0.21.0 was 'slider'.</p>
+            <p class="last">Sets the style of the playback position marker and overall shape
+            of the seekbar: <tt class="docutils literal">bar</tt>, <tt class="docutils literal">diamond</tt> or <tt class="docutils literal">knob</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal">seekbarhandlesize</tt></dt>
+            <dd><p class="first">Default: 0.6</p>
+            <p class="last">Size ratio of the seek handle if <tt class="docutils literal">seekbarstyle</tt> is set to <tt class="docutils literal">dimaond</tt>
+            or <tt class="docutils literal">knob</tt>. This is relative to the full height of the seekbar.</p>
             </dd>
             <dt><tt class="docutils literal">seekbarkeyframes</tt></dt>
             <dd><p class="first">Default: yes</p>
@@ -10744,6 +10748,25 @@
             will be used instead. Keyframes are preferred, but exact seeks may be
             useful in cases where keyframes cannot be found. Note that using exact
             seeks can potentially make mouse dragging much slower.</p>
+            </dd>
+            <dt><tt class="docutils literal">seekrangestyle</tt></dt>
+            <dd><p class="first">Default: inverted</p>
+            <p class="last">Display seekable ranges on the seekbar. <tt class="docutils literal">bar</tt> shows them on the full
+            height of the bar, <tt class="docutils literal">line</tt> as a thick line and <tt class="docutils literal">inverted</tt> as a thin
+            line that is inverted over playback position markers. <tt class="docutils literal">none</tt> will hide
+            them. Additionally, <tt class="docutils literal">slider</tt> will show a permanent handle inside the seekbar
+            with cached ranges marked inside. Note that these will look differently
+            based on the seekbarstyle option. Also, <tt class="docutils literal">slider</tt> does not work with
+            <tt class="docutils literal">seekbarstyle</tt> set to <tt class="docutils literal">bar</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal">seekrangeseparate</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Controls whether to show line-style seekable ranges on top of the
+            seekbar or separately if <tt class="docutils literal">seekbarstyle</tt> is set to <tt class="docutils literal">bar</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal">seekrangealpha</tt></dt>
+            <dd><p class="first">Default: 200</p>
+            <p class="last">Alpha of the seekable ranges, 0 (opaque) to 255 (fully transparent).</p>
             </dd>
             <dt><tt class="docutils literal">deadzonesize</tt></dt>
             <dd><p class="first">Default: 0.5</p>
@@ -10827,10 +10850,6 @@
             <dt><tt class="docutils literal">timems</tt></dt>
             <dd><p class="first">Default: no</p>
             <p class="last">Display timecodes with milliseconds</p>
-            </dd>
-            <dt><tt class="docutils literal">seekranges</tt></dt>
-            <dd><p class="first">Default: yes</p>
-            <p class="last">Display seekable ranges on the seekbar</p>
             </dd>
             <dt><tt class="docutils literal">visibility</tt></dt>
             <dd><p class="first">Default: auto (auto hide/show on mouse move)</p>
