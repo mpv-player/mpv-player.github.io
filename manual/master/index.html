@@ -11878,10 +11878,13 @@
             <h2>Scripting APIs - identical to Lua</h2>
             <p>(LE) - Last-Error, indicates that <tt class="docutils literal">mp.last_error()</tt> can be used after the
             call to test for success (empty string) or failure (non empty reason string).
-            Otherwise, where the Lua APIs return <tt class="docutils literal">nil</tt> on error, JS returns <tt class="docutils literal">undefined</tt>.</p>
+            Where the Lua APIs use <tt class="docutils literal">nil</tt> to indicate error, JS APIs use <tt class="docutils literal">undefined</tt>.</p>
             <p><tt class="docutils literal">mp.command(string)</tt> (LE)</p>
             <p><tt class="docutils literal">mp.commandv(arg1, arg2, <span class="pre">...)</span></tt> (LE)</p>
             <p><tt class="docutils literal">mp.command_native(table [,def])</tt> (LE)</p>
+            <p><tt class="docutils literal">id = mp.command_native_async(table [,fn])</tt> (LE) Notes: <tt class="docutils literal">id</tt> is true-thy on
+            success, <tt class="docutils literal">fn</tt> is called always a-sync, <tt class="docutils literal">error</tt> is empty string on success.</p>
+            <p><tt class="docutils literal">mp.abort_async_command(id)</tt></p>
             <p><tt class="docutils literal">mp.get_property(name [,def])</tt> (LE)</p>
             <p><tt class="docutils literal">mp.get_property_osd(name [,def])</tt> (LE)</p>
             <p><tt class="docutils literal">mp.get_property_bool(name [,def])</tt> (LE)</p>
