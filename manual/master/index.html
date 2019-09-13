@@ -524,24 +524,6 @@
             tree and play the longest title.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
-            <p>DVD library choices</p>
-            <p class="last">mpv uses a different default DVD library than MPlayer. MPlayer
-            uses libdvdread by default, and mpv uses libdvdnav by default.
-            Both libraries are developed in parallel, but libdvdnav is
-            intended to support more sophisticated DVD features such as menus
-            and multi-angle playback. mpv uses libdvdnav for files specified
-            as either <tt class="docutils literal"><span class="pre">dvd://...</span></tt> or <tt class="docutils literal"><span class="pre">dvdnav://...</span></tt>. To use libdvdread,
-            which will produce behavior more like MPlayer, specify
-            <tt class="docutils literal"><span class="pre">dvdread://...</span></tt> instead. Some users have experienced problems
-            when using libdvdnav, in which playback gets stuck in a DVD menu
-            stream. These problems are reported to go away when auto-selecting
-            the title (<tt class="docutils literal"><span class="pre">dvd://</span></tt> rather than <tt class="docutils literal"><span class="pre">dvd://1</span></tt>) or when using
-            libdvdread (e.g. <tt class="docutils literal"><span class="pre">dvdread://0</span></tt>). There are also outstanding bugs
-            in libdvdnav with seeking backwards and forwards in a video
-            stream. Specify <tt class="docutils literal"><span class="pre">dvdread://...</span></tt> to fix such problems.</p>
-            </div>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
             <p>DVD subtitles</p>
             <p class="last">DVDs use image-based subtitles. Image subtitles are implemented as
             a bitmap video stream which can be superimposed over the main
@@ -4418,181 +4400,6 @@
             <dd>Prepend module name to each console message.</dd>
             <dt><tt class="docutils literal"><span class="pre">--msg-time</span></tt></dt>
             <dd>Prepend timing information to each console message.</dd>
-            </dl>
-            </div>
-            <div class="section" id="tv">
-            <h2>TV</h2>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">--tv-...</span></tt></dt>
-            <dd>These options tune various properties of the TV capture module. For
-            watching TV with mpv, use <tt class="docutils literal"><span class="pre">tv://</span></tt> or <tt class="docutils literal"><span class="pre">tv://&lt;channel_number&gt;</span></tt> or
-            even <tt class="docutils literal"><span class="pre">tv://&lt;channel_name&gt;</span></tt> (see option <tt class="docutils literal"><span class="pre">tv-channels</span></tt> for <tt class="docutils literal">channel_name</tt>
-            below) as a media URL. You can also use <tt class="docutils literal"><span class="pre">tv:///&lt;input_id&gt;</span></tt> to start
-            watching a video from a composite or S-Video input (see option <tt class="docutils literal">input</tt> for
-            details).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-device=&lt;value&gt;</span></tt></dt>
-            <dd>Specify TV device (default: <tt class="docutils literal">/dev/video0</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-channel=&lt;value&gt;</span></tt></dt>
-            <dd>Set tuner to &lt;value&gt; channel.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--no-tv-audio</span></tt></dt>
-            <dd>no sound</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-automute=&lt;0-255&gt;</span> (v4l and v4l2 only)</tt></dt>
-            <dd>If signal strength reported by device is less than this value, audio
-            and video will be muted. In most cases automute=100 will be enough.
-            Default is 0 (automute disabled).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-driver=&lt;value&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--tv=driver=help</span></tt> for a list of compiled-in TV input drivers.
-            available: dummy, v4l2 (default: autodetect)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-input=&lt;value&gt;</span></tt></dt>
-            <dd>Specify input (default: 0 (TV), see console output for available
-            inputs).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-freq=&lt;value&gt;</span></tt></dt>
-            <dd>Specify the frequency to set the tuner to (e.g. 511.250). Not
-            compatible with the channels parameter.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-outfmt=&lt;value&gt;</span></tt></dt>
-            <dd>Specify the output format of the tuner with a preset value supported
-            by the V4L driver (YV12, UYVY, YUY2, I420) or an arbitrary format given
-            as hex value.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-width=&lt;value&gt;</span></tt></dt>
-            <dd>output window width</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-height=&lt;value&gt;</span></tt></dt>
-            <dd>output window height</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-fps=&lt;value&gt;</span></tt></dt>
-            <dd>framerate at which to capture video (frames per second)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-buffersize=&lt;value&gt;</span></tt></dt>
-            <dd>maximum size of the capture buffer in megabytes (default: dynamical)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-norm=&lt;value&gt;</span></tt></dt>
-            <dd><p class="first">See the console output for a list of all available norms.</p>
-            <p class="last">See also: <tt class="docutils literal"><span class="pre">--tv-normid</span></tt>.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-normid=&lt;value&gt;</span> (v4l2 only)</tt></dt>
-            <dd>Sets the TV norm to the given numeric ID. The TV norm depends on the
-            capture card. See the console output for a list of available TV norms.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-chanlist=&lt;value&gt;</span></tt></dt>
-            <dd>available: argentina, australia, china-bcast, europe-east,
-            europe-west, france, ireland, italy, japan-bcast, japan-cable,
-            newzealand, russia, southafrica, us-bcast, us-cable, us-cable-hrc</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-channels=&lt;chan&gt;-&lt;name&gt;[=&lt;norm&gt;],&lt;chan&gt;-&lt;name&gt;[=&lt;norm&gt;],...</span></tt></dt>
-            <dd><p class="first">Set names for channels.</p>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">If &lt;chan&gt; is an integer greater than 1000, it will be treated as
-            frequency (in kHz) rather than channel name from frequency table.
-            Use _ for spaces in names (or play with quoting ;-) ). The channel
-            names will then be written using OSD, and the input commands
-            <tt class="docutils literal">tv_step_channel</tt>, <tt class="docutils literal">tv_set_channel</tt> and <tt class="docutils literal">tv_last_channel</tt>
-            will be usable for a remote control. Not compatible with
-            the <tt class="docutils literal">frequency</tt> parameter.</p>
-            </div>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">The channel number will then be the position in the 'channels'
-            list, beginning with 1.</p>
-            </div>
-            <div class="admonition admonition-examples last">
-            <p class="first admonition-title">Examples</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">tv://1</span></tt>, <tt class="docutils literal"><span class="pre">tv://TV1</span></tt>, <tt class="docutils literal">tv_set_channel 1</tt>,
-            <tt class="docutils literal">tv_set_channel TV1</tt></p>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-[brightness|contrast|hue|saturation]=&lt;-100-100&gt;</span></tt></dt>
-            <dd>Set the image equalizer on the card.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-audiorate=&lt;value&gt;</span></tt></dt>
-            <dd>Set input audio sample rate.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-forceaudio</span></tt></dt>
-            <dd>Capture audio even if there are no audio sources reported by v4l.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-alsa</span></tt></dt>
-            <dd>Capture from ALSA.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-amode=&lt;0-3&gt;</span></tt></dt>
-            <dd><p class="first">Choose an audio mode:</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">0:</th><td class="field-body">mono</td>
-            </tr>
-            <tr class="field"><th class="field-name">1:</th><td class="field-body">stereo</td>
-            </tr>
-            <tr class="field"><th class="field-name">2:</th><td class="field-body">language 1</td>
-            </tr>
-            <tr class="field"><th class="field-name">3:</th><td class="field-body">language 2</td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-forcechan=&lt;1-2&gt;</span></tt></dt>
-            <dd>By default, the count of recorded audio channels is determined
-            automatically by querying the audio mode from the TV card. This option
-            allows forcing stereo/mono recording regardless of the amode option
-            and the values returned by v4l. This can be used for troubleshooting
-            when the TV card is unable to report the current audio mode.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-adevice=&lt;value&gt;</span></tt></dt>
-            <dd>Set an audio device. &lt;value&gt; should be <tt class="docutils literal">/dev/xxx</tt> for OSS and a
-            hardware ID for ALSA. You must replace any ':' by a '.' in the
-            hardware ID for ALSA.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-audioid=&lt;value&gt;</span></tt></dt>
-            <dd>Choose an audio output of the capture card, if it has more than one.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-[volume|bass|treble|balance]=&lt;0-100&gt;</span></tt></dt>
-            <dd>These options set parameters of the mixer on the video capture card.
-            They will have no effect, if your card does not have one. For v4l2 50
-            maps to the default value of the control, as reported by the driver.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-gain=&lt;0-100&gt;</span></tt></dt>
-            <dd>Set gain control for video devices (usually webcams) to the desired
-            value and switch off automatic control. A value of 0 enables automatic
-            control. If this option is omitted, gain control will not be modified.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-immediatemode=&lt;bool&gt;</span></tt></dt>
-            <dd>A value of 0 means capture and buffer audio and video together. A
-            value of 1 (default) means to do video capture only and let the audio
-            go through a loopback cable from the TV card to the sound card.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-mjpeg</span></tt></dt>
-            <dd>Use hardware MJPEG compression (if the card supports it). When using
-            this option, you do not need to specify the width and height of the
-            output window, because mpv will determine it automatically from
-            the decimation value (see below).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-decimation=&lt;1|2|4&gt;</span></tt></dt>
-            <dd><p class="first">choose the size of the picture that will be compressed by hardware
-            MJPEG compression:</p>
-            <table class="last docutils field-list" frame="void" rules="none">
-            <col class="field-name" />
-            <col class="field-body" />
-            <tbody valign="top">
-            <tr class="field"><th class="field-name">1:</th><td class="field-body"><p class="first">full size</p>
-            <ul class="simple">
-            <li>704x576 PAL</li>
-            <li>704x480 NTSC</li>
-            </ul>
-            </td>
-            </tr>
-            <tr class="field"><th class="field-name">2:</th><td class="field-body"><p class="first">medium size</p>
-            <ul class="simple">
-            <li>352x288 PAL</li>
-            <li>352x240 NTSC</li>
-            </ul>
-            </td>
-            </tr>
-            <tr class="field"><th class="field-name">4:</th><td class="field-body"><p class="first">small size</p>
-            <ul class="last simple">
-            <li>176x144 PAL</li>
-            <li>176x120 NTSC</li>
-            </ul>
-            </td>
-            </tr>
-            </tbody>
-            </table>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-quality=&lt;0-100&gt;</span></tt></dt>
-            <dd>Choose the quality of the JPEG compression (&lt; 60 recommended for full
-            size).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-scan-autostart</span></tt></dt>
-            <dd>Begin channel scanning immediately after startup (default: disabled).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-scan-period=&lt;0.1-2.0&gt;</span></tt></dt>
-            <dd>Specify delay in seconds before switching to next channel (default:
-            0.5). Lower values will cause faster scanning, but can detect inactive
-            TV channels as active.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--tv-scan-threshold=&lt;1-100&gt;</span></tt></dt>
-            <dd>Threshold value for the signal strength (in percent), as reported by
-            the device (default: 50). A signal strength higher than this value will
-            indicate that the currently scanning channel is active.</dd>
             </dl>
             </div>
             <div class="section" id="cache">
@@ -9035,8 +8842,7 @@
             </div>
             </dd>
             </dl>
-            <p>Undocumented commands: <tt class="docutils literal"><span class="pre">tv-last-channel</span></tt> (TV/DVB only),
-            <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
+            <p>Undocumented commands: <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
             <div class="section" id="hooks">
             <h3>Hooks</h3>
             <p>Hooks are synchronous events between player core and a script or similar. This
@@ -9280,7 +9086,6 @@
             property.</dd>
             <dt><tt class="docutils literal"><span class="pre">media-title</span></tt></dt>
             <dd><p class="first">If the currently played file has a <tt class="docutils literal">title</tt> tag, use that.</p>
-            <p>Otherwise, if the media type is DVD, return the volume ID of DVD.</p>
             <p class="last">Otherwise, return the <tt class="docutils literal">filename</tt> property.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">file-format</span></tt></dt>
@@ -9371,34 +9176,6 @@
             <dt><tt class="docutils literal">edition</tt> (RW)</dt>
             <dd>Current MKV edition number. Setting this property to a different value will
             restart playback. The number of the first edition is 0.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disc-titles</span></tt></dt>
-            <dd><p class="first">Number of BD/DVD titles.</p>
-            <p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based edition
-            index.</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">disc-titles/count</span></tt></dt>
-            <dd>Number of titles.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disc-titles/id</span></tt></dt>
-            <dd>Title ID as integer. Currently, this is the same as the title index.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disc-titles/length</span></tt></dt>
-            <dd>Length in seconds. Can be unavailable in a number of cases (currently
-            it works for libdvdnav only).</dd>
-            </dl>
-            <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
-            or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
-            the following contents:</p>
-            <pre class="last literal-block">
-            MPV_FORMAT_NODE_ARRAY
-                MPV_FORMAT_NODE_MAP (for each edition)
-                    &quot;id&quot;                MPV_FORMAT_INT64
-                    &quot;length&quot;            MPV_FORMAT_DOUBLE
-            </pre>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">disc-title-list</span></tt></dt>
-            <dd>List of BD/DVD titles.</dd>
-            <dt><tt class="docutils literal"><span class="pre">disc-title</span></tt> (RW)</dt>
-            <dd>Current BD/DVD title number. Writing works only for <tt class="docutils literal"><span class="pre">dvdnav://</span></tt> and
-            <tt class="docutils literal"><span class="pre">bd://</span></tt> (and aliases for these).</dd>
             <dt><tt class="docutils literal">chapters</tt></dt>
             <dd>Number of chapters.</dd>
             <dt><tt class="docutils literal">editions</tt></dt>
@@ -9431,8 +9208,6 @@
                     &quot;default&quot;           MPV_FORMAT_FLAG
             </pre>
             </dd>
-            <dt><tt class="docutils literal">angle</tt> (RW)</dt>
-            <dd>Current DVD angle.</dd>
             <dt><tt class="docutils literal">metadata</tt></dt>
             <dd><p class="first">Metadata key/value pairs.</p>
             <p>If the property is accessed with Lua's <tt class="docutils literal">mp.get_property_native</tt>, this
@@ -9824,23 +9599,12 @@
             different from the window size in some cases.</dd>
             <dt><tt class="docutils literal"><span class="pre">osd-par</span></tt></dt>
             <dd>Last known OSD display pixel aspect (can be 0).</dd>
-            <dt><tt class="docutils literal">program</tt> (W)</dt>
-            <dd>Switch TS program (write-only).</dd>
-            <dt><tt class="docutils literal"><span class="pre">dvb-channel</span></tt> (W)</dt>
-            <dd>Pair of integers: card,channel of current DVB stream.
-            Can be switched to switch to another channel on the same card.</dd>
-            <dt><tt class="docutils literal"><span class="pre">dvb-channel-name</span></tt> (RW)</dt>
-            <dd>Name of current DVB program.
-            On write, a channel-switch to the named channel on the same
-            card is performed. Can also be used for channel switching.</dd>
             <dt><tt class="docutils literal"><span class="pre">sub-text</span></tt></dt>
             <dd><p class="first">Return the current subtitle text. Formatting is stripped. If a subtitle
             is selected, but no text is currently visible, or the subtitle is not
             text-based (i.e. DVD/BD subtitles), an empty string is returned.</p>
             <p class="last">This property is experimental and might be removed in the future.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">tv-brightness</span></tt>, <tt class="docutils literal"><span class="pre">tv-contrast</span></tt>, <tt class="docutils literal"><span class="pre">tv-saturation</span></tt>, <tt class="docutils literal"><span class="pre">tv-hue</span></tt> (RW)</dt>
-            <dd>TV stuff.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
             <dd>Current position on playlist. The first entry is on position 0. Writing
             to the property will restart playback at the written entry.</dd>
