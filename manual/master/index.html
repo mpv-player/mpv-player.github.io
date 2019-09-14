@@ -1874,19 +1874,6 @@
             rotation metadata. (The rotation value is added to the rotation metadata,
             which means the value <tt class="docutils literal">0</tt> would rotate the video according to the
             rotation metadata.)</dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-stereo-mode=&lt;no|mode&gt;</span></tt></dt>
-            <dd><p class="first">Set the stereo 3D output mode (default: <tt class="docutils literal">mono</tt>). This is mostly broken and
-            thus deprecated.</p>
-            <p>The pseudo-mode <tt class="docutils literal">no</tt> disables automatic conversion completely.</p>
-            <p>The mode <tt class="docutils literal">mono</tt> is an alias to <tt class="docutils literal">ml</tt>, which refers to the left frame in
-            2D. This is the default, which means mpv will try to show 3D movies in 2D,
-            instead of the mangled 3D image not intended for consumption (such as
-            showing the left and right frame side by side, etc.).</p>
-            <p class="last">Use <tt class="docutils literal"><span class="pre">--video-stereo-mode=help</span></tt> to list all available modes. Check with
-            the <tt class="docutils literal">stereo3d</tt> filter documentation to see what the names mean. Note that
-            some names refer to modes not supported by <tt class="docutils literal">stereo3d</tt> - these modes can
-            appear in files, but can't be handled properly by mpv.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-zoom=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Adjust the video display scale factor by the given value. The parameter is
             given log 2. For example, <tt class="docutils literal"><span class="pre">--video-zoom=0</span></tt> is unscaled,
@@ -7579,11 +7566,12 @@
             </table>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;stereo-in&gt;</span></tt></dt>
-            <dd>Set the stereo mode the video is assumed to be encoded in. Takes the
-            same values as the <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.</dd>
+            <dd>Set the stereo mode the video is assumed to be encoded in. Use
+            <tt class="docutils literal"><span class="pre">--vf</span> <span class="pre">format:stereo-in=help</span></tt> to list all available modes. Check with
+            the <tt class="docutils literal">stereo3d</tt> filter documentation to see what the names mean.</dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;stereo-out&gt;</span></tt></dt>
             <dd>Set the stereo mode the video should be displayed as. Takes the
-            same values as the <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.</dd>
+            same values as the <tt class="docutils literal"><span class="pre">stereo-in</span></tt> option.</dd>
             <dt><tt class="docutils literal">&lt;rotate&gt;</tt></dt>
             <dd>Set the rotation the video is assumed to be encoded with in degrees.
             The special value <tt class="docutils literal"><span class="pre">-1</span></tt> uses the input format.</dd>
@@ -9493,7 +9481,8 @@
             <dt><tt class="docutils literal"><span class="pre">video-params/rotate</span></tt></dt>
             <dd>Intended display rotation in degrees (clockwise).</dd>
             <dt><tt class="docutils literal"><span class="pre">video-params/stereo-in</span></tt></dt>
-            <dd>Source file stereo 3D mode. (See <tt class="docutils literal"><span class="pre">--video-stereo-mode</span></tt> option.)</dd>
+            <dd>Source file stereo 3D mode. (See the <tt class="docutils literal">format</tt> video filter's
+            <tt class="docutils literal"><span class="pre">stereo-in</span></tt> option.)</dd>
             </dl>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
