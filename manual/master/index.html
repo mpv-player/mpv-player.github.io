@@ -1015,17 +1015,25 @@
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--start=&lt;relative</span> time&gt;</tt></dt>
             <dd><p class="first">Seek to given time position.</p>
-            <p>The general format for absolute times is <tt class="docutils literal"><span class="pre">[[hh:]mm:]ss[.ms]</span></tt>. If the time
-            is given with a prefix of <tt class="docutils literal">+</tt> or <tt class="docutils literal">-</tt>, the seek is relative from the start
-            or end of the file. (Since mpv 0.14, the start of the file is always
-            considered 0.)</p>
+            <p>The general format for times is <tt class="docutils literal"><span class="pre">[+|-][[hh:]mm:]ss[.ms]</span></tt>. If the time is
+            prefixed with <tt class="docutils literal">-</tt>, the time is considered relative from the end of the
+            file (as signaled by the demuxer/the file). A <tt class="docutils literal">+</tt> is usually ignored (but
+            see below).</p>
+            <p>The following alternative time specifications are recognized:</p>
             <p><tt class="docutils literal">pp%</tt> seeks to percent position pp (0-100).</p>
             <p><tt class="docutils literal">#c</tt> seeks to chapter number c. (Chapters start from 1.)</p>
             <p><tt class="docutils literal">none</tt> resets any previously set option (useful for libmpv).</p>
+            <p>If <tt class="docutils literal"><span class="pre">--rebase-start-time=no</span></tt> is given, then prefixing times with <tt class="docutils literal">+</tt>
+            makes the time relative to the start of the file. A timestamp without
+            prefix is considered an absolute time, i.e. should seek to a frame with a
+            timestamp as the file contains it. As a bug, but also a hidden feature,
+            putting 1 or more spaces before the <tt class="docutils literal">+</tt> or <tt class="docutils literal">-</tt> always interprets the
+            time as absolute, which can be used to seek to negative timestamps (useful
+            for debugging at most).</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">--start=+56</span></tt>, <tt class="docutils literal"><span class="pre">--start=+00:56</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--start=+56</span></tt>, <tt class="docutils literal"><span class="pre">--start=00:56</span></tt></dt>
             <dd>Seeks to the start time + 56 seconds.</dd>
             <dt><tt class="docutils literal"><span class="pre">--start=-56</span></tt>, <tt class="docutils literal"><span class="pre">--start=-00:56</span></tt></dt>
             <dd>Seeks to the end time - 56 seconds.</dd>
@@ -1049,8 +1057,11 @@
             <dt><tt class="docutils literal"><span class="pre">--length=&lt;relative</span> time&gt;</tt></dt>
             <dd><p class="first">Stop after a given time relative to the start time.
             See <tt class="docutils literal"><span class="pre">--start</span></tt> for valid option values and examples.</p>
-            <p class="last">If both <tt class="docutils literal"><span class="pre">--end</span></tt> and <tt class="docutils literal"><span class="pre">--length</span></tt> are provided, playback will stop when it
+            <p>If both <tt class="docutils literal"><span class="pre">--end</span></tt> and <tt class="docutils literal"><span class="pre">--length</span></tt> are provided, playback will stop when it
             reaches either of the two endpoints.</p>
+            <p class="last">Obscurity note: this does not work correctly if <tt class="docutils literal"><span class="pre">--rebase-start-time=no</span></tt>,
+            and the specified time is not an &quot;absolute&quot; time, as defined in the
+            <tt class="docutils literal"><span class="pre">--start</span></tt> option description.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--rebase-start-time=&lt;yes|no&gt;</span></tt></dt>
             <dd>Whether to move the file start time to <tt class="docutils literal">00:00:00</tt> (default: yes). This
@@ -1069,11 +1080,6 @@
             <dd>Start the player in paused state.</dd>
             <dt><tt class="docutils literal"><span class="pre">--shuffle</span></tt></dt>
             <dd>Play files in random order.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--chapter=&lt;start[-end]&gt;</span></tt></dt>
-            <dd><p class="first">Specify which chapter to start playing at. Optionally specify which
-            chapter to end playing at.</p>
-            <p class="last">See also: <tt class="docutils literal"><span class="pre">--start</span></tt>.</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--playlist-start=&lt;auto|index&gt;</span></tt></dt>
             <dd><p class="first">Set which file on the internal playlist to start playback with. The index
             is an integer, with 0 meaning the first file. The value <tt class="docutils literal">auto</tt> means that
@@ -1189,6 +1195,10 @@
             <dd><p class="first">Load URLs from playlists which are considered unsafe (default: no). This
             includes special protocols and anything that doesn't refer to normal files.
             Local files and HTTP links on the other hand are always considered safe.</p>
+            <p>In addition, if a playlist is loaded while this is set, the added playlist
+            entries are not marked as originating from network or potentially unsafe
+            location. (Instead, the behavior is as if the playlist entries were provided
+            directly to mpv command line or <tt class="docutils literal">loadfile</tt> command.)</p>
             <p class="last">Note that <tt class="docutils literal"><span class="pre">--playlist</span></tt> always loads all entries, so you use that instead
             if you really have the need for this functionality.</p>
             </dd>
@@ -1234,9 +1244,13 @@
             <dd><p class="first">Set loop points. If playback passes the <tt class="docutils literal">b</tt> timestamp, it will seek to
             the <tt class="docutils literal">a</tt> timestamp. Seeking past the <tt class="docutils literal">b</tt> point doesn't loop (this is
             intentional).</p>
-            <p>If both options are set to <tt class="docutils literal">no</tt> or unset, looping is disabled.
-            Otherwise, the start/end of playback is used if one of the options
-            is set to <tt class="docutils literal">no</tt> or unset.</p>
+            <p>If <tt class="docutils literal">a</tt> is after <tt class="docutils literal">b</tt>, the behavior is as if the points were given in
+            the right order, and the player will seek to <tt class="docutils literal">b</tt> after crossing through
+            <tt class="docutils literal">a</tt>. This is different from old behavior, where looping was disabled (and
+            as a bug, looped back to <tt class="docutils literal">a</tt> on the end of the file).</p>
+            <p>If either options are set to <tt class="docutils literal">no</tt> (or unset), looping is disabled. This
+            is different from old behavior, where an unset <tt class="docutils literal">a</tt> implied the start of
+            the file, and an unset <tt class="docutils literal">b</tt> the end of the file.</p>
             <p class="last">The loop-points can be adjusted at runtime with the corresponding
             properties. See also <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command.</p>
             </dd>
@@ -1274,6 +1288,193 @@
             With <tt class="docutils literal">no</tt>, playback will continue in video-only or audio-only mode if one
             of them fails. This doesn't affect playback of audio-only or video-only
             files.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--play-dir=&lt;forward|+|backward|-&gt;</span></tt></dt>
+            <dd><p class="first">Control the playback direction (default: forward). Setting <tt class="docutils literal">backward</tt>
+            will attempt to play the file in reverse direction, with decreasing
+            playback time. If this is set on playback starts, playback will start from
+            the end of the file. If this is changed at during playback, a hr-seek will
+            be issued to change the direction.</p>
+            <p><tt class="docutils literal">+</tt> and <tt class="docutils literal">-</tt> are aliases for <tt class="docutils literal">forward</tt> and <tt class="docutils literal">backward</tt>.</p>
+            <p>The rest of this option description pertains to the <tt class="docutils literal">backward</tt> mode.</p>
+            <div class="admonition note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Backward playback is extremely fragile. It may not always work, is much
+            slower than forward playback, and breaks certain other features. How
+            well it works depends mainly on the file being played. Generally, it
+            will show good results (or results at all) only if the stars align.</p>
+            </div>
+            <p>mpv, as well as most media formats, were designed for forward playback
+            only. Backward playback is bolted on top of mpv, and tries to make a medium
+            effort to make backward playback work. Depending on your use-case, another
+            tool may work much better.</p>
+            <p>Backward playback is not exactly a 1st class feature. Implementation
+            tradeoffs were made, that are bad for backward playback, but in turn do not
+            cause disadvantages for normal playback. Various possible optimizations are
+            not implemented in order to keep the complexity down. Normally, a media
+            player is highly pipelined (future data is prepared in separate threads, so
+            it is available in realtime when the next stage needs it), but backward
+            playback will essentially stall the pipeline at various random points.</p>
+            <p>For example, for intra-only codecs are trivially backward playable, and
+            tools built around them may make efficient use of them (consider video
+            editors or camera viewers). mpv won't be efficient in this case, because it
+            uses its generic backward playback algorithm, that on top of it is not very
+            optimized.</p>
+            <p>If you just want to quickly go backward through the video and just show
+            &quot;keyframes&quot;, just use forward playback, and hold down the left cursor key
+            (which on CLI with default config sends many small relative seek commands).</p>
+            <p>The implementation consists of mostly 3 parts:</p>
+            <ul class="simple">
+            <li>Backward demuxing. This relies on the demuxer cache, so the demuxer cache
+            should (or must, didn't test it) be enabled, and its size will affect
+            performance. If the cache is too small or too large, quadratic runtime
+            behavior may result.</li>
+            <li>Backward decoding. The decoder library used (libavcodec) does not support
+            this. It is emulated by feeding bits of data in forward, putting the
+            result in a queue, returning the queue data to the VO in reverse, and
+            then starting over at an earlier position. This can require buffering an
+            extreme amount of decoded data, and also completely breaks pipelining.</li>
+            <li>Backward output. This is relatively simple, because the decoder returns
+            the frames in the needed order. However, this may cause various problems
+            because filters see audio and video going backward.</li>
+            </ul>
+            <p>Known problems:</p>
+            <ul class="simple">
+            <li>It's fragile. If anything doesn't work, random non-useful behavior may
+            occur. In simple cases, the player will just play nonsense and artifacts.
+            In other cases, it may get stuck or heat the CPU. (Exceeding memory usage
+            significantly beyond the user-set limits would be a bug, though.)</li>
+            <li>Performance and resource usage isn't good. In part this is inherent to
+            backward playback of normal media formats, and in parts due to
+            implementation choices and tradeoffs.</li>
+            <li>This is extremely reliant on good demuxer behavior. Although backward
+            demuxing requires no special demuxer support, it is required that the
+            demuxer performs seeks reliably, fulfills some specific requirements
+            about packet metadata, and has deterministic behavior.</li>
+            <li>Starting playback exactly from the end may or may not work, depending on
+            seeking behavior and file duration detection.</li>
+            <li>Some container formats, audio, and video codecs are not supported due to
+            their behavior. There is no list, and the player usually does not detect
+            them. Certain live streams (including TV captures) may exhibit problems
+            in particular, as well as some lossy audio codecs. h264 intra-refresh is
+            known not to work due to problems with libavcodec. WAV and some other raw
+            audio formats tend to have problems - there are hacks for dealing with
+            them, which may or may not work.</li>
+            <li>Backward demuxing of subtitles is not supported. Subtitle display still
+            works for some external text subtitle formats. (These are fully read into
+            memory, and only backward display is needed.) Text subtitles that are
+            cached in the subtitle renderer also have a chance to be displayed
+            correctly.</li>
+            <li>Some features dealing with playback of broken or hard to deal with files
+            will not work fully (such as timestamp correction).</li>
+            <li>If demuxer low level seeks (i.e. seeking the actual demuxer instead of
+            just within the demuxer cache) are performed by backward playback, the
+            created seek ranges may not join, because not enough overlap is achieved.</li>
+            <li>Trying to use this with hardware video decoding will probably exhaust all
+            your GPU memory and then crash a thing or two. Or it will fail because
+            <tt class="docutils literal"><span class="pre">--hwdec-extra-frames</span></tt> will certainly be set too low.</li>
+            <li>Stream recording is broken. <tt class="docutils literal"><span class="pre">--stream-record</span></tt> may keep working if you
+            backward play within a cached region only.</li>
+            <li>Relative seeks may behave weird. Small seeks backward (towards smaller
+            time, i.e. <tt class="docutils literal">seek <span class="pre">-1</span></tt>) may not really seek properly, and audio will
+            remain muted for a while. Using hr-seek is recommended, which should have
+            none of these problems.</li>
+            <li>Some things are just weird. For example, while seek commands manipulate
+            playback time in the expected way (provided they work correctly), the
+            framestep commands are transposed. Backstepping will perform very
+            expensive work to step forward by 1 frame.</li>
+            </ul>
+            <p>Tuning:</p>
+            <ul class="last simple">
+            <li>Remove all <tt class="docutils literal"><span class="pre">--vf</span></tt>/<tt class="docutils literal"><span class="pre">--af</span></tt> filters you have set. Disable hardware
+            decoding. Disable idiotic nonsense like SPDIF passthrough.</li>
+            <li>Increasing <tt class="docutils literal"><span class="pre">--video-reversal-buffer</span></tt> might help if reversal queue
+            overflow is reported, which may happen in high bitrate video, or video
+            with large GOP. Hardware decoding mostly ignores this, and you need to
+            increase <tt class="docutils literal"><span class="pre">--hwdec-extra-frames</span></tt> instead (until you get playback without
+            logged errors).</li>
+            <li>The demuxer cache is essential for backward demuxing. Make sure to set
+            <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache</span></tt> (or just use <tt class="docutils literal"><span class="pre">--cache</span></tt>). The cache size
+            might matter. If it's too small, a queue overflow will be logged, and
+            backward playback cannot continue, or it performs too many low level
+            seeks. If it's too large, implementation tradeoffs may cause general
+            performance issues. Use <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> to potentially increase
+            the amount of packets the demuxer layer can queue for reverse demuxing
+            (basically it's the <tt class="docutils literal"><span class="pre">--video-reversal-buffer</span></tt> equivalent for the
+            demuxer layer).</li>
+            <li><tt class="docutils literal"><span class="pre">--demuxer-backward-playback-step</span></tt> also factors into how many seeks may
+            be performed, and whether backward demuxing could break due to queue
+            overflow. If it's set too high, the backstep operation needs to search
+            through more packets all the time, even if the cache is large enough.</li>
+            <li>Setting <tt class="docutils literal"><span class="pre">--demuxer-cache-wait</span></tt> may be useful to cache the entire file
+            into the demuxer cache. Set <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> to a large size to
+            make sure it can read the entire cache; <tt class="docutils literal"><span class="pre">--demuxer-max-back-bytes</span></tt>
+            should also be set to a large size to prevent that tries to trim the
+            cache.</li>
+            <li>If audio artifacts are audible, even though the AO does not underrun,
+            increasing <tt class="docutils literal"><span class="pre">--audio-backward-overlap</span></tt> might help in some cases.</li>
+            </ul>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-reversal-buffer=&lt;bytesize&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--audio-reversal-buffer=&lt;bytesize&gt;</span></tt></dt>
+            <dd><p class="first">For backward decoding. Backward decoding decodes forward in steps, and then
+            reverses the decoder output. These options control the approximate maximum
+            amount of bytes that can be buffered. The main use of this is to avoid
+            unbounded resource usage; during normal backward playback, it's not supposed
+            to hit the limit, and if it does, it will drop frames and complain about it.</p>
+            <p>Use this option if you get reversal queue overflow errors during backward
+            playback. Increase the size until the warning disappears. Usually, the video
+            buffer will overflow first, especially if it's high resolution video.</p>
+            <p>This does not work correctly if video hardware decoding is used. The video
+            frame size will not include the referenced GPU and driver memory. Some
+            hardware decoders may also be limited by <tt class="docutils literal"><span class="pre">--hwdec-extra-frames</span></tt>.</p>
+            <p>How large the queue size needs to be depends entirely on the way the media
+            was encoded. Audio typically requires a very small buffer, while video can
+            require excessively large buffers.</p>
+            <p>(Technically, this allows the last frame to exceed the limit. Also, this
+            does not account for other buffered frames, such as inside the decoder or
+            the video output.)</p>
+            <p>This does not affect demuxer cache behavior at all.</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range. <tt class="docutils literal">&lt;bytesize&gt;</tt> options
+            accept suffixes such as <tt class="docutils literal">KiB</tt> and <tt class="docutils literal">MiB</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-backward-overlap=&lt;auto|number&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--audio-backward-overlap=&lt;auto|number&gt;</span></tt></dt>
+            <dd><p class="first">Number of overlapping keyframe ranges to use for backward decoding (default:
+            auto) (&quot;keyframe&quot; to be understood as in the mpv/ffmpeg specific meaning).
+            Backward decoding works by forward decoding in small steps. Some codecs
+            cannot restart decoding from any packet (even if it's marked as seek point),
+            which becomes noticeable with backward decoding (in theory this is a problem
+            with seeking too, but <tt class="docutils literal"><span class="pre">--hr-seek-demuxer-offset</span></tt> can fix it for seeking).
+            In particular, MDCT based audio codecs are affected.</p>
+            <p>The solution is to feed a previous packet to the decoder each time, and then
+            discard the output. This option controls how many packets to feed. The
+            <tt class="docutils literal">auto</tt> choice is currently hardcoded to 0 for video, and uses 1 for lossy
+            audio, 0 for lossless audio. For some specific lossy audio codecs, this is
+            set to 2.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--video-backward-overlap</span></tt> can potentially handle intra-refresh video,
+            depending on the exact conditions. You may have to use the
+            <tt class="docutils literal"><span class="pre">--vd-lavc-show-all</span></tt> option as well.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-backward-batch=&lt;number&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--audio-backward-batch=&lt;number&gt;</span></tt></dt>
+            <dd><p class="first">Number of keyframe ranges to decode at once when backward decoding (default:
+            1 for video, 10 for audio). Another pointless tuning parameter nobody should
+            use. This should affect performance only. In theory, setting a number higher
+            than 1 for audio will reduce overhead due to less frequent backstep
+            operations and less redundant decoding work due to fewer decoded overlap
+            frames (see <tt class="docutils literal"><span class="pre">--audio-backward-overlap</span></tt>). On the other hand, it requires
+            a larger reversal buffer, and could make playback less smooth due to
+            breaking pipelining (e.g. by decoding a lot, and then doing nothing for a
+            while).</p>
+            <p class="last">It probably never makes sense to set <tt class="docutils literal"><span class="pre">--video-backward-batch</span></tt>. But in
+            theory, it could help with intra-only video codecs by reducing backstep
+            operations.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-backward-playback-step=&lt;seconds&gt;</span></tt></dt>
+            <dd><p class="first">Number of seconds the demuxer should seek back to get new packets during
+            backward playback (default: 60). This is useful for tuning backward
+            playback, see <tt class="docutils literal"><span class="pre">--play-dir</span></tt> for details.</p>
+            <p>Setting this to a very low value or 0 may make the player think seeking is
+            broken, or may make it perform multiple seeks.</p>
+            <p class="last">Setting this to a high value may lead to quadratic runtime behavior.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="program-behavior">
@@ -1766,6 +1967,19 @@
             barely related to this anymore, but will be somewhat compatible in some
             cases.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--hwdec-extra-frames=&lt;N&gt;</span></tt></dt>
+            <dd><p class="first">Number of GPU frames hardware decoding should preallocate (default: see
+            <tt class="docutils literal"><span class="pre">--list-options</span></tt> output). If this is too low, frame allocation may fail
+            during decoding, and video frames might get dropped and/or corrupted.
+            Setting it too high simply wastes GPU memory and has no advantages.</p>
+            <p>This value is used only for hardware decoding APIs which require
+            preallocating surfaces (known examples include <tt class="docutils literal">d3d11va</tt> and <tt class="docutils literal">vaapi</tt>).
+            For other APIs, frames are allocated as needed. The details depend on the
+            libavcodec implementations of the hardware decoders.</p>
+            <p class="last">The required number of surfaces depends on dynamic runtime situations. The
+            default is a fixed value that is thought to be sufficient for most uses. But
+            in certain situations, it may not be enough.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--hwdec-image-format=&lt;name&gt;</span></tt></dt>
             <dd><p class="first">Set the internal pixel format used by hardware decoding via <tt class="docutils literal"><span class="pre">--hwdec</span></tt>
             (default <tt class="docutils literal">no</tt>). The special value <tt class="docutils literal">no</tt> selects an implementation
@@ -1890,6 +2104,25 @@
             screen.</p>
             <p>If video and screen aspect match perfectly, these options do nothing.</p>
             <p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-margin-ratio-left=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-right=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-top=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-bottom=&lt;val&gt;</span></tt></dt>
+            <dd><p class="first">Set extra video margins on each border (default: 0). Each value is a ratio
+            of the window size, using a range 0.0-1.0. For example, setting the option
+            <tt class="docutils literal"><span class="pre">--video-margin-ratio-right=0.2</span></tt> at a window size of 1000 pixels will add
+            a 200 pixels border on the right side of the window.</p>
+            <p>The video is &quot;boxed&quot; by these margins. The window size is not changed. In
+            particular it does not enlarge the window, and the margins will cause the
+            video to be downscaled by default. This may or may not change in the future.</p>
+            <p>The margins are applied after 90° video rotation, but before any other video
+            transformations.</p>
+            <p>This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+            <p>Subtitles still may use the margins, depending on <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt> and
+            similar options.</p>
+            <p class="last">These options were created for the OSC. Some odd decisions, such as making
+            the margin values a ratio (instead of pixels), were made for the sake of
+            the OSC. It's possible that these options may be replaced by ones that are
+            more generally useful. The behavior of these options may change to fit
+            OSC requirements better, too.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--correct-pts</span></tt>, <tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt></dt>
             <dd><tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt> switches mpv to a mode where video timing is
@@ -2640,7 +2873,7 @@
             <dd><p class="first">Control whether user style overrides should be applied. Note that all of
             these overrides try to be somewhat smart about figuring out whether or not
             a subtitle is considered a &quot;sign&quot;.</p>
-            <table class="last docutils field-list" frame="void" rules="none">
+            <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
             <tbody valign="top">
@@ -2661,6 +2894,8 @@
             </tr>
             </tbody>
             </table>
+            <p class="last">This also controls some bitmap subtitle overrides, as well as HTML tags in
+            formats like SRT, despite the name of the option.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-ass-force-margins</span></tt></dt>
             <dd><p class="first">Enables placing toptitles and subtitles in black borders when they are
@@ -3602,6 +3837,21 @@
             (default: 32768). Lowering the size could lower latency. Note that
             libavformat might reallocate the buffer internally, or not fully use all
             of it.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-linearize-timestamps=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd><p class="first">Attempt to linearize timestamp resets in demuxed streams (default: auto).
+            This was tested only for single audio streams. It's unknown whether it
+            works correctly for video (but likely won't). Note that the implementation
+            is slightly incorrect either way, and will introduce a discontinuity by
+            about 1 codec frame size.</p>
+            <p class="last">The <tt class="docutils literal">auto</tt> mode enables this for OGG audio stream. This covers the common
+            and annoying case of OGG web radio streams. Some of these will reset
+            timestamps to 0 every time a new song begins. This breaks the mpv seekable
+            cache, which can't deal with timestamp resets. Note that FFmpeg/libavformat's
+            seeking API can't deal with this either; it's likely that if this option
+            breaks this even more, while if it's disabled, you can at least seek within
+            the first song in the stream. Well, you won't get anything useful either
+            way if the seek is outside of mpv's cache.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll=&lt;yes|index|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--mkv-subtitle-preroll</span></tt></dt>
             <dd><p class="first">Try harder to show embedded soft subtitles when seeking somewhere. Normally,
             it can happen that the subtitle at the seek target is not shown due to how
@@ -3710,6 +3960,12 @@
             option to 0 will strictly disable any back buffer, but this will lead to
             the situation that the forward seek range starts after the current playback
             position (as it removes past packets that are seek points).</p>
+            <p>If the end of the file is reached, the remaining unused forward buffer space
+            is &quot;donated&quot; to the backbuffer (unless the backbuffer size is set to 0).
+            This still limits the total cache usage to the sum of the forward and
+            backward cache, and effectively makes better use of the total allowed memory
+            budget. (The opposite does not happen: free backward buffer is never
+            &quot;donated&quot; to the forward buffer.)</p>
             <p>Keep in mind that other buffers in the player (like decoders) will cause the
             demuxer to cache &quot;future&quot; frames in the back buffer, which can skew the
             impression about how much data the backbuffer contains.</p>
@@ -3781,6 +4037,13 @@
             pipe, or it's an http stream with a server that doesn't support range
             requests), seeking will be disabled. This option can forcibly enable it.
             For seeks within the cache, there's a good chance of success.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-cache-wait=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Before starting playback, read data until either the end of the file was
+            reached, or the demuxer cache has reached maximum capacity. Only once this
+            is done, playback starts. This intentionally happens before the initial
+            seek triggered with <tt class="docutils literal"><span class="pre">--start</span></tt>. This does not change any runtime behavior
+            after the initial caching. This option is useless if the file cannot be
+            cached completely.</dd>
             </dl>
             </div>
             <div class="section" id="input">
@@ -4419,6 +4682,33 @@
             is enabled and the value is larger. The default value is set to something
             very high, so the actually achieved readahead will usually be limited by
             the value of the <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> option.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cache-on-disk=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Write packet data to a temporary file, instead of keeping them in memory.
+            This makes sense only with <tt class="docutils literal"><span class="pre">--cache</span></tt>. If the normal cache is disabled,
+            this option is ignored.</p>
+            <p>You need to set <tt class="docutils literal"><span class="pre">--cache-dir</span></tt> to use this.</p>
+            <p>The cache file is append-only. Even if the player appears to prune data, the
+            file space freed by it is not reused. The cache file is deleted when
+            playback is closed.</p>
+            <p>Note that packet metadata is still kept in memory. <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>
+            and related options are applied to metadata <em>only</em>. The size of this
+            metadata  varies, but 50 MB per hour of media is typical. The cache
+            statistics will report this metadats size, instead of the size of the cache
+            file. If the metadata hits the size limits, the metadata is pruned (but not
+            the cache file).</p>
+            <p>When the media is closed, the cache file is deleted. A cache file is
+            generally worthless after the media is closed, and it's hard to retrieve
+            any media data from it (it's not supported by design).</p>
+            <p class="last">If the option is enabled at runtime, the cache file is created, but old data
+            will remain in the memory cache. If the option is disabled at runtime, old
+            data remains in the disk cache, and the cache file is not closed until the
+            media is closed. If the option is disabled and enabled again, it will
+            continue to use the cache file that was opened first.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--cache-dir=&lt;path&gt;</span></tt></dt>
+            <dd><p class="first">Directory where to create temporary files (default: none).</p>
+            <p class="last">Currently, this is used for <tt class="docutils literal"><span class="pre">--cache-on-disk</span></tt> only.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-pause=&lt;yes|no&gt;</span></tt></dt>
             <dd>Whether the player should automatically pause when the cache runs out of
             data and stalls decoding/playback (default: yes). If enabled, it will
@@ -4442,6 +4732,24 @@
             at first. In these cases, it helps enabling this option, and setting
             <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> and <tt class="docutils literal"><span class="pre">--cache-pause-wait</span></tt> to roughly the same value.</p>
             <p class="last">This option also triggers when playback is restarted after seeking.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--cache-unlink-files=&lt;immediate|whendone|no&gt;</span></tt></dt>
+            <dd><p class="first">Whether or when to unlink cache files (default: immediate). This affects
+            cache files which are inherently temporary, and which make no sense to
+            remain on disk after the player terminates. This is a debugging option.</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">immediate</tt></dt>
+            <dd>Unlink cache file after they were created. The cache files won't be
+            visible anymore, even though they're in use. This ensures they are
+            guaranteed to be removed from disk when the player terminates, even if
+            it crashes.</dd>
+            <dt><tt class="docutils literal">whendone</tt></dt>
+            <dd>Delete cache files after they are closed.</dd>
+            <dt><tt class="docutils literal">no</tt></dt>
+            <dd>Don't delete cache files. They will consume disk space without having a
+            use.</dd>
+            </dl>
+            <p class="last">Currently, this is used for <tt class="docutils literal"><span class="pre">--cache-on-disk</span></tt> only.</p>
             </dd>
             </dl>
             </div>
@@ -5500,8 +5808,6 @@
             <dd>X11/EGL</dd>
             <dt>android</dt>
             <dd>Android/EGL. Requires <tt class="docutils literal"><span class="pre">--wid</span></tt> be set to an <tt class="docutils literal">android.view.Surface</tt>.</dd>
-            <dt>mali-fbdev</dt>
-            <dd>Direct fbdev/EGL support on some ARM/MALI devices.</dd>
             <dt>vdpauglx</dt>
             <dd>Use vdpau presentation with GLX as backing. Experimental use only.
             Using this will have no advantage (other than additional bugs or
@@ -6140,29 +6446,41 @@
             referenced files like with ordered chapters.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--record-file=&lt;file&gt;</span></tt></dt>
-            <dd><p class="first">Record the current stream to the given target file. The target file will
+            <dd><p class="first">Deprecated, use <tt class="docutils literal"><span class="pre">--stream-record</span></tt>, or the <tt class="docutils literal"><span class="pre">dump-cache</span></tt> command.</p>
+            <p>Record the current stream to the given target file. The target file will
             always be overwritten without asking.</p>
-            <p>This remuxes the source stream without reencoding, which makes this a
-            highly fragile and experimental feature. It's entirely possible that this
-            writes files which are broken, not standards compliant, not playable with
-            all players (including mpv), or incomplete.</p>
-            <p>The target file format is determined by the file extension of the target
-            filename. It is recommended to use the same target container as the source
-            container if possible, and preferring Matroska as fallback.</p>
-            <p>Seeking during stream recording, or enabling/disabling stream recording
-            during playback, can cut off data, or produce &quot;holes&quot; in the output file.
-            These are technical restrictions. In particular, video data or subtitles
-            which were read ahead can produce such holes, which might cause playback
-            problems with various players (including mpv).</p>
-            <p class="last">The behavior of this option might changed in the future, such as changing
-            it to a template (similar to <tt class="docutils literal"><span class="pre">--screenshot-template</span></tt>), being renamed,
-            removed, or anything else, until it is declared semi-stable.</p>
+            <p class="last">This was deprecated because it isn't very nice to use. For one, seeking
+            while this is enabled will be directly reflected in the output, which was
+            not useful and annoying.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--stream-record=&lt;file&gt;</span></tt></dt>
-            <dd>Similar to <tt class="docutils literal"><span class="pre">--record-file</span></tt>, but write packets as they are received. The
-            implementation of this does not tolerate seeks (outside of demuxer cache),
-            or streams being selected/deselected during recording. Can not be set at
-            runtime. Use with care.</dd>
+            <dd><p class="first">Write received/read data from the demuxer to the given output file. The
+            output file will always be overwritten without asking. The output format
+            is determined by the extension of the output file.</p>
+            <p>Switching streams or seeking during recording might result in recording
+            being stopped and/or broken files. Use with care.</p>
+            <p>Seeking outside of the demuxer cache will result in &quot;skips&quot; in the output
+            file, but seeking within  the demuxer cache should not affect recording. One
+            exception is when you seek back far enough to exceed the forward buffering
+            size, in which case the cache stops actively reading. This will return in
+            dropped data if it's a live stream.</p>
+            <p>If this is set at runtime, the old file is closed, and the new file is
+            opened. Note that this will write only data that is appended at the end of
+            the cache, and the already cached data cannot be written. You can try the
+            <tt class="docutils literal"><span class="pre">dump-cache</span></tt> command as an alternative.</p>
+            <p>External files (<tt class="docutils literal"><span class="pre">--audio-file</span></tt> etc.) are ignored by this, it works on the
+            &quot;main&quot; file only. Using this with files using ordered chapters or EDL files
+            will also not work correctly in general.</p>
+            <p>There are some glitches with this because it uses FFmpeg's libavformat for
+            writing the output file. For example, it's typical that it will only work if
+            the output format is the same as the input format. This is the case even if
+            it works with the <tt class="docutils literal">ffmpeg</tt> tool. One reason for this is that <tt class="docutils literal">ffmpeg</tt>
+            and its libraries contain certain hacks and workarounds for these issues,
+            that are unavailable to outside users.</p>
+            <p class="last">This replaces <tt class="docutils literal"><span class="pre">--record-file</span></tt>. It is similar to the ancient/removed
+            <tt class="docutils literal"><span class="pre">--stream-capture</span></tt>/<tt class="docutils literal"><span class="pre">-capture</span></tt> options, and provides better behavior in
+            most cases (i.e. actually works).</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--lavfi-complex=&lt;string&gt;</span></tt></dt>
             <dd><p class="first">Set a &quot;complex&quot; libavfilter filter, which means a single filter graph can
             take input from multiple source audio and video tracks. The graph can result
@@ -7056,44 +7374,6 @@
             <tt class="docutils literal"><span class="pre">--af-pre</span></tt>, <tt class="docutils literal"><span class="pre">--af-del</span></tt>, <tt class="docutils literal"><span class="pre">--af-clr</span></tt>, and possibly others work.</p>
             <p>Available filters are:</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">lavrresample[=option1:option2:...]</span></tt></dt>
-            <dd><p class="first">This filter uses libavresample (or libswresample, depending on the build)
-            to change sample rate, sample format, or channel layout of the audio stream.
-            This filter is automatically enabled if the audio output does not support
-            the audio configuration of the file being played.</p>
-            <div class="admonition warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">Deprecated. Either use the <tt class="docutils literal"><span class="pre">--audio-resample-...</span></tt> options to customize
-            resampling, or the libavfilter <tt class="docutils literal"><span class="pre">--af=aresample</span></tt> filter, which has its
-            own options.</p>
-            </div>
-            <p>It supports only the following sample formats: u8, s16, s32, float.</p>
-            <dl class="last docutils">
-            <dt><tt class="docutils literal"><span class="pre">filter-size=&lt;length&gt;</span></tt></dt>
-            <dd>Length of the filter with respect to the lower sampling rate. (default:
-            16)</dd>
-            <dt><tt class="docutils literal"><span class="pre">phase-shift=&lt;count&gt;</span></tt></dt>
-            <dd>Log2 of the number of polyphase entries. (..., 10-&gt;1024, 11-&gt;2048,
-            12-&gt;4096, ...) (default: 10-&gt;1024)</dd>
-            <dt><tt class="docutils literal"><span class="pre">cutoff=&lt;cutoff&gt;</span></tt></dt>
-            <dd>Cutoff frequency (0.0-1.0), default set depending upon filter length.</dd>
-            <dt><tt class="docutils literal">linear</tt></dt>
-            <dd>If set then filters will be linearly interpolated between polyphase
-            entries. (default: no)</dd>
-            <dt><tt class="docutils literal"><span class="pre">no-detach</span></tt></dt>
-            <dd>Do not detach if input and output audio format/rate/channels match.
-            (If you just want to set defaults for this filter that will be used
-            even by automatically inserted lavrresample instances, you should
-            prefer setting them with the <tt class="docutils literal"><span class="pre">--audio-resample-...</span></tt> options.) This
-            does not do anything anymore and the filter will never detach.</dd>
-            <dt><tt class="docutils literal"><span class="pre">normalize=&lt;yes|no|auto&gt;</span></tt></dt>
-            <dd>Whether to normalize when remixing channel layouts (default: auto).
-            <tt class="docutils literal">auto</tt> uses the value set by <tt class="docutils literal"><span class="pre">--audio-normalize-downmix</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">o=&lt;string&gt;</span></tt></dt>
-            <dd>Set AVOptions on the SwrContext or AVAudioResampleContext. These should
-            be documented by FFmpeg or Libav.</dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">lavcac3enc[=options]</span></tt></dt>
             <dd><p class="first">Encode multi-channel audio to AC-3 at runtime using libavcodec. Supports
             16-bit native-endian input format, maximum 6 channels. The output is
@@ -7780,29 +8060,6 @@
             <dd>Refresh rate of the current display. Note that this value can be 0.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">vapoursynth-lazy</span></tt></dt>
-            <dd><p class="first">The same as <tt class="docutils literal">vapoursynth</tt>, but doesn't load Python scripts. Instead, a
-            custom backend using Lua and the raw VapourSynth API is used. The syntax
-            is completely different, and absolutely no convenience features are
-            provided. There's no type checking either, and you can trigger crashes.</p>
-            <div class="admonition admonition-example">
-            <p class="first admonition-title">Example:</p>
-            <pre class="last literal-block">
-            video_out = invoke(&quot;morpho&quot;, &quot;Open&quot;, {clip = video_in})
-            </pre>
-            </div>
-            <p>The special variable <tt class="docutils literal">video_in</tt> is the mpv video source, while the
-            special variable <tt class="docutils literal">video_out</tt> is used to read video from. The 1st argument
-            is the plugin (queried with <tt class="docutils literal">getPluginByNs</tt>), the 2nd is the filter name,
-            and the 3rd argument is a table with the arguments. Positional arguments
-            are not supported. The types must match exactly. Since Lua is terrible and
-            can't distinguish integers and floats, integer arguments must be prefixed
-            with <tt class="docutils literal">i_</tt>, in which case the prefix is removed and the argument is cast
-            to an integer. Should the argument's name start with <tt class="docutils literal">i_</tt>, you're out of
-            luck.</p>
-            <p class="last">Clips (VSNodeRef) are passed as light userdata, so trying to pass any
-            other userdata type will result in hard crashes.</p>
-            </dd>
             <dt><tt class="docutils literal">vavpp</tt></dt>
             <dd><p class="first">VA-API video post processing. Requires the system to support VA-API,
             i.e. Linux/BSD only. Works with <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> and <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> only.
@@ -7930,6 +8187,76 @@
             which algorithm is actually selected. <tt class="docutils literal">none</tt> always falls back. On
             most if not all hardware, this option will probably do nothing, because
             a video processor usually supports all modes or none.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">fingerprint=...</span></tt></dt>
+            <dd><p class="first">Compute video frame fingerprints and provide them as metadata. Actually, it
+            currently barely deserved to be called <tt class="docutils literal">fingerprint</tt>, because it does not
+            compute &quot;proper&quot; fingerprints, only tiny downscaled images (but which can be
+            used to compute image hashes or for similarity matching).</p>
+            <p>The main purpose of this filter is to support the <tt class="docutils literal"><span class="pre">skip-logo.lua</span></tt> script.
+            If this script is dropped, or mpv ever gains a way to load user-defined
+            filters (other than VapourSynth), this filter will be removed. Due to the
+            &quot;special&quot; nature of this filter, it will be removed without warning.</p>
+            <p>The intended way to read from the filter is using <tt class="docutils literal"><span class="pre">vf-metadata</span></tt> (also
+            see <tt class="docutils literal"><span class="pre">clear-on-query</span></tt> filter parameter). The property will return a list
+            of key/value pairs as follows:</p>
+            <pre class="literal-block">
+            fp0.pts = 1.2345
+            fp0.hex = 1234abcdef...bcde
+            fp1.pts = 1.4567
+            fp1.hex = abcdef1234...6789
+            ...
+            fpN.pts = ...
+            fpN.hex = ...
+            type = gray-hex-16x16
+            </pre>
+            <p>Each <tt class="docutils literal">fp&lt;N&gt;</tt> entry is for a frame. The <tt class="docutils literal">pts</tt> entry specifies the
+            timestamp of the frame (within the filter chain; in simple cases this is
+            the same as the display timestamp). The <tt class="docutils literal">hex</tt> field is the hex encoded
+            fingerprint, whose size and meaning depend on the <tt class="docutils literal">type</tt> filter option.
+            The <tt class="docutils literal">type</tt> field has the same value as the option the filter was created
+            with.</p>
+            <p>This returns the frames that were filtered since the last query of the
+            property. If <tt class="docutils literal"><span class="pre">clear-on-query=no</span></tt> was set, a query doesn't reset the list
+            of frames. In both cases, a maximum of 10 frames is returned. If there are
+            more frames, the oldest frames are discarded. Frames are returned in filter
+            order.</p>
+            <p>(This doesn't return a structured list for the per-frame details because the
+            internals of the <tt class="docutils literal"><span class="pre">vf-metadata</span></tt> mechanism suck. The returned format may
+            change in the future.)</p>
+            <p>This filter uses zimg for speed and profit. However, it will fallback to
+            libswscale in a number of situations: lesser pixel formats, unaligned data
+            pointers or strides, or if zimg fails to initialize for unknown reasons. In
+            these cases, the filter will use more CPU. Also, it will output different
+            fingerprints, because libswscale cannot perform the full range expansion we
+            normally request from zimg. As a consequence, the filter may be slower and
+            not work correctly in random situations.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">type=...</span></tt></dt>
+            <dd><p class="first">What fingerprint to compute. Available types are:</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">gray-hex-8x8:</th><td class="field-body">grayscale, 8 bit, 8x8 size</td>
+            </tr>
+            <tr class="field"><th class="field-name">gray-hex-16x16:</th><td class="field-body">grayscale, 8 bit, 16x16 size (default)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p class="last">Both types simply remove all colors, downscale the image, concatenate
+            all pixel values to a byte array, and convert the array to a hex string.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">clear-on-query=yes|no</span></tt></dt>
+            <dd>Clear the list of frame fingerprints if the <tt class="docutils literal"><span class="pre">vf-metadata</span></tt> property for
+            this filter is queried (default: yes). This requires some care by the
+            user. Some types of accesses might query the filter multiple times,
+            which leads to lost frames.</dd>
+            <dt><tt class="docutils literal">print=yes|no</tt></dt>
+            <dd>Print computed fingerprints the the terminal (default: no). This is
+            mostly for testing and such. Scripts should use <tt class="docutils literal"><span class="pre">vf-metadata</span></tt> to
+            read information from this filter instead.</dd>
             </dl>
             </dd>
             </dl>
@@ -8845,6 +9172,64 @@
             <tt class="docutils literal"><span class="pre">--glsl-shader=file.glsl</span></tt>.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">dump-cache</span> &lt;start&gt; &lt;end&gt; &lt;filename&gt;</tt></dt>
+            <dd><p class="first">Dump the current cache to the given filename. The <tt class="docutils literal">&lt;filename&gt;</tt> file is
+            overwritten if it already exists. <tt class="docutils literal">&lt;start&gt;</tt> and <tt class="docutils literal">&lt;end&gt;</tt> give the
+            time range of what to dump. If no data is cached at the given time range,
+            nothing may be dumped (creating a file with no packets).</p>
+            <p>Dumping a larger part of the cache will freeze the player. No effort was
+            made to fix this, as this feature was meant mostly for creating small
+            excerpts.</p>
+            <p>See <tt class="docutils literal"><span class="pre">--stream-record</span></tt> for various caveats that mostly apply to this
+            command too, as both use the same underlying code for writing the output
+            file.</p>
+            <p>If <tt class="docutils literal">&lt;filename&gt;</tt> is an empty string, an ongoing <tt class="docutils literal"><span class="pre">dump-cache</span></tt> is stopped.</p>
+            <p>If <tt class="docutils literal">&lt;end&gt;</tt> is <tt class="docutils literal">no</tt>, then continuous dumping is enabled. Then, after
+            dumping the existing parts of the cache, anything read from network is
+            appended to the cache as well. This behaves similar to <tt class="docutils literal"><span class="pre">--stream-record</span></tt>
+            (although it does not conflict with that option, and they can be both active
+            at the same time).</p>
+            <p>If the <tt class="docutils literal">&lt;end&gt;</tt> time is after the cache, the command will _not_ wait and
+            write newly received data to it.</p>
+            <p>The end of the resulting file may be slightly damaged or incomplete at the
+            end. (Not enough effort was made to ensure that the end lines up properly.)</p>
+            <p>Note that this command will finish only once dumping ends. That means it
+            works similar to the <tt class="docutils literal">screenshot</tt> command, just that it can block much
+            longer. If continuous dumping is used, the command will not finish until
+            playback is stopped, an error happens, another <tt class="docutils literal"><span class="pre">dump-cache</span></tt> command is
+            run, or an API like <tt class="docutils literal">mp.abort_async_command</tt> was called to explicitly stop
+            the command. See <a class="reference internal" href="#synchronous-vs-asynchronous">Synchronous vs. Asynchronous</a>.</p>
+            <div class="admonition note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">This was mostly created for network streams. For local files, there may
+            be much better methods to create excerpts and such. There are tons of
+            much more user-friendly Lua scripts, that will reencode parts of a file
+            by spawning a separate instance of <tt class="docutils literal">ffmpeg</tt>. With network streams,
+            this is not that easily possible, as the stream would have to be
+            downloaded again. Even if <tt class="docutils literal"><span class="pre">--stream-record</span></tt> is used to record the
+            stream to the local filesystem, there may be problems, because the
+            recorded file is still written to.</p>
+            </div>
+            <p class="last">This command is experimental, and all details about it may change in the
+            future.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">ab-loop-dump-cache</span> &lt;filename&gt;</tt></dt>
+            <dd><p class="first">Essentially calls <tt class="docutils literal"><span class="pre">dump-cache</span></tt> with the current AB-loop points as
+            arguments. Like <tt class="docutils literal"><span class="pre">dump-cache</span></tt>, this will overwrite the file at
+            <tt class="docutils literal">&lt;filename&gt;</tt>. Likewise, if the B point is set to <tt class="docutils literal">no</tt>, it will enter
+            continuous dumping after the existing cache was dumped.</p>
+            <p class="last">The author reserves the right to remove this command if enough motivation
+            is found to move this functionality to a trivial Lua script.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">ab-loop-align-cache</span></tt></dt>
+            <dd><p class="first">Re-adjust the A/B loop points to the start and end within the cache the
+            <tt class="docutils literal"><span class="pre">ab-loop-dump-cache</span></tt> command will (probably) dump. Basically, it aligns
+            the times on keyframes. The guess might be off especially at the end (due to
+            granularity issues due to remuxing). If the cache shrinks in the meantime,
+            the points set by the command will not be the effective parameters either.</p>
+            <p class="last">This command has an even more uncertain future than <tt class="docutils literal"><span class="pre">ab-loop-dump-cache</span></tt>
+            and might disappear without replacement if the author decides it's useless.</p>
+            </dd>
             </dl>
             <p>Undocumented commands: <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
             <div class="section" id="hooks">
@@ -8992,6 +9377,8 @@
             <li>Async libmpv command API (e.g. <tt class="docutils literal">mpv_command_async()</tt>) never blocks the
             caller, and always notify their completion with a message. The <tt class="docutils literal">sync</tt> and
             <tt class="docutils literal">async</tt> prefixes make no difference.</li>
+            <li>Lua also provides APIs for running async commands, which behave similar to the
+            C counterparts.</li>
             <li>In all cases, async mode can still run commands in a synchronous manner, even
             in detached mode. This can for example happen in cases when a command does not
             have an  asynchronous implementation. The async libmpv API still never blocks
@@ -9002,7 +9389,8 @@
             default now, and <tt class="docutils literal">async</tt> changes behavior only in the ways mentioned above.</p>
             <p>Currently the following commands have different waiting characteristics with
             sync vs. async: sub-add, audio-add, sub-reload, audio-reload,
-            rescan-external-files, screenshot, screenshot-to-file.</p>
+            rescan-external-files, screenshot, screenshot-to-file, dump-cache,
+            ab-loop-dump-cache.</p>
             </div>
             <div class="section" id="input-sections">
             <h2>Input Sections</h2>
@@ -9306,8 +9694,19 @@
             <tt class="docutils literal"><span class="pre">demuxer-cache-time</span></tt> property, because that property returns the guessed
             buffering amount, while the seek ranges represent the buffered data that
             can actually be used for cached seeking.</p>
+            <p><tt class="docutils literal"><span class="pre">bof-cached</span></tt> indicates whether the seek range with the lowest timestamp
+            points to the beginning of the stream (BOF). This implies you cannot seek
+            before this position at all. <tt class="docutils literal"><span class="pre">eof-cached</span></tt> indicates whether the seek range
+            with the highest timestamp points to the end of the stream (EOF). If both
+            <tt class="docutils literal"><span class="pre">bof-cached</span></tt> and <tt class="docutils literal"><span class="pre">eof-cached</span></tt> are set to <tt class="docutils literal">yes</tt>, and there's only 1
+            cache range, the entire stream is cached.</p>
             <p><tt class="docutils literal"><span class="pre">fw-bytes</span></tt> is the number of bytes of packets buffered in the range
-            starting from the current decoding position.</p>
+            starting from the current decoding position. This is a rough estimate
+            (may not account correctly for various overhead), and stops at the
+            demuxer position (it ignores seek ranges after it).</p>
+            <p><tt class="docutils literal"><span class="pre">file-cache-bytes</span></tt> is the number of bytes stored in the file cache. This
+            includes all overhead, and possibly unused data (like pruned data). This
+            member is missing if the file cache is not active.</p>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
@@ -9317,7 +9716,10 @@
                     MPV_FORMAT_NODE_MAP
                         &quot;start&quot;             MPV_FORMAT_DOUBLE
                         &quot;end&quot;               MPV_FORMAT_DOUBLE
+                &quot;bof-cached&quot;        MPV_FORMAT_FLAG
+                &quot;eof-cached&quot;        MPV_FORMAT_FLAG
                 &quot;fw-bytes&quot;          MPV_FORMAT_INT64
+                &quot;file-cache-bytes&quot;  MPV_FORMAT_INT64
             </pre>
             <p>Other fields (might be changed or removed in the future):</p>
             <dl class="last docutils">
@@ -9331,10 +9733,6 @@
             <dt><tt class="docutils literal"><span class="pre">total-bytes</span></tt></dt>
             <dd>Sum of packet bytes (plus some overhead estimation) of the entire packet
             queue, including cached seekable ranges.</dd>
-            <dt><tt class="docutils literal"><span class="pre">fw-bytes</span></tt></dt>
-            <dd>Sum of packet bytes (plus some overhead estimation) of the readahead
-            packet queue (packets between current decoder reader positions and
-            demuxer position).</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-via-network</span></tt></dt>
@@ -9360,7 +9758,7 @@
             <dt><tt class="docutils literal">seeking</tt></dt>
             <dd>Returns <tt class="docutils literal">yes</tt> if the player is currently seeking, or otherwise trying
             to restart playback. (It's possible that it returns <tt class="docutils literal">yes</tt> while a file
-            is loadedThis is because the same underlying code is used for seeking and
+            is loaded. This is because the same underlying code is used for seeking and
             resyncing.)</dd>
             <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
             <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise.</p>
@@ -10631,6 +11029,22 @@
             default is conservative to allow wide fonts to be used without overflow.
             However, with many common fonts a bigger number can be used. YMMV.</p>
             </dd>
+            <dt><tt class="docutils literal">boxvideo</tt></dt>
+            <dd><p class="first">Default: no</p>
+            <p>Whether to overlay the osc over the video (<tt class="docutils literal">no</tt>), or to box the video
+            within the areas not covered by the osc (<tt class="docutils literal">yes</tt>). If this option is set,
+            the osc may overwrite the <tt class="docutils literal"><span class="pre">--video-margin-ratio-*</span></tt> options, even if the
+            user has set them. (It will not overwrite them if all of them are set to
+            default values.)</p>
+            <p>Currently, this is supported for the <tt class="docutils literal">bottombar</tt> layout only. The other
+            layouts do not change if this option is set.</p>
+            <p>The border is static and appears even if the OSC is configured to appear
+            only on mouse interaction. If the OSC is invisible, the border is simply
+            filled with the background color (black by default).</p>
+            <p class="last">This currently still makes the OSC overlap with subtitles (if the
+            <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt> option is set to <tt class="docutils literal">yes</tt>, the default). This may be
+            fixed later.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="script-commands">
@@ -11162,7 +11576,7 @@
             </dl>
             </dd>
             </dl>
-            <p>Note that these are method, and you have to call them using <tt class="docutils literal">:</tt> instead
+            <p>Note that these are methods, and you have to call them using <tt class="docutils literal">:</tt> instead
             of <tt class="docutils literal">.</tt> (Refer to <a class="reference external" href="http://www.lua.org/manual/5.2/manual.html#3.4.9">http://www.lua.org/manual/5.2/manual.html#3.4.9</a> .)</p>
             <p>Example:</p>
             <pre class="last literal-block">
