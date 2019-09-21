@@ -10012,9 +10012,9 @@
             <dt><tt class="docutils literal"><span class="pre">osd-par</span></tt></dt>
             <dd>Last known OSD display pixel aspect (can be 0).</dd>
             <dt><tt class="docutils literal"><span class="pre">sub-text</span></tt></dt>
-            <dd><p class="first">Return the current subtitle text. Formatting is stripped. If a subtitle
-            is selected, but no text is currently visible, or the subtitle is not
-            text-based (i.e. DVD/BD subtitles), an empty string is returned.</p>
+            <dd><p class="first">Return the current subtitle text regardless of sub visibility.
+            Formatting is stripped. If the subtitle is not text-based
+            (i.e. DVD/BD subtitles), an empty string is returned.</p>
             <p class="last">This property is experimental and might be removed in the future.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
@@ -10117,6 +10117,12 @@
             <dd>Audio sample rate as indicated by the container. (Not always accurate.)</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-fps</span></tt></dt>
             <dd>Video FPS as indicated by the container. (Not always accurate.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-bitrate</span></tt></dt>
+            <dd>Audio average bitrate, in bits per second. (Not always accurate.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-rotation</span></tt></dt>
+            <dd>Video clockwise rotation metadata, in degrees.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-par</span></tt></dt>
+            <dd>Pixel aspect ratio.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/audio-channels</span></tt> (deprecated)</dt>
             <dd>Deprecated alias for <tt class="docutils literal"><span class="pre">track-list/N/demux-channel-count</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/replaygain-track-peak</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/replaygain-track-gain</span></tt></dt>
@@ -10154,6 +10160,9 @@
                     &quot;demux-channels&quot;    MPV_FORMAT_STRING
                     &quot;demux-samplerate&quot;  MPV_FORMAT_INT64
                     &quot;demux-fps&quot;         MPV_FORMAT_DOUBLE
+                    &quot;demux-bitrate&quot;     MPV_FORMAT_INT64
+                    &quot;demux-rotation&quot;    MPV_FORMAT_INT64
+                    &quot;demux-par&quot;         MPV_FORMAT_DOUBLE
                     &quot;audio-channels&quot;    MPV_FORMAT_INT64
                     &quot;replaygain-track-peak&quot; MPV_FORMAT_DOUBLE
                     &quot;replaygain-track-gain&quot; MPV_FORMAT_DOUBLE
