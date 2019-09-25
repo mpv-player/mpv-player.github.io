@@ -2782,9 +2782,9 @@
             Like <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>, this can break ASS subtitles.</p>
             <p class="last">Default: no.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--embeddedfonts</span></tt>, <tt class="docutils literal"><span class="pre">--no-embeddedfonts</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--embeddedfonts=&lt;yes|no&gt;</span></tt></dt>
             <dd>Use fonts embedded in Matroska container files and ASS scripts (default:
-            enabled). These fonts can be used for SSA/ASS subtitle rendering.</dd>
+            yes). These fonts can be used for SSA/ASS subtitle rendering.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-pos=&lt;0-100&gt;</span></tt></dt>
             <dd><p class="first">Specify the position of subtitles on the screen. The value is the vertical
             position of the subtitle in % of the screen height.</p>
@@ -3275,6 +3275,19 @@
             <tt class="docutils literal"><span class="pre">--sid</span></tt> to explicitly select the correct track too.</p>
             <p class="last">If the video stream contains no closed captions, or if no video is being
             decoded, the CC track will remain empty and will not show any text.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-font-provider=&lt;auto|none|fontconfig&gt;</span></tt></dt>
+            <dd><p class="first">Which libass font provider backend to use (default: auto). <tt class="docutils literal">auto</tt> will
+            attempt to use the native font provider: fontconfig on Linux, CoreText on
+            OSX, DirectWrite on Windows. <tt class="docutils literal">fontconfig</tt> forces fontconfig, if libass
+            was built with support (if not, it behaves like <tt class="docutils literal">none</tt>).</p>
+            <p class="last">The <tt class="docutils literal">none</tt> font provider effectively disables system fonts. It will still
+            attempt to use embedded fonts (unless <tt class="docutils literal"><span class="pre">--embeddedfonts=no</span></tt> is set; this is
+            the same behavior as with all other font providers), <tt class="docutils literal">subfont.ttf</tt> if
+            provided, and fonts in  the <tt class="docutils literal">fonts</tt> sub-directory if provided. (The
+            fallback is more strict than that of other font providers, and if a font
+            name does not match, it may prefer not to render any text that uses the
+            missing font.)</p>
             </dd>
             </dl>
             </div>
@@ -4321,6 +4334,9 @@
             <p class="last">This option is somewhat experimental and could be replaced by another
             mechanism in the future.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-font-provider=&lt;...&gt;</span></tt></dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--sub-font-provider</span></tt> for details and accepted values. Note that
+            unlike subtitles, OSD never uses embedded fonts from media files.</dd>
             </dl>
             </div>
             <div class="section" id="screenshot">
