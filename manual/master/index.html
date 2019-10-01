@@ -4871,6 +4871,12 @@
             <div class="section" id="dvb">
             <h2>DVB</h2>
             <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--dvbin-prog=&lt;string&gt;</span></tt></dt>
+            <dd>This defines the program to tune to. Usually, you may specify this
+            by using a stream URI like <tt class="docutils literal"><span class="pre">&quot;dvb://ZDF</span> HD&quot;</tt>, but you can tune to a
+            different channel by writing to this property at runtime.
+            Also see <tt class="docutils literal"><span class="pre">dvbin-channel-switch-offset</span></tt> for more useful channel
+            switching functionality.</dd>
             <dt><tt class="docutils literal"><span class="pre">--dvbin-card=&lt;0-15&gt;</span></tt></dt>
             <dd>Specifies using card number 0-15 (default: 0).</dd>
             <dt><tt class="docutils literal"><span class="pre">--dvbin-file=&lt;filename&gt;</span></tt></dt>
@@ -4902,6 +4908,14 @@
             It is also recommended to use this for channels which switch PIDs
             on-the-fly, e.g. for regional news.</p>
             <p class="last">Default: <tt class="docutils literal">no</tt></p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--dvbin-channel-switch-offset=&lt;integer&gt;</span></tt></dt>
+            <dd><p class="first">This value is not meant for setting via configuration, but used in channel
+            switching. An <tt class="docutils literal">input.conf</tt> can <tt class="docutils literal">cycle</tt> this value <tt class="docutils literal">up</tt> and <tt class="docutils literal">down</tt>
+            to perform channel switching. This number effectively gives the offset
+            to the initially tuned to channel in the channel list.</p>
+            <p class="last">An example <tt class="docutils literal">input.conf</tt> could contain:
+            <tt class="docutils literal">H cycle <span class="pre">dvbin-channel-switch-offset</span> up</tt>, <tt class="docutils literal">K cycle <span class="pre">dvbin-channel-switch-offset</span> down</tt></p>
             </dd>
             </dl>
             </div>
