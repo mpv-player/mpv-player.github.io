@@ -8760,6 +8760,8 @@
             <dt><tt class="docutils literal">subprocess</tt></dt>
             <dd><p class="first">Similar to <tt class="docutils literal">run</tt>, but gives more control about process execution to the
             caller, and does does not detach the process.</p>
+            <p>You can avoid blocking until the process terminates by running this command
+            asynchronously. (For example <tt class="docutils literal">mp.command_native_async()</tt> in Lua scripting.)</p>
             <p>This has the following named arguments. The order of them is not guaranteed,
             so you should always call them with named arguments, see <a class="reference internal" href="#named-arguments">Named arguments</a>.</p>
             <dl class="docutils">
@@ -8810,16 +8812,25 @@
             killed by mpv as a result of <tt class="docutils literal">playback_only</tt> being set to <tt class="docutils literal">yes</tt>.</p>
             </dd>
             <dt><tt class="docutils literal">killed_by_us</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
-            <dd>Set to <tt class="docutils literal">yes</tt> if the process has been killed by mpv as a result
-            of <tt class="docutils literal">playback_only</tt> being set to <tt class="docutils literal">yes</tt>.</dd>
+            <dd>Set to <tt class="docutils literal">yes</tt> if the process has been killed by mpv, for example as a
+            result of <tt class="docutils literal">playback_only</tt> being set to <tt class="docutils literal">yes</tt>, aborting the command
+            (e.g. by <tt class="docutils literal">mp.abort_async_command()</tt>), or if the player is about to
+            exit.</dd>
             </dl>
             <p>Note that the command itself will always return success as long as the
             parameters are correct. Whether the process could be spawned or whether
             it was somehow killed or returned an error status has to be queried from
             the result value.</p>
             <p>This command can be asynchronously aborted via API.</p>
-            <p class="last">In all cases, the subprocess will be terminated on player exit. Only the
-            <tt class="docutils literal">run</tt> command can start processes in a truly detached way.</p>
+            <p>In all cases, the subprocess will be terminated on player exit. Also see
+            <a class="reference internal" href="#asynchronous-command-details">Asynchronous command details</a>. Only the <tt class="docutils literal">run</tt> command can start
+            processes in a truly detached way.</p>
+            <div class="admonition admonition-warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">Don't forget to set the <tt class="docutils literal">playback_only</tt> field if you want the command
+            run while the player is in idle mode, or if you don't want that end of
+            playback kills the command.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal">quit [&lt;code&gt;]</tt></dt>
             <dd>Exit the player. If an argument is given, it's used as process exit code.</dd>
@@ -9473,6 +9484,21 @@
             sync vs. async: sub-add, audio-add, sub-reload, audio-reload,
             rescan-external-files, screenshot, screenshot-to-file, dump-cache,
             ab-loop-dump-cache.</p>
+            </div>
+            <div class="section" id="asynchronous-command-details">
+            <h2>Asynchronous command details</h2>
+            <p>On the API level, every asynchronous command is bound to the context which
+            started it. For example, an asynchronous command started by <tt class="docutils literal">mpv_command_async</tt>
+            is bound to the <tt class="docutils literal">mpv_handle</tt> passed to the function. Only this <tt class="docutils literal">mpv_handle</tt>
+            receives the completion notification (<tt class="docutils literal">MPV_EVENT_COMMAND_REPLY</tt>), and only
+            this handle can abort a still running command directly. If the <tt class="docutils literal">mpv_handle</tt> is
+            destroyed, any still running async. commands started by it are terminated.</p>
+            <p>The scripting APIs and JSON IPC give each script/connection its own implicit
+            <tt class="docutils literal">mpv_handle</tt>.</p>
+            <p>If the player is closed, the core may abort all pending async. commands on its
+            own (like a forced <tt class="docutils literal">mpv_abort_async_command()</tt> call for each pending command
+            on behalf of the API user). This happens at the same time <tt class="docutils literal">MPV_EVENT_SHUTDOWN</tt>
+            is sent, and there is no way to prevent this.</p>
             </div>
             <div class="section" id="input-sections">
             <h2>Input Sections</h2>
@@ -11924,9 +11950,10 @@
             <li>copy <tt class="docutils literal">error_string</tt> to <tt class="docutils literal">error</tt> field if the string is non-empty</li>
             <li>return the result table</li>
             </ul>
-            <p class="last">It is recommended to use <tt class="docutils literal">mp.command_native</tt> or <tt class="docutils literal">mp.command_native_async</tt>
+            <p>It is recommended to use <tt class="docutils literal">mp.command_native</tt> or <tt class="docutils literal">mp.command_native_async</tt>
             directly, instead of calling this legacy wrapper. It is for compatibility
             only.</p>
+            <p class="last">See the <tt class="docutils literal">subprocess</tt> documentation for semantics and further parameters.</p>
             </dd>
             <dt><tt class="docutils literal">utils.subprocess_detached(t)</tt></dt>
             <dd><p class="first">Runs an external process and detaches it from mpv's control.</p>
