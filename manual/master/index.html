@@ -2010,9 +2010,9 @@
             output drivers.</p>
             <p class="last">This option has no effect if <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt> option is used.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-aspect=&lt;ratio|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--video-aspect-override=&lt;ratio|no&gt;</span></tt></dt>
             <dd><p class="first">Override video aspect ratio, in case aspect information is incorrect or
-            missing in the file being played. See also <tt class="docutils literal"><span class="pre">--no-video-aspect</span></tt>.</p>
+            missing in the file being played.</p>
             <p>These values have special meaning:</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -2030,15 +2030,15 @@
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--video-aspect=4:3</span></tt>  or <tt class="docutils literal"><span class="pre">--video-aspect=1.3333</span></tt></li>
-            <li><tt class="docutils literal"><span class="pre">--video-aspect=16:9</span></tt> or <tt class="docutils literal"><span class="pre">--video-aspect=1.7777</span></tt></li>
-            <li><tt class="docutils literal"><span class="pre">--no-video-aspect</span></tt> or <tt class="docutils literal"><span class="pre">--video-aspect=no</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--video-aspect-override=4:3</span></tt>  or <tt class="docutils literal"><span class="pre">--video-aspect-override=1.3333</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--video-aspect-override=16:9</span></tt> or <tt class="docutils literal"><span class="pre">--video-aspect-override=1.7777</span></tt></li>
+            <li><tt class="docutils literal"><span class="pre">--no-video-aspect-override</span></tt> or <tt class="docutils literal"><span class="pre">--video-aspect-override=no</span></tt></li>
             </ul>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;bitstream|container&gt;</span></tt></dt>
             <dd><p class="first">This sets the default video aspect determination method (if the aspect is
-            _not_ overridden by the user with <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> or others).</p>
+            _not_ overridden by the user with <tt class="docutils literal"><span class="pre">--video-aspect-override</span></tt> or others).</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
@@ -3617,7 +3617,7 @@
             <dd><p class="first">Set the aspect ratio of your monitor or TV screen. A value of 0 disables a
             previous setting (e.g. in the config file). Overrides the
             <tt class="docutils literal"><span class="pre">--monitorpixelaspect</span></tt> setting if enabled.</p>
-            <p>See also <tt class="docutils literal"><span class="pre">--monitorpixelaspect</span></tt> and <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</p>
+            <p>See also <tt class="docutils literal"><span class="pre">--monitorpixelaspect</span></tt> and <tt class="docutils literal"><span class="pre">--video-aspect-override</span></tt>.</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -3638,7 +3638,7 @@
             <dt><tt class="docutils literal"><span class="pre">--monitorpixelaspect=&lt;ratio&gt;</span></tt></dt>
             <dd>Set the aspect of a single pixel of your monitor or TV screen (default:
             1). A value of 1 means square pixels (correct for (almost?) all LCDs). See
-            also <tt class="docutils literal"><span class="pre">--monitoraspect</span></tt> and <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</dd>
+            also <tt class="docutils literal"><span class="pre">--monitoraspect</span></tt> and <tt class="docutils literal"><span class="pre">--video-aspect-override</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt>, <tt class="docutils literal"><span class="pre">--no-stop-screensaver</span></tt></dt>
             <dd><p class="first">Turns off the screensaver (or screen blanker and similar mechanisms) at
             startup and turns it on again on exit (default: yes). The screensaver is
@@ -10100,9 +10100,10 @@
             <dt><tt class="docutils literal"><span class="pre">vsync-jitter</span></tt></dt>
             <dd>Estimated deviation factor of the vsync duration.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt> (RW)</dt>
-            <dd><p class="first">Video aspect, see <tt class="docutils literal"><span class="pre">--video-aspect</span></tt>.</p>
-            <p class="last">If video is active, this reports the effective aspect value, instead of
-            the value of the <tt class="docutils literal"><span class="pre">--video-aspect</span></tt> option.</p>
+            <dd><p class="first">Deprecated. This is tied to <tt class="docutils literal"><span class="pre">--video-aspect-override</span></tt>, but always
+            reports the current video aspect if video is active.</p>
+            <p class="last">The read and write components of this option can be split up into
+            <tt class="docutils literal"><span class="pre">video-params/aspect</span></tt> and <tt class="docutils literal"><span class="pre">video-aspect-override</span></tt> respectively.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">osd-width</span></tt>, <tt class="docutils literal"><span class="pre">osd-height</span></tt></dt>
             <dd>Last known OSD width (can be 0). This is needed if you want to use the
@@ -10600,11 +10601,6 @@
             loading time.)</p>
             <p class="last">Option changes at runtime are affected by this as well.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt></dt>
-            <dd>While video is active, always returns the effective aspect ratio. Setting
-            a special value (like <tt class="docutils literal">no</tt>, values <tt class="docutils literal">&lt;= 0</tt>) will make the property
-            set this as option, and return whatever actual aspect was derived from the
-            option setting.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
             <dd>If a VO is created, this will return either the actual display FPS, or
             an invalid value, instead of the option value.</dd>
