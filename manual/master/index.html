@@ -11651,10 +11651,13 @@
             of times in a row, only the last change triggers the change function. (The
             exact behavior depends on timing and other things.)</p>
             <p>In some cases the function is not called even if the property changes.
-            Whether this can happen depends on the property.</p>
-            <p class="last">If the <tt class="docutils literal">type</tt> is <tt class="docutils literal">none</tt> or <tt class="docutils literal">nil</tt>, sporadic property change events are
+            This depends on the property, and it's a valid feature request to ask for
+            better update handling of a specific property.</p>
+            <p>If the <tt class="docutils literal">type</tt> is <tt class="docutils literal">none</tt> or <tt class="docutils literal">nil</tt>, sporadic property change events are
             possible. This means the change function <tt class="docutils literal">fn</tt> can be called even if the
             property doesn't actually change.</p>
+            <p class="last">You always get an initial change notification. This is meant to initialize
+            the user's state to the current value of the property.</p>
             </dd>
             <dt><tt class="docutils literal">mp.unobserve_property(fn)</tt></dt>
             <dd>Undo <tt class="docutils literal"><span class="pre">mp.observe_property(...,</span> fn)</tt>. This removes all property handlers
