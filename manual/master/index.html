@@ -4694,9 +4694,9 @@
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--cache=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd><p class="first">Decide whether to use network cache settings (default: auto).</p>
-            <p>If enabled, use the maximum of <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> and <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>
-            for the cache size, and <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache=auto</span></tt> behaves as if it
-            was set to <tt class="docutils literal">yes</tt>. If disabled, <tt class="docutils literal"><span class="pre">--cache-pause</span></tt> and related are
+            <p>If enabled, use up to <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> for the cache size (but still limited
+            to <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>). <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache=auto</span></tt> behaves as if
+            it was set to <tt class="docutils literal">yes</tt>. If disabled, <tt class="docutils literal"><span class="pre">--cache-pause</span></tt> and related are
             implicitly disabled.</p>
             <p>The <tt class="docutils literal">auto</tt> choice enables this depending on whether the stream is thought
             to involve network accesses or other slow media (this is an imperfect
@@ -4712,7 +4712,8 @@
             overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
             is enabled and the value is larger. The default value is set to something
             very high, so the actually achieved readahead will usually be limited by
-            the value of the <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> option.</dd>
+            the value of the <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> option. Setting this option is
+            usually only useful for limiting readahead.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-on-disk=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Write packet data to a temporary file, instead of keeping them in memory.
             This makes sense only with <tt class="docutils literal"><span class="pre">--cache</span></tt>. If the normal cache is disabled,
@@ -4750,8 +4751,8 @@
             to control how long the player rebuffers if <tt class="docutils literal"><span class="pre">--cache-pause</span></tt> is enabled,
             and the demuxer underruns. If the given time is higher than the maximum
             set with <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> or  <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt>, or prefetching
-            ends before that for some other reason (like file end), playback resumes
-            earlier.</dd>
+            ends before that for some other reason (like file end or maximum configured
+            cache size reached), playback resumes earlier.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-pause-initial=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Enter &quot;buffering&quot; mode before starting playback (default: no). This can be
             used to ensure playback starts smoothly, in exchange for waiting some time
