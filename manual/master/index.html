@@ -6374,10 +6374,20 @@
             making a some idealized assumptions, which may not always apply in reality.
             Behavior can depend on the VO and the system's video and audio drivers.
             Media files must use constant framerate. Section-wise VFR might work as well
-            with some container formats (but not e.g. mkv). If the sync code detects
-            severe A/V desync, or the framerate cannot be detected, the player
-            automatically reverts to <tt class="docutils literal">audio</tt> mode for some time or permanently. These
-            modes also require a vsync blocked presentation mode. For OpenGL, this
+            with some container formats (but not e.g. mkv).</p>
+            <p>Under some circumstances, the player automatically reverts to <tt class="docutils literal">audio</tt> mode
+            for some time or permanently. This can happen on very low framerate video,
+            or if the framerate cannot be detected.</p>
+            <p>Also in display-sync modes it can happen that interruptions to video
+            playback (such as toggling fullscreen mode, or simply resizing the window)
+            will skip the video frames that should have been displayed, while <tt class="docutils literal">audio</tt>
+            mode will display them after the renderer has resumed (typically resulting
+            in a short A/V desync and the video &quot;catching up&quot;).</p>
+            <p>Before mpv 0.30.0, there was a fallback to <tt class="docutils literal">audio</tt> mode on severe A/V
+            desync. This was changed for the sake of not sporadically stopping. Now,
+            <tt class="docutils literal"><span class="pre">display-desync</span></tt> does what it promises and may desync with audio by an
+            arbitrary amount, until it is manually fixed with a seek.</p>
+            <p>These modes also require a vsync blocked presentation mode. For OpenGL, this
             translates to <tt class="docutils literal"><span class="pre">--opengl-swapinterval=1</span></tt>. For Vulkan, it translates to
             <tt class="docutils literal"><span class="pre">--vulkan-swap-mode=fifo</span></tt> (or <tt class="docutils literal"><span class="pre">fifo-relaxed</span></tt>).</p>
             <p>The modes with <tt class="docutils literal">desync</tt> in their names do not attempt to keep audio/video
