@@ -7791,15 +7791,52 @@
             <p>Available mpv-only filters are:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">format=fmt=&lt;value&gt;:colormatrix=&lt;value&gt;:...</span></tt></dt>
-            <dd><p class="first">Restricts the color space for the next filter without doing any conversion.
-            Use together with the scale filter for a real conversion.</p>
+            <dd><p class="first">Applies video parameter overrides, with optional conversion. By default,
+            this</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
-            <p class="last">For a list of available formats, see <tt class="docutils literal">format=fmt=help</tt>.</p>
+            <p class="last">For a list of available formats, use <tt class="docutils literal"><span class="pre">--vf=format=fmt=help</span></tt>.</p>
             </div>
             <dl class="last docutils">
             <dt><tt class="docutils literal">&lt;fmt&gt;</tt></dt>
-            <dd>Format name, e.g. rgb15, bgr24, 420p, etc. (default: don't change).</dd>
+            <dd><p class="first">Image format name, e.g. rgb15, bgr24, 420p, etc. (default: don't change).</p>
+            <p class="last">This filter always performs conversion to the given format.</p>
+            </dd>
+            <dt><tt class="docutils literal">&lt;convert=yes|no&gt;</tt></dt>
+            <dd><p class="first">Force conversion of color parameters (default: no).</p>
+            <p>If this is disabled (the default), the only conversion that is possibly
+            performed is format conversion if <tt class="docutils literal">&lt;fmt&gt;</tt> is set. All other parameters
+            (like <tt class="docutils literal">&lt;colormatrix&gt;</tt>) are forced without conversion. This mode is
+            typically useful when files have been incorrectly tagged.</p>
+            <p>If this is enabled, libswscale or zimg is used if any of the parameters
+            mismatch. zimg is used of the input/output image formats are supported
+            by mpv's zimg wrapper, and if <tt class="docutils literal"><span class="pre">--sws-allow-zimg=yes</span></tt> is used. Both
+            libraries may not support all kinds of conversions. This typically
+            results in silent incorrect conversion. zimg has in many cases a better
+            chance of performing the conversion correctly.</p>
+            <p>In both cases, the color parameters are set on the output stage of the
+            image format conversion (if <tt class="docutils literal">fmt</tt> was set). The difference is that
+            with <tt class="docutils literal">convert=no</tt>, the color parameters are not passed on to the
+            converter.</p>
+            <p>If input and output video parameters are the same, conversion is always
+            skipped.</p>
+            <div class="admonition admonition-examples last">
+            <p class="first admonition-title">Examples</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">mpv test.mkv <span class="pre">--vf=format:colormatrix=ycgco</span></tt></dt>
+            <dd>Results in incorrect colors (if test.mkv was tagged correctly).</dd>
+            <dt><tt class="docutils literal">mpv test.mkv <span class="pre">--vf=format:colormatrix=ycgco:convert=yes</span> <span class="pre">--sws-allow-zimg</span></tt></dt>
+            <dd><p class="first">Results in true conversion to <tt class="docutils literal">ycgco</tt>, assuming the renderer
+            supports it (<tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> normally does). You can add <tt class="docutils literal"><span class="pre">--vo=xv</span></tt>
+            to force a VO which definitely does not support it, which should
+            show incorrect colors as confirmation.</p>
+            <p class="last">Using <tt class="docutils literal"><span class="pre">--sws-allow-zimg=no</span></tt> (or disabling zimg at build time)
+            will use libswscale, which cannot perform this conversion as
+            of this writing.</p>
+            </dd>
+            </dl>
+            </div>
+            </dd>
             <dt><tt class="docutils literal">&lt;colormatrix&gt;</tt></dt>
             <dd><p class="first">Controls the YUV to RGB color space conversion when playing video. There
             are various standards. Normally, BT.601 should be used for SD video, and
