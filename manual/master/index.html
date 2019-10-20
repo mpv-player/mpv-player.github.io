@@ -9271,6 +9271,11 @@
             field is of type MPV_FORMAT_BYTE_ARRAY with the actual image data. The image
             is freed as soon as the result mpv_node is freed. As usual with client API
             semantics, you are not allowed to write to the image data.</p>
+            <p>The <tt class="docutils literal">stride</tt> is the number of bytes from a pixel at <tt class="docutils literal">(x0, y0)</tt> to the
+            pixel at <tt class="docutils literal">(x0, y0 + 1)</tt>. This can be larger than <tt class="docutils literal">w * 4</tt> if the image
+            was cropped, or if there is padding. This number can be negative as well.
+            You access a pixel with <tt class="docutils literal">byte_index = y * stride + x * 4</tt> (assuming the
+            <tt class="docutils literal">bgr0</tt> format).</p>
             <p class="last">The <tt class="docutils literal">flags</tt> argument is like the first argument to <tt class="docutils literal">screenshot</tt> and
             supports <tt class="docutils literal">subtitles</tt>, <tt class="docutils literal">video</tt>, <tt class="docutils literal">window</tt>.</p>
             </dd>
