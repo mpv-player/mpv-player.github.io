@@ -1900,7 +1900,7 @@
             chroma scalers instead of the one specified by <tt class="docutils literal"><span class="pre">--cscale</span></tt>. In other
             cases, hardware decoding can also reduce the bit depth of the decoded
             image, which can introduce banding or precision loss for 10-bit files.</p>
-            <p><tt class="docutils literal">vdpau</tt> is usually safe, exycept for 10 bit video. If deinterlacing
+            <p><tt class="docutils literal">vdpau</tt> is usually safe, except for 10 bit video. If deinterlacing
             enabled (or the <tt class="docutils literal">vdpaupp</tt> video filter is active in general), it
             forces RGB conversion. The latter currently does not treat certain
             colorspaces like BT.2020 correctly.</p>
@@ -4520,6 +4520,23 @@
             <dd>Software scaler chroma horizontal shifting. See <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sws-cvs=&lt;v&gt;</span></tt></dt>
             <dd>Software scaler chroma vertical shifting. See <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sws-allow-zimg=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Allow using zimg (if the component using the internal swscale wrapper
+            explicitly allows so). In this case, zimg <em>may</em> be used, if the internal
+            zimg wrapper supports the input and output formats. It will silently
+            fall back to libswscale if one of these conditions does not apply.</p>
+            <p>If zimg is used, the other <tt class="docutils literal"><span class="pre">--sws-</span></tt> options are ignored, and the
+            <tt class="docutils literal"><span class="pre">--zimg-</span></tt> options are used instead.</p>
+            <p>If the internal component using the swscale wrapper hooks up logging
+            correctly, a verbose priority log message will indicate whether zimg is
+            being used.</p>
+            <p class="last">Currently, barely anything uses this.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg--scaler=&lt;point|bilinear|bicubic|spline16|lanczos&gt;</span></tt></dt>
+            <dd>Zimg luma scaler to use (default: bilinear).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg-fast=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Allow optimizations that help with performance, but reduce quality (default:
+            yes). Currently, this may simplify gamma conversion operations.</dd>
             </dl>
             </div>
             <div class="section" id="audio-resampler">
@@ -9598,6 +9615,14 @@
             if it's a relative path. If you expect an absolute path, you will have to
             determine it yourself, for example by using the <tt class="docutils literal"><span class="pre">working-directory</span></tt>
             property.</dd>
+            <dt><tt class="docutils literal"><span class="pre">stream-open-filename</span></tt></dt>
+            <dd>The full path to the currently played media. This is different only from
+            <tt class="docutils literal">path</tt> in special cases. In particular, if <tt class="docutils literal"><span class="pre">--ytdl=yes</span></tt> is used, and
+            the URL is detected by <tt class="docutils literal"><span class="pre">youtube-dl</span></tt>, then the script will set this
+            property to the actual media URL. This property should be set only during
+            the <tt class="docutils literal">on_load</tt> or <tt class="docutils literal">on_load_fail</tt> hooks, otherwise it will have no effect
+            (or may do something implementation defined in the future). The property is
+            reset if playback of the current media ends.</dd>
             <dt><tt class="docutils literal"><span class="pre">media-title</span></tt></dt>
             <dd><p class="first">If the currently played file has a <tt class="docutils literal">title</tt> tag, use that.</p>
             <p class="last">Otherwise, return the <tt class="docutils literal">filename</tt> property.</p>
