@@ -4528,6 +4528,19 @@
             <dd>Software scaler chroma horizontal shifting. See <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sws-cvs=&lt;v&gt;</span></tt></dt>
             <dd>Software scaler chroma vertical shifting. See <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sws-bitexact=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Unknown functionality (default: no). Consult libswscale source code. The
+            primary purpose of this, as far as libswscale API goes), is to produce
+            exactly the same output for the same input on all platforms (output has the
+            same &quot;bits&quot; everywhere, thus &quot;bitexact&quot;). Typically disables optimizations.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sws-fast=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Allow optimizations that help with performance, but reduce quality (default:
+            no).</p>
+            <p class="last">VOs like <tt class="docutils literal">drm</tt> and <tt class="docutils literal">x11</tt> will benefit a lot from using <tt class="docutils literal"><span class="pre">--sws-fast</span></tt>.
+            You may need to set other options, like <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>. The builtin
+            <tt class="docutils literal"><span class="pre">sws-fast</span></tt> profile sets this option and some others to gain performance
+            for reduced quality.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--sws-allow-zimg=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Allow using zimg (if the component using the internal swscale wrapper
             explicitly allows so). In this case, zimg <em>may</em> be used, if the internal
@@ -4538,13 +4551,30 @@
             <p>If the internal component using the swscale wrapper hooks up logging
             correctly, a verbose priority log message will indicate whether zimg is
             being used.</p>
-            <p class="last">Currently, barely anything uses this.</p>
+            <p class="last">Most things which need software conversion can make use of this.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--zimg--scaler=&lt;point|bilinear|bicubic|spline16|lanczos&gt;</span></tt></dt>
-            <dd>Zimg luma scaler to use (default: bilinear).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg-scaler=&lt;point|bilinear|bicubic|spline16|spline36|lanczos&gt;</span></tt></dt>
+            <dd>Zimg luma scaler to use (default: lanczos).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg-scaler-param-a=&lt;default|float&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--zimg-scaler-param-b=&lt;default|float&gt;</span></tt></dt>
+            <dd><p class="first">Set scaler parameters. By default, these are set to the special string
+            <tt class="docutils literal">default</tt>, which maps to a scaler-specific default value. Ignored if the
+            scaler is not tunable.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">lanczos</tt></dt>
+            <dd><tt class="docutils literal"><span class="pre">--zimg-scaler-param-a</span></tt> is the number of taps.</dd>
+            <dt><tt class="docutils literal">bicubic</tt></dt>
+            <dd>a and b are the bicubic b and c parameters.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg-scaler-chroma=...</span></tt></dt>
+            <dd>Same as <tt class="docutils literal"><span class="pre">--zimg--scaler</span></tt>, for for chroma interpolation (default: bilinear).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg-scaler-chroma-param-a</span></tt>, <tt class="docutils literal"><span class="pre">--zimg-scaler-chroma-param-b</span></tt></dt>
+            <dd>Same as <tt class="docutils literal"><span class="pre">--zimg-scaler-param-a</span></tt> / <tt class="docutils literal"><span class="pre">--zimg-scaler-param-b</span></tt>, for chroma.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg-dither=&lt;no|ordered|random|error-diffusion&gt;</span></tt></dt>
+            <dd>Dithering (default: random).</dd>
             <dt><tt class="docutils literal"><span class="pre">--zimg-fast=&lt;yes|no&gt;</span></tt></dt>
             <dd>Allow optimizations that help with performance, but reduce quality (default:
-            yes). Currently, this may simplify gamma conversion operations.</dd>
+            no). Currently, this may simplify gamma conversion operations.</dd>
             </dl>
             </div>
             <div class="section" id="audio-resampler">
@@ -6975,6 +7005,8 @@
             <dt><tt class="docutils literal">x11</tt> (X11 only)</dt>
             <dd><p class="first">Shared memory video output driver without hardware acceleration that works
             whenever X11 is present.</p>
+            <p>Since mpv 0.30.0, you may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent
+            performance.</p>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
             <p class="last">This is a fallback only, and should not be normally used.</p>
@@ -7284,6 +7316,8 @@
             <dd><p class="first">Color Unicode art video output driver that works on a text console.
             Depends on support of true color by modern terminals to display the images
             at full color range. On Windows it requires an ansi terminal such as mintty.</p>
+            <p>Since mpv 0.30.0, you may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent
+            performance.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--vo-tct-algo=&lt;algo&gt;</span></tt></dt>
             <dd><p class="first">Select how to write the pixels to the terminal.</p>
@@ -7380,6 +7414,8 @@
             Should be used when one doesn't want to install full-blown graphical
             environment (e.g. no X). Does not support hardware acceleration (if you
             need this, check the <tt class="docutils literal">drm</tt> backend for <tt class="docutils literal">gpu</tt> VO).</p>
+            <p>Since mpv 0.30.0, you may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent
+            performance.</p>
             <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--drm-connector=[&lt;gpu_number&gt;.]&lt;name&gt;</span></tt></dt>
@@ -7488,6 +7524,8 @@
             <dt><tt class="docutils literal">wlshm</tt> (Wayland only)</dt>
             <dd><p class="first">Shared memory video output driver without hardware acceleration that works
             whenever Wayland is present.</p>
+            <p>Since mpv 0.30.0, you may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent
+            performance.</p>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
             <p class="last">This is a fallback only, and should not be normally used.</p>
