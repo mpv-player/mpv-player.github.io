@@ -1729,25 +1729,37 @@
             <p>The argument selects the drop methods, and can be one of the following:</p>
             <dl class="docutils">
             <dt>&lt;no&gt;</dt>
-            <dd>Disable any framedropping.</dd>
+            <dd>Disable any frame dropping. Not recommended, for testing only.</dd>
             <dt>&lt;vo&gt;</dt>
-            <dd>Drop late frames on video output (default). This still decodes and
-            filters all frames, but doesn't render them on the VO. It tries to query
-            the display FPS (X11 only, not correct on multi-monitor systems), or
-            assumes infinite display FPS if that fails. Drops are indicated in
-            the terminal status line as <tt class="docutils literal">Dropped:</tt> field. If the decoder is too slow,
-            in theory all frames would have to be dropped (because all frames are
-            too late) - to avoid this, frame dropping stops if the effective
-            framerate is below 10 FPS.</dd>
+            <dd><p class="first">Drop late frames on video output (default). This still decodes and
+            filters all frames, but doesn't render them on the VO. Drops are
+            indicated in the terminal status line as <tt class="docutils literal">Dropped:</tt> field.</p>
+            <p>In audio sync. mode, this drops frames that are outdated at the time of
+            display. If the decoder is too slow, in theory all frames would have to
+            be dropped (because all frames are too late) - to avoid this, frame
+            dropping stops  if the effective framerate is below 10 FPS.</p>
+            <p>In display-sync. modes (see <tt class="docutils literal"><span class="pre">--video-sync</span></tt>), this affects only how
+            A/V drops or repeats frames. If this mode is disabled, A/V desync will
+            in theory not affect video scheduling anymore (much like the
+            <tt class="docutils literal"><span class="pre">display-resample-desync</span></tt> mode). However, even if disabled, frames
+            will still be skipped (i.e. dropped) according to the ratio between
+            video and display frequencies.</p>
+            <p class="last">This is the recommended mode, and the default.</p>
+            </dd>
             <dt>&lt;decoder&gt;</dt>
-            <dd>Old, decoder-based framedrop mode. (This is the same as <tt class="docutils literal"><span class="pre">--framedrop=yes</span></tt>
+            <dd><p class="first">Old, decoder-based framedrop mode. (This is the same as <tt class="docutils literal"><span class="pre">--framedrop=yes</span></tt>
             in mpv 0.5.x and before.) This tells the decoder to skip frames (unless
             they are needed to decode future frames). May help with slow systems,
             but can produce unwatchable choppy output, or even freeze the display
-            completely. Not recommended.
-            The <tt class="docutils literal"><span class="pre">--vd-lavc-framedrop</span></tt> option controls what frames to drop.</dd>
+            completely.</p>
+            <p>This uses a heuristic which may not make sense, and in  general cannot
+            achieve good results, because the decoder's frame dropping cannot be
+            controlled in a predictable manner. Not recommended.</p>
+            <p>Even if you want to use this, prefer <tt class="docutils literal">decoder+vo</tt> for better results.</p>
+            <p class="last">The <tt class="docutils literal"><span class="pre">--vd-lavc-framedrop</span></tt> option controls what frames to drop.</p>
+            </dd>
             <dt>&lt;decoder+vo&gt;</dt>
-            <dd>Enable both modes. Not recommended.</dd>
+            <dd>Enable both modes. Not recommended. Better than just <tt class="docutils literal">decoder</tt> mode.</dd>
             </dl>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
@@ -2210,9 +2222,14 @@
             The result is most likely broken decoding, but may also help if the
             detected or reported profiles are somehow incorrect.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-software-fallback=&lt;yes|no|N&gt;</span></tt></dt>
-            <dd>Fallback to software decoding if the hardware-accelerated decoder fails
+            <dd><p class="first">Fallback to software decoding if the hardware-accelerated decoder fails
             (default: 3). If this is a number, then fallback will be triggered if
-            N frames fail to decode in a row. 1 is equivalent to <tt class="docutils literal">yes</tt>.</dd>
+            N frames fail to decode in a row. 1 is equivalent to <tt class="docutils literal">yes</tt>.</p>
+            <p class="last">Setting this to a higher number might break the playback start fallback: if
+            a fallback happens, parts of the file will be skipped, approximately by to
+            the number of packets that could not be decoded. Values below an unspecified
+            count will not have this problem, because mpv retains the packets.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-dr=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Enable direct rendering (default: yes). If this is set to <tt class="docutils literal">yes</tt>, the
             video will be decoded directly to GPU video memory (or staging buffers).
