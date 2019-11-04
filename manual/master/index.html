@@ -516,29 +516,6 @@
             <p>Options of this type can be changed at runtime using the <tt class="docutils literal"><span class="pre">change-list</span></tt>
             command, which takes the suffix as separate operation parameter.</p>
             </div>
-            <div class="section" id="playing-dvds">
-            <h2>Playing DVDs</h2>
-            <p>DVDs can be played with the <tt class="docutils literal"><span class="pre">dvd://[title]</span></tt> syntax. The optional
-            title specifier is a number which selects between separate video
-            streams on the DVD. If no title is given (<tt class="docutils literal"><span class="pre">dvd://</span></tt>) then the longest
-            title is selected automatically by the library. This is usually what
-            you want. mpv does not support DVD menus.</p>
-            <p>DVDs which have been copied on to a hard drive or other mounted
-            filesystem (by e.g. the <tt class="docutils literal">dvdbackup</tt> tool) are accommodated by
-            specifying the path to the local copy: <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt>.
-            Alternatively, running <tt class="docutils literal">mpv PATH</tt> should auto-detect a DVD directory
-            tree and play the longest title.</p>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p>DVD subtitles</p>
-            <p class="last">DVDs use image-based subtitles. Image subtitles are implemented as
-            a bitmap video stream which can be superimposed over the main
-            movie. mpv's subtitle styling and positioning options and keyboard
-            shortcuts generally do not work with image-based subtitles.
-            Exceptions include options like <tt class="docutils literal"><span class="pre">--stretch-dvd-subs</span></tt> and
-            <tt class="docutils literal"><span class="pre">--stretch-image-subs-to-screen</span></tt>.</p>
-            </div>
-            </div>
             </div>
             <div class="section" id="configuration-files">
             <h1>CONFIGURATION FILES</h1>
@@ -664,12 +641,8 @@
             <div class="admonition admonition-auto-profile-loading">
             <p class="first admonition-title">Auto profile loading</p>
             <pre class="last literal-block">
-            [protocol.dvd]
-            profile-desc=&quot;profile for dvd:// streams&quot;
-            alang=en
-            
-            [extension.flv]
-            profile-desc=&quot;profile for .flv files&quot;
+            [extension.mkv]
+            profile-desc=&quot;profile for .mkv files&quot;
             vf=flip
             </pre>
             </div>
@@ -790,10 +763,10 @@
             </blockquote>
             <p><tt class="docutils literal"><span class="pre">ytdl://...</span></tt></p>
             <blockquote>
-            <p>By default, the youtube-dl hook script (enabled by default for mpv CLI)
-            only looks at http URLs. Prefixing an URL with <tt class="docutils literal"><span class="pre">ytdl://</span></tt> forces it to
-            be always processed by the script. This can also be used to invoke special
-            youtube-dl functionality like playing a video by ID or invoking search.</p>
+            <p>By default, the youtube-dl hook script only looks at http(s) URLs. Prefixing
+            an URL with <tt class="docutils literal"><span class="pre">ytdl://</span></tt> forces it to be always processed by the script. This
+            can also be used to invoke special youtube-dl functionality like playing a
+            video by ID or invoking search.</p>
             <p>Keep in mind that you can't pass youtube-dl command line options by this,
             and you have to use <tt class="docutils literal"><span class="pre">--ytdl-raw-options</span></tt> instead.</p>
             </blockquote>
@@ -813,25 +786,14 @@
             the available playlists on loading.</p>
             <p><tt class="docutils literal"><span class="pre">bluray://</span></tt> is an alias.</p>
             </blockquote>
-            <p><tt class="docutils literal"><span class="pre">dvd://[title|[starttitle]-endtitle][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
+            <p><tt class="docutils literal"><span class="pre">dvd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
             <blockquote>
             <p>Play a DVD. DVD menus are not supported. If no title is given, the longest
-            title is auto-selected.</p>
+            title is auto-selected. Without <tt class="docutils literal"><span class="pre">--dvd-device</span></tt>, it will probably try
+            to open an actual optical drive, if available and implemented for the OS.</p>
             <p><tt class="docutils literal"><span class="pre">dvdnav://</span></tt> is an old alias for <tt class="docutils literal"><span class="pre">dvd://</span></tt> and does exactly the same
             thing.</p>
             </blockquote>
-            <p><tt class="docutils literal"><span class="pre">dvdread://...:</span></tt></p>
-            <blockquote>
-            Play a DVD using the old libdvdread code. This is what MPlayer and
-            older mpv versions used for <tt class="docutils literal"><span class="pre">dvd://</span></tt>. Use is discouraged. It's
-            provided only for compatibility and for transition, and to work
-            around outstanding dvdnav bugs (see &quot;DVD library choices&quot; above).</blockquote>
-            <p><tt class="docutils literal"><span class="pre">tv://[channel][/input_id]</span></tt> <tt class="docutils literal"><span class="pre">--tv-...</span></tt></p>
-            <blockquote>
-            Analogue TV via V4L. Also useful for webcams. (Linux only.)</blockquote>
-            <p><tt class="docutils literal"><span class="pre">pvr://</span></tt> <tt class="docutils literal"><span class="pre">--pvr-...</span></tt></p>
-            <blockquote>
-            PVR. (Linux only.)</blockquote>
             <p><tt class="docutils literal"><span class="pre">dvb://[cardnumber&#64;]channel</span></tt> <tt class="docutils literal"><span class="pre">--dvbin-...</span></tt></p>
             <blockquote>
             Digital TV via DVB. (Linux only.)</blockquote>
@@ -850,9 +812,17 @@
             <p>This is intended for using libavdevice inputs. <tt class="docutils literal">type</tt> is the libavdevice
             demuxer name, and <tt class="docutils literal">options</tt> is the (pseudo-)filename passed to the
             demuxer.</p>
-            <p>For example, <tt class="docutils literal">mpv <span class="pre">av://lavfi:mandelbrot</span></tt> makes use of the libavfilter
-            wrapper included in libavdevice, and will use the <tt class="docutils literal">mandelbrot</tt> source
-            filter to generate input data.</p>
+            <div class="admonition admonition-example">
+            <p class="first admonition-title">Example</p>
+            <pre class="literal-block">
+            mpv av://v4l2:/dev/video0 --profile=low-latency --untimed
+            </pre>
+            <p class="last">This plays video from the first v4l input with nearly the lowest latency
+            possible. It's a good replacement for the removed <tt class="docutils literal"><span class="pre">tv://</span></tt> input.
+            Using <tt class="docutils literal"><span class="pre">--untimed</span></tt> is a hack to output a captured frame immediately,
+            instead of respecting the input framerate. (There may be better ways to
+            handle this in the future.)</p>
+            </div>
             <p><tt class="docutils literal"><span class="pre">avdevice://</span></tt> is an alias.</p>
             </blockquote>
             <p><tt class="docutils literal"><span class="pre">file://PATH</span></tt></p>
@@ -1842,7 +1812,7 @@
             <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
             <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (OS X 10.8 and up),
-            or <tt class="docutils literal"><span class="pre">--vo=opengl-cb</span></tt> (iOS 9.0 and up)</td>
+            or <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> (iOS 9.0 and up)</td>
             </tr>
             <tr class="field"><th class="field-name" colspan="2">videotoolbox-copy:</th></tr>
             <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (OS X 10.8 or iOS 9.0 and up)</td>
@@ -1971,12 +1941,12 @@
             <dt><tt class="docutils literal"><span class="pre">--gpu-hwdec-interop=&lt;auto|all|no|name&gt;</span></tt></dt>
             <dd><p class="first">This option is for troubleshooting hwdec interop issues. Since it's a
             debugging option, its semantics may change at any time.</p>
-            <p>This is useful for the <tt class="docutils literal">gpu</tt> and <tt class="docutils literal"><span class="pre">opengl-cb</span></tt> VOs for selecting which
+            <p>This is useful for the <tt class="docutils literal">gpu</tt> and <tt class="docutils literal">libmpv</tt> VOs for selecting which
             hwdec interop context to use exactly. Effectively it also can be used
             to block loading of certain backends.</p>
             <p>If set to <tt class="docutils literal">auto</tt> (default), the behavior depends on the VO: for <tt class="docutils literal">gpu</tt>,
             it does nothing, and the interop context is loaded on demand (when the
-            decoder probes for <tt class="docutils literal"><span class="pre">--hwdec</span></tt> support). For <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, which has
+            decoder probes for <tt class="docutils literal"><span class="pre">--hwdec</span></tt> support). For <tt class="docutils literal">libmpv</tt>, which has
             has no on-demand loading, this is equivalent to <tt class="docutils literal">all</tt>.</p>
             <p>The empty string is equivalent to <tt class="docutils literal">auto</tt>.</p>
             <p>If set to <tt class="docutils literal">all</tt>, it attempts to load all interop contexts at GL context
@@ -5050,7 +5020,7 @@
             <div class="section" id="gpu-renderer-options">
             <h2>GPU renderer options</h2>
             <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> and
-            <tt class="docutils literal"><span class="pre">--vo=opengl-cb</span></tt> only, which are the only VOs that implement them.</p>
+            <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> only, which are the only VOs that implement them.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--scale=&lt;filter&gt;</span></tt></dt>
             <dd><p class="first">The filter function to use when upscaling video.</p>
@@ -5953,7 +5923,7 @@
             <dt>auto</dt>
             <dd>auto-select (default)</dd>
             <dt>cocoa</dt>
-            <dd>Cocoa/OS X (deprecated, use --vo=opengl-cb instead)</dd>
+            <dd>Cocoa/OS X (deprecated, use --vo=libmpv instead)</dd>
             <dt>win</dt>
             <dd>Win32/WGL</dd>
             <dt>winvk</dt>
