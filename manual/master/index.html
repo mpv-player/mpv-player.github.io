@@ -4830,6 +4830,29 @@
             </dl>
             <p class="last">Currently, this is used for <tt class="docutils literal"><span class="pre">--cache-on-disk</span></tt> only.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--stream-buffer-size=&lt;bytesize&gt;</span></tt></dt>
+            <dd><p class="first">Size of the low level stream byte buffer (default: 128KB). This is used as
+            buffer between demuxer and low level I/O (e.g. sockets). Generally, this
+            can be very small, and the main purpose is similar to the internal buffer
+            FILE in the C standard library will have.</p>
+            <p>Half of the buffer is always used for guaranteed seek back, which is
+            important for unseekable input.</p>
+            <p>There are known cases where this can help performance to set a large buffer:</p>
+            <blockquote>
+            <ol class="arabic simple">
+            <li>mp4 files. libavformat may trigger many small seeks in both
+            directions, depending on how the file was muxed.</li>
+            <li>Certain network filesystems, which do not have a cache, and where
+            small reads can be inefficient.</li>
+            </ol>
+            </blockquote>
+            <p>In other cases, setting this to a large value can reduce performance.</p>
+            <p>Usually, read accesses are at half the buffer size, but it may happen that
+            accesses are done alternating with smaller and larger sizes (this is due to
+            the internal ring buffer wrap-around).</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">--list-options</span></tt> for defaults and value range. <tt class="docutils literal">&lt;bytesize&gt;</tt> options
+            accept suffixes such as <tt class="docutils literal">KiB</tt> and <tt class="docutils literal">MiB</tt>.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="network">
