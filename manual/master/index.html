@@ -1802,8 +1802,7 @@
             </tr>
             <tr class="field"><th class="field-name">auto-copy:</th><td class="field-body">enable best hw decoder with copy-back (see below)</td>
             </tr>
-            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=x11</span></tt>,
-            or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
+            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with X11, or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
@@ -5975,11 +5974,6 @@
             <dd>X11/EGL</dd>
             <dt>android</dt>
             <dd>Android/EGL. Requires <tt class="docutils literal"><span class="pre">--wid</span></tt> be set to an <tt class="docutils literal">android.view.Surface</tt>.</dd>
-            <dt>vdpauglx</dt>
-            <dd>Use vdpau presentation with GLX as backing. Experimental use only.
-            Using this will have no advantage (other than additional bugs or
-            performance problems), and is for doing experiments only. Will not
-            be used automatically.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gpu-api=&lt;type&gt;</span></tt></dt>
@@ -6713,6 +6707,22 @@
             </div>
             <p class="last">See the FFmpeg libavfilter documentation for details on the available
             filters.</p>
+            </dd>
+            </dl>
+            </div>
+            <div class="section" id="debugging">
+            <h2>Debugging</h2>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--unittest=&lt;name&gt;</span></tt></dt>
+            <dd><p class="first">Run an internal unit test. There are multiple, and the name specifies which.</p>
+            <p>The special value <tt class="docutils literal"><span class="pre">all-simple</span></tt> runs all tests which do not need further
+            setup (other arguments and such). Some tests may need additional arguments
+            to do anything useful.</p>
+            <p>On success, the player binary exits with exit status 0, otherwise it returns
+            with an undefined non-0 exit status (it may crash or abort itself on test
+            failures).</p>
+            <p class="last">This is only enabled if built with <tt class="docutils literal"><span class="pre">--enable-tests</span></tt>, and should normally
+            be enabled and used by developers only.</p>
             </dd>
             </dl>
             </div>
