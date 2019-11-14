@@ -4904,9 +4904,10 @@
             <dt><tt class="docutils literal"><span class="pre">--referrer=&lt;string&gt;</span></tt></dt>
             <dd>Specify a referrer path or URL for HTTP requests.</dd>
             <dt><tt class="docutils literal"><span class="pre">--network-timeout=&lt;seconds&gt;</span></tt></dt>
-            <dd><p class="first">Specify the network timeout in seconds. This affects at least HTTP. The
-            special value 0 (default) uses the FFmpeg/Libav defaults. If a protocol
-            is used which does not support timeouts, this option is silently ignored.</p>
+            <dd><p class="first">Specify the network timeout in seconds (default: 60 seconds). This affects
+            at least HTTP. The special value 0 uses the FFmpeg/Libav defaults. If a
+            protocol is used which does not support timeouts, this option is silently
+            ignored.</p>
             <div class="admonition warning last">
             <p class="first admonition-title">Warning</p>
             <p class="last">This breaks the RTSP protocol, because of inconsistent FFmpeg API
@@ -4914,8 +4915,10 @@
             option accept different units (seconds instead of microseconds, causing
             mpv to pass it huge values), it will also overflow FFmpeg internal
             calculations. The worst is that merely setting the option will put RTSP
-            into listening mode, which breaks any client uses. Do not use this
-            option with RTSP URLs.</p>
+            into listening mode, which breaks any client uses. At time of this
+            writing, the fix was not made effective yet. For this reason, this
+            option is ignored (or should be ignored) on RTSP URLs. You can still
+            set the timeout option directly with <tt class="docutils literal"><span class="pre">--demuxer-lavf-o</span></tt>.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--rtsp-transport=&lt;lavf|udp|tcp|http&gt;</span></tt></dt>
