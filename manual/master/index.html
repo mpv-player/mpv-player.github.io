@@ -3870,6 +3870,16 @@
             the first song in the stream. Well, you won't get anything useful either
             way if the seek is outside of mpv's cache.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-lavf-propagate-opts=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Propagate FFmpeg-level options to recursively opened connections (default:
+            yes). This is needed because FFmpeg will apply these settings to nested
+            AVIO contexts automatically. On the other hand, this could break in certain
+            situations - it's the FFmpeg API, you just can't win.</p>
+            <p>This affects in particular the <tt class="docutils literal"><span class="pre">--timeout</span></tt> option and anything passed
+            with <tt class="docutils literal"><span class="pre">--demuxer-lavf-o</span></tt>.</p>
+            <p class="last">If this option is deemed unnecessary at some point in the future, it will
+            be removed without notice.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll=&lt;yes|index|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--mkv-subtitle-preroll</span></tt></dt>
             <dd><p class="first">Try harder to show embedded soft subtitles when seeking somewhere. Normally,
             it can happen that the subtitle at the seek target is not shown due to how
