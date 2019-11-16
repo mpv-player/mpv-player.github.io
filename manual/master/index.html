@@ -653,6 +653,47 @@
             <p>This feature is very limited, and there are no other auto profiles.</p>
             </div>
             </div>
+            <div class="section" id="using-mpv-from-other-programs-or-scripts">
+            <h1>Using mpv from other programs or scripts</h1>
+            <p>There are three choices for using mpv from other programs or scripts:</p>
+            <blockquote>
+            <ol class="arabic">
+            <li><p class="first">Calling it as UNIX process. If you do this, <em>do not parse terminal output</em>.
+            The terminal output is intended for humans, and may change any time. In
+            addition, terminal behavior itself may change any time. Compatibility
+            cannot be guaranteed.</p>
+            <p>Your code should work even if you pass <tt class="docutils literal"><span class="pre">--no-terminal</span></tt>. Do not attempt
+            to simulate user input by sending terminal control codes to mpv's stdin.
+            If you need interactive control, using <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> is
+            recommended. This gives you access to the <a class="reference internal" href="#json-ipc">JSON IPC</a>  over unix domain
+            sockets (or named pipes on Windows).</p>
+            <p>Depending on what you do, passing <tt class="docutils literal"><span class="pre">--no-config</span></tt> or <tt class="docutils literal"><span class="pre">--config-dir</span></tt> may
+            be a good idea to avoid conflicts with the normal mpv user configuration
+            intended for CLI playback.</p>
+            <p>Using <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> is also suitable for purposes like remote
+            control (however, the IPC protocol itself is not &quot;secure&quot; and not
+            intended to be so).</p>
+            </li>
+            <li><p class="first">Using libmpv. This is generally recommended when mpv is used as playback
+            backend for a completely different application. The provided C API is
+            very close to CLI mechanisms and the scripting API.</p>
+            <p>Note that even though libmpv has different defaults, it can be configured
+            to work exactly like the CLI player (except command line parsing is
+            unavailable).</p>
+            <p>See <a class="reference internal" href="#embedding-into-other-programs-libmpv">EMBEDDING INTO OTHER PROGRAMS (LIBMPV)</a>.</p>
+            </li>
+            <li><p class="first">As a user script (<a class="reference internal" href="#lua-scripting">LUA SCRIPTING</a>, <a class="reference internal" href="#javascript">JAVASCRIPT</a>, <a class="reference internal" href="#c-plugins">C PLUGINS</a>). This is
+            recommended when the goal is to &quot;enhance&quot; the CLI player. Scripts get
+            access to the entire client API of mpv.</p>
+            <p>This is the standard way to create third-party extensions for the player.</p>
+            </li>
+            </ol>
+            </blockquote>
+            <p>All these access the client API, which is the sum of the various mechanisms
+            provided by the player core, as documented here: <a class="reference internal" href="#options">OPTIONS</a>,
+            <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>, <a class="reference internal" href="#properties">Properties</a>, <a class="reference internal" href="#list-of-events">List of events</a> (also see C API),
+            <a class="reference internal" href="#hooks">Hooks</a>.</p>
+            </div>
             <div class="section" id="taking-screenshots">
             <h1>TAKING SCREENSHOTS</h1>
             <p>Screenshots of the currently played file can be taken using the 'screenshot'
@@ -4113,7 +4154,8 @@
             work (key bindings that normally quit will be shown on OSD only, just
             like any other binding). See <a class="reference internal" href="#input-conf">INPUT.CONF</a>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-file=&lt;filename&gt;</span></tt></dt>
-            <dd><p class="first">Read commands from the given file. Mostly useful with a FIFO. Since
+            <dd><p class="first">Deprecated. Use <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>.</p>
+            <p>Read commands from the given file. Mostly useful with a FIFO. Since
             mpv 0.7.0 also understands JSON commands (see <a class="reference internal" href="#json-ipc">JSON IPC</a>), but you can't
             get replies or events. Use <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> for something
             bi-directional. On MS Windows, JSON commands are not available.</p>
