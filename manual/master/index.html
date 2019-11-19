@@ -8754,6 +8754,7 @@
             </pre>
             <p>(Only closing the window will make <strong>mpv</strong> exit, pressing normal keys will
             merely display the binding, even if mapped to quit.)</p>
+            <p>Also see <a class="reference internal" href="#key-names">Key names</a>.</p>
             </div>
             <div class="section" id="input-conf-syntax">
             <h2>input.conf syntax</h2>
@@ -8783,6 +8784,62 @@
             that matches, and the multi-key command will never be called. Intermediate keys
             can be remapped to <tt class="docutils literal">ignore</tt> in order to avoid this issue. The maximum number
             of (non-modifier) keys for combinations is currently 4.</p>
+            </div>
+            <div class="section" id="key-names">
+            <h2>Key names</h2>
+            <p>All mouse and keyboard input is to converted to mpv-specific key names. Key
+            names are either special symbolic identifiers representing a physical key, or a
+            text key names, which are unicode code points encoded as UTF-8. These are what
+            keyboard input would normally produce, for example <tt class="docutils literal">a</tt> for the A key. As a
+            consequence, mpv uses input translated by the current OS keyboard layout, rather
+            than physical scan codes.</p>
+            <p>Currently there is the hardcoded assumption that every text key can be
+            represented as a single unicode code point (in NFKC form).</p>
+            <p>All key names can be combined with the modifiers <tt class="docutils literal">Shift</tt>, <tt class="docutils literal">Ctrl</tt>, <tt class="docutils literal">Alt</tt>,
+            <tt class="docutils literal">Meta</tt>. They must be prefixed to the actual key name, where each modifier
+            is followed by a <tt class="docutils literal">+</tt> (for example <tt class="docutils literal">ctrl+q</tt>).</p>
+            <p>Symbolic key names and modifier names are case-insensitive. Unicode key names
+            are case-sensitive because input bindings typically respect the shift key.</p>
+            <p>Another type of key names are hexadecimal key names, that serve as fallback
+            for special keys that are neither unicode, nor have a special mpv defined name.
+            They will break as soon as mpv adds proper names for them, but can enable you
+            to use a key at all if that does not happen.</p>
+            <p>All symbolic names are listed by <tt class="docutils literal"><span class="pre">--input-keylist</span></tt>. <tt class="docutils literal"><span class="pre">--input-test</span></tt> is a
+            special mode that prints all input on the OSD.</p>
+            <p>Comments on some symbolic names:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">KP*</tt></dt>
+            <dd>Keypad names. Behavior varies by backend (whether they implement this, and
+            on how they treat numlock), but typically, mpv tries to map keys on the
+            keypad to separate names, even if they produce the same text as normal keys.</dd>
+            <dt><tt class="docutils literal">MOUSE_BTN*</tt>, <tt class="docutils literal">MBTN*</tt></dt>
+            <dd><p class="first">Various mouse buttons.</p>
+            <p>Depending on backend, the mouse wheel might also be represented as a button.
+            In addition, <tt class="docutils literal">MOUSE_BTN3</tt> to <tt class="docutils literal">MOUSE_BTN6</tt> are deprecated aliases for
+            <tt class="docutils literal">WHEEL_UP</tt>, <tt class="docutils literal">WHEEL_DOWN</tt>, <tt class="docutils literal">WHEEL_LEFT</tt>, <tt class="docutils literal">WHEEL_RIGHT</tt>.</p>
+            <p class="last"><tt class="docutils literal">MBTN*</tt> are aliases for <tt class="docutils literal">MOUSE_BTN*</tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal">WHEEL_*</tt></dt>
+            <dd>Mouse wheels (typically).</dd>
+            <dt><tt class="docutils literal">AXIS_*</tt></dt>
+            <dd>Deprecated aliases for <tt class="docutils literal">WHEEL_*</tt>.</dd>
+            <dt><tt class="docutils literal">*_DBL</tt></dt>
+            <dd>Mouse button double clicks.</dd>
+            <dt><tt class="docutils literal">MOUSE_MOVE</tt>, <tt class="docutils literal">MOUSE_ENTER</tt>, <tt class="docutils literal">MOUSE_LEAVE</tt></dt>
+            <dd>Emitted by mouse move events. Enter/leave happens when the mouse enters or
+            leave the mpv window (or the current mouse region, using the deprecated
+            mouse region input section mechanism).</dd>
+            <dt><tt class="docutils literal">CLOSE_WIN</tt></dt>
+            <dd>Pseudo key emitted when closing the mpv window using the OS window manager
+            (for example, by clicking the close button in the window title bar).</dd>
+            <dt><tt class="docutils literal">GAMEPAD_*</tt></dt>
+            <dd>Keys emitted by the SDL gamepad backend.</dd>
+            <dt><tt class="docutils literal">AR_*</tt></dt>
+            <dd>Keys emitted by the OSX-only Apple Remote code.</dd>
+            <dt><tt class="docutils literal">UNMAPPED</tt></dt>
+            <dd>Pseudo-key that matches any unmapped key. (You should probably avoid this
+            if possible, because it might change behavior or get removed in the future.)</dd>
+            </dl>
             </div>
             <div class="section" id="flat-command-syntax">
             <h2>Flat command syntax</h2>
@@ -9344,7 +9401,8 @@
             list yourself when adding a second key binding for cycling backwards.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">enable-section</span> &lt;name&gt; [&lt;flags&gt;]</tt></dt>
-            <dd><p class="first">Enable all key bindings in the named input section.</p>
+            <dd><p class="first">This command is deprecated, except for mpv-internal uses.</p>
+            <p>Enable all key bindings in the named input section.</p>
             <p>The enabled input sections form a stack. Bindings in sections on the top of
             the stack are preferred to lower sections. This command puts the section
             on top of the stack. If the section was already on the stack, it is
@@ -9365,9 +9423,12 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">disable-section</span> &lt;name&gt;</tt></dt>
-            <dd>Disable the named input section. Undoes <tt class="docutils literal"><span class="pre">enable-section</span></tt>.</dd>
+            <dd><p class="first">This command is deprecated, except for mpv-internal uses.</p>
+            <p class="last">Disable the named input section. Undoes <tt class="docutils literal"><span class="pre">enable-section</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">define-section</span> &lt;name&gt; &lt;contents&gt; [&lt;flags&gt;]</tt></dt>
-            <dd><p class="first">Create a named input section, or replace the contents of an already existing
+            <dd><p class="first">This command is deprecated, except for mpv-internal uses.</p>
+            <p>Create a named input section, or replace the contents of an already existing
             input section. The <tt class="docutils literal">contents</tt> parameter uses the same syntax as the
             <tt class="docutils literal">input.conf</tt> file (except that using the section syntax in it is not
             allowed), including the need to separate bindings with a newline character.</p>
@@ -11870,9 +11931,10 @@
             events (as well as key repeat, if enabled), with the first
             argument being a table. This table has an <tt class="docutils literal">event</tt> entry, which
             is set to one of the strings <tt class="docutils literal">down</tt>, <tt class="docutils literal">repeat</tt>, <tt class="docutils literal">up</tt> or
-            <tt class="docutils literal">press</tt> (the latter if key up/down can't be tracked). It further
-            has an <tt class="docutils literal">is_mouse</tt> entry, which tells whether the event was caused
-            by a mouse button.</dd>
+            <tt class="docutils literal">press</tt> (the latter if key up/down can't be tracked). The
+            <tt class="docutils literal">is_mouse</tt> entry tells whether the event was caused by a mouse
+            button. The <tt class="docutils literal">key_name</tt> entry contains the name of they key that
+            triggered this, or <tt class="docutils literal">nil</tt> if unknown or invoked artificially.</dd>
             </dl>
             </blockquote>
             <p>Internally, key bindings are dispatched via the <tt class="docutils literal"><span class="pre">script-message-to</span></tt> or
