@@ -8845,6 +8845,10 @@
             <dt><tt class="docutils literal">UNMAPPED</tt></dt>
             <dd>Pseudo-key that matches any unmapped key. (You should probably avoid this
             if possible, because it might change behavior or get removed in the future.)</dd>
+            <dt><tt class="docutils literal">ANY_UNICODE</tt></dt>
+            <dd>Pseudo-key that matches any key that produces text. (You should probably
+            avoid this if possible, because it might change behavior or get removed in
+            the future.)</dd>
             </dl>
             </div>
             <div class="section" id="flat-command-syntax">
@@ -9548,15 +9552,21 @@
             <li>The name of the binding (as established above).</li>
             <li>The key state as string (see below).</li>
             <li>The key name (since mpv 0.15.0).</li>
+            <li>The text the key would produce, or empty string if not applicable.</li>
             </ol>
-            <p>The key state consists of 2 letters:</p>
-            <ol class="last arabic simple">
+            <p>The 5th argument is only set if no modifiers are present (using the shift
+            key with a letter is normally not emitted as having a modifier, and results
+            in upper case text instead, but some backends may mess up).</p>
+            <p>The key state consists of 2 characters:</p>
+            <ol class="arabic simple">
             <li>One of <tt class="docutils literal">d</tt> (key was pressed down), <tt class="docutils literal">u</tt> (was released), <tt class="docutils literal">r</tt> (key
             is still down, and was repeated; only if key repeat is enabled for this
             binding), <tt class="docutils literal">p</tt> (key was pressed; happens if up/down can't be tracked).</li>
             <li>Whether the event originates from the mouse, either <tt class="docutils literal">m</tt> (mouse button)
             or <tt class="docutils literal">-</tt> (something else).</li>
             </ol>
+            <p class="last">Future versions can add more arguments and more key state characters to
+            support more input peculiarities.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">ab-loop</span></tt></dt>
             <dd>Cycle through A-B loop states. The first command will set the <tt class="docutils literal">A</tt> point
@@ -11933,14 +11943,25 @@
             <dt><tt class="docutils literal">repeatable</tt></dt>
             <dd>If set to <tt class="docutils literal">true</tt>, enables key repeat for this specific binding.</dd>
             <dt><tt class="docutils literal">complex</tt></dt>
-            <dd>If set to <tt class="docutils literal">true</tt>, then <tt class="docutils literal">fn</tt> is called on both key up and down
+            <dd><p class="first">If set to <tt class="docutils literal">true</tt>, then <tt class="docutils literal">fn</tt> is called on both key up and down
             events (as well as key repeat, if enabled), with the first
-            argument being a table. This table has an <tt class="docutils literal">event</tt> entry, which
-            is set to one of the strings <tt class="docutils literal">down</tt>, <tt class="docutils literal">repeat</tt>, <tt class="docutils literal">up</tt> or
-            <tt class="docutils literal">press</tt> (the latter if key up/down can't be tracked). The
-            <tt class="docutils literal">is_mouse</tt> entry tells whether the event was caused by a mouse
-            button. The <tt class="docutils literal">key_name</tt> entry contains the name of they key that
-            triggered this, or <tt class="docutils literal">nil</tt> if unknown or invoked artificially.</dd>
+            argument being a table. This table has the following entries (and
+            may contain undocumented ones):</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">event</tt></dt>
+            <dd>Set to one of the strings <tt class="docutils literal">down</tt>, <tt class="docutils literal">repeat</tt>, <tt class="docutils literal">up</tt> or
+            <tt class="docutils literal">press</tt> (the latter if key up/down can't be tracked).</dd>
+            <dt><tt class="docutils literal">is_mouse</tt></dt>
+            <dd>Boolean Whether the event was caused by a mouse button.</dd>
+            <dt><tt class="docutils literal">key_name</tt></dt>
+            <dd>The name of they key that triggered this, or <tt class="docutils literal">nil</tt> if invoked
+            artificially. If the key name is unknown, it's an empty string.</dd>
+            <dt><tt class="docutils literal">key_text</tt></dt>
+            <dd>Text if triggered by a text key, otherwise <tt class="docutils literal">nil</tt>. See
+            description of <tt class="docutils literal"><span class="pre">script-binding</span></tt> command for details (this
+            field is equivalent to the 5th argument).</dd>
+            </dl>
+            </dd>
             </dl>
             </blockquote>
             <p>Internally, key bindings are dispatched via the <tt class="docutils literal"><span class="pre">script-message-to</span></tt> or
