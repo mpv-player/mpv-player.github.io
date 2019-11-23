@@ -10959,6 +10959,49 @@
             with the value currently always being a string. Note that the options array
             is not a map, as order matters and duplicate entries are possible. Recursive
             profiles are not expanded, and show up as special <tt class="docutils literal">profile</tt> options.</dd>
+            <dt><tt class="docutils literal"><span class="pre">command-list</span></tt></dt>
+            <dd>Return the list of input commands. This returns an array of maps, where
+            each map node represents a command. This map currently only has a single
+            entry: <tt class="docutils literal">name</tt> for the name of the command. (This property is supposed to
+            be a replacement for <tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt>. The option dumps some more
+            information, but it's a valid feature request to extend this property if
+            needed.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">input-bindings</span></tt></dt>
+            <dd><p class="first">Return list of current input key bindings. This returns an array of maps,
+            where each map node represents a binding for a single key/command. This map
+            has the following entries:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">key</tt></dt>
+            <dd>The key name. This is normalized and may look slightly different from
+            how it was specified in the source (e.g. in input.conf).</dd>
+            <dt><tt class="docutils literal">cmd</tt></dt>
+            <dd>The command mapped to the key. (Currently, this is exactly the same
+            string as specified in the source, other than stripping whitespace and
+            comments. It's possible that it will be normalized in the future.)</dd>
+            <dt><tt class="docutils literal">is_weak</tt></dt>
+            <dd>If set to true, any existing and active user bindings will take priority.</dd>
+            <dt><tt class="docutils literal">owner</tt></dt>
+            <dd>If this entry exists, the name of the script (or similar) which added
+            this binding.</dd>
+            <dt><tt class="docutils literal">section</tt></dt>
+            <dd>Name of the section this binding is part of. This is a rarely used
+            mechanism. This entry may be removed or change meaning in the future.</dd>
+            <dt><tt class="docutils literal">priority</tt></dt>
+            <dd>A number. Bindings with a higher value are preferred over bindings
+            with a lower value. If the value is negative, this binding is inactive
+            and will not be triggered by input. Note that mpv does not use this
+            value internally, and matching of bindings may work slightly differently
+            in some cases. In addition, this value is dynamic and can change around
+            at runtime.</dd>
+            <dt><tt class="docutils literal">comment</tt></dt>
+            <dd>If available, the comment following the command on the same line. (For
+            example, the input.conf entry <tt class="docutils literal">f cycle bla # toggle bla</tt> would
+            result in an entry with <tt class="docutils literal">comment = &quot;toggle bla&quot;, cmd = &quot;cycle bla&quot;</tt>.)</dd>
+            </dl>
+            <p class="last">This property is read-only, and change notification is not supported.
+            Currently, there is no mechanism to change key bindings at runtime, other
+            than scripts adding or removing their own bindings.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="inconsistencies-between-options-and-properties">
