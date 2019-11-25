@@ -1803,7 +1803,7 @@
             to drop some frames if rendering the first frame takes longer than needed.</li>
             </ul>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--display-fps=&lt;fps&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--override-display-fps=&lt;fps&gt;</span></tt></dt>
             <dd><p class="first">Set the display FPS used with the <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> modes. By
             default, a detected value is used. Keep in mind that setting an incorrect
             value (even if slightly incorrect) can ruin video playback. On multi-monitor
@@ -1812,6 +1812,8 @@
             <p class="last">Set this option only if you have reason to believe the automatically
             determined value is wrong.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--display-fps=&lt;fps&gt;</span></tt></dt>
+            <dd>Deprecated alias for <tt class="docutils literal"><span class="pre">--override-display-fps</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--hwdec=&lt;api&gt;</span></tt></dt>
             <dd><p class="first">Specify the hardware video decoding API that should be used if possible.
             Whether hardware decoding is actually done depends on the video codec. If
@@ -5395,7 +5397,7 @@
             require driver-specific hacks if using multiple monitors, to ensure mpv
             syncs to the right one. Compositing window managers can also lead to bad
             results, as can missing or incorrect display FPS information (see
-            <tt class="docutils literal"><span class="pre">--display-fps</span></tt>).</p>
+            <tt class="docutils literal"><span class="pre">--override-display-fps</span></tt>).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vulkan-swap-mode=&lt;mode&gt;</span></tt></dt>
             <dd><p class="first">Controls the presentation mode of the vulkan swapchain. This is similar
@@ -10458,12 +10460,17 @@
             window (as determined by the MonitorFromWindow API.) On macOS these are the
             Display Product Names as used in the System Information and only one display
             name is returned since a window can only be on one screen.</dd>
-            <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt> (RW)</dt>
-            <dd>The refresh rate of the current display. Currently, this is the lowest FPS
+            <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
+            <dd><p class="first">The refresh rate of the current display. Currently, this is the lowest FPS
             of any display covered by the video, as retrieved by the underlying system
             APIs (e.g. xrandr on X11). It is not the measured FPS. It's not necessarily
             available on all platforms. Note that any of the listed facts may change
-            any time without a warning.</dd>
+            any time without a warning.</p>
+            <p class="last">Writing to this property is deprecated. It has the same effect as writing to
+            <tt class="docutils literal"><span class="pre">override-display-fps</span></tt>. Since mpv 0.31.0, this property is unavailable
+            if no display FPS was reported (e.g. if no video is active), while in older
+            versions, it returned the <tt class="docutils literal"><span class="pre">--display-fps</span></tt> option value.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">estimated-display-fps</span></tt></dt>
             <dd>Only available if display-sync mode (as selected by <tt class="docutils literal"><span class="pre">--video-sync</span></tt>) is
             active. Returns the actual rate at which display refreshes seem to occur,
@@ -11016,15 +11023,17 @@
             <p class="last">Option changes at runtime are affected by this as well.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">display-fps</span></tt></dt>
-            <dd>If a VO is created, this will return either the actual display FPS, or
-            an invalid value, instead of the option value.</dd>
+            <dd>This inconsistent behavior is deprecated. Post-deprecation, the reported
+            value and the option value are cleanly separated (<tt class="docutils literal"><span class="pre">override-display-fps</span></tt>
+            for the option value).</dd>
             <dt><tt class="docutils literal">vf</tt>, <tt class="docutils literal">af</tt></dt>
             <dd><p class="first">If you set the properties during playback, and the filter chain fails to
-            reinitialize, the new value will be rejected. Setting the option or
-            setting the property outside of playback will always succeed/fail in the
-            same way. Also, there are no <tt class="docutils literal"><span class="pre">vf-add</span></tt> etc. properties, but you can use
-            the <tt class="docutils literal">vf</tt>/<tt class="docutils literal">af</tt> group of commands to achieve the same.</p>
-            <p class="last">Option changes at runtime are affected by this as well.</p>
+            reinitialize, the option will be set, but the runtime filter chain does not
+            change. On the other hand, the next video to be played will fail, because
+            the initial filter chain cannot be created.</p>
+            <p class="last">This behavior changed in mpv 0.31.0. Before this, the new value was rejected
+            <em>iff</em> video (for <tt class="docutils literal">vf</tt>) or audio (for <tt class="docutils literal">af</tt>) was active. If playback was
+            not active, the behavior was the same as the current behavior.</p>
             </dd>
             <dt><tt class="docutils literal">edition</tt></dt>
             <dd>While a file is loaded, the property will always return the effective
@@ -11035,22 +11044,8 @@
             option is for loading playlist during command line parsing. For client API
             uses, you should use the <tt class="docutils literal">loadlist</tt> command instead.</dd>
             <dt><tt class="docutils literal"><span class="pre">window-scale</span></tt></dt>
-            <dd>Might verify the set value when setting while a window is created.</dd>
-            <dt><tt class="docutils literal"><span class="pre">audio-file</span></tt>, <tt class="docutils literal"><span class="pre">sub-file</span></tt>, <tt class="docutils literal"><span class="pre">external-file</span></tt></dt>
-            <dd><p class="first">These options/properties are actually lists of filenames. To make the
-            command-line interface easier, each <tt class="docutils literal"><span class="pre">--audio-file=...</span></tt> option appends
-            the full string to the internal list. However, when used as properties,
-            every time you set the property as a string the internal list will be
-            replaced with a single entry containing the string you set. <tt class="docutils literal">,</tt> or other
-            separators are never used. You have to use <tt class="docutils literal">MPV_FORMAT_NODE_ARRAY</tt> (or
-            corresponding API, e.g. <tt class="docutils literal">mp.set_property_native()</tt> with a table in Lua)
-            to set multiple entries.</p>
-            <p class="last">Strictly speaking, option access via API (e.g. <tt class="docutils literal">mpv_set_option_string()</tt>)
-            has the same problem, and it's only a difference between CLI/API.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt>, <tt class="docutils literal">chapter</tt></dt>
-            <dd>These properties behave different from the deprecated options with the same
-            names.</dd>
+            <dd>Returns the current window values if a window exists, and the option value
+            otherwise.</dd>
             <dt><tt class="docutils literal">profile</tt>, <tt class="docutils literal">include</tt></dt>
             <dd>These are write-only, and will perform actions as they are written to,
             exactly as if they were used on the mpv CLI commandline. Their only use is
