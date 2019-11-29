@@ -8623,6 +8623,41 @@
             read information from this filter instead.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">gpu=...</span></tt></dt>
+            <dd><p class="first">Convert video to RGB using the OpenGL renderer normally used with
+            <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. This requires that the EGL implementation supports off-screen
+            rendering on the default display. (This is the case with Mesa.)</p>
+            <p>Sub-options:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">w=&lt;pixels&gt;</span></tt>, <tt class="docutils literal"><span class="pre">h=&lt;pixels&gt;</span></tt></dt>
+            <dd>Size of the output in pixels (default: 0). If not positive, this will
+            use the size of the first filtered input frame.</dd>
+            </dl>
+            <div class="admonition warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This is highly experimental. Performance is bad, and it will not work
+            everywhere in the first place. Some features are not supported.</p>
+            </div>
+            <div class="admonition warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This does not do OSD rendering. If you see OSD or subtitles, then these
+            have been renderer by the VO backend (or the <tt class="docutils literal">sub</tt> video filter). This
+            is normally done in software, and potentially questionable quality.</p>
+            </div>
+            <div class="admonition warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">If you use this with encoding mode, keep in mind that encoding mode will
+            convert the RGB filter's output back to yuv420p in software, using the
+            configured software scaler. Using <tt class="docutils literal">zimg</tt> might improve this, but in
+            any case it might go against your goals when using this filter.</p>
+            </div>
+            <div class="admonition warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">Do not use this with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. It will apply filtering twice, since
+            most <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> options are unconditionally applied to the <tt class="docutils literal">gpu</tt>
+            filter. There is no mechanism in mpv to prevent this.</p>
+            </div>
+            </dd>
             </dl>
             </div>
             <div class="section" id="encoding">
