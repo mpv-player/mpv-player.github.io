@@ -10606,7 +10606,11 @@
             <dt><tt class="docutils literal"><span class="pre">track-list/N/type</span></tt></dt>
             <dd>String describing the media type. One of <tt class="docutils literal">audio</tt>, <tt class="docutils literal">video</tt>, <tt class="docutils literal">sub</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/src-id</span></tt></dt>
-            <dd>Track ID as used in the source file. Not always available.</dd>
+            <dd>Track ID as used in the source file. Not always available. (It is
+            missing if the format has no native ID, if the track is a pseudo-track
+            that does not exist in this way in the actual file, or if the format
+            is handled by libavformat, and the format was not whitelisted as having
+            track IDs.)</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/title</span></tt></dt>
             <dd>Track title as it is stored in the file. Not always available.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt></dt>
