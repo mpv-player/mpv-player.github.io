@@ -1707,6 +1707,11 @@
             <dd>Enable the builtin script that shows useful playback information on a key
             binding (default: yes). By default, the <tt class="docutils literal">i</tt> key is used (<tt class="docutils literal">I</tt> to make
             the overlay permanent).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--load-osd-console=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Enable the builtin script that shows a console on a key binding and lets
+            you enter commands (default: yes). By default,. The <tt class="docutils literal">´</tt> key is used to
+            show the console, and <tt class="docutils literal">ESC</tt> to hide it again. (This is based on  a user
+            script called <tt class="docutils literal">repl.lua</tt>.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--player-operation-mode=&lt;cplayer|pseudo-gui&gt;</span></tt></dt>
             <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
             options are changed. This option should not normally be used directly, but
@@ -11841,6 +11846,94 @@
             </div>
             </div>
             </div>
+            <div class="section" id="console">
+            <h1>CONSOLE</h1>
+            <p>The console is a REPL for mpv input commands. It is displayed on the video
+            window. It also shows log messages. It can be disabled entirely using the
+            <tt class="docutils literal"><span class="pre">--load-osd-console=no</span></tt> option.</p>
+            <div class="section" id="keybindings">
+            <h2>Keybindings</h2>
+            <dl class="docutils">
+            <dt>`</dt>
+            <dd>Show the console.</dd>
+            <dt>ESC</dt>
+            <dd>Hide the console.</dd>
+            <dt>ENTER</dt>
+            <dd>Run the typed command.</dd>
+            <dt>Shift+ENTER</dt>
+            <dd>Type a literal newline character.</dd>
+            <dt>Ctrl+LEFT and Ctrl+RIGHT</dt>
+            <dd>Move cursor to previous/next word.</dd>
+            <dt>UP and DOWN</dt>
+            <dd>Navigate command history.</dd>
+            <dt>PGUP</dt>
+            <dd>Go to the first command in the history.</dd>
+            <dt>PGDN</dt>
+            <dd>Stop navigating command history.</dd>
+            <dt>INSERT</dt>
+            <dd>Toggle insert mode.</dd>
+            <dt>Shift+INSERT</dt>
+            <dd>Paste text (uses the primary selection on X11.)</dd>
+            <dt>TAB</dt>
+            <dd>Complete the command or property name at the cursor.</dd>
+            <dt>Ctrl+C</dt>
+            <dd>Clear current line.</dd>
+            <dt>Ctrl+K.</dt>
+            <dd>Delete text from the cursor to the end of the line.</dd>
+            <dt>Ctrl+L</dt>
+            <dd>Clear all log messages from the console.</dd>
+            <dt>Ctrl+U</dt>
+            <dd>Delete text from the cursor to the beginning of the line.</dd>
+            <dt>Ctrl+V</dt>
+            <dd>Paste text (uses the clipboard on X11.)</dd>
+            <dt>Ctrl+W</dt>
+            <dd>Delete text from the cursor to the beginning of the current word.</dd>
+            </dl>
+            </div>
+            <div class="section" id="commands">
+            <h2>Commands</h2>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">script-message-to</span> console type &lt;text&gt;</tt></dt>
+            <dd>Show the console and pre-fill it with the provided text.</dd>
+            </dl>
+            </div>
+            <div class="section" id="known-issues">
+            <h2>Known issues</h2>
+            <ul class="simple">
+            <li>Pasting text is slow on Windows</li>
+            <li>Non-ASCII keyboard input has restrictions</li>
+            <li>The cursor keys move between Unicode code-points, not grapheme clusters</li>
+            </ul>
+            </div>
+            <div class="section" id="id4">
+            <h2>Configuration</h2>
+            <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/console.conf</span></tt>
+            placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
+            option. The configuration syntax is described in <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a>.</p>
+            <p>Key bindings can be changed in a standard way, see for example stats.lua
+            documentation.</p>
+            <div class="section" id="id5">
+            <h3>Configurable Options</h3>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">scale</tt></dt>
+            <dd><p class="first">Default: 1</p>
+            <p class="last">All drawing is scaled by this value, including the text borders and the
+            cursor. Change it if you have a high-DPI display.</p>
+            </dd>
+            <dt><tt class="docutils literal">font</tt></dt>
+            <dd><p class="first">Default: unset (picks a hardcoded font depending on detected platform)</p>
+            <p class="last">Set the font used for the REPL and the console. This probably doesn't
+            have to be a monospaced font.</p>
+            </dd>
+            <dt><tt class="docutils literal">font_size</tt></dt>
+            <dd><p class="first">Default: 16</p>
+            <p class="last">Set the font size used for the REPL and the console. This will be
+            multiplied by &quot;scale.&quot;</p>
+            </dd>
+            </dl>
+            </div>
+            </div>
+            </div>
             <div class="section" id="lua-scripting">
             <h1>LUA SCRIPTING</h1>
             <p>mpv can load Lua scripts. Scripts passed to the <tt class="docutils literal"><span class="pre">--script</span></tt> option, or found in
@@ -12625,7 +12718,7 @@
             <p>JavaScript support in mpv is near identical to its Lua support. Use this section
             as reference on differences and availability of APIs, but otherwise you should
             refer to the Lua documentation for API details and general scripting in mpv.</p>
-            <div class="section" id="id4">
+            <div class="section" id="id6">
             <h2>Example</h2>
             <p>JavaScript code which leaves fullscreen mode when the player is paused:</p>
             <pre class="literal-block">
@@ -12983,7 +13076,7 @@
             <p>Currently, embedded 0 bytes terminate the current line, but you should not
             rely on this.</p>
             </div>
-            <div class="section" id="commands">
+            <div class="section" id="id7">
             <h2>Commands</h2>
             <p>In addition to the commands described in <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>, a few
             extra commands can also be used as part of the protocol:</p>
