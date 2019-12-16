@@ -10097,8 +10097,19 @@
             <dt><tt class="docutils literal">chapter</tt> (RW)</dt>
             <dd>Current chapter number. The number of the first chapter is 0.</dd>
             <dt><tt class="docutils literal">edition</tt> (RW)</dt>
-            <dd>Current MKV edition number. Setting this property to a different value will
-            restart playback. The number of the first edition is 0.</dd>
+            <dd><p class="first">Current MKV edition number. Setting this property to a different value will
+            restart playback. The number of the first edition is 0.</p>
+            <p class="last">Before mpv 0.31.0, this showed the actual edition selected at runtime, if
+            you didn't set the option or property manually. With mpv 0.31.0 and later,
+            this strictly returns the user-set option or property value, and the
+            <tt class="docutils literal"><span class="pre">current-edition</span></tt> property was added to return the runtime selected
+            edition (this matters with <tt class="docutils literal"><span class="pre">--edition=auto</span></tt>, the default).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">current-edition</span></tt></dt>
+            <dd>Currently selected edition. This property is unavailable if no file is
+            loaded, or the file has no editions. (Matroska files make a difference
+            between having no editions and a single edition, which will be reflected by
+            the property, although in practice it does not matter.)</dd>
             <dt><tt class="docutils literal">chapters</tt></dt>
             <dd>Number of chapters.</dd>
             <dt><tt class="docutils literal">editions</tt></dt>
@@ -10495,11 +10506,23 @@
             enabled, or after precise seeking). Files with imprecise timestamps (such
             as Matroska) might lead to unstable results.</dd>
             <dt><tt class="docutils literal"><span class="pre">window-scale</span></tt> (RW)</dt>
-            <dd>Window size multiplier. Setting this will resize the video window to the
+            <dd><p class="first">Window size multiplier. Setting this will resize the video window to the
             values contained in <tt class="docutils literal">dwidth</tt> and <tt class="docutils literal">dheight</tt> multiplied with the value
             set with this property. Setting <tt class="docutils literal">1</tt> will resize to original video size
             (or to be exact, the size the video filters output). <tt class="docutils literal">2</tt> will set the
-            double size, <tt class="docutils literal">0.5</tt> halves the size.</dd>
+            double size, <tt class="docutils literal">0.5</tt> halves the size.</p>
+            <p>See <tt class="docutils literal"><span class="pre">current-window-scale</span></tt> for the value derived from the actual window
+            size.</p>
+            <p class="last">Since mpv 0.31.0, this always returns the previously set value (or the
+            default value), instead of the value implied by the actual window size.
+            Before mpv 0.31.0, this returned what <tt class="docutils literal"><span class="pre">current-window-scale</span></tt> returns now,
+            after the window was created.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">current-window-scale</span></tt></dt>
+            <dd>The <tt class="docutils literal"><span class="pre">window-scale</span></tt> value calculated from the current window size. This
+            has the same value as <tt class="docutils literal"><span class="pre">window-scale</span></tt> if the window size was not changed
+            since setting the option, and the window size was not restricted in other
+            ways. The property is unavailable if no video is active.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-names</span></tt></dt>
             <dd>Names of the displays that the mpv window covers. On X11, these
             are the xrandr names (LVDS1, HDMI1, DP1, VGA1, etc.). On Windows, these
@@ -11087,17 +11110,10 @@
             <em>iff</em> video (for <tt class="docutils literal">vf</tt>) or audio (for <tt class="docutils literal">af</tt>) was active. If playback was
             not active, the behavior was the same as the current behavior.</p>
             </dd>
-            <dt><tt class="docutils literal">edition</tt></dt>
-            <dd>While a file is loaded, the property will always return the effective
-            edition, and setting the <tt class="docutils literal">auto</tt> value will show somewhat strange behavior
-            (the property eventually switching to whatever is the default edition).</dd>
             <dt><tt class="docutils literal">playlist</tt></dt>
             <dd>The property is read-only and returns the current internal playlist. The
             option is for loading playlist during command line parsing. For client API
             uses, you should use the <tt class="docutils literal">loadlist</tt> command instead.</dd>
-            <dt><tt class="docutils literal"><span class="pre">window-scale</span></tt></dt>
-            <dd>Returns the current window values if a window exists, and the option value
-            otherwise.</dd>
             <dt><tt class="docutils literal">profile</tt>, <tt class="docutils literal">include</tt></dt>
             <dd>These are write-only, and will perform actions as they are written to,
             exactly as if they were used on the mpv CLI commandline. Their only use is
