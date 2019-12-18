@@ -468,14 +468,21 @@
             <div class="section" id="list-options">
             <h2>List Options</h2>
             <p>Some options which store lists of option values can have action suffixes. For
-            example, you can set a <tt class="docutils literal">,</tt>-separated list of filters with <tt class="docutils literal"><span class="pre">--vf</span></tt>, but the
-            option also allows you to append filters with <tt class="docutils literal"><span class="pre">--vf-append</span></tt>.</p>
-            <p>Options for filenames do not use <tt class="docutils literal">,</tt> as separator, but <tt class="docutils literal">:</tt> (Unix) or <tt class="docutils literal">;</tt>
-            (Windows).</p>
+            example, the <tt class="docutils literal"><span class="pre">--display-tags</span></tt> option takes a <tt class="docutils literal">,</tt>-separated list of tags, but
+            the option also allows you to append a single tag with <tt class="docutils literal"><span class="pre">--display-tags-append</span></tt>,
+            and the tag name can for example contain a literal <tt class="docutils literal">,</tt> without the need for
+            escaping.</p>
+            <div class="section" id="string-list-and-path-list-options">
+            <h3>String list and path list options</h3>
+            <p>String lists are separated by <tt class="docutils literal">,</tt>. The strings are not parsed or interpreted
+            by the option system itself. However, most</p>
+            <p>Path or file list options use <tt class="docutils literal">:</tt> (Unix) or <tt class="docutils literal">;</tt> (Windows) as separator,
+            instead of <tt class="docutils literal">,</tt>.</p>
+            <p>They support the following operations:</p>
             <table border="1" class="docutils">
             <colgroup>
-            <col width="20%" />
-            <col width="80%" />
+            <col width="16%" />
+            <col width="84%" />
             </colgroup>
             <thead valign="bottom">
             <tr><th class="head">Suffix</th>
@@ -483,38 +490,130 @@
             </tr>
             </thead>
             <tbody valign="top">
-            <tr><td>-add</td>
-            <td>Append 1 or more items (may become alias for -append)</td>
+            <tr><td>-set</td>
+            <td>Set a list of items (using the list separator, interprets escapes)</td>
             </tr>
             <tr><td>-append</td>
-            <td>Append single item (avoids need for escaping)</td>
+            <td>Append single item (does not interpret escapes)</td>
             </tr>
-            <tr><td>-clr</td>
-            <td>Clear the option</td>
-            </tr>
-            <tr><td>-del</td>
-            <td>Delete an existing item by integer index</td>
+            <tr><td>-add</td>
+            <td>Append 1 or more items (same syntax as -set)</td>
             </tr>
             <tr><td>-pre</td>
-            <td>Prepend 1 or more items</td>
+            <td>Prepend 1 or more items (same syntax as -set)</td>
             </tr>
-            <tr><td>-set</td>
-            <td>Set a list of items</td>
+            <tr><td>-clr</td>
+            <td>Clear the option (remove all items)</td>
+            </tr>
+            <tr><td>-remove</td>
+            <td>Delete item if present (does not interpret escapes)</td>
+            </tr>
+            <tr><td>-del</td>
+            <td>Delete 1 or more items by integer index (deprecated)</td>
             </tr>
             <tr><td>-toggle</td>
-            <td>Append an item, or remove if if it already exists</td>
+            <td>Append an item, or remove if if it already exists (no escapes)</td>
             </tr>
             </tbody>
             </table>
-            <p>Although some operations allow specifying multiple <tt class="docutils literal">,</tt>-separated items, using
-            this is strongly discouraged and deprecated, except for <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
-            <p>Without suffix, the action taken is normally <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
+            <p><tt class="docutils literal"><span class="pre">-append</span></tt> is meant as a simple way to append a single item without having
+            to escape the argument (you may still need to escape on the shell level).</p>
+            </div>
+            <div class="section" id="key-value-list-options">
+            <h3>Key/value list options</h3>
+            <p>A key/value list is a list of key/value string pairs. In programming languages,
+            this type of data structure is often called a map or a dictionary. The order
+            normally does not matter, although in some cases the order might matter.</p>
+            <p>They support the following operations:</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="16%" />
+            <col width="84%" />
+            </colgroup>
+            <thead valign="bottom">
+            <tr><th class="head">Suffix</th>
+            <th class="head">Meaning</th>
+            </tr>
+            </thead>
+            <tbody valign="top">
+            <tr><td>-set</td>
+            <td>Set a list of items (using <tt class="docutils literal">,</tt> as separator)</td>
+            </tr>
+            <tr><td>-append</td>
+            <td>Append a single item (escapes for the key, no escapes for the value)</td>
+            </tr>
+            <tr><td>-add</td>
+            <td>Append 1 or more items (same syntax as -set)</td>
+            </tr>
+            <tr><td>-remove</td>
+            <td>Delete item by key if present (does not interpret escapes)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>Keys are unique within the list. If an already present key is set, the existing
+            key is removed before the new value is appended.</p>
+            </div>
+            <div class="section" id="filter-options">
+            <h3>Filter options</h3>
+            <p>This is a very complex option type for the <tt class="docutils literal"><span class="pre">--af</span></tt> and <tt class="docutils literal"><span class="pre">--vf</span></tt> options only.
+            They often require complicated escaping. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for details. They
+            support the following operations:</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="16%" />
+            <col width="84%" />
+            </colgroup>
+            <thead valign="bottom">
+            <tr><th class="head">Suffix</th>
+            <th class="head">Meaning</th>
+            </tr>
+            </thead>
+            <tbody valign="top">
+            <tr><td>-set</td>
+            <td>Set a list of filters (using <tt class="docutils literal">,</tt> as separator)</td>
+            </tr>
+            <tr><td>-append</td>
+            <td>Append single filter</td>
+            </tr>
+            <tr><td>-add</td>
+            <td>Append 1 or more filters (same syntax as -set)</td>
+            </tr>
+            <tr><td>-pre</td>
+            <td>Prepend 1 or more filters (same syntax as -set)</td>
+            </tr>
+            <tr><td>-clr</td>
+            <td>Clear the option (remove all filters)</td>
+            </tr>
+            <tr><td>-remove</td>
+            <td>Delete filter if present</td>
+            </tr>
+            <tr><td>-del</td>
+            <td>Delete 1 or more filters by integer index or filter label (deprecated)</td>
+            </tr>
+            <tr><td>-toggle</td>
+            <td>Append a filter, or remove if if it already exists</td>
+            </tr>
+            <tr><td>-help</td>
+            <td>Pseudo operation that prints a help text to the terminal</td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+            <div class="section" id="general">
+            <h3>General</h3>
+            <p>Without suffix, the operation used is normally <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
+            <p>Although some operations allow specifying multiple items, using this is strongly
+            discouraged and deprecated, except for <tt class="docutils literal"><span class="pre">-set</span></tt>. There is a chance that
+            operations like <tt class="docutils literal"><span class="pre">-add</span></tt> and <tt class="docutils literal"><span class="pre">-pre</span></tt> will work like <tt class="docutils literal"><span class="pre">-append</span></tt> and accept a
+            single, unescaped item only (so the <tt class="docutils literal">,</tt> separator will not be interpreted and
+            is passed on as part of the value).</p>
             <p>Some options (like <tt class="docutils literal"><span class="pre">--sub-file</span></tt>, <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, <tt class="docutils literal"><span class="pre">--glsl-shader</span></tt>) are
             aliases for the proper option with <tt class="docutils literal"><span class="pre">-append</span></tt> action. For example,
             <tt class="docutils literal"><span class="pre">--sub-file</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sub-files-append</span></tt>.</p>
-            <p>Some options only support a subset of the above.</p>
             <p>Options of this type can be changed at runtime using the <tt class="docutils literal"><span class="pre">change-list</span></tt>
-            command, which takes the suffix as separate operation parameter.</p>
+            command, which takes the suffix (without the <tt class="docutils literal">-</tt>) as separate operation
+            parameter.</p>
+            </div>
             </div>
             </div>
             <div class="section" id="configuration-files">
@@ -956,6 +1055,7 @@
             formats employ different language codes. DVDs use ISO 639-1 two-letter
             language codes, Matroska, MPEG-TS and NUT use ISO 639-2 three-letter
             language codes, while OGM uses a free-form identifier. See also <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -971,6 +1071,7 @@
             formats employ different language codes. DVDs use ISO 639-1 two letter
             language codes, Matroska uses ISO 639-2 three letter language codes while
             OGM uses a free-form identifier. See also <tt class="docutils literal"><span class="pre">--sid</span></tt>.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -982,7 +1083,9 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vlang=&lt;...&gt;</span></tt></dt>
-            <dd>Equivalent to <tt class="docutils literal"><span class="pre">--alang</span></tt> and <tt class="docutils literal"><span class="pre">--slang</span></tt>, for video tracks.</dd>
+            <dd><p class="first">Equivalent to <tt class="docutils literal"><span class="pre">--alang</span></tt> and <tt class="docutils literal"><span class="pre">--slang</span></tt>, for video tracks.</p>
+            <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--aid=&lt;ID|auto|no&gt;</span></tt></dt>
             <dd><p class="first">Select audio track. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables audio.
             See also <tt class="docutils literal"><span class="pre">--alang</span></tt>. mpv normally prints available audio tracks on the
@@ -1573,12 +1676,16 @@
             configuration subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt>).
             (Default: <tt class="docutils literal">yes</tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--script=&lt;filename&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scripts=file1.lua:file2.lua:...</span></tt></dt>
-            <dd>Load a Lua script. The second option allows you to load multiple scripts by
-            separating them with the path separator (<tt class="docutils literal">:</tt> on Unix, <tt class="docutils literal">;</tt> on Windows).</dd>
+            <dd><p class="first">Load a Lua script. The second option allows you to load multiple scripts by
+            separating them with the path separator (<tt class="docutils literal">:</tt> on Unix, <tt class="docutils literal">;</tt> on Windows).</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--scripts</span></tt> is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--script-opts=key1=value1,key2=value2,...</span></tt></dt>
-            <dd>Set options for scripts. A script can query an option by key. If an
+            <dd><p class="first">Set options for scripts. A script can query an option by key. If an
             option is used and what semantics the option value has depends entirely on
-            the loaded scripts. Values not claimed by any scripts are ignored.</dd>
+            the loaded scripts. Values not claimed by any scripts are ignored.</p>
+            <p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--merge-files</span></tt></dt>
             <dd>Pretend that all files passed to mpv are concatenated into a single, big
             file. This uses timeline/EDL support internally.</dd>
@@ -1609,6 +1716,7 @@
             will only be reset if it is explicitly set in the config file or the
             command line.</p>
             <p>The special name <tt class="docutils literal">all</tt> resets as many options as possible.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -1693,6 +1801,7 @@
             URLs also require a proxy for playback, so this can pass that proxy
             information to mpv. Take note that SOCKS proxies aren't supported and
             https URLs also bypass the proxy. This is a limitation in FFmpeg.</p>
+            <p>This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
             <ul class="last simple">
@@ -2294,6 +2403,7 @@
             <p>Some options which used to be direct options can be set with this
             mechanism, like <tt class="docutils literal">bug</tt>, <tt class="docutils literal">gray</tt>, <tt class="docutils literal">idct</tt>, <tt class="docutils literal">ec</tt>, <tt class="docutils literal">vismv</tt>,
             <tt class="docutils literal">skip_top</tt> (was <tt class="docutils literal">st</tt>), <tt class="docutils literal">skip_bottom</tt> (was <tt class="docutils literal">sb</tt>), <tt class="docutils literal">debug</tt>.</p>
+            <p>This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
             <p class="last"><tt class="docutils literal"><span class="pre">--vd-lavc-o=debug=pict</span></tt></p>
@@ -2530,9 +2640,11 @@
             lossless codecs only. 0 means autodetect number of cores on the
             machine and use that, up to the maximum of 16 (default: 1).</dd>
             <dt><tt class="docutils literal"><span class="pre">--ad-lavc-o=&lt;key&gt;=&lt;value&gt;[,&lt;key&gt;=&lt;value&gt;[,...]]</span></tt></dt>
-            <dd>Pass AVOptions to libavcodec decoder. Note, a patch to make the o=
+            <dd><p class="first">Pass AVOptions to libavcodec decoder. Note, a patch to make the o=
             unneeded and pass all unknown options through the AVOption system is
-            welcome. A full list of AVOptions can be found in the FFmpeg manual.</dd>
+            welcome. A full list of AVOptions can be found in the FFmpeg manual.</p>
+            <p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--ad-spdif-dtshd=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dtshd</span></tt>, <tt class="docutils literal"><span class="pre">--no-dtshd</span></tt></dt>
             <dd><p class="first">If DTS is passed through, use DTS-HD.</p>
             <div class="admonition admonition-warning last">
@@ -2627,7 +2739,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-files=&lt;files&gt;</span></tt></dt>
             <dd><p class="first">Play audio from an external file while viewing a video.</p>
-            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            <p class="last">This is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-file=&lt;file&gt;</span></tt></dt>
             <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--audio-files-append</span></tt>. Each use of this
@@ -2718,7 +2830,9 @@
             </table>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-file-paths=&lt;path1:path2:...&gt;</span></tt></dt>
-            <dd>Equivalent to <tt class="docutils literal"><span class="pre">--sub-file-paths</span></tt> option, but for auto-loaded audio files.</dd>
+            <dd><p class="first">Equivalent to <tt class="docutils literal"><span class="pre">--sub-file-paths</span></tt> option, but for auto-loaded audio files.</p>
+            <p class="last">This is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-client-name=&lt;name&gt;</span></tt></dt>
             <dd>The application name the player reports to the audio API. Can be useful
             if you want to force a different audio profile (e.g. with PulseAudio),
@@ -2782,7 +2896,7 @@
             two subtitles at once: use <tt class="docutils literal"><span class="pre">--sid</span></tt> to select the first subtitle index,
             and <tt class="docutils literal"><span class="pre">--secondary-sid</span></tt> to select the second index. (The index is printed
             on the terminal output after the <tt class="docutils literal"><span class="pre">--sid=</span></tt> in the list of streams.)</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">--sub-files</span></tt> is a list option (see <a class="reference internal" href="#list-options">List Options</a>  for details), and
+            <p class="last"><tt class="docutils literal"><span class="pre">--sub-files</span></tt> is a path list option (see <a class="reference internal" href="#list-options">List Options</a>  for details), and
             can take multiple file names separated by <tt class="docutils literal">:</tt> (Unix) or <tt class="docutils literal">;</tt> (Windows),
             while  <tt class="docutils literal"><span class="pre">--sub-file</span></tt> takes a single filename, but can be used multiple
             times to add multiple files. Technically, <tt class="docutils literal"><span class="pre">--sub-file</span></tt> is a CLI/config
@@ -2866,6 +2980,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-ass-force-style=&lt;[Style.]Param=Value[,...]&gt;</span></tt></dt>
             <dd><p class="first">Override some style or script info parameters.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -3171,7 +3286,7 @@
             <li>the <tt class="docutils literal">sub</tt> configuration subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/sub/</span></tt>)</li>
             </ul>
             </div>
-            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            <p class="last">This is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-visibility</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-visibility</span></tt></dt>
             <dd>Can be used to disable display of subtitles, but still select and decode
@@ -3910,6 +4025,7 @@
             through the AVOption system is welcome. A full list of AVOptions can
             be found in the FFmpeg manual. Note that some options may conflict
             with mpv options.</p>
+            <p>This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
             <p class="last"><tt class="docutils literal"><span class="pre">--demuxer-lavf-o=fflags=+ignidx</span></tt></p>
@@ -4689,8 +4805,10 @@
             <p class="last">For testing/debugging only. Can be removed or changed any time.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-swresample-o=&lt;string&gt;</span></tt></dt>
-            <dd>Set AVOptions on the SwrContext or AVAudioResampleContext. These should
-            be documented by FFmpeg or Libav.</dd>
+            <dd><p class="first">Set AVOptions on the SwrContext or AVAudioResampleContext. These should
+            be documented by FFmpeg or Libav.</p>
+            <p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="terminal">
@@ -4943,6 +5061,7 @@
             format.</dd>
             <dt><tt class="docutils literal"><span class="pre">--http-header-fields=&lt;field1,field2&gt;</span></tt></dt>
             <dd><p class="first">Set custom HTTP fields when accessing HTTP stream.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
             <pre class="literal-block">
@@ -5549,11 +5668,14 @@
             It may be removed in the future.</p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--glsl-shaders=&lt;file-list&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--glsl-shader=&lt;file&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--glsl-shaders=&lt;file-list&gt;</span></tt></dt>
             <dd><p class="first">Custom GLSL hooks. These are a flexible way to add custom fragment shaders,
             which can be injected at almost arbitrary points in the rendering pipeline,
-            and access all previous intermediate textures. Each use of the option will
-            add another file to the internal list of shaders (see <a class="reference internal" href="#list-options">List Options</a>).</p>
+            and access all previous intermediate textures.</p>
+            <p>Each use of the <tt class="docutils literal"><span class="pre">--glsl-shader</span></tt> option will add another file to the
+            internal list of shaders, while <tt class="docutils literal"><span class="pre">--glsl-shaders</span></tt> takes a list of files,
+            and overwrites the internal list with it. The latter is a path list option
+            (see <a class="reference internal" href="#list-options">List Options</a> for details).</p>
             <div class="admonition admonition-warning">
             <p class="first admonition-title">Warning</p>
             <p class="last">The syntax is not stable yet and may change any time.</p>
@@ -6508,8 +6630,9 @@
             are in the list, but are not present in the played file, will not be shown.
             If a value ends with <tt class="docutils literal">*</tt>, all tags are matched by prefix (though there
             is no general globbing). Just passing <tt class="docutils literal">*</tt> essentially filtering.</p>
-            <p class="last">The default includes a common list of tags, call mpv with <tt class="docutils literal"><span class="pre">--list-options</span></tt>
+            <p>The default includes a common list of tags, call mpv with <tt class="docutils literal"><span class="pre">--list-options</span></tt>
             to see it.</p>
+            <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--mc=&lt;seconds/frame&gt;</span></tt></dt>
             <dd>Maximum A-V sync correction per frame (in seconds)</dd>
@@ -6659,11 +6782,13 @@
             destination file. The destination is overwritten. Can be useful to test
             network-related behavior.</dd>
             <dt><tt class="docutils literal"><span class="pre">--stream-lavf-o=opt1=value1,opt2=value2,...</span></tt></dt>
-            <dd>Set AVOptions on streams opened with libavformat. Unknown or misspelled
+            <dd><p class="first">Set AVOptions on streams opened with libavformat. Unknown or misspelled
             options are silently ignored. (They are mentioned in the terminal output
             in verbose mode, i.e. <tt class="docutils literal"><span class="pre">--v</span></tt>. In general we can't print errors, because
             other options such as e.g. user agent are not available with all protocols,
-            and printing errors for unknown options would end up being too noisy.)</dd>
+            and printing errors for unknown options would end up being too noisy.)</p>
+            <p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--vo-mmcss-profile=&lt;name&gt;</span></tt></dt>
             <dd>(Windows only.)
             Set the MMCSS profile for the video renderer thread (default: <tt class="docutils literal">Playback</tt>).</dd>
@@ -6691,7 +6816,7 @@
             does not cause default stream selection over the &quot;proper&quot; file. This makes
             it slightly less intrusive. (In mpv 0.28.0 and before, this was not quite
             strictly enforced.)</p>
-            <p class="last">This is a list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            <p class="last">This is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--external-file=&lt;file&gt;</span></tt></dt>
             <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--external-files-append</span></tt>. Each use of this
@@ -7944,18 +8069,30 @@
             <p>Video filters are managed in lists. There are a few commands to manage the
             filter list.</p>
             <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--vf-append=filter</span></tt></dt>
+            <dd>Appends the filter given as arguments to the filter list.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vf-add=filter</span></tt></dt>
             <dd>Appends the filter given as arguments to the filter list. (Passing multiple
             filters is currently still possible, but deprecated.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--vf-pre=filter</span></tt></dt>
             <dd>Prepends the filters given as arguments to the filter list. (Passing
             multiple filters is currently still possible, but deprecated.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vf-remove=filter</span></tt></dt>
+            <dd>Deletes the filter from the list. The filter can be either given the way it
+            was added (filter name and its full argument list), or by label (prefixed
+            with <tt class="docutils literal">&#64;</tt>). Matching of filters works as follows: if either of the compared
+            filters has a label set, only the labels are compared. If none of the
+            filters have a label, the filter name, arguments, and argument order are
+            compared. (Passing multiple filters is currently still possible, but
+            deprecated.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">-vf-toggle=filter</span></tt></dt>
+            <dd>Add the given filter to the list if it was not present yet, or remove it
+            from the list if it was present. Matching of filters works as described in
+            <tt class="docutils literal"><span class="pre">--vf-remove</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vf-del=filter</span></tt></dt>
-            <dd>Deletes the filter. The filter can even given the way it was added (filter
-            name and its full argument list), by label (prefixed with <tt class="docutils literal">&#64;</tt>), or as
-            index number. Index numbers start at 0, negative numbers address the end of
-            the list (-1 is the last). (Passing multiple filters is currently still
-            possible, but deprecated.)</dd>
+            <dd>Sort of like <tt class="docutils literal"><span class="pre">--vf-remove</span></tt>, but also accepts an index number. Index
+            numbers start at 0, negative numbers address the end of the list (-1 is the
+            last). Deprecated.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vf-clr</span></tt></dt>
             <dd>Completely empties the filter list.</dd>
             </dl>
@@ -8675,8 +8812,7 @@
             <dt><tt class="docutils literal"><span class="pre">--ofopts=&lt;options&gt;</span></tt></dt>
             <dd><p class="first">Specifies the output format options for libavformat.
             See <tt class="docutils literal"><span class="pre">--ofopts=help</span></tt> for a full list of supported options.</p>
-            <p>Options are managed in lists. There are a few commands to manage the
-            options list.</p>
+            <p>This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--ofopts-add=&lt;options1[,options2,...]&gt;</span></tt></dt>
             <dd>Appends the options given as arguments to the options list.</dd>
@@ -8700,8 +8836,7 @@
             <dd>selects 128 kbps MP3 encoding.</dd>
             </dl>
             </div>
-            <p>Options are managed in lists. There are a few commands to manage the
-            options list.</p>
+            <p>This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--oacopts-add=&lt;options1[,options2,...]&gt;</span></tt></dt>
             <dd>Appends the options given as arguments to the options list.</dd>
@@ -8730,8 +8865,7 @@
             <dd>selects VBR quality factor 23 for H.264 encoding.</dd>
             </dl>
             </div>
-            <p>Options are managed in lists. There are a few commands to manage the
-            options list.</p>
+            <p>This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--ovcopts-add=&lt;options1[,options2,...]&gt;</span></tt></dt>
             <dd>Appends the options given as arguments to the options list.</dd>
@@ -8755,6 +8889,7 @@
             Supported keys vary between output formats. For example, Matroska (MKV) and
             FLAC allow almost arbitrary keys, while support in MP4 and MP3 is more
             limited.</p>
+            <p>This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
             <dl class="last docutils">
@@ -8766,6 +8901,7 @@
             <dt><tt class="docutils literal"><span class="pre">--oremove-metadata=&lt;metadata-tag[,metadata-tag,...]&gt;</span></tt></dt>
             <dd><p class="first">Specifies metadata to exclude from the output file when copying from the
             input file.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
             <dl class="last docutils">
@@ -9389,6 +9525,9 @@
             <dd>Change audio filter chain. See <tt class="docutils literal">vf</tt> command.</dd>
             <dt><tt class="docutils literal">vf &lt;operation&gt; &lt;value&gt;</tt></dt>
             <dd><p class="first">Change video filter chain.</p>
+            <p>The semantics are exactly the same as with option parsing (see
+            <a class="reference internal" href="#video-filters">VIDEO FILTERS</a>). As such the text below is a redundant and incomplete
+            summary.</p>
             <p>The first argument decides what happens:</p>
             <dl class="docutils">
             <dt>&lt;set&gt;</dt>
@@ -9409,7 +9548,7 @@
             cases, the second parameter is a comma separated list of filter names
             or integer indexes. <tt class="docutils literal">0</tt> would denote the first filter. Negative
             indexes start from the last filter, and <tt class="docutils literal"><span class="pre">-1</span></tt> denotes the last
-            filter.</dd>
+            filter. Deprecated.</dd>
             <dt>&lt;clr&gt;</dt>
             <dd>Remove all filters. Note that like the other sub-commands, this does
             not control automatically inserted filters.</dd>
@@ -10928,6 +11067,24 @@
             <dd>Current video output driver (name as used with <tt class="docutils literal"><span class="pre">--vo</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">current-ao</span></tt></dt>
             <dd>Current audio output driver (name as used with <tt class="docutils literal"><span class="pre">--ao</span></tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">shared-script-properties</span></tt> (RW)</dt>
+            <dd><p class="first">This is a key/value map of arbitrary strings shared between scripts for
+            general use. The player itself does not use any data in it (although some
+            builtin scripts may). The property is not preserved across player restarts.</p>
+            <p>This is very primitive, inefficient, and annoying to use. It's a makeshift
+            solution which could go away any time (for example, when a better solution
+            becomes available). This is also why this property has an annoying name. You
+            should avoid using it, unless you absolutely have to.</p>
+            <p>Lua scripting has helpers starting with <tt class="docutils literal">utils.shared_script_property_</tt>.
+            They are undocumented because you should not use this property. If you still
+            think you must, you should use the helpers instead of the property directly.</p>
+            <p>You are supposed to use the <tt class="docutils literal"><span class="pre">change-list</span></tt> command to modify the contents.
+            Reading, modifying, and writing the property manually could data loss if two
+            scripts update different keys at the same time due to lack of
+            synchronization. The Lua helpers take care of this.</p>
+            <p class="last">(There is no way to ensure synchronization if two scripts try to update the
+            same key at the same time.)</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
             <dd>Return the working directory of the mpv process. Can be useful for JSON IPC
             users, because the command line player usually works with relative paths.</dd>
