@@ -219,6 +219,10 @@
             <dd>Show/toggle an overlay displaying statistics about the currently playing
             file such as codec, framerate, number of dropped frames and so on. See
             <a class="reference internal" href="#stats">STATS</a> for more information.</dd>
+            <dt>del</dt>
+            <dd>Cycles visibility between never / auto (mouse-move) / always</dd>
+            <dt>`</dt>
+            <dd>Show the console. (ESC closes it again. See <a class="reference internal" href="#console">CONSOLE</a>.)</dd>
             </dl>
             <p>(The following keys are valid only when using a video output that supports the
             corresponding adjustment.)</p>
@@ -6913,6 +6917,16 @@
             <p class="last">See the FFmpeg libavfilter documentation for details on the available
             filters.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--metadata-codepage=&lt;codepage&gt;</span></tt></dt>
+            <dd><p class="first">Codepage for various input metadata (default: <tt class="docutils literal"><span class="pre">utf-8</span></tt>). This affects how
+            file tags, chapter titles, etc. are interpreted. You can for example set
+            this to <tt class="docutils literal">auto</tt> to enable autodetection of the codepage. (This is not the
+            default because non-UTF-8 codepages are an obscure fringe use-case.)</p>
+            <p>See <tt class="docutils literal"><span class="pre">--sub-codepage</span></tt> option on how codepages are specified and further
+            details regarding autodetection and codepage conversion. (The underlying
+            code is the same.)</p>
+            <p class="last">Conversion is not applied to metadata that is updated at runtime.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="debugging">
@@ -10687,6 +10701,11 @@
             measured by system time.</dd>
             <dt><tt class="docutils literal"><span class="pre">vsync-jitter</span></tt></dt>
             <dd>Estimated deviation factor of the vsync duration.</dd>
+            <dt><tt class="docutils literal"><span class="pre">display-hidpi-scale</span></tt></dt>
+            <dd>The HiDPI scale factor as reported by the windowing backend. If no VO is
+            active, or if the VO does not report a value, this property is unavailable.
+            It may be saner to report an absolute DPI, however, this is the way HiDPI
+            support is implemented on most OS APIs. See also <tt class="docutils literal"><span class="pre">--hidpi-window-scale</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">video-aspect</span></tt> (RW)</dt>
             <dd><p class="first">Deprecated. This is tied to <tt class="docutils literal"><span class="pre">--video-aspect-override</span></tt>, but always
             reports the current video aspect if video is active.</p>
@@ -12085,8 +12104,10 @@
             <dl class="docutils">
             <dt><tt class="docutils literal">scale</tt></dt>
             <dd><p class="first">Default: 1</p>
-            <p class="last">All drawing is scaled by this value, including the text borders and the
-            cursor. Change it if you have a high-DPI display.</p>
+            <p>All drawing is scaled by this value, including the text borders and the
+            cursor.</p>
+            <p class="last">If the VO backend in use has HiDPI scale reporting implemented, the option
+            value is scaled with the reported HiDPI scale.</p>
             </dd>
             <dt><tt class="docutils literal">font</tt></dt>
             <dd><p class="first">Default: unset (picks a hardcoded font depending on detected platform)</p>
@@ -12588,13 +12609,19 @@
             the read_options function. The function will overwrite the default values
             with values found in the config-file and the command-line (in that order).</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal">options.read_options(table [, identifier])</tt></dt>
+            <dt><tt class="docutils literal">options.read_options(table [, identifier [, <span class="pre">on_update]])</span></tt></dt>
             <dd><p class="first">A <tt class="docutils literal">table</tt> with key-value pairs. The type of the default values is
             important for converting the values read from the config file or
             command-line back. Do not use <tt class="docutils literal">nil</tt> as a default value!</p>
-            <p class="last">The <tt class="docutils literal">identifier</tt> is used to identify the config-file and the command-line
+            <p>The <tt class="docutils literal">identifier</tt> is used to identify the config-file and the command-line
             options. These needs to unique to avoid collisions with other scripts.
-            Defaults to <tt class="docutils literal">mp.get_script_name()</tt>.</p>
+            Defaults to <tt class="docutils literal">mp.get_script_name()</tt> if the parameter is <tt class="docutils literal">nil</tt> or missing.</p>
+            <p class="last">The <tt class="docutils literal">on_update</tt> parameter enables run-time updates of all matching option
+            values via the <tt class="docutils literal"><span class="pre">script-opts</span></tt> option/property. If any of the matching
+            options changes, the values in the <tt class="docutils literal">table</tt> (which was originally passed to
+            the function) are changed, and <tt class="docutils literal">on_update(list)</tt> is called. <tt class="docutils literal">list</tt> is
+            a table where each updated option has a <tt class="docutils literal">list[option_name] = true</tt> entry.
+            There is no initial <tt class="docutils literal">on_update()</tt> call. This never re-reads the config file.</p>
             </dd>
             </dl>
             <p>Example implementation:</p>
