@@ -12621,7 +12621,13 @@
             options changes, the values in the <tt class="docutils literal">table</tt> (which was originally passed to
             the function) are changed, and <tt class="docutils literal">on_update(list)</tt> is called. <tt class="docutils literal">list</tt> is
             a table where each updated option has a <tt class="docutils literal">list[option_name] = true</tt> entry.
-            There is no initial <tt class="docutils literal">on_update()</tt> call. This never re-reads the config file.</p>
+            There is no initial <tt class="docutils literal">on_update()</tt> call. This never re-reads the config file.
+            <tt class="docutils literal"><span class="pre">script-opts</span></tt> is always applied on the original config file, ignoring
+            previous <tt class="docutils literal"><span class="pre">script-opts</span></tt> values (for example, if an option is removed from
+            <tt class="docutils literal"><span class="pre">script-opts</span></tt> at runtime, the option will have the value in the config
+            file). <tt class="docutils literal">table</tt> entries are only written for option values whose values
+            effectively change (this is important if the script changes <tt class="docutils literal">table</tt>
+            entries independently).</p>
             </dd>
             </dl>
             <p>Example implementation:</p>
