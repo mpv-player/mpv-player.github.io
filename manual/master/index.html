@@ -9727,6 +9727,76 @@
             <dt><tt class="docutils literal"><span class="pre">overlay-remove</span> &lt;id&gt;</tt></dt>
             <dd>Remove an overlay added with <tt class="docutils literal"><span class="pre">overlay-add</span></tt> and the same ID. Does nothing
             if no overlay with this ID exists.</dd>
+            <dt><tt class="docutils literal"><span class="pre">osd-overlay</span></tt></dt>
+            <dd><p class="first">Add/update/remove an OSD overlay.</p>
+            <p>(Although this sounds similar to <tt class="docutils literal"><span class="pre">overlay-add</span></tt>, <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> is for
+            text overlays, while <tt class="docutils literal"><span class="pre">overlay-add</span></tt> is for bitmaps. Maybe <tt class="docutils literal"><span class="pre">overlay-add</span></tt>
+            will be merged into <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> to remove this oddity.)</p>
+            <p>You can use this to add text overlays in ASS format. ASS has advanced
+            positioning and rendering tags, which can be used to render almost any kind
+            of vector graphics.</p>
+            <p>This command accepts the following parameters:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">id</tt></dt>
+            <dd><p class="first">Arbitrary integer that identifies the overlay. Multiple overlays can be
+            added by calling this command with different <tt class="docutils literal">id</tt> parameters. Calling
+            this command with the same <tt class="docutils literal">id</tt> replaces the previously set overlay.</p>
+            <p>There is a separate namespace for each libmpv client (i.e. IPC
+            connection, script), so IDs can be made up and assigned by the API user
+            without conflicting with other API users.</p>
+            <p class="last">If the libmpv client is destroyed, all overlays associated with it are
+            also deleted. In particular, connecting via <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>,
+            adding an overlay, and disconnecting will remove the overlay immediately
+            again.</p>
+            </dd>
+            <dt><tt class="docutils literal">format</tt></dt>
+            <dd><p class="first">String that gives the type of the overlay. Accepts the following values:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">ass-events</span></tt></dt>
+            <dd><p class="first">The <tt class="docutils literal">data</tt> parameter is a string. The string is split on the
+            newline character. Every line is turned into the <tt class="docutils literal">Text</tt> part of
+            a <tt class="docutils literal">Dialogue</tt> ASS event. Timing is unused (but behavior of timing
+            dependent ASS tags may change in future mpv versions).</p>
+            <p>Note that it's better to put multiple lines into <tt class="docutils literal">data</tt>, instead
+            of adding multiple OSD overlays.</p>
+            <p>This provides 2 ASS <tt class="docutils literal">Styles</tt>. <tt class="docutils literal">OSD</tt> contains the text style as
+            defined by the current <tt class="docutils literal"><span class="pre">--osd-...</span></tt> options. <tt class="docutils literal">Default</tt> is
+            similar, and contains style that <tt class="docutils literal">OSD</tt> would have if all options
+            were set to the default.</p>
+            <p class="last">In addition, the <tt class="docutils literal">res_x</tt> and <tt class="docutils literal">res_y</tt> options specify the value
+            of the ASS <tt class="docutils literal">PlayResX</tt> and <tt class="docutils literal">PlayResY</tt> header fields. If <tt class="docutils literal">res_y</tt>
+            is set to 0, <tt class="docutils literal">PlayResY</tt> is initialized to an arbitrary default
+            value (but note that the default for this command is 720, not 0).
+            If <tt class="docutils literal">res_x</tt> is set to 0, <tt class="docutils literal">PlayResX</tt> is set based on <tt class="docutils literal">res_y</tt>
+            such that a virtual ASS pixel has a square pixel aspect ratio.</p>
+            </dd>
+            <dt><tt class="docutils literal">none</tt></dt>
+            <dd>Special value that causes the overlay to be removed. Most parameters
+            other than <tt class="docutils literal">id</tt> and <tt class="docutils literal">format</tt> are mostly ignored.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal">data</tt></dt>
+            <dd>String defining the overlay contents according to the <tt class="docutils literal">format</tt>
+            parameter.</dd>
+            <dt><tt class="docutils literal">res_x</tt>, <tt class="docutils literal">res_y</tt></dt>
+            <dd>Used if <tt class="docutils literal">format</tt> is set to <tt class="docutils literal"><span class="pre">ass-events</span></tt> (see description there).
+            Optional, defaults to 0/720.</dd>
+            <dt><tt class="docutils literal">z</tt></dt>
+            <dd><p class="first">The Z order of the overlay. Optional, defaults to 0.</p>
+            <p>Note that Z order between different overlays of different formats is
+            static, and cannot be changed (currently, this means that bitmap
+            overlays added by <tt class="docutils literal"><span class="pre">overlay-add</span></tt> are always on top of the ASS overlays
+            added by <tt class="docutils literal"><span class="pre">osd-overlay</span></tt>). In addition, the builtin OSD components are
+            always below any of the custom OSD. (This includes subtitles of any kind
+            as well as text rendered by <tt class="docutils literal"><span class="pre">show-text</span></tt>.)</p>
+            <p class="last">It's possible that future mpv versions will randomly change how Z order
+            between different OSD formats and builtin OSD is handled.</p>
+            </dd>
+            </dl>
+            <p class="last">Note: always use named arguments (<tt class="docutils literal">mpv_command_node()</tt>). Scripts should
+            use the <tt class="docutils literal">mp.create_osd_overlay()</tt> helper instead of invoking this command
+            directly.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">script-message</span> [&lt;arg1&gt; [&lt;arg2&gt; <span class="pre">[...]]]</span></tt></dt>
             <dd><p class="first">Send a message to all clients, and pass it the following list of arguments.
             What this message means, how many arguments it takes, and what the arguments
@@ -11818,9 +11888,11 @@
             <p>The border is static and appears even if the OSC is configured to appear
             only on mouse interaction. If the OSC is invisible, the border is simply
             filled with the background color (black by default).</p>
-            <p class="last">This currently still makes the OSC overlap with subtitles (if the
+            <p>This currently still makes the OSC overlap with subtitles (if the
             <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt> option is set to <tt class="docutils literal">yes</tt>, the default). This may be
             fixed later.</p>
+            <p class="last">This does not work correctly with video outputs like <tt class="docutils literal"><span class="pre">--vo=xv</span></tt>, which
+            render OSD into the unscaled video.</p>
             </dd>
             <dt><tt class="docutils literal">windowcontrols</tt></dt>
             <dd><p class="first">Default: auto (Show window controls if there is no window border)</p>
@@ -12580,6 +12652,36 @@
             <dt><tt class="docutils literal">mp.unregister_script_message(name)</tt></dt>
             <dd>Undo a previous registration with <tt class="docutils literal">mp.register_script_message</tt>. Does
             nothing if the <tt class="docutils literal">name</tt> wasn't registered.</dd>
+            <dt><tt class="docutils literal">mp.create_osd_overlay(format)</tt></dt>
+            <dd><p class="first">Create an OSD overlay. This is a very thin wrapper around the <tt class="docutils literal"><span class="pre">osd-overlay</span></tt>
+            command. The function returns a table, which mostly contains fields that
+            will be passed to <tt class="docutils literal"><span class="pre">osd-overlay</span></tt>. The <tt class="docutils literal">format</tt> parameter is used to
+            initialize the <tt class="docutils literal">format</tt> field. The <tt class="docutils literal">data</tt> field contains the text to
+            be used as overlay. For details, see the <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> command.</p>
+            <p>In addition, it provides the following methods:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">update()</tt></dt>
+            <dd>Commit the OSD overlay to the screen, or in other words, run the
+            <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> command with the current fields of the overlay table.</dd>
+            <dt><tt class="docutils literal">remove()</tt></dt>
+            <dd>Remove the overlay from the screen. A <tt class="docutils literal">update()</tt> call will add it
+            again.</dd>
+            </dl>
+            <p>Example:</p>
+            <pre class="literal-block">
+            ov = mp.create_osd_overlay(&quot;ass-events&quot;)
+            ov.data = &quot;{\\an5}{\\b1}hello world!&quot;
+            ov:update()
+            </pre>
+            <p class="last">The advantage of using this wrapper (as opposed to running <tt class="docutils literal"><span class="pre">osd-overlay</span></tt>
+            directly) is that the <tt class="docutils literal">id</tt> field is allocated automatically.</p>
+            </dd>
+            <dt><tt class="docutils literal">mp.get_osd_size()</tt></dt>
+            <dd><p class="first">Returns a tuple of <tt class="docutils literal">osd_width, osd_height, osd_par</tt>. The first two give
+            the size of the OSD in pixels (for video ouputs like <tt class="docutils literal"><span class="pre">--vo=xv</span></tt>, this may
+            be &quot;scaled&quot; pixels). The third is the display pixel aspect ratio.</p>
+            <p class="last">May return invalid/nonsense values if OSD is not initialized yet.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="mp-msg-functions">
