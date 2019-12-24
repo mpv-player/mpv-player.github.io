@@ -1945,7 +1945,10 @@
             toggles this option between <tt class="docutils literal">auto</tt> and <tt class="docutils literal">no</tt>.</p>
             <p class="last">Always enabling HW decoding by putting it into the config file is
             discouraged. If you use the Ubuntu package, delete <tt class="docutils literal">/etc/mpv/mpv.conf</tt>,
-            as the package tries to enable HW decoding by default.</p>
+            as the package tries to enable HW decoding by default by setting
+            <tt class="docutils literal">hwdec=vaapi</tt> (which is less than ideal, and may even cause
+            sub-optimal wrappers to be used). Or at least change it to
+            <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt>.</p>
             </div>
             <p>Use one of the auto modes if you want to enable hardware decoding.
             Explicitly selecting the mode is mostly meant for testing and debugging.
@@ -1956,6 +1959,21 @@
             <p class="last">Even if enabled, hardware decoding is still only white-listed for some
             codecs. See <tt class="docutils literal"><span class="pre">--hwdec-codecs</span></tt> to enable hardware decoding in more cases.</p>
             </div>
+            <div class="admonition admonition-which-method-to-choose">
+            <p class="first admonition-title">Which method to choose?</p>
+            <ul class="last simple">
+            <li>If you only want to enable hardware decoding at runtime, don't set the
+            parameter, or put <tt class="docutils literal">hwdec=no</tt> into your <tt class="docutils literal">mpv.conf</tt> (relevant on
+            distros which force-enable it by default, such as on Ubuntu). Use the
+            <tt class="docutils literal">Ctrl+h</tt> default binding to enable it at runtime.</li>
+            <li>If you're not sure, but want hardware decoding always enabled by
+            default, put <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt> into your <tt class="docutils literal">mpv.conf</tt>, and
+            acknowledge that this use case is not &quot;really&quot; supported and may cause
+            problems.</li>
+            <li>If you want to test available hardware decoding methods, pass
+            <tt class="docutils literal"><span class="pre">--hwdec=auto</span> <span class="pre">--hwdec-codecs</span></tt> and look at the terminal output.</li>
+            </ul>
+            </div>
             <p><tt class="docutils literal">&lt;api&gt;</tt> can be one of the following:</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -1963,9 +1981,11 @@
             <tbody valign="top">
             <tr class="field"><th class="field-name">no:</th><td class="field-body">always use software decoding (default)</td>
             </tr>
-            <tr class="field"><th class="field-name">auto:</th><td class="field-body">enable best hw decoder (see below)</td>
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">forcibly enable any hw decoder found (see below)</td>
             </tr>
             <tr class="field"><th class="field-name">yes:</th><td class="field-body">exactly the same as <tt class="docutils literal">auto</tt></td>
+            </tr>
+            <tr class="field"><th class="field-name">auto-safe:</th><td class="field-body">enable any whitelisted hw decoder (see below)</td>
             </tr>
             <tr class="field"><th class="field-name">auto-copy:</th><td class="field-body">enable best hw decoder with copy-back (see below)</td>
             </tr>
@@ -2023,6 +2043,18 @@
             never be enabled. Also note that if the first found method doesn't actually
             work, it will always fall back to software decoding, instead of trying the
             next method (might matter on some Linux systems).</p>
+            <p><tt class="docutils literal"><span class="pre">auto-safe</span></tt> is similar to <tt class="docutils literal">auto</tt>, but allows only whitelisted methods
+            that are considered &quot;safe&quot;. This is supposed to be a reasonable way to
+            enable hardware decdoding by default in a config file (even though you
+            shouldn't do that anyway; prefer runtime enabling with <tt class="docutils literal">Ctrl+h</tt>). Unlike
+            <tt class="docutils literal">auto</tt>, this will not try to enable unknown or known-to-be-bad methods. In
+            addition, this may disable hardware decoding in other situations when it's
+            known to cause problems, but currently this mechanism is quite primitive.
+            (As an example for something that still causes problems: certain
+            combinations of HEVC and Intel chips on Windows tend to cause mpv to crash,
+            most likely due to driver bugs.)</p>
+            <p><tt class="docutils literal"><span class="pre">auto-copy-safe</span></tt> selects the union of methods selected with <tt class="docutils literal"><span class="pre">auto-safe</span></tt>
+            and <tt class="docutils literal"><span class="pre">auto-copy</span></tt>.</p>
             <p><tt class="docutils literal"><span class="pre">auto-copy</span></tt> selects only modes that copy the video data back to system
             memory after decoding. This selects modes like <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> (and so on).
             If none of these work, hardware decoding is disabled. This mode is usually
@@ -2046,8 +2078,9 @@
             output path. To use this deinterlacing you must pass the option:
             <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>.
             Pass <tt class="docutils literal">weave</tt> (or leave the option unset) to not attempt any
-            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred unless the <tt class="docutils literal">gpu</tt>
-            vo is not being used or filters are required.</p>
+            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred over <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> unless
+            the <tt class="docutils literal">gpu</tt> vo is not being used or filters are required. Using <tt class="docutils literal">nvdec</tt>
+            should be preferred on Nvidia hardware.</p>
             <p><tt class="docutils literal">nvdec</tt> is a newer implementation of CUVID/CUDA decoding, which uses the
             FFmpeg decoders for file parsing. Experimental, is known not to correctly
             check whether decoding is supported by the hardware at all. Deinterlacing
