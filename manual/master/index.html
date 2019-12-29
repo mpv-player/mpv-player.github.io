@@ -2025,13 +2025,13 @@
             </tr>
             <tr class="field"><th class="field-name">mmal-copy:</th><td class="field-body">copies video back to system RAM (Raspberry Pi only)</td>
             </tr>
-            <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
-            </tr>
-            <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
-            </tr>
             <tr class="field"><th class="field-name">nvdec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">nvdec-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
+            </tr>
+            <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
+            </tr>
+            <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">crystalhd:</th><td class="field-body">copies video back to system RAM (Any platform supported by hardware)</td>
             </tr>
@@ -2065,29 +2065,27 @@
             allow CPU processing with video filters. This mode works with all video
             filters and VOs.</p>
             <p>Because these copy the decoded video back to system RAM, they're often less
-            less efficient than the direct modes, and may not help too much over
-            software decoding.</p>
+            efficient than the direct modes, and may not help too much over software
+            decoding.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Most non-copy methods only work with the OpenGL GPU backend. Currently,
-            only the <tt class="docutils literal">nvdec</tt> and <tt class="docutils literal">cuda</tt> methods work with Vulkan.</p>
+            only the <tt class="docutils literal">vaapi</tt>, <tt class="docutils literal">nvdec</tt> and <tt class="docutils literal">cuda</tt> methods work with Vulkan.</p>
             </div>
-            <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, requires Mesa 11 and most
+            <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, requires Mesa 11, and most
             likely works with Intel and AMD GPUs only. It also requires the opengl EGL
             backend.</p>
-            <p>The <tt class="docutils literal">cuda</tt> and <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> modes provides deinterlacing in the decoder
-            which is useful as there is no other deinterlacing mechanism in the gpu
-            output path. To use this deinterlacing you must pass the option:
+            <p><tt class="docutils literal">nvdec</tt> and <tt class="docutils literal"><span class="pre">nvdec-copy</span></tt> are the newest, and recommended method to do
+            hardware decoding on Nvidia GPUs.</p>
+            <p><tt class="docutils literal">cuda</tt> and <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> are an older implementation of hardware decoding
+            on Nvidia GPUs that uses Nvidia's bitstream parsers rather than FFmpeg's.
+            This can lead to feature deficiencies, such as incorrect playback of HDR
+            content, and <tt class="docutils literal">nvdec</tt>/<tt class="docutils literal"><span class="pre">nvdec-copy</span></tt> should always be preferred unless you
+            specifically need Nvidia's deinterlacing algorithms. To use this
+            deinterlacing you must pass the option:
             <tt class="docutils literal"><span class="pre">vd-lavc-o=deint=[weave|bob|adaptive]</span></tt>.
             Pass <tt class="docutils literal">weave</tt> (or leave the option unset) to not attempt any
-            deinterlacing. <tt class="docutils literal">cuda</tt> should always be preferred over <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> unless
-            the <tt class="docutils literal">gpu</tt> vo is not being used or filters are required. Using <tt class="docutils literal">nvdec</tt>
-            should be preferred on Nvidia hardware.</p>
-            <p><tt class="docutils literal">nvdec</tt> is a newer implementation of CUVID/CUDA decoding, which uses the
-            FFmpeg decoders for file parsing. Experimental, is known not to correctly
-            check whether decoding is supported by the hardware at all. Deinterlacing
-            is not supported. Since this uses FFmpeg's codec parsers, it is expected
-            that this generally causes fewer issues than <tt class="docutils literal">cuda</tt>.</p>
+            deinterlacing.</p>
             <div class="admonition admonition-quality-reduction-with-hardware-decoding last">
             <p class="first admonition-title">Quality reduction with hardware decoding</p>
             <p>In theory, hardware decoding does not reduce video quality (at least
@@ -2102,10 +2100,10 @@
             chroma scalers instead of the one specified by <tt class="docutils literal"><span class="pre">--cscale</span></tt>. In other
             cases, hardware decoding can also reduce the bit depth of the decoded
             image, which can introduce banding or precision loss for 10-bit files.</p>
-            <p><tt class="docutils literal">vdpau</tt> is usually safe, except for 10 bit video. If deinterlacing
-            enabled (or the <tt class="docutils literal">vdpaupp</tt> video filter is active in general), it
-            forces RGB conversion. The latter currently does not treat certain
-            colorspaces like BT.2020 correctly.</p>
+            <p><tt class="docutils literal">vdpau</tt> always does RGB conversion in hardware, which does not
+            support newer colorspaces like BT.2020 correctly. However, <tt class="docutils literal">vdpau</tt>
+            doesn't support 10 bit or HDR encodings, so these limitations are
+            unlikely to be relevant.</p>
             <p><tt class="docutils literal">vaapi</tt> and <tt class="docutils literal">d3d11va</tt> are safe. Enabling deinterlacing (or simply
             their respective post-processing filters) will possibly at least reduce
             color quality by converting the output to a 8 bit format.</p>
@@ -2117,10 +2115,11 @@
             completely ordinary video sources.</p>
             <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
             <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>.</p>
-            <p><tt class="docutils literal">cuda</tt> should be safe, but it has been reported to corrupt the
-            timestamps causing glitched, flashing frames on some files. It can also
-            sometimes cause massive framedrops for unknown reasons. Caution is
-            advised.</p>
+            <p><tt class="docutils literal">cuda</tt> should usually be safe, but depending on how a file/stream
+            has been mixed, it has been reported to corrupt the timestamps causing
+            glitched, flashing frames. It can also sometimes cause massive
+            framedrops for unknown reasons. Caution is advised, and <tt class="docutils literal">nvdec</tt>
+            should always be preferred.</p>
             <p><tt class="docutils literal">crystalhd</tt> is not safe. It always converts to 4:2:2 YUV, which
             may be lossy, depending on how chroma sub-sampling is done during
             conversion. It also discards the top left pixel of each frame for
