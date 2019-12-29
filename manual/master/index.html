@@ -2185,14 +2185,15 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cuda-decode-device=&lt;auto|0..&gt;</span></tt></dt>
             <dd><p class="first">Choose the GPU device used for decoding when using the <tt class="docutils literal">cuda</tt> or
-            <tt class="docutils literal">nvdec</tt> hwdecs with the OpenGL GPU backend.</p>
-            <p>By default, the device that is being used to provide <tt class="docutils literal">gpu</tt> output will
-            also be used for decoding (and in the vast majority of cases, only one
-            GPU will be present).</p>
-            <p>Note that when using the <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> or <tt class="docutils literal"><span class="pre">nvdec-copy</span></tt> hwdec, a
-            different option must be passed: <tt class="docutils literal"><span class="pre">--vd-lavc-o=gpu=&lt;0..&gt;</span></tt>.</p>
-            <p class="last">Note that this option is not available with the Vulkan GPU backend. With
-            Vulkan, decoding must always happen on the display device.</p>
+            <tt class="docutils literal">nvdec</tt> hwdecs with the OpenGL GPU backend, and with the <tt class="docutils literal"><span class="pre">cuda-copy</span></tt>
+            or <tt class="docutils literal"><span class="pre">nvdec-copy</span></tt> hwdecs in all cases.</p>
+            <p>For the OpenGL GPU backend, the default device used for decoding is the one
+            being used to provide <tt class="docutils literal">gpu</tt> output (and in the vast majority of cases,
+            only one GPU will be present).</p>
+            <p>For the <tt class="docutils literal">copy</tt> hwdecs, the default device will be the first device
+            enumerated by the CUDA libraries - however that is done.</p>
+            <p class="last">For the Vulkan GPU backend, decoding must always happen on the display
+            device, and this option has no effect.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vaapi-device=&lt;device</span> file&gt;</tt></dt>
             <dd>Choose the DRM device for <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>. This should be the path to a
