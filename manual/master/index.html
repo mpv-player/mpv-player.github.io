@@ -4298,6 +4298,17 @@
             seek triggered with <tt class="docutils literal"><span class="pre">--start</span></tt>. This does not change any runtime behavior
             after the initial caching. This option is useless if the file cannot be
             cached completely.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--rar-list-all-volumes=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">When opening multi-volume rar files, open all volumes to create a full list
+            of contained files (default: no). If disabled, only the archive entries
+            whose headers are located within the first volume are listed (and thus
+            played when opening a .rar file with mpv). Doing so speeds up opening, and
+            the typical idiotic use-case of playing uncompressed multi-volume rar files
+            that contain a single media file is made faster.</p>
+            <p class="last">Opening is still slow, because for unknown, idiotic, and unnecessary reasons
+            libarchive opens all volumes anyway when playing the main file, even though
+            mpv iterated no archive entries yet.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="input">
@@ -13887,7 +13898,7 @@
     <footer>
       <div class='container'>
         <small class='pull-left text-muted copyright'>
-          &copy; 2012-2019 mpv.io
+          &copy; 2012-2020 mpv.io
         </small>
         <div class='social-icons pull-right'>
                     <a target="_blank" href="https://github.com/mpv-player/mpv"><i class='fa fa-github-alt'></i>
