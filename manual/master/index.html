@@ -290,7 +290,7 @@
             <div class="section" id="legacy-option-syntax">
             <h2>Legacy option syntax</h2>
             <p>The <tt class="docutils literal"><span class="pre">--option=value</span></tt> syntax is not strictly enforced, and the alternative
-            legacy syntax <tt class="docutils literal"><span class="pre">-option</span> value</tt> and <tt class="docutils literal"><span class="pre">--option</span> value</tt> will also work. This is
+            legacy syntax <tt class="docutils literal"><span class="pre">-option</span> value</tt> and <tt class="docutils literal"><span class="pre">-option=value</span></tt> will also work. This is
             mostly  for compatibility with MPlayer. Using these should be avoided. Their
             semantics can change any time in the future.</p>
             <p>For example, the alternative syntax will consider an argument following the
@@ -298,9 +298,14 @@
             because <tt class="docutils literal"><span class="pre">--fs</span></tt> is a flag option that requires no parameter. If an option
             changes and its parameter becomes optional, then a command line using the
             alternative syntax will break.</p>
-            <p>Currently, the parser makes no difference whether an option starts with <tt class="docutils literal"><span class="pre">--</span></tt>
-            or a single <tt class="docutils literal">-</tt>. This might also change in the future, and <tt class="docutils literal"><span class="pre">--option</span> value</tt>
-            might always interpret <tt class="docutils literal">value</tt> as filename in order to reduce ambiguities.</p>
+            <p>Until mpv 0.31.0, there was no difference whether an option started with <tt class="docutils literal"><span class="pre">--</span></tt>
+            or a single <tt class="docutils literal">-</tt>. Newer mpv releases strictly expect that you pass the option
+            value after a <tt class="docutils literal">=</tt>. For example, before <tt class="docutils literal">mpv <span class="pre">--log-file</span> f.txt</tt> would write
+            a log to <tt class="docutils literal">f.txt</tt>, but now this command line fails, as <tt class="docutils literal"><span class="pre">--log-file</span></tt> expects
+            an option value, and <tt class="docutils literal">f.txt</tt> is simply considered a normal file to be played
+            (as in <tt class="docutils literal">mpv f.txt</tt>).</p>
+            <p>The future plan is that <tt class="docutils literal"><span class="pre">-option</span> value</tt> will not work anymore, and options
+            with a single <tt class="docutils literal">-</tt> behave the same as <tt class="docutils literal"><span class="pre">--</span></tt> options.</p>
             </div>
             <div class="section" id="escaping-spaces-and-other-special-characters">
             <h2>Escaping spaces and other special characters</h2>
@@ -10837,11 +10842,37 @@
             <tt class="docutils literal"><span class="pre">video-params/aspect</span></tt> and <tt class="docutils literal"><span class="pre">video-aspect-override</span></tt> respectively.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">osd-width</span></tt>, <tt class="docutils literal"><span class="pre">osd-height</span></tt></dt>
-            <dd>Last known OSD width (can be 0). This is needed if you want to use the
+            <dd><p class="first">Last known OSD width (can be 0). This is needed if you want to use the
             <tt class="docutils literal"><span class="pre">overlay-add</span></tt> command. It gives you the actual OSD size, which can be
-            different from the window size in some cases.</dd>
+            different from the window size in some cases.</p>
+            <p class="last">Alias to <tt class="docutils literal"><span class="pre">osd-dimensions/w</span></tt> and <tt class="docutils literal"><span class="pre">osd-dimensions/h</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">osd-par</span></tt></dt>
-            <dd>Last known OSD display pixel aspect (can be 0).</dd>
+            <dd><p class="first">Last known OSD display pixel aspect (can be 0).</p>
+            <p class="last">Alias to <tt class="docutils literal"><span class="pre">osd-dimensions/osd-par</span></tt>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">osd-dimensions</span></tt></dt>
+            <dd><p class="first">Last known OSD dimensions.</p>
+            <p>Has the following sub-properties (which can be read as <tt class="docutils literal">MPV_FORMAT_NODE</tt>
+            or Lua table with <tt class="docutils literal">mp.get_property_native</tt>):</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">w</tt></dt>
+            <dd>Size of the VO window in OSD render units (usually pixels, but may be
+            scaled pixels with VOs like <tt class="docutils literal">xv</tt>).</dd>
+            <dt><tt class="docutils literal">h</tt></dt>
+            <dd>Size of the VO window in OSD render units,</dd>
+            <dt><tt class="docutils literal">par</tt></dt>
+            <dd>Pixel aspect ratio of the OSD (usually 1).</dd>
+            <dt><tt class="docutils literal">aspect</tt></dt>
+            <dd>Display aspect ratio of the VO window. (Computing from the properties
+            above.)</dd>
+            <dt><tt class="docutils literal">mt</tt>, <tt class="docutils literal">mb</tt>, <tt class="docutils literal">ml</tt>, <tt class="docutils literal">mr</tt></dt>
+            <dd>OSD to video margins (top, bottom, left, right). This describes the
+            area into which the video is rendered.</dd>
+            </dl>
+            <p class="last">Any of these properties may be unavailable or set to dummy values if the
+            VO window is not created or visible.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">sub-text</span></tt></dt>
             <dd><p class="first">Return the current subtitle text regardless of sub visibility.
             Formatting is stripped. If the subtitle is not text-based
