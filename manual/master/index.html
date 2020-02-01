@@ -3272,8 +3272,13 @@
             <p>The pseudo codepage <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> is used internally. If it's set,
             subtitles are interpreted as UTF-8 with &quot;Latin 1&quot; as fallback for bytes
             which are not valid UTF-8 sequences. iconv is never involved in this mode.</p>
-            <p class="last">This option changed in mpv 0.23.0. Support for the old syntax was fully
+            <p>This option changed in mpv 0.23.0. Support for the old syntax was fully
             removed in mpv 0.24.0.</p>
+            <div class="admonition note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">This works for text subtitle files only. Other types of subtitles (in
+            particular subtitles in mkv files) are always assumed to be UTF-8.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-fix-timing=&lt;yes|no&gt;</span></tt></dt>
             <dd>Adjust subtitle timing is to remove minor gaps or overlaps between
@@ -12278,12 +12283,7 @@
             </div>
             <div class="section" id="lua-scripting">
             <h1>LUA SCRIPTING</h1>
-            <p>mpv can load Lua scripts. Scripts passed to the <tt class="docutils literal"><span class="pre">--script</span></tt> option, or found in
-            the <tt class="docutils literal">scripts</tt> subdirectory of the mpv configuration directory (usually
-            <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt>) will be loaded on program start. mpv also appends the
-            <tt class="docutils literal">scripts</tt> subdirectory to the end of Lua's path so you can import scripts from
-            there too. Since it's added to the end, don't name scripts you want to import
-            the same as Lua libraries because they will be overshadowed by them.</p>
+            <p>mpv can load Lua scripts. (See <a class="reference internal" href="#script-location">Script location</a>.)</p>
             <p>mpv provides the built-in module <tt class="docutils literal">mp</tt>, which contains functions to send
             commands to the mpv core and to retrieve information about playback state, user
             settings, file information, and so on.</p>
@@ -12300,6 +12300,36 @@
             end
             mp.observe_property(&quot;pause&quot;, &quot;bool&quot;, on_pause_change)
             </pre>
+            </div>
+            <div class="section" id="script-location">
+            <h2>Script location</h2>
+            <p>Scripts can be passed to the <tt class="docutils literal"><span class="pre">--script</span></tt> option, and are automatically loaded
+            from the <tt class="docutils literal">scripts</tt> subdirectory of the mpv configuration directory (usually
+            <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt>).</p>
+            <p>A script can be a single file. The file extension is used to select the
+            scripting backend to use for it. For Lua, it is <tt class="docutils literal">.lua</tt>. If the extension is
+            not recognized, an error is printed. (If an error happens, the extension is
+            either mistyped, or the backend was not compiled into your mpv binary.)</p>
+            <p>Entries with <tt class="docutils literal">.disable</tt> extension are always ignored.</p>
+            <p>If a script is a directory (either if a directory is passed to <tt class="docutils literal"><span class="pre">--script</span></tt>,
+            or any sub-directories in the script directory, such as for example
+            <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/something/</span></tt>), then the directory represents a single
+            script. The player will try to load a file named <tt class="docutils literal">main.x</tt>, where <tt class="docutils literal">x</tt> is
+            replaced with the file extension. For example, if <tt class="docutils literal">main.lua</tt> exists, it is
+            loaded with the Lua scripting backend.</p>
+            <p>You must not put any other files or directories that start with <tt class="docutils literal">main.</tt> into
+            the script's top level directory. If the script directory contains for example
+            both <tt class="docutils literal">main.lua</tt> and <tt class="docutils literal">main.js</tt>, only one of them will be loaded (and which
+            one depends on mpv internals that may change any time). Likewise, if there is
+            for example <tt class="docutils literal">main.foo</tt>, your script will break as soon as mpv adds a backend
+            that uses the <tt class="docutils literal">.foo</tt> file extension.</p>
+            <p>mpv also appends the top level directory of the script to the start of Lua's
+            package path so you can import scripts from there too. Be aware that this will
+            shadow Lua libraries that use the same package path.</p>
+            <p>On the other hand, if the script is a single file (directly located in
+            <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt> and not as sub-directory), the Lua package path
+            does not include any mpv specific directories. (This was silently changed in
+            mpv 0.32.0.)</p>
             </div>
             <div class="section" id="details-on-the-script-initialization-and-lifecycle">
             <h2>Details on the script initialization and lifecycle</h2>
@@ -13858,11 +13888,11 @@
             lot of fonts, consider using fonts.conf (see above) to include additional
             fonts, which is more memory-efficient.</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt></dt>
-            <dd>All files in this directory are loaded as if they were passed to the
-            <tt class="docutils literal"><span class="pre">--script</span></tt> option. They are loaded in alphabetical order. Directory entries
-            other than files are ignored. Files with unknown extension lead to an
-            initialization error. Files with <tt class="docutils literal">.disable</tt> extension are ignored. The
-            <tt class="docutils literal"><span class="pre">--load-scripts=no</span></tt> option disables loading these files.</dd>
+            <dd><p class="first">All files in this directory are loaded as if they were passed to the
+            <tt class="docutils literal"><span class="pre">--script</span></tt> option. They are loaded in alphabetical order.</p>
+            <p>The <tt class="docutils literal"><span class="pre">--load-scripts=no</span></tt> option disables loading these files.</p>
+            <p class="last">See <a class="reference internal" href="#script-location">Script location</a> for details.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt></dt>
             <dd><p class="first">Contains temporary config files needed for resuming playback of files with
             the watch later feature. See for example the <tt class="docutils literal">Q</tt> key binding, or the
