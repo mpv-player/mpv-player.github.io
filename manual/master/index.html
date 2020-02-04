@@ -12325,11 +12325,16 @@
             that uses the <tt class="docutils literal">.foo</tt> file extension.</p>
             <p>mpv also appends the top level directory of the script to the start of Lua's
             package path so you can import scripts from there too. Be aware that this will
-            shadow Lua libraries that use the same package path.</p>
-            <p>On the other hand, if the script is a single file (directly located in
-            <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt> and not as sub-directory), the Lua package path
-            does not include any mpv specific directories. (This was silently changed in
-            mpv 0.32.0.)</p>
+            shadow Lua libraries that use the same package path. (Single file scripts do not
+            include mpv specific directory the Lua package path. This was silently changed
+            in mpv 0.32.0.)</p>
+            <p>Using a script directory is the recommended way to package a script that
+            consists of multiple source files, or requires other files (you can use
+            <tt class="docutils literal">mp.get_script_directory()</tt> to get the location and e.g. load data files).</p>
+            <p>Making a script a git repository, basically a repository which contains a
+            <tt class="docutils literal">main.lua`</tt> file in the root directory, makes scripts easily updateable
+            (without the dangers of auto-updates). Another suggestion is to use git
+            submodules to share common files or libraries.</p>
             </div>
             <div class="section" id="details-on-the-script-initialization-and-lifecycle">
             <h2>Details on the script initialization and lifecycle</h2>
@@ -12698,6 +12703,10 @@
             <p class="last">The script <tt class="docutils literal">/path/to/fooscript.lua</tt> becomes <tt class="docutils literal">fooscript</tt>.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal">mp.get_script_directory()</tt></dt>
+            <dd>Return the directory if this is a script packaged as directory (see
+            <a class="reference internal" href="#script-location">Script location</a> for a description). Return nothing if this is a single
+            file script.</dd>
             <dt><tt class="docutils literal">mp.osd_message(text [,duration])</tt></dt>
             <dd>Show an OSD message on the screen. <tt class="docutils literal">duration</tt> is in seconds, and is
             optional (uses <tt class="docutils literal"><span class="pre">--osd-duration</span></tt> by default).</dd>
