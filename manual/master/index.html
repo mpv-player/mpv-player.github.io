@@ -13246,6 +13246,7 @@
             <p><tt class="docutils literal">mp.unobserve_property(fn)</tt></p>
             <p><tt class="docutils literal">mp.get_opt(key)</tt></p>
             <p><tt class="docutils literal">mp.get_script_name()</tt></p>
+            <p><tt class="docutils literal">mp.get_script_directory()</tt></p>
             <p><tt class="docutils literal">mp.osd_message(text [,duration])</tt></p>
             <p><tt class="docutils literal">mp.get_wakeup_pipe()</tt></p>
             <p><tt class="docutils literal">mp.register_idle(fn)</tt></p>
@@ -13355,21 +13356,30 @@
             do work. In general, this is for mpv modules and not a node.js replacement.</p>
             <p>A <tt class="docutils literal">.js</tt> file extension is always added to <tt class="docutils literal">id</tt>, e.g. <tt class="docutils literal"><span class="pre">require(&quot;./foo&quot;)</span></tt>
             will load the file <tt class="docutils literal">./foo.js</tt> and return its <tt class="docutils literal">exports</tt> object.</p>
-            <p>An id is relative (to the script which <tt class="docutils literal">require</tt>'d it) if it starts with
-            <tt class="docutils literal">./</tt> or <tt class="docutils literal">../</tt>. Otherwise, it's considered a &quot;top-level id&quot; (CommonJS term).</p>
-            <p>Top level id is evaluated as absolute filesystem path if possible, e.g. <tt class="docutils literal">/x/y</tt>
-            or <tt class="docutils literal">~/x</tt>. Otherwise, it's considered a global module id and searched at
-            <tt class="docutils literal">scripts/modules.js/</tt> in mpv config dirs - in normal config search order. E.g.
-            <tt class="docutils literal"><span class="pre">require(&quot;x&quot;)</span></tt> is searched as file <tt class="docutils literal">x.js</tt> at those dirs, and id <tt class="docutils literal">foo/x</tt> is
-            searched as file <tt class="docutils literal">x.js</tt> inside dir <tt class="docutils literal">foo</tt> at those dirs.</p>
-            <p>Search paths for global module id's are at the array <tt class="docutils literal">mp.module_paths</tt>, which
-            is searched in order. Initially it contains one item: <tt class="docutils literal"><span class="pre">~~/scripts/modules.js</span></tt>
-            such that it behaves as described above. Modifying it will affect future
-            <tt class="docutils literal">require</tt> calls with global module id's which are not already loaded/cached.</p>
+            <p>An id which starts with <tt class="docutils literal">./</tt> or <tt class="docutils literal">../</tt> is relative to the script or module
+            which <tt class="docutils literal">require</tt> it. Otherwise it's considered a top-level id (CommonJS term).</p>
+            <p>Top-level id is evaluated as absolute filesystem path if possible, e.g. <tt class="docutils literal">/x/y</tt>
+            or <tt class="docutils literal">~/x</tt>. Otherwise it's considered a global module id and searched according
+            <tt class="docutils literal">mp.module_paths</tt> in normal array order, e.g. <tt class="docutils literal"><span class="pre">require(&quot;x&quot;)</span></tt> tries to
+            load <tt class="docutils literal">x.js</tt> at one of the array paths, and id <tt class="docutils literal">foo/x</tt> tries to load <tt class="docutils literal">x.js</tt>
+            inside dir <tt class="docutils literal">foo</tt> at one of the paths.</p>
+            <p>The <tt class="docutils literal">mp.module_paths</tt> array is empty by default except for scripts which are
+            loaded as a directory where it contains one item - <tt class="docutils literal"><span class="pre">&lt;directory&gt;/modules/</span></tt>.
+            <tt class="docutils literal">mp.module_paths</tt> may be updated from a script (preferably via custom init -
+            see below) which will affect future calls to <tt class="docutils literal">require</tt> for global module id's
+            which are not already loaded/cached.</p>
             <p>No <tt class="docutils literal">global</tt> variable, but a module's <tt class="docutils literal">this</tt> at its top lexical scope is the
             global object - also in strict mode. If you have a module which needs <tt class="docutils literal">global</tt>
             as the global object, you could do <tt class="docutils literal">this.global = this;</tt> before <tt class="docutils literal">require</tt>.</p>
             <p>Functions and variables declared at a module don't pollute the global object.</p>
+            </div>
+            <div class="section" id="custom-initialization">
+            <h2>Custom initialization</h2>
+            <p>After mpv initializes the JavaScript environment for a script but before it
+            loads the script - it tries to run the file <tt class="docutils literal">.init.js</tt> at the root of the mpv
+            configuration directory. Code at this file can update the environment further
+            for all scripts. E.g. if it contains <tt class="docutils literal"><span class="pre">mp.module_paths.push(&quot;/foo&quot;)</span></tt> then
+            <tt class="docutils literal">require</tt> at all scripts will search global module id's also at <tt class="docutils literal">/foo</tt>.</p>
             </div>
             <div class="section" id="the-event-loop">
             <h2>The event loop</h2>
