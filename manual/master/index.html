@@ -13360,14 +13360,14 @@
             which <tt class="docutils literal">require</tt> it. Otherwise it's considered a top-level id (CommonJS term).</p>
             <p>Top-level id is evaluated as absolute filesystem path if possible, e.g. <tt class="docutils literal">/x/y</tt>
             or <tt class="docutils literal">~/x</tt>. Otherwise it's considered a global module id and searched according
-            <tt class="docutils literal">mp.module_paths</tt> in normal array order, e.g. <tt class="docutils literal"><span class="pre">require(&quot;x&quot;)</span></tt> tries to
+            to <tt class="docutils literal">mp.module_paths</tt> in normal array order, e.g. <tt class="docutils literal"><span class="pre">require(&quot;x&quot;)</span></tt> tries to
             load <tt class="docutils literal">x.js</tt> at one of the array paths, and id <tt class="docutils literal">foo/x</tt> tries to load <tt class="docutils literal">x.js</tt>
             inside dir <tt class="docutils literal">foo</tt> at one of the paths.</p>
             <p>The <tt class="docutils literal">mp.module_paths</tt> array is empty by default except for scripts which are
-            loaded as a directory where it contains one item - <tt class="docutils literal"><span class="pre">&lt;directory&gt;/modules/</span></tt>.
-            <tt class="docutils literal">mp.module_paths</tt> may be updated from a script (preferably via custom init -
-            see below) which will affect future calls to <tt class="docutils literal">require</tt> for global module id's
-            which are not already loaded/cached.</p>
+            loaded as a directory where it contains one item - <tt class="docutils literal"><span class="pre">&lt;directory&gt;/modules/</span></tt> .
+            The array may be updated from a script (or using custom init - see below) which
+            will affect future calls to <tt class="docutils literal">require</tt> for global module id's which are not
+            already loaded/cached.</p>
             <p>No <tt class="docutils literal">global</tt> variable, but a module's <tt class="docutils literal">this</tt> at its top lexical scope is the
             global object - also in strict mode. If you have a module which needs <tt class="docutils literal">global</tt>
             as the global object, you could do <tt class="docutils literal">this.global = this;</tt> before <tt class="docutils literal">require</tt>.</p>
