@@ -4813,7 +4813,7 @@
             <p class="last">VOs like <tt class="docutils literal">drm</tt> and <tt class="docutils literal">x11</tt> will benefit a lot from using <tt class="docutils literal"><span class="pre">--sws-fast</span></tt>.
             You may need to set other options, like <tt class="docutils literal"><span class="pre">--sws-scaler</span></tt>. The builtin
             <tt class="docutils literal"><span class="pre">sws-fast</span></tt> profile sets this option and some others to gain performance
-            for reduced quality.</p>
+            for reduced quality. Also see <tt class="docutils literal"><span class="pre">--sws-allow-zimg</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sws-allow-zimg=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Allow using zimg (if the component using the internal swscale wrapper
@@ -4825,7 +4825,16 @@
             <p>If the internal component using the swscale wrapper hooks up logging
             correctly, a verbose priority log message will indicate whether zimg is
             being used.</p>
-            <p class="last">Most things which need software conversion can make use of this.</p>
+            <p>Most things which need software conversion can make use of this.</p>
+            <div class="admonition note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">The builtin <tt class="docutils literal"><span class="pre">sws-fast</span></tt> profile (which you are supposed to use when you
+            use a VO that uses software conversion on weak hardware) sets this
+            option. But do note that zimg <em>may</em> be slower than libswscale. Usually,
+            it's faster on x86 platforms, but slower on ARM (due to lack of ARM
+            specific optimizations). The mpv zimg wrapper uses unoptimized repacking
+            for some formats, for which zimg cannot be blamed.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--zimg-scaler=&lt;point|bilinear|bicubic|spline16|spline36|lanczos&gt;</span></tt></dt>
             <dd>Zimg luma scaler to use (default: lanczos).</dd>
