@@ -4817,9 +4817,10 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sws-allow-zimg=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Allow using zimg (if the component using the internal swscale wrapper
-            explicitly allows so). In this case, zimg <em>may</em> be used, if the internal
-            zimg wrapper supports the input and output formats. It will silently
-            fall back to libswscale if one of these conditions does not apply.</p>
+            explicitly allows so) (default: yes). In this case, zimg <em>may</em> be used, if
+            the internal zimg wrapper supports the input and output formats. It will
+            silently or noisily fall back to libswscale if one of these conditions does
+            not apply.</p>
             <p>If zimg is used, the other <tt class="docutils literal"><span class="pre">--sws-</span></tt> options are ignored, and the
             <tt class="docutils literal"><span class="pre">--zimg-</span></tt> options are used instead.</p>
             <p>If the internal component using the swscale wrapper hooks up logging
@@ -4828,9 +4829,7 @@
             <p>Most things which need software conversion can make use of this.</p>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
-            <p class="last">The builtin <tt class="docutils literal"><span class="pre">sws-fast</span></tt> profile (which you are supposed to use when you
-            use a VO that uses software conversion on weak hardware) sets this
-            option. But do note that zimg <em>may</em> be slower than libswscale. Usually,
+            <p class="last">Do note that zimg <em>may</em> be slower than libswscale. Usually,
             it's faster on x86 platforms, but slower on ARM (due to lack of ARM
             specific optimizations). The mpv zimg wrapper uses unoptimized repacking
             for some formats, for which zimg cannot be blamed.</p>
