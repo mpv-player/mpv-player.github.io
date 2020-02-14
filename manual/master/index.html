@@ -1032,17 +1032,21 @@
             <li>if you manually use <tt class="docutils literal"><span class="pre">--player-operation-mode=pseudo-gui</span></tt> on the command line</li>
             </ul>
             <p>This mode applies options from the builtin profile <tt class="docutils literal"><span class="pre">builtin-pseudo-gui</span></tt>, but
-            only if these haven't been set in the user's config file or on the command line.
-            Also, for compatibility with the old pseudo-gui behavior, the options in the
-            <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile are applied unconditionally. In addition, the profile
-            makes sure to enable the pseudo-GUI mode, so that <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt>
-            works like in older mpv releases. The profiles are currently defined as follows:</p>
+            only if these haven't been set in the user's config file or on the command line,
+            which is the main difference to using <tt class="docutils literal"><span class="pre">--profile=builtin-pseudo-gui</span></tt>.</p>
+            <p>The profile is currently defined as follows:</p>
             <pre class="literal-block">
             [builtin-pseudo-gui]
             terminal=no
             force-window=yes
             idle=once
             screenshot-directory=~~desktop/
+            </pre>
+            <p>The <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile exists for compatibility. The options in the
+            <tt class="docutils literal"><span class="pre">pseudo-gui</span></tt> profile are applied unconditionally. In addition, the profile
+            makes sure to enable the pseudo-GUI mode, so that <tt class="docutils literal"><span class="pre">--profile=pseudo-gui</span></tt>
+            works like in older mpv releases:</p>
+            <pre class="literal-block">
             [pseudo-gui]
             player-operation-mode=pseudo-gui
             </pre>
@@ -1844,7 +1848,7 @@
             <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
             options are changed. This option should not normally be used directly, but
             only by mpv internally, or mpv-provided scripts, config files, or .desktop
-            files.</dd>
+            files. See <a class="reference internal" href="#pseudo-gui-mode">PSEUDO GUI MODE</a> for details.</dd>
             </dl>
             </div>
             <div class="section" id="video">
