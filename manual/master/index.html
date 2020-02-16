@@ -3503,6 +3503,43 @@
             lower and upper case letters.</p>
             <p class="last">Default: <tt class="docutils literal">no</tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-filter-regex-...=...</span></tt></dt>
+            <dd><p class="first">Set a list of regular expressions to match on text subtitles, and remove any
+            lines that match (default: empty). This is a string list option. See
+            <a class="reference internal" href="#list-options">List Options</a> for details. Normally, you should use
+            <tt class="docutils literal"><span class="pre">--sub-filter-regex-append=&lt;regex&gt;</span></tt>, where each option use will append a
+            new regular expression, without having to fight escaping problems.</p>
+            <p>List items are matched in order. If a regular expression matches, the
+            process is stopped, and the subtitle line is discarded. The text matched
+            against is, currently, always the <tt class="docutils literal">Text</tt> field of ASS events (if the
+            subtitle format is different, it is always converted). This may include
+            formatting tags. Matching is case-insensitive, but how this is done depends
+            on the libc, and most likely works in ASCII only. It does not work on
+            bitmap/image subtitles. Unavailable on inferior OSes (requires POSIX regex
+            support).</p>
+            <div class="admonition admonition-example">
+            <p class="first admonition-title">Example</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--sub-filter-regex-append=opensubtitles\.org</span></tt> filters some ads.</p>
+            </div>
+            <p>Technically, using a list for matching is redundant, since you could just
+            use a single combined regular expression. But it helps with diagnosis,
+            ease of use, and temporarily disabling or enabling individual filters.</p>
+            <div class="admonition warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This is experimental. The semantics most likely will change, and if you
+            use this, you should be prepared to update the option later. Ideas
+            include replacing the regexes with a very primitive and small subset of
+            sed, or some method to control case-sensitivity.</p>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-filter-regex-warn=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Log dropped lines with warning log level, instead of verbose (default: no).
+            Helpful for testing.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-filter-regex-enable=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Whether to enable regex filtering (default: yes). Note that if no regexes
+            are added to the <tt class="docutils literal"><span class="pre">--sub-filter-regex</span></tt> list, setting this option to <tt class="docutils literal">yes</tt>
+            has no default. It's meant to easily disable or enable filtering
+            temporarily.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-create-cc-track=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">For every video stream, create a closed captions track (default: no). The
             only purpose is to make the track available for selection at the start of
