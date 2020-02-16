@@ -12497,12 +12497,24 @@
             </dd>
             <dt><tt class="docutils literal">mp.command_native_async(table [,fn])</tt></dt>
             <dd><p class="first">Like <tt class="docutils literal">mp.command_native()</tt>, but the command is ran asynchronously (as far
-            as possible), and upon completion, fn is called. fn has two arguments:
-            <tt class="docutils literal">fn(success, result, error)</tt>. <tt class="docutils literal">success</tt> is always a Boolean and is true
-            if the command was successful, otherwise false. The second parameter is
-            the result value (can be nil) in case of success, nil otherwise (as returned
-            by <tt class="docutils literal">mp.command_native()</tt>). The third parameter is the error string in case
-            of an error, nil otherwise.</p>
+            as possible), and upon completion, fn is called. fn has three arguments:
+            <tt class="docutils literal">fn(success, result, error)</tt>:</p>
+            <blockquote>
+            <blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">success</tt></dt>
+            <dd>Always a Boolean and is true if the command was successful,
+            otherwise false.</dd>
+            </dl>
+            </blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">result</tt></dt>
+            <dd>The result value (can be nil) in case of success, nil otherwise (as
+            returned by <tt class="docutils literal">mp.command_native()</tt>).</dd>
+            <dt><tt class="docutils literal">error</tt></dt>
+            <dd>The error string in case of an error, nil otherwise.</dd>
+            </dl>
+            </blockquote>
             <p>Returns a table with undefined contents, which can be used as argument for
             <tt class="docutils literal">mp.abort_async_command</tt>.</p>
             <p class="last">If starting the command failed for some reason, <tt class="docutils literal">nil, error</tt> is returned,
