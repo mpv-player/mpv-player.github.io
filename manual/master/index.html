@@ -1792,6 +1792,17 @@
             <p><tt class="docutils literal">^</tt> matches the beginning of the URL, <tt class="docutils literal">$</tt> matches its end, and you
             should use <tt class="docutils literal">%</tt> before any of the characters <tt class="docutils literal"><span class="pre">^$()%|,.[]*+-?</span></tt> to match
             that character.</p>
+            <div class="admonition admonition-examples">
+            <p class="first admonition-title">Examples</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--script-opts=ytdl_hook-exclude='^youtube%.com'</span></tt>
+            will exclude any URL that starts with <tt class="docutils literal"><span class="pre">http://youtube.com</span></tt> or
+            <tt class="docutils literal"><span class="pre">https://youtube.com</span></tt>.</li>
+            <li><tt class="docutils literal"><span class="pre">--script-opts=ytdl_hook-exclude='%.mkv$|%.mp4$'</span></tt>
+            will exclude any URL that ends with <tt class="docutils literal">.mkv</tt> or <tt class="docutils literal">.mp4</tt>.</li>
+            </ul>
+            </div>
+            <p>See more lua patterns here: <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
             <p>The <tt class="docutils literal">all_formats</tt> script option accepts a boolean 'yes' or 'no',
             and if 'yes' will attempt to add all formats found reported by youtube-dl
             (default: no). Each format is added as a separate track. In addition, they
@@ -1804,17 +1815,6 @@
             makes it possible to switch streams at runtime, it's not suitable for this
             purpose for various technical reasons. In general, this option is not
             useful, and was only added to show that it's possible.</p>
-            <div class="admonition admonition-examples">
-            <p class="first admonition-title">Examples</p>
-            <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--script-opts=ytdl_hook-exclude='^youtube%.com'</span></tt>
-            will exclude any URL that starts with <tt class="docutils literal"><span class="pre">http://youtube.com</span></tt> or
-            <tt class="docutils literal"><span class="pre">https://youtube.com</span></tt>.</li>
-            <li><tt class="docutils literal"><span class="pre">--script-opts=ytdl_hook-exclude='%.mkv$|%.mp4$'</span></tt>
-            will exclude any URL that ends with <tt class="docutils literal">.mkv</tt> or <tt class="docutils literal">.mp4</tt>.</li>
-            </ul>
-            </div>
-            <p>See more lua patterns here: <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
             <p>The <tt class="docutils literal">use_manifests</tt> script option makes mpv use the master manifest URL for
             formats like HLS and DASH, if available, allowing for video/audio selection
             in runtime. It's disabled (&quot;no&quot;) by default for performance reasons.</p>
@@ -13783,7 +13783,7 @@
             descriptor inheritance. The file descriptor is indicated as the special command
             line argument <tt class="docutils literal"><span class="pre">--mpv-ipc-fd=N</span></tt>, where <tt class="docutils literal">N</tt> is the numeric file descriptor.
             Currently, this is hardcoded as <tt class="docutils literal"><span class="pre">--mpv-ipc-fd=3</span></tt>, and the intention is that
-            it will always be <tt class="docutils literal">3</tt>. (This was a promise between keeping it as simple as
+            it will always be <tt class="docutils literal">3</tt>. (This was a compromise between keeping it as simple as
             possible, and not doing too much implicitly. Also, since there is a chance that
             this will change anyway, you should at least validate that you got the expected
             argument.)</p>
