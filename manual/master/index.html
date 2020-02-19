@@ -645,7 +645,7 @@
             # Use GPU-accelerated video output by default.
             vo=gpu
             # Use quotes for text that can contain spaces:
-            status-msg=&quot;Time: ${time-pos}&quot;
+            term-status-msg=&quot;Time: ${time-pos}&quot;
             </pre>
             </div>
             </div>
@@ -828,7 +828,7 @@
             <ul class="simple">
             <li><tt class="docutils literal">AV:</tt> or <tt class="docutils literal">V:</tt> (video only) or <tt class="docutils literal">A:</tt> (audio only)</li>
             <li>The current time position in <tt class="docutils literal">HH:MM:SS</tt> format (<tt class="docutils literal"><span class="pre">playback-time</span></tt> property)</li>
-            <li>The total file duration (absent if unknown) (<tt class="docutils literal">length</tt> property)</li>
+            <li>The total file duration (absent if unknown) (<tt class="docutils literal">duration</tt> property)</li>
             <li>Playback speed, e.g. `` x2.0``. Only visible if the speed is not normal. This
             is the user-requested speed, and not the actual speed  (usually they should
             be the same, unless playback is too slow). (<tt class="docutils literal">speed</tt> property.)</li>
@@ -854,11 +854,11 @@
             <li>Dropped frames, e.g. <tt class="docutils literal">Dropped: 4</tt>. Shows up only if the count is not 0. Can
             grow if the video framerate is higher than that of the display, or if video
             rendering is too slow. May also be incremented on &quot;hiccups&quot; and when the video
-            frame couldn't be displayed on time. (<tt class="docutils literal"><span class="pre">vo-drop-frame-count</span></tt> property.)
+            frame couldn't be displayed on time. (<tt class="docutils literal"><span class="pre">frame-drop-count</span></tt> property.)
             If the decoder drops frames, the number of decoder-dropped frames is appended
             to the display as well, e.g.: <tt class="docutils literal">Dropped: 4/34</tt>. This happens only if
             decoder frame dropping is enabled with the <tt class="docutils literal"><span class="pre">--framedrop</span></tt> options.
-            (<tt class="docutils literal"><span class="pre">drop-frame-count</span></tt> property.)</li>
+            (<tt class="docutils literal"><span class="pre">decoder-frame-drop-count</span></tt> property.)</li>
             <li>Cache state, e.g. <tt class="docutils literal">Cache:&nbsp; 2s/134KB</tt>. Visible if the stream cache is enabled.
             The first value shows the amount of video buffered in the demuxer in seconds,
             the second value shows the estimated size of the buffered amount in kilobytes.
