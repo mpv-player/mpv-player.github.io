@@ -1815,6 +1815,17 @@
             makes it possible to switch streams at runtime, it's not suitable for this
             purpose for various technical reasons. In general, this option is not
             useful, and was only added to show that it's possible.</p>
+            <p>The <tt class="docutils literal">skip_muxed</tt> script option is a boolean (default: yes). It is used
+            only if <tt class="docutils literal">all_formats</tt> is set. If set to 'yes', it will skip formats that
+            have both audio and video streams. Some sites that provide multiple
+            qualities will do so with separated audio and video streams (which is what
+            <tt class="docutils literal">all_formats</tt> is supposed to make use of), still provide formats that
+            include both audio and video. We assume that they do so for compatibility
+            reasons, and <tt class="docutils literal">skip_muxed</tt> filters them out. This will make loading faster,
+            and potentially avoid wasting bandwidth by using only one stream of a muxed
+            stream. On the other hand, if muxed streams are present, but the separate
+            streams lack either video or audio or do not exist at all, then the stream
+            selection as done by youtube-dl (via <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt>) is used.</p>
             <p>The <tt class="docutils literal">use_manifests</tt> script option makes mpv use the master manifest URL for
             formats like HLS and DASH, if available, allowing for video/audio selection
             in runtime. It's disabled (&quot;no&quot;) by default for performance reasons.</p>
