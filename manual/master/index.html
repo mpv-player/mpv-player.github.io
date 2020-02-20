@@ -1782,16 +1782,21 @@
             not just the one that the script is named after. This requires a recent
             version of youtube-dl to be installed on the system. (Enabled by default.)</p>
             <p>If the script can't do anything with an URL, it will do nothing.</p>
-            <p>The <tt class="docutils literal">try_ytdl_first</tt> script option accepts a boolean 'yes' or 'no', and if
-            'yes' will try parsing the URL with youtube-dl first, instead of the default
-            where it's only after mpv failed to open it. This mostly depends on whether
-            most of your URLs need youtube-dl parsing.</p>
-            <p>The <tt class="docutils literal">exclude</tt> script option accepts a <tt class="docutils literal">|</tt>-separated list of URL patterns
-            which mpv should not use with youtube-dl. The patterns are matched after
-            the <tt class="docutils literal"><span class="pre">http(s)://</span></tt> part of the URL.</p>
+            <p>This accepts a set of options, which can be passed to it with the
+            <tt class="docutils literal"><span class="pre">--script-opts</span></tt> option (using <tt class="docutils literal">ytdl_hook-</tt> as prefix):</p>
+            <p><tt class="docutils literal"><span class="pre">try_ytdl_first=&lt;yes|no&gt;</span></tt></p>
+            <blockquote>
+            If 'yes' will try parsing the URL with youtube-dl first, instead of the
+            default where it's only after mpv failed to open it. This mostly depends
+            on whether most of your URLs need youtube-dl parsing.</blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">exclude=&lt;URL1|URL2|...</span></tt></dt>
+            <dd><p class="first">A <tt class="docutils literal">|</tt>-separated list of URL patterns which mpv should not use with
+            youtube-dl. The patterns are matched after the <tt class="docutils literal"><span class="pre">http(s)://</span></tt> part of
+            the URL.</p>
             <p><tt class="docutils literal">^</tt> matches the beginning of the URL, <tt class="docutils literal">$</tt> matches its end, and you
-            should use <tt class="docutils literal">%</tt> before any of the characters <tt class="docutils literal"><span class="pre">^$()%|,.[]*+-?</span></tt> to match
-            that character.</p>
+            should use <tt class="docutils literal">%</tt> before any of the characters <tt class="docutils literal"><span class="pre">^$()%|,.[]*+-?</span></tt> to
+            match that character.</p>
             <div class="admonition admonition-examples">
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
@@ -1802,33 +1807,43 @@
             will exclude any URL that ends with <tt class="docutils literal">.mkv</tt> or <tt class="docutils literal">.mp4</tt>.</li>
             </ul>
             </div>
-            <p>See more lua patterns here: <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
-            <p>The <tt class="docutils literal">all_formats</tt> script option accepts a boolean 'yes' or 'no',
-            and if 'yes' will attempt to add all formats found reported by youtube-dl
-            (default: no). Each format is added as a separate track. In addition, they
-            are delay-loaded, and actually opened only when a track is selected (this
-            should keep load times as low as without this option). It also adds average
-            bitrate metadata, if available, which means <tt class="docutils literal"><span class="pre">--hls-bitrate</span></tt> will decide
-            which track to select. (HLS used to be the only format whose alternative
-            quality streams were exposed in a similar way, thus the option name.) The
-            <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt> option is essentially ignored. Although this mechanism
-            makes it possible to switch streams at runtime, it's not suitable for this
-            purpose for various technical reasons. In general, this option is not
+            <p class="last">See more lua patterns here: <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">all_formats=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">If 'yes' will attempt to add all formats found reported by youtube-dl
+            (default: no). Each format is added as a separate track. In addition,
+            they are delay-loaded, and actually opened only when a track is selected
+            (this should keep load times as low as without this option). It also
+            adds average bitrate metadata, if available, which means
+            <tt class="docutils literal"><span class="pre">--hls-bitrate</span></tt> will decide which track to select. (HLS used to be the
+            only format whose alternative quality streams were exposed in a similar
+            way, thus the option name.)</p>
+            <p>The <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt> option is essentially ignored.</p>
+            <p class="last">Although this mechanism makes it possible to switch streams at runtime,
+            it's not suitable for this purpose for various technical reasons. (It's
+            slow, which can't be really fixed.) In general, this option is not
             useful, and was only added to show that it's possible.</p>
-            <p>The <tt class="docutils literal">skip_muxed</tt> script option is a boolean (default: yes). It is used
-            only if <tt class="docutils literal">all_formats</tt> is set. If set to 'yes', it will skip formats that
-            have both audio and video streams. Some sites that provide multiple
-            qualities will do so with separated audio and video streams (which is what
-            <tt class="docutils literal">all_formats</tt> is supposed to make use of), still provide formats that
-            include both audio and video. We assume that they do so for compatibility
-            reasons, and <tt class="docutils literal">skip_muxed</tt> filters them out. This will make loading faster,
-            and potentially avoid wasting bandwidth by using only one stream of a muxed
-            stream. On the other hand, if muxed streams are present, but the separate
-            streams lack either video or audio or do not exist at all, then the stream
-            selection as done by youtube-dl (via <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt>) is used.</p>
-            <p>The <tt class="docutils literal">use_manifests</tt> script option makes mpv use the master manifest URL for
-            formats like HLS and DASH, if available, allowing for video/audio selection
-            in runtime. It's disabled (&quot;no&quot;) by default for performance reasons.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">skip_muxed=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">If set to 'yes', and <tt class="docutils literal">all_formats</tt> is also set to 'yes', this will
+            skip formats that have both audio and video streams (default: yes).</p>
+            <p>Some sites that provide multiple qualities will do so with separated
+            audio and video streams (which is what <tt class="docutils literal">all_formats</tt> is supposed to
+            make use of), still provide formats that include both audio and video.
+            We assume that they do so for compatibility reasons, and <tt class="docutils literal">skip_muxed</tt>
+            filters them out. This will make loading faster, and potentially avoid
+            wasting bandwidth by using only one stream of a muxed stream. On the
+            other hand, if muxed streams are present, but the separate streams lack
+            either video or audio or do not exist at all, then the stream selection
+            as done by youtube-dl (via <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt>) is used.</p>
+            <p class="last">This appears to terribly break with some sites that provide a HLS master
+            playlist on the lowest level.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">use_manifests=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Make mpv use the master manifest URL for formats like HLS and DASH,
+            if available, allowing for video/audio selection in runtime (default:
+            no). It's disabled (&quot;no&quot;) by default for performance reasons.</dd>
+            </dl>
             <div class="admonition admonition-why-do-the-option-names-mix-and last">
             <p class="first admonition-title">Why do the option names mix <tt class="docutils literal">_</tt> and <tt class="docutils literal">-</tt>?</p>
             <p class="last">I have no idea.</p>
