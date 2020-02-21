@@ -382,7 +382,7 @@
             <p>Some mpv options interpret paths starting with <tt class="docutils literal">~</tt>. Currently, the prefix
             <tt class="docutils literal">~~/</tt> expands to the mpv configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).
             <tt class="docutils literal">~/</tt> expands to the user's home directory. (The trailing <tt class="docutils literal">/</tt> is always
-            required.) There are the following paths as well:</p>
+            required.) The following paths are currently recognized:</p>
             <table border="1" class="docutils">
             <colgroup>
             <col width="20%" />
@@ -394,6 +394,12 @@
             </tr>
             </thead>
             <tbody valign="top">
+            <tr><td><tt class="docutils literal">~~/</tt></td>
+            <td>mpv config dir (for example <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>)</td>
+            </tr>
+            <tr><td><tt class="docutils literal">~/</tt></td>
+            <td>user home directory root (similar to shell, <tt class="docutils literal">$HOME</tt>)</td>
+            </tr>
             <tr><td><tt class="docutils literal">~~home/</tt></td>
             <td>same as <tt class="docutils literal">~~/</tt></td>
             </tr>
@@ -405,6 +411,9 @@
             </tr>
             <tr><td><tt class="docutils literal">~~desktop/</tt></td>
             <td>the path to the desktop (win32, OSX)</td>
+            </tr>
+            <tr><td><tt class="docutils literal">~~old_home</tt></td>
+            <td>do not use</td>
             </tr>
             </tbody>
             </table>
@@ -1784,12 +1793,11 @@
             <p>If the script can't do anything with an URL, it will do nothing.</p>
             <p>This accepts a set of options, which can be passed to it with the
             <tt class="docutils literal"><span class="pre">--script-opts</span></tt> option (using <tt class="docutils literal">ytdl_hook-</tt> as prefix):</p>
-            <p><tt class="docutils literal"><span class="pre">try_ytdl_first=&lt;yes|no&gt;</span></tt></p>
-            <blockquote>
-            If 'yes' will try parsing the URL with youtube-dl first, instead of the
-            default where it's only after mpv failed to open it. This mostly depends
-            on whether most of your URLs need youtube-dl parsing.</blockquote>
             <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">try_ytdl_first=&lt;yes|no&gt;</span></tt></dt>
+            <dd>If 'yes' will try parsing the URL with youtube-dl first, instead of the
+            default where it's only after mpv failed to open it. This mostly depends
+            on whether most of your URLs need youtube-dl parsing.</dd>
             <dt><tt class="docutils literal"><span class="pre">exclude=&lt;URL1|URL2|...</span></tt></dt>
             <dd><p class="first">A <tt class="docutils literal">|</tt>-separated list of URL patterns which mpv should not use with
             youtube-dl. The patterns are matched after the <tt class="docutils literal"><span class="pre">http(s)://</span></tt> part of
@@ -1819,25 +1827,44 @@
             only format whose alternative quality streams were exposed in a similar
             way, thus the option name.)</p>
             <p>The <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt> option is essentially ignored.</p>
-            <p class="last">Although this mechanism makes it possible to switch streams at runtime,
+            <p>Although this mechanism makes it possible to switch streams at runtime,
             it's not suitable for this purpose for various technical reasons. (It's
             slow, which can't be really fixed.) In general, this option is not
             useful, and was only added to show that it's possible.</p>
+            <p>There are two cases that must be considered when doing quality/bandwidth
+            selection:</p>
+            <blockquote>
+            <ol class="arabic">
+            <li><p class="first">Completely separate audio and video streams (DASH-like). Each of
+            these streams contain either only audio or video, so you can
+            mix and combine audio/video bandwidths without restriction. This
+            intuitively matches best with the concept of selecting quality
+            by track (what <tt class="docutils literal">all_formats</tt> is supposed to do).</p>
+            </li>
+            <li><p class="first">Separate sets of muxed audio and video streams. Each version of
+            the media contains both an audio and video stream, and they are
+            interleaved. In order not to waste bandwidth, you should only
+            select one of these versions (if, for example, you select an
+            audio stream, then video will be downloaded, even if you selected
+            video from a different stream).</p>
+            <p>mpv will still represent them as separate tracks, but will set
+            the title of each track to <tt class="docutils literal"><span class="pre">muxed-N</span></tt>, where <tt class="docutils literal">N</tt> is replaced
+            with the youtube-dl format ID of the originating stream.</p>
+            </li>
+            </ol>
+            </blockquote>
+            <p class="last">Some sites will mix 1. and 2., but we assume that they do so for
+            compatibility reasons, and there is no reason to use them at all.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">skip_muxed=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">force_all_formats=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">If set to 'yes', and <tt class="docutils literal">all_formats</tt> is also set to 'yes', this will
-            skip formats that have both audio and video streams (default: yes).</p>
-            <p>Some sites that provide multiple qualities will do so with separated
-            audio and video streams (which is what <tt class="docutils literal">all_formats</tt> is supposed to
-            make use of), still provide formats that include both audio and video.
-            We assume that they do so for compatibility reasons, and <tt class="docutils literal">skip_muxed</tt>
-            filters them out. This will make loading faster, and potentially avoid
-            wasting bandwidth by using only one stream of a muxed stream. On the
-            other hand, if muxed streams are present, but the separate streams lack
-            either video or audio or do not exist at all, then the stream selection
-            as done by youtube-dl (via <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt>) is used.</p>
-            <p class="last">This appears to terribly break with some sites that provide a HLS master
-            playlist on the lowest level.</p>
+            try to represent all youtube-dl reported formats as tracks, even if
+            mpv would normally use the direct URL reported by it (default: yes).</p>
+            <p>It appears this normally makes a difference if youtube-dl works on a
+            master HLS playlist.</p>
+            <p class="last">If this is set to 'no', this specific kind of stream is treated like
+            <tt class="docutils literal">all_formats</tt> is set to 'no', and the stream selection as done by
+            youtube-dl (via <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt>) is used.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">use_manifests=&lt;yes|no&gt;</span></tt></dt>
             <dd>Make mpv use the master manifest URL for formats like HLS and DASH,
@@ -13607,6 +13634,8 @@
             <p>To be able to simultaneously read and write from the IPC pipe, like on Linux,
             it's necessary to write an external program that uses overlapped file I/O (or
             some wrapper like .NET's NamedPipeClientStream.)</p>
+            <p>You can open the pipe in PuTTY as &quot;serial&quot; device. This is not very
+            comfortable, but gives a way to test interactively without having to write code.</p>
             </div>
             <div class="section" id="protocol">
             <h2>Protocol</h2>
@@ -13916,9 +13945,6 @@
             <p class="last"><tt class="docutils literal"><span class="pre">$HOME/.mpv</span></tt> is always added to the list of config search paths with a
             lower priority.</p>
             </dd>
-            <dt><tt class="docutils literal">XDG_CONFIG_DIRS</tt></dt>
-            <dd>If set, XDG-style system configuration directories are used. Otherwise,
-            the UNIX convention (<tt class="docutils literal">PREFIX/etc/mpv/</tt>) is used.</dd>
             <dt><tt class="docutils literal">MPV_HOME</tt></dt>
             <dd>Directory where mpv looks for user settings. Overrides <tt class="docutils literal">HOME</tt>, and mpv
             will try to load the config file as <tt class="docutils literal">$MPV_HOME/mpv.conf</tt>.</dd>
