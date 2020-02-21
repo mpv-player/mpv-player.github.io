@@ -1821,12 +1821,14 @@
             <dd><p class="first">If 'yes' will attempt to add all formats found reported by youtube-dl
             (default: no). Each format is added as a separate track. In addition,
             they are delay-loaded, and actually opened only when a track is selected
-            (this should keep load times as low as without this option). It also
-            adds average bitrate metadata, if available, which means
-            <tt class="docutils literal"><span class="pre">--hls-bitrate</span></tt> will decide which track to select. (HLS used to be the
+            (this should keep load times as low as without this option).</p>
+            <p>It adds average bitrate metadata, if available, which means you can use
+            <tt class="docutils literal"><span class="pre">--hls-bitrate</span></tt> to decide which track to select. (HLS used to be the
             only format whose alternative quality streams were exposed in a similar
             way, thus the option name.)</p>
-            <p>The <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt> option is essentially ignored.</p>
+            <p>Tracks which represent formats that were selected by youtube-dl as
+            default will have the default flag set. This means mpv should generally
+            still select formats chosen with <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt> by default.</p>
             <p>Although this mechanism makes it possible to switch streams at runtime,
             it's not suitable for this purpose for various technical reasons. (It's
             slow, which can't be really fixed.) In general, this option is not
@@ -13857,10 +13859,13 @@
             </li>
             <li><p class="first">The git log, which is the &quot;real&quot; changelog</p>
             </li>
-            <li><p class="first">The files <tt class="docutils literal"><span class="pre">client-api-changes.rst</span></tt> and <tt class="docutils literal"><span class="pre">interface-changes.rst</span></tt> in the
-            <tt class="docutils literal">DOCS</tt> sub directoryon the git repository, which document API and user
-            interface changes (the latter usually documents breaking changes only, rather
-            than additions).</p>
+            <li><p class="first">The file <a class="reference external" href="https://github.com/mpv-player/mpv/blob/master/DOCS/interface-changes.rst">https://github.com/mpv-player/mpv/blob/master/DOCS/interface-changes.rst</a>
+            documents changes to the command and user interface, such as options and
+            properties. (It usually documents breaking changes only, additions and
+            enhancements are often not listed.)</p>
+            </li>
+            <li><p class="first">C API changes are listed in
+            <a class="reference external" href="https://github.com/mpv-player/mpv/blob/master/DOCS/client-api-changes.rst">https://github.com/mpv-player/mpv/blob/master/DOCS/client-api-changes.rst</a></p>
             </li>
             <li><p class="first">The file <tt class="docutils literal"><span class="pre">mplayer-changes.rst</span></tt> in the <tt class="docutils literal">DOCS</tt> sub directory on the git
             repository, which used to be in place of this section. It documents some
