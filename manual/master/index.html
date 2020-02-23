@@ -13685,8 +13685,6 @@
             { &quot;error&quot;: &quot;success&quot;, &quot;data&quot;: 1.468135, &quot;request_id&quot;: 100 }
             </pre>
             <p>If you don't specify a <tt class="docutils literal">request_id</tt>, command replies will set it to 0.</p>
-            <p>Commands may run asynchronously in the future, instead of blocking the  socket
-            until a reply is sent.</p>
             <p>All commands, replies, and events are separated from each other with a line
             break character (<tt class="docutils literal">\n</tt>).</p>
             <p>If the first character (after skipping whitespace) is not <tt class="docutils literal">{</tt>, the command
@@ -13695,6 +13693,56 @@
             with <tt class="docutils literal">#</tt> and empty lines are ignored.</p>
             <p>Currently, embedded 0 bytes terminate the current line, but you should not
             rely on this.</p>
+            </div>
+            <div class="section" id="data-flow">
+            <h2>Data flow</h2>
+            <p>Currently, the mpv-side IPC implementation does not service the socket while a
+            command is executed and the reply is written. It is for example not possible
+            that other events, that happened during the execution of the command, are
+            written to the socket before the reply is written.</p>
+            <p>This might change in the future. The only guarantee is that replies to IPC
+            messages are sent in sequence.</p>
+            <p>Also, since socket I/O is inherently asynchronous, it is possible that you read
+            unrelated event messages from the socket, before you read the reply to the
+            previous command you sent. In this case, these events were queued by the mpv
+            side before it read and started processing your command message.</p>
+            <p>If the mpv-side IPC implementation switches away from blocking writes and
+            blocking command execution, it may attempt to send events at any time.</p>
+            <p>You can also use asynchronous commands, which can return in any order, and
+            which do not block IPC protocol interaction at all while the command is
+            executed in the background.</p>
+            </div>
+            <div class="section" id="asynchronous-commands">
+            <h2>Asynchronous commands</h2>
+            <p>Command can be run asynchronously. This behaves exactly as with normal command
+            execution, except that execution is not blocking. Other commands can be sent
+            while it's executing, and command completion can be arbitrarily reordered.</p>
+            <p>The <tt class="docutils literal">async</tt> field controls this. If present, it must be a boolean. If missing,
+            <tt class="docutils literal">false</tt> is assumed.</p>
+            <p>For example, this initiates an asynchronous command:</p>
+            <pre class="literal-block">
+            { &quot;command&quot;: [&quot;screenshot&quot;], &quot;request_id&quot;: 123, &quot;async&quot;: true }
+            </pre>
+            <p>And this is the completion:</p>
+            <pre class="literal-block">
+            {&quot;request_id&quot;:123,&quot;error&quot;:&quot;success&quot;,&quot;data&quot;:null}
+            </pre>
+            <p>By design, you will not get a confirmation that the command was started. If a
+            command is long running, sending the message will lead to any reply until much
+            later when the command finishes.</p>
+            <p>Some commands execute synchronously, but these will behave like asynchronous
+            commands that finished execution immediately.</p>
+            <p>Cancellation of asynchronous commands is available in the libmpv API, but has
+            not yet been implemented in the IPC protocol.</p>
+            </div>
+            <div class="section" id="commands-with-named-arguments">
+            <h2>Commands with named arguments</h2>
+            <p>If the <tt class="docutils literal">command</tt> field is a JSON object, named arguments are expected. This
+            is described in the C API <tt class="docutils literal">mpv_command_node()</tt> documentation (the
+            <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt> case). In some cases, this may make commands more
+            readable, while some obscure commands basically require using named arguments.</p>
+            <p>Currently, only &quot;proper&quot; commands (as listed by <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>)
+            support named arguments.</p>
             </div>
             <div class="section" id="id7">
             <h2>Commands</h2>
