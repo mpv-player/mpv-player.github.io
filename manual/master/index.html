@@ -4284,6 +4284,11 @@
             <dd>See <tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll-secs-index=&lt;value&gt;</span></tt></dt>
             <dd>See <tt class="docutils literal"><span class="pre">--demuxer-mkv-subtitle-preroll</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-probe-start-time=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Check the start time of Matroska files (default: yes). This simply reads the
+            first cluster timestamps and assumes it is the start time. Technically, this
+            also reads the first timestamp, which may increase latency by one frame
+            (which may be relevant for live streams).</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-probe-video-duration=&lt;yes|no|full&gt;</span></tt></dt>
             <dd><p class="first">When opening the file, seek to the end of it, and check what timestamp the
             last video packet has, and report that as file duration. This is strictly
@@ -4389,6 +4394,15 @@
             <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> is used (i.e. when the stream appears to be a network
             stream or the stream cache is enabled).</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--demuxer-force-retry-on-eof=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Whether to keep retrying making the demuxer thread read more packets each
+            time the decoder dequeues a packet, even if the end of the file was reached
+            (default: no). This does not really make sense, but was the default behavior
+            in mpv 0.32.0 and earlier. This option will be silently removed after a
+            while, and exists only to restore the old behavior for testing, in case this
+            was actually needed somewhere. This does _not_ help with files that are
+            being appended to (in these cases use <tt class="docutils literal"><span class="pre">appending://</span></tt>, or disable the
+            cache).</dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-thread=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Run the demuxer in a separate thread, and let it prefetch a certain amount
             of packets (default: yes). Having this enabled leads to smoother playback,
