@@ -1552,6 +1552,8 @@
             the amount of packets the demuxer layer can queue for reverse demuxing
             (basically it's the <tt class="docutils literal"><span class="pre">--video-reversal-buffer</span></tt> equivalent for the
             demuxer layer).</li>
+            <li>Setting <tt class="docutils literal"><span class="pre">--vd-queue-enable=yes</span></tt> can help a lot to make playback smooth
+            (once it works).</li>
             <li><tt class="docutils literal"><span class="pre">--demuxer-backward-playback-step</span></tt> also factors into how many seeks may
             be performed, and whether backward demuxing could break due to queue
             overflow. If it's set too high, the backstep operation needs to search
@@ -5289,6 +5291,9 @@
             seeking slower and use significantly more memory.</p>
             <p>In specific situations, this still makes the player wait on the decoder,
             such as seeking, switching hardware decoding modes, and more.</p>
+            <p>Most queue options can be changed at runtime. <tt class="docutils literal"><span class="pre">--vd-queue-enable</span></tt> itself
+            (and the audio equivalent) update only if decoding is completely
+            reinitialized.</p>
             <p class="last">This should not be used with hardware decoding. It is possible to enable
             this for audio, but it makes even less sense.</p>
             </dd>
