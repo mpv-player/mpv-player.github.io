@@ -4434,8 +4434,12 @@
             should buffer ahead in seconds (default: 1). As long as no packet has
             a timestamp difference higher than the readahead amount relative to the
             last packet returned to the decoder, the demuxer keeps reading.</p>
-            <p>Note that the <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> option will override this value if a cache
-            is enabled, and the value is larger.</p>
+            <p>Note that enabling the cache (such as <tt class="docutils literal"><span class="pre">--cache=yes</span></tt>, or if the input
+            is considered a network stream, and <tt class="docutils literal"><span class="pre">--cache=auto</span></tt> is used), this option
+            is mostly ignored. (<tt class="docutils literal"><span class="pre">--cache-secs</span></tt> will override this. Technically, the
+            maximum of both options is used.)</p>
+            <p>The main purpose of this option is to limit the readhead for local playback,
+            since a large readahead value is not overly useful in this case.</p>
             <p class="last">(This value tends to be fuzzy, because many file formats don't store linear
             timestamps.)</p>
             </dd>
@@ -5179,12 +5183,18 @@
             <dt><tt class="docutils literal"><span class="pre">--no-cache</span></tt></dt>
             <dd>Turn off input stream caching. See <tt class="docutils literal"><span class="pre">--cache</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-secs=&lt;seconds&gt;</span></tt></dt>
-            <dd>How many seconds of audio/video to prefetch if the cache is active. This
+            <dd><p class="first">Deprecated. Once this option is removed, there will be no way to limit the
+            cache size by time (only by size with <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>). This option
+            is considered useless, since there is no good reason to limit the cache by
+            time, and the default value of this ption is already something very high.
+            The interactions with the other cache options is also confusing.</p>
+            <p class="last">How many seconds of audio/video to prefetch if the cache is active. This
             overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
             is enabled and the value is larger. The default value is set to something
             very high, so the actually achieved readahead will usually be limited by
             the value of the <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> option. Setting this option is
-            usually only useful for limiting readahead.</dd>
+            usually only useful for limiting readahead.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-on-disk=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Write packet data to a temporary file, instead of keeping them in memory.
             This makes sense only with <tt class="docutils literal"><span class="pre">--cache</span></tt>. If the normal cache is disabled,
@@ -5289,11 +5299,15 @@
             using a decoding thread would distribute the decoding time evenly without
             affecting the playback logic). In other situations, it will simply make
             seeking slower and use significantly more memory.</p>
-            <p>In specific situations, this still makes the player wait on the decoder,
-            such as seeking, switching hardware decoding modes, and more.</p>
+            <p>The queue size is restricted by the other <tt class="docutils literal"><span class="pre">--vd-queue-...</span></tt> options. The
+            final queue size is the minimum as indicated by the option with the lowest
+            limit. Each decoder/track has its own queue that may use the full configured
+            queue size.</p>
             <p>Most queue options can be changed at runtime. <tt class="docutils literal"><span class="pre">--vd-queue-enable</span></tt> itself
             (and the audio equivalent) update only if decoding is completely
-            reinitialized.</p>
+            reinitialized. However, setting <tt class="docutils literal"><span class="pre">--vd-queue-max-samples=1</span></tt> should almost
+            lead to the same behavior as <tt class="docutils literal"><span class="pre">--vd-queue-enable=no</span></tt>, so that value can
+            be used for effectively runtime enabling/disabling the queue.</p>
             <p class="last">This should not be used with hardware decoding. It is possible to enable
             this for audio, but it makes even less sense.</p>
             </dd>
@@ -11098,8 +11112,14 @@
             present, or if it's present but has unknown or incorrect duration, null
             is returned instead.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
-            <dd>Current position on playlist. The first entry is on position 0. Writing
-            to the property will restart playback at the written entry.</dd>
+            <dd><p class="first">Current position on playlist. The first entry is on position 0. Writing to
+            this property may start playback at the new position.</p>
+            <p class="last">What happens if you write the same value back to the property is
+            implementation dependent. Currently, writing the same value will restart
+            playback from the beginning. It is possible (but not necessarily planned)
+            that in the future, write access if the same value is written will be
+            ignored.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos-1</span></tt> (RW)</dt>
             <dd>Same as <tt class="docutils literal"><span class="pre">playlist-pos</span></tt>, but 1-based.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-count</span></tt></dt>
