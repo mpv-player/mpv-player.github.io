@@ -5186,8 +5186,8 @@
             <dd><p class="first">Deprecated. Once this option is removed, there will be no way to limit the
             cache size by time (only by size with <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>). This option
             is considered useless, since there is no good reason to limit the cache by
-            time, and the default value of this ption is already something very high.
-            The interactions with the other cache options is also confusing.</p>
+            time, and the default value of this option is already something very high.
+            The interaction with the other cache options is also confusing.</p>
             <p class="last">How many seconds of audio/video to prefetch if the cache is active. This
             overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
             is enabled and the value is larger. The default value is set to something
@@ -10072,6 +10072,26 @@
             <p class="last">It's possible that future mpv versions will randomly change how Z order
             between different OSD formats and builtin OSD is handled.</p>
             </dd>
+            <dt><tt class="docutils literal">hidden</tt></dt>
+            <dd>If set to <tt class="docutils literal">yes</tt>/true, do not display this (default: no).</dd>
+            <dt><tt class="docutils literal">compute_bounds</tt></dt>
+            <dd><p class="first">If set to <tt class="docutils literal">yes</tt>/true, attempt to determine bounds and write them to
+            the command's result value as <tt class="docutils literal">x0</tt>, <tt class="docutils literal">x1</tt>, <tt class="docutils literal">y0</tt>, <tt class="docutils literal">y1</tt> rectangle
+            (default: no). If the rectangle is empty, not known, or somehow
+            degenerate, it is not set. <tt class="docutils literal">x1</tt>/<tt class="docutils literal">y1</tt> is the coordinate of the bottom
+            exclusive corner of the rectangle.</p>
+            <p>The result value may depend on the VO window size, and is based on the
+            last known window size at the time of the call. This means the results
+            may be different from what is actually rendered.</p>
+            <p>For <tt class="docutils literal"><span class="pre">ass-events</span></tt>, the result rectangle is recomputed to <tt class="docutils literal">PlayRes</tt>
+            coordinates (<tt class="docutils literal">res_x</tt>/<tt class="docutils literal">res_y</tt>). If window size is not known, a
+            fallback is chosen.</p>
+            <p>You should be aware that this mechanism is very inefficient, as it
+            renders the full result, and then uses the bounding box of the rendered
+            bitmap list (even if <tt class="docutils literal">hidden</tt> is set). It will flush various caches.
+            Its results also depend on the used libass version.</p>
+            <p class="last">This feature is experimental, and may change in some way again.</p>
+            </dd>
             </dl>
             <p class="last">Note: always use named arguments (<tt class="docutils literal">mpv_command_node()</tt>). Scripts should
             use the <tt class="docutils literal">mp.create_osd_overlay()</tt> helper instead of invoking this command
@@ -13030,7 +13050,8 @@
             <dl class="docutils">
             <dt><tt class="docutils literal">update()</tt></dt>
             <dd>Commit the OSD overlay to the screen, or in other words, run the
-            <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> command with the current fields of the overlay table.</dd>
+            <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> command with the current fields of the overlay table.
+            Returns the result of the <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> command itself.</dd>
             <dt><tt class="docutils literal">remove()</tt></dt>
             <dd>Remove the overlay from the screen. A <tt class="docutils literal">update()</tt> call will add it
             again.</dd>
