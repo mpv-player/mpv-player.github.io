@@ -10304,45 +10304,6 @@
             everything. It's not possible to resume playback in this state.</dd>
             </dl>
             </div>
-            <div class="section" id="legacy-hook-api">
-            <h3>Legacy hook API</h3>
-            <div class="admonition warning">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">The legacy API is deprecated and will be removed soon.</p>
-            </div>
-            <p>There are two special commands involved. Also, the client must listen for
-            client messages (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt> in the C API).</p>
-            <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">hook-add</span> <span class="pre">&lt;hook-name&gt;</span> &lt;id&gt; &lt;priority&gt;</tt></dt>
-            <dd><p class="first">Subscribe to the hook identified by the first argument (basically, the
-            name of event). The <tt class="docutils literal">id</tt> argument is an arbitrary integer chosen by the
-            user. <tt class="docutils literal">priority</tt> is used to sort all hook handlers globally across all
-            clients. Each client can register multiple hook handlers (even for the
-            same hook-name). Once the hook is registered, it cannot be unregistered.</p>
-            <p>When a specific event happens, all registered handlers are run serially.
-            This uses a protocol every client has to follow explicitly. When a hook
-            handler is run, a client message (<tt class="docutils literal">MPV_EVENT_CLIENT_MESSAGE</tt>) is sent to
-            the client which registered the hook. This message has the following
-            arguments:</p>
-            <ol class="arabic simple">
-            <li>the string <tt class="docutils literal">hook_run</tt></li>
-            <li>the <tt class="docutils literal">id</tt> argument the hook was registered with as string (this can be
-            used to correctly handle multiple hooks registered by the same client,
-            as long as the <tt class="docutils literal">id</tt> argument is unique in the client)</li>
-            <li>something undefined, used by the hook mechanism to track hook execution</li>
-            </ol>
-            <p>Upon receiving this message, the client can handle the event. While doing
-            this, the player core will still react to requests, but playback will
-            typically be stopped.</p>
-            <p class="last">When the client is done, it must continue the core's hook execution by
-            running the <tt class="docutils literal"><span class="pre">hook-ack</span></tt> command.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">hook-ack</span> &lt;string&gt;</tt></dt>
-            <dd>Run the next hook in the global chain of hooks. The argument is the 3rd
-            argument of the client message that starts hook execution for the
-            current client.</dd>
-            </dl>
-            </div>
             </div>
             <div class="section" id="input-command-prefixes">
             <h2>Input Command Prefixes</h2>
