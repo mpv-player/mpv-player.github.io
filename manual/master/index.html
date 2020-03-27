@@ -4520,20 +4520,6 @@
             with a dummy video, and the normal ways to quit the player will not
             work (key bindings that normally quit will be shown on OSD only, just
             like any other binding). See <a class="reference internal" href="#input-conf">INPUT.CONF</a>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--input-file=&lt;filename&gt;</span></tt></dt>
-            <dd><p class="first">Deprecated. Use <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>.</p>
-            <p>Read commands from the given file. Mostly useful with a FIFO. Since
-            mpv 0.7.0 also understands JSON commands (see <a class="reference internal" href="#json-ipc">JSON IPC</a>), but you can't
-            get replies or events. Use <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> for something
-            bi-directional. On MS Windows, JSON commands are not available.</p>
-            <p>This can also specify a direct file descriptor with <tt class="docutils literal"><span class="pre">fd://N</span></tt> (UNIX only).
-            In this case, JSON replies will be written if the FD is writable.</p>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">When the given file is a FIFO mpv opens both ends, so you can do several
-            <cite>echo &quot;seek 10&quot; &gt; mp_pipe</cite> and the pipe will stay valid.</p>
-            </div>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--input-terminal</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-terminal</span></tt></dt>
             <dd><tt class="docutils literal"><span class="pre">--no-input-terminal</span></tt> prevents the player from reading key events from
             standard input. Useful when reading data from standard input. This is
@@ -10307,6 +10293,9 @@
             <tt class="docutils literal">mpv_event_to_node()</tt> returns, and which is what scripting APIs and the JSON
             IPC sees. Note that the C API has separate C-level declarations with
             <tt class="docutils literal">mpv_event</tt>, which may be slightly different.</p>
+            <p>Note that events are asynchronous: the player core continues running while
+            events are delivered to scripts and other clients. In some cases, you can hooks
+            to enforce synchronous execution.</p>
             <p>All events can have the following fields:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">event</tt></dt>
@@ -10428,13 +10417,13 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">get-property-reply</span></tt> (<tt class="docutils literal">MPV_EVENT_GET_PROPERTY_REPLY</tt>)</dt>
-            <dd>Undocumented.</dd>
+            <dd>See C API.</dd>
             <dt><tt class="docutils literal"><span class="pre">set-property-reply</span></tt> (<tt class="docutils literal">MPV_EVENT_SET_PROPERTY_REPLY</tt>)</dt>
-            <dd>Undocumented.</dd>
+            <dd>See C API.</dd>
             <dt><tt class="docutils literal"><span class="pre">command-reply</span></tt> (<tt class="docutils literal">MPV_EVENT_COMMAND_REPLY</tt>)</dt>
             <dd><p class="first">This is one of the commands for which the <tt class="docutils literal">`error</tt> field is meaningful.</p>
             <p>JSON IPC and Lua and possibly other backends treat this specially and may
-            not pass the actual event to the user.</p>
+            not pass the actual event to the user. See C API.</p>
             <p>The event has the following fields:</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal">result</tt></dt>
@@ -10478,32 +10467,41 @@
             <p>The following hooks are currently defined:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">on_load</tt></dt>
-            <dd>Called when a file is to be opened, before anything is actually done.
+            <dd><p class="first">Called when a file is to be opened, before anything is actually done.
             For example, you could read and write the <tt class="docutils literal"><span class="pre">stream-open-filename</span></tt>
             property to redirect an URL to something else (consider support for
             streaming sites which rarely give the user a direct media URL), or
             you could set per-file options with by setting the property
             <tt class="docutils literal"><span class="pre">file-local-options/&lt;option</span> name&gt;</tt>. The player will wait until all
-            hooks are run.</dd>
+            hooks are run.</p>
+            <p class="last">Ordered after <tt class="docutils literal"><span class="pre">start-file</span></tt> and before <tt class="docutils literal"><span class="pre">playback-restart</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal">on_load_fail</tt></dt>
-            <dd>Called after after a file has been opened, but failed to. This can be
+            <dd><p class="first">Called after after a file has been opened, but failed to. This can be
             used to provide a fallback in case native demuxers failed to recognize
             the file, instead of always running before the native demuxers like
             <tt class="docutils literal">on_load</tt>. Demux will only be retried if <tt class="docutils literal"><span class="pre">stream-open-filename</span></tt>
-            was changed.</dd>
+            was changed. If it fails again, this hook is _not_ called again, and
+            loading definitely fails.</p>
+            <p class="last">Ordered after <tt class="docutils literal">on_load</tt>, and before <tt class="docutils literal"><span class="pre">playback-restart</span></tt> and <tt class="docutils literal"><span class="pre">end-file</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal">on_preloaded</tt></dt>
             <dd><p class="first">Called after a file has been opened, and before tracks are selected and
             decoders are created. This has some usefulness if an API users wants
             to select tracks manually, based on the set of available tracks. It's
             also useful to initialize <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> in a specific way by API,
             without having to &quot;probe&quot; the available streams at first.</p>
-            <p class="last">Note that this does not yet apply default track selection. Which operations
+            <p>Note that this does not yet apply default track selection. Which operations
             exactly can be done and not be done, and what information is available and
             what is not yet available yet, is all subject to change.</p>
+            <p class="last">Ordered after <tt class="docutils literal">on_load_fail</tt> etc. and before <tt class="docutils literal"><span class="pre">playback-restart</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal">on_unload</tt></dt>
-            <dd>Run before closing a file, and before actually uninitializing
-            everything. It's not possible to resume playback in this state.</dd>
+            <dd><p class="first">Run before closing a file, and before actually uninitializing
+            everything. It's not possible to resume playback in this state.</p>
+            <p class="last">Ordered before <tt class="docutils literal"><span class="pre">end-file</span></tt>. Will also happen in the error case (then after
+            <tt class="docutils literal">on_load_fail</tt>).</p>
+            </dd>
             <dt><tt class="docutils literal">on_before_start_file</tt></dt>
             <dd>Run before a <tt class="docutils literal"><span class="pre">start-file</span></tt> event is sent. (If any client changes the
             current playlist entry, or sends a quit command to the player, the
