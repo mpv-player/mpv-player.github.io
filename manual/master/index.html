@@ -10220,9 +10220,13 @@
             merely sets all option values listed within the profile.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">load-script</span> &lt;filename&gt;</tt></dt>
-            <dd>Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option. Whether this waits for
+            <dd><p class="first">Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option. Whether this waits for
             the script to finish initialization or not changed multiple times, and the
-            future behavior is left undefined.</dd>
+            future behavior is left undefined.</p>
+            <p class="last">On success, returns a <tt class="docutils literal">mpv_node</tt> with a <tt class="docutils literal">client_id</tt> field set to the
+            return value of the <tt class="docutils literal">mpv_client_id()</tt> API call of the newly created script
+            handle.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">change-list</span> &lt;name&gt; &lt;operation&gt; &lt;value&gt;</tt></dt>
             <dd><p class="first">This command changes list options as described in <a class="reference internal" href="#list-options">List Options</a>. The
             <tt class="docutils literal">&lt;name&gt;</tt> parameter is the normal option name, while <tt class="docutils literal">&lt;operation&gt;</tt> is
@@ -10365,6 +10369,21 @@
             on the <tt class="docutils literal">error</tt> field directly. This is deprecated since mpv 0.33.0.
             In the future, this <tt class="docutils literal">error</tt> field will be unset for this specific
             event.)</dd>
+            <dt><tt class="docutils literal">playlist_insert_id</tt></dt>
+            <dd>If loading ended, because the playlist entry to be played was for example
+            a playlist, and the current playlist entry is replaced with a number of
+            other entries. This may happen at least with MPV_END_FILE_REASON_REDIRECT
+            (other event types may use this for similar but different purposes in the
+            future). In this case, playlist_insert_id will be set to the playlist
+            entry ID of the first inserted entry, and playlist_insert_num_entries to
+            the total number of inserted playlist entries. Note this in this specific
+            case, the ID of the last inserted entry is playlist_insert_id+num-1.
+            Beware that depending on circumstances, you may observe the new playlist
+            entries before seeing the event (e.g. reading the &quot;playlist&quot; property or
+            getting a property change notification before receiving the event).
+            If this is 0 in the C API, this field isn't added.</dd>
+            <dt><tt class="docutils literal">playlist_insert_num_entries</tt></dt>
+            <dd>See playlist_insert_id. Only present if playlist_insert_id is present.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">file-loaded</span></tt>  (<tt class="docutils literal">MPV_EVENT_FILE_LOADED</tt>)</dt>
