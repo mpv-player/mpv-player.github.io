@@ -10870,9 +10870,11 @@
             video playing. (Behavior since mpv 0.7.0.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">cache-speed</span></tt> (R)</dt>
-            <dd>Current I/O read speed between the cache and the lower layer (like network).
+            <dd><p class="first">Current I/O read speed between the cache and the lower layer (like network).
             This gives the number bytes per seconds over a 1 second window (using
-            the type <tt class="docutils literal">MPV_FORMAT_INT64</tt> for the client API).</dd>
+            the type <tt class="docutils literal">MPV_FORMAT_INT64</tt> for the client API).</p>
+            <p class="last">This is the same as <tt class="docutils literal"><span class="pre">demuxer-cache-state/raw-input-rate</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt></dt>
             <dd>Approximate duration of video buffered in the demuxer, in seconds. The
             guess is very unreliable, and often the property will not be available
@@ -10910,6 +10912,9 @@
             includes all overhead, and possibly unused data (like pruned data). This
             member is missing if the file cache is not active.</p>
             <p><tt class="docutils literal"><span class="pre">cache-duration</span></tt> is <tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt>. Missing if unavailable.</p>
+            <p><tt class="docutils literal"><span class="pre">raw-input-rate</span></tt> is the estimated input rate of the network layer (or any
+            other byte-oriented input layer) in bytes per second. May be inaccurate or
+            missing.</p>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
@@ -10924,6 +10929,7 @@
                 &quot;fw-bytes&quot;          MPV_FORMAT_INT64
                 &quot;file-cache-bytes&quot;  MPV_FORMAT_INT64
                 &quot;cache-duration&quot;    MPV_FORMAT_DOUBLE
+                &quot;raw-input-rate&quot;    MPV_FORMAT_INT64
             </pre>
             <p>Other fields (might be changed or removed in the future):</p>
             <dl class="last docutils">
