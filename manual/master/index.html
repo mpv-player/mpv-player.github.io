@@ -4539,6 +4539,34 @@
             Windows.</p>
             <p class="last">See <a class="reference internal" href="#json-ipc">JSON IPC</a> for details.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--input-ipc-client=fd://&lt;N&gt;</span></tt></dt>
+            <dd><p class="first">Connect a single IPC client to the given FD. This is somewhat similar to
+            <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>, except no socket is created, and instead the passed
+            FD is treated like a socket connection received from <tt class="docutils literal">accept()</tt>. In
+            practice, you could pass either a FD created by <tt class="docutils literal">socketpair()</tt>, or a pipe.
+            In both cases, you must sure the FD is actually inherited by mpv (do not
+            set the POSIX <tt class="docutils literal">CLOEXEC</tt> flag).</p>
+            <p>This is somewhat similar to the removed <tt class="docutils literal"><span class="pre">--input-file</span></tt> option, except it
+            supports only integer FDs, and cannot open actual paths.</p>
+            <div class="admonition admonition-example">
+            <p class="first admonition-title">Example</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--input-ipc-client=fd://123</span></tt></p>
+            </div>
+            <div class="admonition note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Does not and will not work on Windows.</p>
+            </div>
+            <div class="admonition warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">Writing to the <tt class="docutils literal"><span class="pre">input-ipc-server</span></tt> option at runtime will start another
+            instance of an IPC client handler for the <tt class="docutils literal"><span class="pre">input-ipc-client</span></tt> option,
+            because initialization is bundled, and this thing is stupid. This is a
+            bug. Writing to <tt class="docutils literal"><span class="pre">input-ipc-client</span></tt> at runtime will start another IPC
+            client handler for the new value, without stopping the old one, even if
+            the FD value is the same (but the string is different e.g. due to
+            whitespace). This is not a bug.</p>
+            </div>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--input-gamepad=&lt;yes|no&gt;</span></tt></dt>
             <dd>Enable/disable SDL2 Gamepad support. Disabled by default.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-cursor</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-cursor</span></tt></dt>
@@ -12651,7 +12679,8 @@
             <p>Selecting this for the first time will start collecting some internal
             performance data. That means performance will be slightly lower than normal for
             the rest of the time the player is running (even if the stats page is closed).
-            Note that the stats page itself</p>
+            Note that the stats page itself uses a lot of CPU and even GPU resources, and
+            may have a heavy impact on performance.</p>
             <p>The displayed information is accumulated over the redraw delay (shown as
             <tt class="docutils literal"><span class="pre">poll-time</span></tt> field).</p>
             <p>This adds entries for each Lua script. If there are too many scripts running,
