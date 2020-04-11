@@ -12533,8 +12533,8 @@
             stats:</p>
             <table border="1" class="docutils">
             <colgroup>
-            <col width="18%" />
-            <col width="82%" />
+            <col width="15%" />
+            <col width="85%" />
             </colgroup>
             <tbody valign="top">
             <tr><td>1</td>
@@ -12547,7 +12547,22 @@
             <td>Input cache stats</td>
             </tr>
             <tr><td>4</td>
-            <td>Internal stuff</td>
+            <td>Internal stuff (scroll)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>On pages which support scroll, these key bindings are also active:</p>
+            <table border="1" class="docutils">
+            <colgroup>
+            <col width="16%" />
+            <col width="84%" />
+            </colgroup>
+            <tbody valign="top">
+            <tr><td>UP</td>
+            <td>Scroll one line up</td>
+            </tr>
+            <tr><td>DOWN</td>
+            <td>Scroll one line down</td>
             </tr>
             </tbody>
             </table>
@@ -12581,6 +12596,14 @@
             <dt><tt class="docutils literal">key_page_4</tt></dt>
             <dd><p class="first">Default: 4</p>
             <p class="last">Key bindings for page switching while stats are displayed.</p>
+            </dd>
+            <dt><tt class="docutils literal">key_scroll_up</tt></dt>
+            <dd>Default: UP</dd>
+            <dt><tt class="docutils literal">key_scroll_down</tt></dt>
+            <dd>Default: DOWN</dd>
+            <dt><tt class="docutils literal">scroll_lines</tt></dt>
+            <dd><p class="first">Default: 1</p>
+            <p class="last">Scroll key bindings and number of lines to scroll on pages which support it.</p>
             </dd>
             <dt><tt class="docutils literal">duration</tt></dt>
             <dd><p class="first">Default: 4</p>
@@ -12684,7 +12707,7 @@
             <p>The displayed information is accumulated over the redraw delay (shown as
             <tt class="docutils literal"><span class="pre">poll-time</span></tt> field).</p>
             <p>This adds entries for each Lua script. If there are too many scripts running,
-            parts of the list will simply be out of the screen.</p>
+            parts of the list will simply be out of the screen, but it can be scrolled.</p>
             <p>If the underlying platform does not support pthread per thread times, the
             displayed times will be 0 or something random (I suspect that at time of this
             writing, only Linux provides the correct via pthread APIs for per thread times).</p>
