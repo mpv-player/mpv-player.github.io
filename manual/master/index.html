@@ -1113,8 +1113,48 @@
             See also <tt class="docutils literal"><span class="pre">--alang</span></tt>. mpv normally prints available audio tracks on the
             terminal when starting playback of a file.</p>
             <p><tt class="docutils literal"><span class="pre">--audio</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
-            <p class="last"><tt class="docutils literal"><span class="pre">--aid=no</span></tt> or <tt class="docutils literal"><span class="pre">--audio=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-audio</span></tt> disables audio playback.
+            <p><tt class="docutils literal"><span class="pre">--aid=no</span></tt> or <tt class="docutils literal"><span class="pre">--audio=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-audio</span></tt> disables audio playback.
             (The latter variant does not work with the client API.)</p>
+            <div class="admonition note last">
+            <p class="first admonition-title">Note</p>
+            <p>The track selection options (<tt class="docutils literal"><span class="pre">--aid</span></tt> but also <tt class="docutils literal"><span class="pre">--sid</span></tt> and the
+            others) sometimes expose behavior that may appear strange. Also, the
+            behavior tends to change around with each mpv release.</p>
+            <p>The track selection properties will return the option value outside of
+            playback (as expected), but during playbac, the affective track
+            selection is returned. For example, with <tt class="docutils literal"><span class="pre">--aid=auto</span></tt>, the <tt class="docutils literal">aid</tt>
+            property will suddenly return <tt class="docutils literal">2</tt> after playback initialization
+            (assuming the file has at least 2 audio tracks, and the second is the
+            default).</p>
+            <p>At mpv 0.32.0 (and some releases before), if you passed a track value
+            for which a corresponding track didn't exist (e.g. <tt class="docutils literal"><span class="pre">--aid=2</span></tt> and there
+            was only 1 audio track), the <tt class="docutils literal">aid</tt> property returned <tt class="docutils literal">no</tt>. However if
+            another audio track was added during playback, and you tried to set the
+            <tt class="docutils literal">aid</tt> property to <tt class="docutils literal">2</tt>, nothing happened, because the <tt class="docutils literal">aid</tt> option
+            still had the value <tt class="docutils literal">2</tt>, and writing the same value has no effect.</p>
+            <p>With mpv 0.33.0, the behavior was changed. Now track selection options
+            are reset to <tt class="docutils literal">auto</tt> at playback initialization, if the option had
+            tries to select a track that does not exist. The same is done if the
+            track exists, but fails to initialize. The consequence is that unlike
+            before mpv 0.33.0, the user's track selection parameters are clobbered
+            in certain situations.</p>
+            <p>Also since mpv 0.33.0, trying to select a track by number will strictly
+            select this track. Before this change, trying to select a track which
+            did not exist would fall back to track default selection at playback
+            initialization. The new behavior is more consistent.</p>
+            <p>Setting a track selection property at runtime, and then playing a new
+            file might reset the track selection to defaults, if the fingerprint
+            of the track list of the new file is different.</p>
+            <p>Be aware of tricky combinations of all of all of the above: for example,
+            <tt class="docutils literal">mpv <span class="pre">--aid=2</span> file_with_2_audio_tracks.mkv file_with_1_audio_track.mkv</tt>
+            would first play the correct track, and the second file without audio.
+            If you then go back the first file, its first audio track will be played,
+            and the second file is played with audio. If you do the same thing again
+            but instead of using <tt class="docutils literal"><span class="pre">--aid=2</span></tt> you run <tt class="docutils literal">set aid 2</tt> while the file is
+            playing, then changing to the second file will play its audio track.
+            This is because runtime selection enables the fingerprint heuristic.</p>
+            <p class="last">Most likely this is not the end.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sid=&lt;ID|auto|no&gt;</span></tt></dt>
             <dd><p class="first">Display the subtitle stream specified by <tt class="docutils literal">&lt;ID&gt;</tt>. <tt class="docutils literal">auto</tt> selects
@@ -8629,6 +8669,9 @@
             <dd>Set the display aspect ratio of the video frame. This is a float,
             but values such as <tt class="docutils literal">[16:9]</tt> can be passed too (<tt class="docutils literal"><span class="pre">[...]</span></tt> for quoting
             to prevent the option parser from interpreting the <tt class="docutils literal">:</tt> character).</dd>
+            <dt><tt class="docutils literal"><span class="pre">&lt;force-scaler=auto|zimg|sws&gt;</span></tt></dt>
+            <dd>Force a specific scaler backend, if applicable. This is a debug option
+            and could go away any time.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">lavfi=graph[:sws-flags[:o=opts]]</span></tt></dt>
