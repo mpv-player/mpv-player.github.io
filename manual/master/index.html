@@ -8672,6 +8672,13 @@
             <dt><tt class="docutils literal"><span class="pre">&lt;force-scaler=auto|zimg|sws&gt;</span></tt></dt>
             <dd>Force a specific scaler backend, if applicable. This is a debug option
             and could go away any time.</dd>
+            <dt><tt class="docutils literal">&lt;alpha=auto|straight|premul&gt;</tt></dt>
+            <dd>Set the kind of alpha the video uses. Undefined effect if the image
+            format has no alpha channel (could be ignored or cause an error,
+            depending on how mpv internals evolve). Setting this may or may not
+            cause downstream image processing to treat alpha differently, depending
+            on support. With <tt class="docutils literal">convert</tt> and zimg used, this will convert the alpha.
+            libswscale and other FFmpeg components completely ignore this.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">lavfi=graph[:sws-flags[:o=opts]]</span></tt></dt>
