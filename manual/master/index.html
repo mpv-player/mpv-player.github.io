@@ -7066,7 +7066,8 @@
             video. See <tt class="docutils literal"><span class="pre">--video-sync-adrop-size</span></tt>. This mode will
             cause severe audio artifacts if the real monitor
             refresh rate is too different from the reported or
-            forced rate.</td>
+            forced rate. Sicne mpv 0.33.0, this acts on entire audio
+            frames, instead of single samples.</td>
             </tr>
             <tr class="field"><th class="field-name">display-desync:</th><td class="field-body">Sync video to display, and let audio play on its own.</td>
             </tr>
@@ -7075,6 +7076,15 @@
             </tr>
             </tbody>
             </table>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--video-sync-max-factor=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Maximum multiple for which to try to fit the video's FPS to the display's
+            FPS (default: 5).</p>
+            <p>For example, if this is set to 1, the video FPS is forced to an integer
+            multiple of the display FPS, as long as the speed change does not exceed
+            the value set by <tt class="docutils literal"><span class="pre">--video-sync-max-video-change</span></tt>.</p>
+            <p class="last">This is mostly for testing, and the option may be randomly changed in the
+            future without notice.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-sync-max-video-change=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Maximum speed difference in percent that is applied to video with
@@ -7100,12 +7110,6 @@
             the A/V desync cannot be compensated, too high values could lead to chaotic
             frame dropping due to the audio &quot;overshooting&quot; and skipping multiple video
             frames before the sync logic can react.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--video-sync-adrop-size=&lt;value&gt;</span></tt></dt>
-            <dd>For the <tt class="docutils literal"><span class="pre">--video-sync=display-adrop</span></tt> mode. This mode duplicates/drops
-            audio data to keep audio in sync with video. To avoid audio artifacts on
-            jitter (which would add/remove samples all the time), this is done in
-            relatively large, fixed units, controlled by this option. The unit is
-            seconds.</dd>
             <dt><tt class="docutils literal"><span class="pre">--mf-fps=&lt;value&gt;</span></tt></dt>
             <dd>Framerate used when decoding from multiple PNG or JPEG files with <tt class="docutils literal"><span class="pre">mf://</span></tt>
             (default: 1).</dd>
@@ -8285,6 +8289,12 @@
             you seek or start playback from the middle of a file.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal">drop</tt></dt>
+            <dd>This filter drops or repeats audio frames to adapt to playback speed. It
+            always operates on full audio frames, because it was made to handle SPDIF
+            (compressed audio passthrough). This is used automatically if the
+            <tt class="docutils literal"><span class="pre">--video-sync=display-adrop</span></tt> option is used. Do not use this filter (or
+            the given option); they are extremely low quality.</dd>
             </dl>
             </div>
             <div class="section" id="video-filters">
