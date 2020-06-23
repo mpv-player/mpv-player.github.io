@@ -1584,14 +1584,13 @@
             increase <tt class="docutils literal"><span class="pre">--hwdec-extra-frames</span></tt> instead (until you get playback without
             logged errors).</li>
             <li>The demuxer cache is essential for backward demuxing. Make sure to set
-            <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache</span></tt> (or just use <tt class="docutils literal"><span class="pre">--cache</span></tt>). The cache size
-            might matter. If it's too small, a queue overflow will be logged, and
-            backward playback cannot continue, or it performs too many low level
-            seeks. If it's too large, implementation tradeoffs may cause general
-            performance issues. Use <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> to potentially increase
-            the amount of packets the demuxer layer can queue for reverse demuxing
-            (basically it's the <tt class="docutils literal"><span class="pre">--video-reversal-buffer</span></tt> equivalent for the
-            demuxer layer).</li>
+            <tt class="docutils literal"><span class="pre">--cache=yes</span></tt>. The cache size might matter. If it's too small, a queue
+            overflow will be logged, and backward playback cannot continue, or it
+            performs too many low level seeks. If it's too large, implementation
+            tradeoffs may cause general performance issues. Use
+            <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> to potentially increase the amount of packets the
+            demuxer layer can queue for reverse demuxing (basically it's the
+            <tt class="docutils literal"><span class="pre">--video-reversal-buffer</span></tt> equivalent for the demuxer layer).</li>
             <li>Setting <tt class="docutils literal"><span class="pre">--vd-queue-enable=yes</span></tt> can help a lot to make playback smooth
             (once it works).</li>
             <li><tt class="docutils literal"><span class="pre">--demuxer-backward-playback-step</span></tt> also factors into how many seeks may
@@ -4405,8 +4404,8 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-max-back-bytes=&lt;bytesize&gt;</span></tt></dt>
             <dd><p class="first">This controls how much past data the demuxer is allowed to preserve. This
-            is useful only if the <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache</span></tt> option is enabled.
-            Unlike the forward cache, there is no control how many seconds are actually
+            is useful only if the cache is enabled.</p>
+            <p>Unlike the forward cache, there is no control how many seconds are actually
             cached - it will simply use as much memory this option allows. Setting this
             option to 0 will strictly disable any back buffer, but this will lead to
             the situation that the forward seek range starts after the current playback
@@ -4435,16 +4434,16 @@
             buffer is only reduced when new data is read.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--demuxer-seekable-cache=&lt;yes|no|auto&gt;</span></tt></dt>
-            <dd><p class="first">This controls whether seeking can use the demuxer cache (default: auto). If
-            enabled, short seek offsets will not trigger a low level demuxer seek
+            <dd><p class="first">Debugging option to control whether seeking can use the demuxer cache
+            (default: auto). Normally you don't ever need to set this; the default
+            <tt class="docutils literal">auto</tt> does the right thing and enables cache seeking it if <tt class="docutils literal"><span class="pre">--cache</span></tt>
+            is set to <tt class="docutils literal">yes</tt> (or is implied <tt class="docutils literal">yes</tt> if <tt class="docutils literal"><span class="pre">--cache=auto</span></tt>).</p>
+            <p>If enabled, short seek offsets will not trigger a low level demuxer seek
             (which means for example that slow network round trips or FFmpeg seek bugs
             can be avoided). If a seek cannot happen within the cached range, a low
             level seek will be triggered. Seeking outside of the cache will start a new
             cached range, but can discard the old cache range if the demuxer exhibits
             certain unsupported behavior.</p>
-            <p>Keep in mind that some events can flush the cache or force a low level
-            seek anyway, such as switching tracks, or attempting to seek before the
-            start or after the end of the file.</p>
             <p class="last">The special value <tt class="docutils literal">auto</tt> means <tt class="docutils literal">yes</tt> in the same situation as
             <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> is used (i.e. when the stream appears to be a network
             stream or the stream cache is enabled).</p>
@@ -5242,9 +5241,8 @@
             <dt><tt class="docutils literal"><span class="pre">--cache=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd><p class="first">Decide whether to use network cache settings (default: auto).</p>
             <p>If enabled, use up to <tt class="docutils literal"><span class="pre">--cache-secs</span></tt> for the cache size (but still limited
-            to <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>). <tt class="docutils literal"><span class="pre">--demuxer-seekable-cache=auto</span></tt> behaves as if
-            it was set to <tt class="docutils literal">yes</tt>. If disabled, <tt class="docutils literal"><span class="pre">--cache-pause</span></tt> and related are
-            implicitly disabled.</p>
+            to <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>), and make the cached data seekable (if possible).
+            If disabled, <tt class="docutils literal"><span class="pre">--cache-pause</span></tt> and related are implicitly disabled.</p>
             <p>The <tt class="docutils literal">auto</tt> choice enables this depending on whether the stream is thought
             to involve network accesses or other slow media (this is an imperfect
             heuristic).</p>
@@ -6686,11 +6684,11 @@
             additional effect of parametrizing the inverse OOTF, in order to get
             colorimetrically consistent results with the mastering display. For SDR, or
             when using an ICC (profile (<tt class="docutils literal"><span class="pre">--icc-profile</span></tt>), setting this to a value
-            above 100 essentially causes the display to be treated as if it were an HDR
+            above 203 essentially causes the display to be treated as if it were an HDR
             display in disguise. (See the note below)</p>
             <p>In <tt class="docutils literal">auto</tt> mode (the default), the chosen peak is an appropriate value
-            based on the TRC in use. For SDR curves, it uses 100. For HDR curves, it
-            uses 100 * the transfer function's nominal peak.</p>
+            based on the TRC in use. For SDR curves, it uses 203. For HDR curves, it
+            uses 203 * the transfer function's nominal peak.</p>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
             <p>When using an SDR transfer function, this is normally not needed, and
@@ -6736,7 +6734,10 @@
             games. Use this when you care about detail preservation more than
             color/brightness accuracy. This is roughly equivalent to
             <tt class="docutils literal"><span class="pre">--tone-mapping=reinhard</span> <span class="pre">--tone-mapping-param=0.24</span></tt>. If possible,
-            you should also enable <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> for the best results.
+            you should also enable <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> for the best results.</dd>
+            <dt>bt.2390</dt>
+            <dd>Perceptual tone mapping curve (EETF) specified in ITU-R Report BT.2390.
+            This is the recommended curve to use for typical HDR-mastered content.
             (Default)</dd>
             <dt>gamma</dt>
             <dd>Fits a logarithmic transfer between the tone curves.</dd>
@@ -6838,6 +6839,12 @@
             gamut of a standard gamut (sRGB) display. This option also does not work
             well with ICC profiles, since the 3DLUTs are always generated against the
             source color space and have chromatically-accurate clipping built in.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--gamut-clipping</span></tt></dt>
+            <dd>If enabled (default: yes), mpv will colorimetrically clip out-of-gamut
+            colors by desaturating them (preserving luma), rather than hard-clipping
+            each component individually. This should make playback of wide gamut
+            content on typical (standard gamut) monitors look much more aesthetically
+            pleasing and less blown-out.</dd>
             <dt><tt class="docutils literal"><span class="pre">--use-embedded-icc-profile</span></tt></dt>
             <dd>Load the embedded ICC profile contained in media files such as PNG images.
             (Default: yes). Note that this option only works when also using a display
@@ -7082,7 +7089,7 @@
             video. See <tt class="docutils literal"><span class="pre">--video-sync-adrop-size</span></tt>. This mode will
             cause severe audio artifacts if the real monitor
             refresh rate is too different from the reported or
-            forced rate. Sicne mpv 0.33.0, this acts on entire audio
+            forced rate. Since mpv 0.33.0, this acts on entire audio
             frames, instead of single samples.</td>
             </tr>
             <tr class="field"><th class="field-name">display-desync:</th><td class="field-body">Sync video to display, and let audio play on its own.</td>
