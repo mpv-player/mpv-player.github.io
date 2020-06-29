@@ -216,7 +216,7 @@ Video output. They also create GUI windows and handle user input. In most
 cases, the windowing code is shared among VOs, like ``x11_common.c`` for X11
 and ``w32_common.c`` for Windows. The VOs stand between frontend and windowing
 code. vo_opengl can pick a windowing system at runtime, e.g. the same binary
-can provide both X11 and Cocoa support on OSX.
+can provide both X11 and Cocoa support on macOS.
 
 VOs can be reconfigured at runtime. A ``config()`` call can change the video
 resolution and format, without destroying the window.
