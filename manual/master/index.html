@@ -1071,6 +1071,43 @@
             profile name.</p>
             </div>
             </div>
+            <div class="section" id="linux-desktop-issues">
+            <h1>Linux desktop issues</h1>
+            <p>This subsection describes common problems on the Linux desktop. None of these
+            problems exist on systems like Windows or OSX.</p>
+            <div class="section" id="disabling-screensaver">
+            <h2>Disabling Screensaver</h2>
+            <p>By default, mpv tries to disable the OS screensaver during playback (only if
+            a VO using the OS GUI API is active). <tt class="docutils literal"><span class="pre">--stop-screensaver=no</span></tt> disables this.</p>
+            <p>A common problem is that Linux desktop environments ignore the standard
+            screensaver APIs on which mpv relies. In particular, mpv uses the Screen Saver
+            extension (XSS) on X11, and the idle-inhibit on Wayland.</p>
+            <p>GNOME is one of the worst offenders, and ignores even the now widely supported
+            idle-inhibit protocol. (This is either due to a combination of malice and
+            incompetence, but since implementing this protocol would only take a few lines
+            of code, it is most likely the former. You will also notice how GNOME advocates
+            react offended whenever their sabotage is pointed out, which indicates either
+            hypocrisy, or even worse ignorance.)</p>
+            <p>Such incompatible desktop environments (i.e. which ignore standards) typically
+            require using a DBus API. This is ridiculous in several ways. The immediate
+            practical problem is that it would require adding a quite unwieldy dependency
+            for a DBus library, somehow integrating its mainloop into mpv, and other
+            generally unacceptable things.</p>
+            <p>However, since mpv does not officially support GNOME, this is not much of a
+            problem. If you are one of those miserable users who want to use mpv on GNOME,
+            report a bug on the GNOME issue tracker:
+            <a class="reference external" href="https://gitlab.gnome.org/groups/GNOME/-/issues">https://gitlab.gnome.org/groups/GNOME/-/issues</a></p>
+            <p>Alternatively, you may be able to write a Lua script that calls the
+            <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> command line program. (By the way, this a command line
+            program is an utterly horrible kludge that tries to identify your DE, and then
+            tries to send the correct DBus command via a DBus CLI tool.) If you find the
+            idea of having to write a script just so your screensaver doesn't kick in
+            ridiculous, do not use GNOME, or use GNOME video software instead of mpv (good
+            luck).</p>
+            <p>Before mpv 0.33.0, the X11 backend ran <tt class="docutils literal"><span class="pre">xdg-screensaver</span> reset</tt> in 10 second
+            intervals when not paused. This hack was removed in 0.33.0.</p>
+            </div>
+            </div>
             <div class="section" id="options">
             <h1>OPTIONS</h1>
             <div class="section" id="track-selection">
@@ -4061,7 +4098,8 @@
             startup and turns it on again on exit (default: yes). The screensaver is
             always re-enabled when the player is paused.</p>
             <p class="last">This is not supported on all video outputs or platforms. Sometimes it is
-            implemented, but does not work (especially with Linux &quot;desktops&quot;).</p>
+            implemented, but does not work (especially with Linux &quot;desktops&quot;). Read the
+            <a class="reference internal" href="#disabling-screensaver">Disabling Screensaver</a> section very carefully.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--wid=&lt;ID&gt;</span></tt></dt>
             <dd><p class="first">This tells mpv to attach to an existing window. If a VO is selected that
