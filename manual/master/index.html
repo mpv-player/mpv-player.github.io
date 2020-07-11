@@ -3901,7 +3901,7 @@
             <dt><tt class="docutils literal"><span class="pre">--on-all-workspaces</span></tt></dt>
             <dd>(X11 only)
             Show the video window on all virtual desktops.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--geometry=&lt;[W[xH]][+-x+-y]&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--geometry=&lt;x:y&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--geometry=&lt;[W[xH]][+-x+-y][/WS]&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--geometry=&lt;x:y&gt;</span></tt></dt>
             <dd><p class="first">Adjust the initial window position or size. <tt class="docutils literal">W</tt> and <tt class="docutils literal">H</tt> set the window
             size in pixels. <tt class="docutils literal">x</tt> and <tt class="docutils literal">y</tt> set the window position, measured in pixels
             from the top-left corner of the screen to the top-left corner of the image
@@ -3910,7 +3910,9 @@
             Positions are specified similar to the standard X11 <tt class="docutils literal"><span class="pre">--geometry</span></tt> option
             format, in which e.g. +10-50 means &quot;place 10 pixels from the left border and
             50 pixels from the lower border&quot; and &quot;--20+-10&quot; means &quot;place 20 pixels
-            beyond the right and 10 pixels beyond the top border&quot;.</p>
+            beyond the right and 10 pixels beyond the top border&quot;. A trailing <tt class="docutils literal">/</tt>
+            followed by an integer denotes on which workspace (virtual desktop) the
+            window should appear (X11 only).</p>
             <p>If an external window is specified using the <tt class="docutils literal"><span class="pre">--wid</span></tt> option, this
             option is ignored.</p>
             <p>The coordinates are relative to the screen given with <tt class="docutils literal"><span class="pre">--screen</span></tt> for the
@@ -3944,9 +3946,10 @@
             <dd>Forces the window width and height to half the screen width and
             height. Will show black borders to compensate for the video aspect
             ratio (with most VOs and without <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">50%+10+10</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">50%+10+10/2</span></tt></dt>
             <dd>Sets the window to half the screen widths, and positions it 10
-            pixels below/left of the top left corner of the screen.</dd>
+            pixels below/left of the top left corner of the screen, on the
+            second workspace.</dd>
             </dl>
             </div>
             <p class="last">See also <tt class="docutils literal"><span class="pre">--autofit</span></tt> and <tt class="docutils literal"><span class="pre">--autofit-larger</span></tt> for fitting the window into
