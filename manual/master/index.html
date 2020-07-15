@@ -5103,6 +5103,16 @@
             <dd>Same as <tt class="docutils literal"><span class="pre">--zimg-scaler-param-a</span></tt> / <tt class="docutils literal"><span class="pre">--zimg-scaler-param-b</span></tt>, for chroma.</dd>
             <dt><tt class="docutils literal"><span class="pre">--zimg-dither=&lt;no|ordered|random|error-diffusion&gt;</span></tt></dt>
             <dd>Dithering (default: random).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--zimg-threads=&lt;auto|integer&gt;</span></tt></dt>
+            <dd><p class="first">Set the maximum number of threads to use for scaling (default: auto).
+            <tt class="docutils literal">auto</tt> uses the number of logical cores on the current machine. Note that
+            the scaler may use less threads (or even just 1 thread) depending on stuff.
+            Passing a value of 1 disables threading and always scales the image in a
+            single operation. Higher thread counts waste resources, but make it
+            typically faster.</p>
+            <p class="last">Note that some zimg git versions had bugs that will corrupt the output if
+            threads are used.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--zimg-fast=&lt;yes|no&gt;</span></tt></dt>
             <dd>Allow optimizations that help with performance, but reduce quality (default:
             yes). Currently, this may simplify gamma conversion operations.</dd>
