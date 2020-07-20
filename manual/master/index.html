@@ -9482,10 +9482,10 @@
             <p>This applies to certain APIs, such as <tt class="docutils literal">mp.command_native()</tt> (with tables that
             have string keys) in Lua scripting, or <tt class="docutils literal">mpv_command_node()</tt> (with
             MPV_FORMAT_NODE_MAP) in the C libmpv client API.</p>
-            <p>Like with array commands, quoting and escaping is inherently not needed in the
-            normal case.</p>
-            <p>The name of each command is defined in each command description in the
-            <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>. <tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt> also lists them.</p>
+            <p>The name of the command is provided with a <tt class="docutils literal">name</tt> string field. The name of
+            each command is defined in each command description in the
+            <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>. <tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt> also lists them. See the
+            <tt class="docutils literal">subprocess</tt> command for an example.</p>
             <p>Some commands do not support named arguments (e.g. <tt class="docutils literal">run</tt> command). You need
             to use APIs that pass arguments as arrays.</p>
             <p>Named arguments are not supported in the &quot;flat&quot; input.conf syntax, which means
@@ -9539,6 +9539,12 @@
             <dd>Mark the current time position. The next normal <tt class="docutils literal"><span class="pre">revert-seek</span></tt> command
             will seek back to this point, no matter how many seeks happened since
             last time.</dd>
+            <dt>mark-permanent</dt>
+            <dd>If set, mark the current position, and do not change the mark position
+            before the next <tt class="docutils literal"><span class="pre">revert-seek</span></tt> command that has <tt class="docutils literal">mark</tt> or
+            <tt class="docutils literal"><span class="pre">mark-permanent</span></tt> set (or playback of the current file ends). Until
+            this happens, <tt class="docutils literal"><span class="pre">revert-seek</span></tt> will always seek to the marked point. This
+            flag cannot be combined with <tt class="docutils literal">mark</tt>.</dd>
             </dl>
             <p class="last">Using it without any arguments gives you the default behavior.</p>
             </dd>
@@ -9755,13 +9761,30 @@
             process ends (optional, default: no).</dd>
             <dt><tt class="docutils literal">capture_stderr</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
             <dd>Same as <tt class="docutils literal">capture_stdout</tt>, but for stderr.</dd>
+            <dt><tt class="docutils literal">detach</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
+            <dd>Whether to run the process in detached mode (optional, default: no). In
+            this mode, the process is run in a new process session, and the command
+            does not wait for the process to terminate. If neither
+            <tt class="docutils literal">capture_stdout</tt> nor <tt class="docutils literal">capture_stderr</tt> have been set to <tt class="docutils literal">yes</tt>,
+            the command returns immediately after the new process has been started,
+            otherwise the command will read as long as the pipes are open.</dd>
+            <dt><tt class="docutils literal">env</tt> (<tt class="docutils literal">MPV_FORMAT_NODE_ARRAY[MPV_FORMAT_STRING]</tt>)</dt>
+            <dd><p class="first">Set a list of environment variables for the new process (default: empty).
+            If an empty list is passed, the environment of the mpv process is used
+            instead. (Unlike the underlying OS mechanisms, the mpv command cannot
+            start a process with empty environment. Fortunately, that is completely
+            useless.) The format of the list is as in the <tt class="docutils literal">execle()</tt> syscall. Each
+            string item defines an environment variable as in <tt class="docutils literal">NANME=VALUE</tt>.</p>
+            <p class="last">On Lua, you may use <tt class="docutils literal">utils.get_env_list()</tt> to retrieve the current
+            environment if you e.g. simply want to add a new variable.</p>
+            </dd>
             </dl>
             <p>The command returns the following result (as <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt>):</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">status</tt> (<tt class="docutils literal">MPV_FORMAT_INT64</tt>)</dt>
             <dd><p class="first">The raw exit status of the process. It will be negative on error. The
             meaning of negative values is undefined, other than meaning error (and
-            does not necessarily correspond to OS low level exit status values).</p>
+            does not correspond to OS low level exit status values).</p>
             <p class="last">On Windows, it can happen that a negative return value is returned
             even if the process exits gracefully, because the win32 <tt class="docutils literal">UINT</tt> exit
             code is assigned to an <tt class="docutils literal">int</tt> variable before being set as <tt class="docutils literal">int64_t</tt>
@@ -9792,11 +9815,27 @@
             <p>In all cases, the subprocess will be terminated on player exit. Also see
             <a class="reference internal" href="#asynchronous-command-details">Asynchronous command details</a>. Only the <tt class="docutils literal">run</tt> command can start
             processes in a truly detached way.</p>
-            <div class="admonition admonition-warning last">
+            <div class="admonition admonition-warning">
             <p class="first admonition-title">Warning</p>
             <p class="last">Don't forget to set the <tt class="docutils literal">playback_only</tt> field if you want the command
             run while the player is in idle mode, or if you don't want that end of
             playback kills the command.</p>
+            </div>
+            <div class="admonition admonition-example last">
+            <p class="first admonition-title">Example</p>
+            <pre class="literal-block">
+            local r = mp.command_native({
+                name = &quot;subprocess&quot;,
+                playback_only = false,
+                capture_stdout = true,
+                args = {&quot;cat&quot;, &quot;/proc/cpuinfo&quot;},
+            })
+            if r.status == 0 then
+                print(&quot;result: &quot; .. r.stdout)
+            end
+            </pre>
+            <p class="last">This is a fairly useless Lua example, which demonstrates how to run
+            a process in a blocking manner, and retrieving its stdout output.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal">quit [&lt;code&gt;]</tt></dt>
@@ -13675,6 +13714,9 @@
             <dt><tt class="docutils literal">utils.getpid()</tt></dt>
             <dd>Returns the process ID of the running mpv process. This can be used to identify
             the calling mpv when launching (detached) subprocesses.</dd>
+            <dt><tt class="docutils literal">utils.get_env_list()</tt></dt>
+            <dd>Returns the C environment as a list of strings. (Do not confuse this with
+            the Lua &quot;environment&quot;, which is an unrelated concept.)</dd>
             <dt><tt class="docutils literal">utils.parse_json(str [, trail])</tt></dt>
             <dd><p class="first">Parses the given string argument as JSON, and returns it as a Lua table. On
             error, returns <tt class="docutils literal">nil, error</tt>. (Currently, <tt class="docutils literal">error</tt> is just a string
