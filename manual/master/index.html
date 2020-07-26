@@ -8310,6 +8310,25 @@
             </dl>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">scaletempo2[=option1:option2:...]</span></tt></dt>
+            <dd><p class="first">Scales audio tempo without altering pitch.
+            The algorithm is ported from chromium and uses the
+            Waveform Similarity Overlap-and-add (WSOLA) method.
+            It seems to achieve a higher audio quality than scaletempo and rubberband.</p>
+            <p>By default, the <tt class="docutils literal"><span class="pre">search-interval</span></tt> and <tt class="docutils literal"><span class="pre">window-size</span></tt> parameters
+            have the same values as in chromium.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">min-speed=&lt;speed&gt;</span></tt></dt>
+            <dd>Mute audio if the playback speed is below <tt class="docutils literal">&lt;speed&gt;</tt>. (default: 0.25)</dd>
+            <dt><tt class="docutils literal"><span class="pre">max-speed=&lt;speed&gt;</span></tt></dt>
+            <dd>Mute audio if the playback speed is above <tt class="docutils literal">&lt;speed&gt;</tt>
+            and <tt class="docutils literal">&lt;speed&gt; != 0</tt>. (default: 4.0)</dd>
+            <dt><tt class="docutils literal"><span class="pre">search-interval=&lt;amount&gt;</span></tt></dt>
+            <dd>Length in milliseconds to search for best overlap position. (default: 30)</dd>
+            <dt><tt class="docutils literal"><span class="pre">window-size=&lt;amount&gt;</span></tt></dt>
+            <dd>Length in milliseconds of the overlap-and-add window. (default: 20)</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal">rubberband</tt></dt>
             <dd><p class="first">High quality pitch correction with librubberband. This can be used in place
             of <tt class="docutils literal">scaletempo</tt>, and will be used to adjust audio pitch when playing
