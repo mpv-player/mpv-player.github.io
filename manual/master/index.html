@@ -756,22 +756,127 @@
             </pre>
             </div>
             </div>
-            <div class="section" id="auto-profiles">
-            <h2>Auto profiles</h2>
-            <p>Some profiles are loaded automatically. The following example demonstrates this:</p>
+            <div class="section" id="conditional-auto-profiles">
+            <h2>Conditional auto profiles</h2>
+            <p>Profiles which have the <tt class="docutils literal"><span class="pre">profile-cond</span></tt> option set are applied automatically
+            if the associated condition matches (unless auto profiles are disabled). The
+            option takes a string, which is interpreted as Lua condition. If evaluating the
+            expression returns true, the profile is applied, if it returns false, it is
+            ignored. This Lua code execution is not sandboxed.</p>
+            <p>Any variables in condition expressions can reference properties. If an
+            identifier is not already by defined by Lua or mpv, it is interpreted as
+            property. For example, <tt class="docutils literal">pause</tt> would return the current pause status. If the
+            variable name contains any <tt class="docutils literal">_</tt> characters, they are turned into <tt class="docutils literal">-</tt>. For
+            example, <tt class="docutils literal">playback_time</tt> would return the property <tt class="docutils literal"><span class="pre">playback-time</span></tt>.</p>
+            <p>A more robust way to access properties is using <tt class="docutils literal">p.property_name</tt> or
+            <tt class="docutils literal"><span class="pre">get(&quot;property-name&quot;,</span> default_value)</tt>. The automatic variable to property
+            magic will break if a new identifier with the same name is introduced (for
+            example, if a function named <tt class="docutils literal">pause()</tt> were added, <tt class="docutils literal">pause</tt> would return a
+            function value instead of the value of the <tt class="docutils literal">pause</tt> property).</p>
+            <p>Note that if a property is not available, it will return <tt class="docutils literal">nil</tt>, which can
+            cause errors if used in expressions. These are logged in verbose mode, and the
+            expression is considered to be false.</p>
+            <p>Whenever a property referenced by a profile condition changes, the condition
+            is re-evaluated. If the return value of the condition changes from false or
+            error to true, the profile is applied.</p>
+            <p>Note that profiles cannot be &quot;unapplied&quot;, so you may have to define inverse
+            profiles with inverse conditions do undo a profile.</p>
+            <div class="admonition admonition-example">
+            <p class="first admonition-title">Example</p>
+            <p>Make only HD video look funny:</p>
+            <pre class="literal-block">
+            [something]
+            profile-desc=HD video sucks
+            profile-cond=width &gt;= 1280
+            hue=-50
+            </pre>
+            <p>If you want the profile to be reverted if the condition goes to false again,
+            you need to do this by manually creating an inverse profile:</p>
+            <pre class="literal-block">
+            [something]
+            profile-desc=Flip video when entering fullscreen
+            profile-cond=fullscreen
+            vf=vflip
+            
+            [something2]
+            profile-desc=Inverse of [something]
+            profile-cond=not fullscreen
+            vf=
+            </pre>
+            <p class="last">This sets the video filter chain to <tt class="docutils literal">vflip</tt> when entering fullscreen. The
+            first profile does not cause the filter to be removed when leaving
+            fullscreen. A second profile has to be defined, which is explicitly applied
+            on leaving fullscreen, and which explicitly clears the filter list. (This
+            would also clear the filter list at program start when starting the player
+            in windowed mode.)</p>
+            </div>
+            <div class="admonition warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">Every time an involved property changes, the condition is evaluated again.
+            If your condition uses <tt class="docutils literal">p.playback_time</tt> for example, the condition is
+            re-evaluated approximately on every video frame. This is probably slow.</p>
+            </div>
+            <p>This feature is managed by an internal Lua script. Conditions are executed as
+            Lua code within this script. Its environment contains at least the following
+            things:</p>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">(function environment table)</tt></dt>
+            <dd><p class="first">Every Lua function has an environment table. This is used for identifier
+            access. There is no named Lua symbol for it; it is implicit.</p>
+            <p>The environment does &quot;magic&quot; accesses to mpv properties. If an identifier
+            is not already defined in <tt class="docutils literal">_G</tt>, it retrieves the mpv property of the same
+            name. Any occurrences of <tt class="docutils literal">_</tt> in the name are replaced with <tt class="docutils literal">-</tt> before
+            reading the property. The returned value is as retrieved by
+            <tt class="docutils literal">mp.get_property_native(name)</tt>. Internally, a cache of property values,
+            updated by observing the property is used instead, so properties that are
+            not observable will be stuck at the initial value forever.</p>
+            <p>If you want to access properties, that actually contain <tt class="docutils literal">_</tt> in the name,
+            use <tt class="docutils literal">get()</tt> (which does not perform transliteration).</p>
+            <p class="last">Internally, the environment table has a <tt class="docutils literal">__index</tt> meta method set, which
+            performs the access logic.</p>
+            </dd>
+            <dt><tt class="docutils literal">p</tt></dt>
+            <dd>A &quot;magic&quot; table similar to the environment table. Unlike the latter, this
+            does not prefer accessing variables defined in <tt class="docutils literal">_G</tt> - it always accesses
+            properties.</dd>
+            <dt><tt class="docutils literal">get(name [, def])</tt></dt>
+            <dd><p class="first">Read a property and return its value. If the property value is <tt class="docutils literal">nil</tt> (e.g.
+            if the property does not exist), <tt class="docutils literal">def</tt> is returned.</p>
+            <p>This is superficially similar to <tt class="docutils literal">mp.get_property_native(name)</tt>. An
+            important difference is that this accesses the property cache, and enables
+            the change detection logic (which is essential to the dynamic runtime
+            behavior of auto profiles). Also, it does not return an error value as
+            second return value.</p>
+            <p class="last">The &quot;magic&quot; tables mentioned above use this function as backend. It does not
+            perform the <tt class="docutils literal">_</tt> transliteration.</p>
+            </dd>
+            </dl>
+            <p>In addition, the same environment as in a blank mpv Lua script is present. For
+            example, <tt class="docutils literal">math</tt> is defined and gives access to the Lua standard math library.</p>
+            <div class="admonition warning">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This feature is subject to change indefinitely. You might be forced to
+            adjust your profiles on mpv updates.</p>
+            </div>
+            </div>
+            <div class="section" id="legacy-auto-profiles">
+            <h2>Legacy auto profiles</h2>
+            <p>Some profiles are loaded automatically using a legacy mechanism. The following
+            example demonstrates this:</p>
             <div class="admonition admonition-auto-profile-loading">
             <p class="first admonition-title">Auto profile loading</p>
             <pre class="last literal-block">
             [extension.mkv]
             profile-desc=&quot;profile for .mkv files&quot;
-            vf=flip
+            vf=vflip
             </pre>
             </div>
             <p>The profile name follows the schema <tt class="docutils literal">type.name</tt>, where type can be
             <tt class="docutils literal">protocol</tt> for the input/output protocol in use (see <tt class="docutils literal"><span class="pre">--list-protocols</span></tt>),
             and <tt class="docutils literal">extension</tt> for the extension of the path of the currently played file
             (<em>not</em> the file format).</p>
-            <p>This feature is very limited, and there are no other auto profiles.</p>
+            <p>This feature is very limited, and is considered soft-deprecated. Use conditional
+            auto profiles.</p>
             </div>
             </div>
             <div class="section" id="using-mpv-from-other-programs-or-scripts">
@@ -2006,6 +2111,10 @@
             you enter commands (default: yes). By default,. The <tt class="docutils literal">´</tt> key is used to
             show the console, and <tt class="docutils literal">ESC</tt> to hide it again. (This is based on  a user
             script called <tt class="docutils literal">repl.lua</tt>.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--load-auto-profiles=&lt;yes|no|auto&gt;</span></tt></dt>
+            <dd>Enable the builtin script that does auto profiles (default: auto). See
+            <a class="reference internal" href="#conditional-auto-profiles">Conditional auto profiles</a> for details. <tt class="docutils literal">auto</tt> will load the script,
+            but immediately unload it if there are no conditional profiles.</dd>
             <dt><tt class="docutils literal"><span class="pre">--player-operation-mode=&lt;cplayer|pseudo-gui&gt;</span></tt></dt>
             <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
             options are changed. This option should not normally be used directly, but
@@ -13785,8 +13894,23 @@
             their result (normally, the Lua scripting interface is asynchronous from
             the point of view of the player core). <tt class="docutils literal">priority</tt> is an arbitrary integer
             that allows ordering among hooks of the same kind. Using the value 50 is
-            recommended as neutral default value. <tt class="docutils literal">fn</tt> is the function that will be
-            called during execution of the hook.</p>
+            recommended as neutral default value.</p>
+            <p><tt class="docutils literal">fn(hook)</tt> is the function that will be called during execution of the
+            hook. The parameter passed to it (<tt class="docutils literal">hook</tt>) is a Lua object that can control
+            further aspects about the currently invoked hook. It provides the following
+            methods:</p>
+            <blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">defer()</tt></dt>
+            <dd>Returning from the hook function should not automatically continue
+            the hook. Instead, the API user wants to call <tt class="docutils literal">hook:cont()</tt> on its
+            own at a later point in time (before or after the function has
+            returned).</dd>
+            <dt><tt class="docutils literal">cont()</tt></dt>
+            <dd>Continue the hook. Doesn't need to be called unless <tt class="docutils literal">defer()</tt> was
+            called.</dd>
+            </dl>
+            </blockquote>
             <p class="last">See <a class="reference internal" href="#hooks">Hooks</a> for currently existing hooks and what they do - only the hook
             list is interesting; handling hook execution is done by the Lua script
             function automatically.</p>
