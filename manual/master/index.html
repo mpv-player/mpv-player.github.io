@@ -756,6 +756,67 @@
             </pre>
             </div>
             </div>
+            <div class="section" id="runtime-profiles">
+            <h2>Runtime profiles</h2>
+            <p>Profiles can be set at runtime with <tt class="docutils literal"><span class="pre">apply-profile</span></tt> command. Since this
+            operation is &quot;destructive&quot; (every item in a profile is simply set as an
+            option, overwriting the previous value), you can't just enable and disable
+            profiles again.</p>
+            <p>As a partial remedy, there is a way to make profiles save old option values
+            before overwriting them with the profile values, and then restoring the old
+            values at a later point using <tt class="docutils literal"><span class="pre">apply-profile</span> <span class="pre">&lt;profile-name&gt;</span> restore</tt>.</p>
+            <p>This can be enabled with the <tt class="docutils literal"><span class="pre">profile-restore</span></tt> option, which takes one of
+            the following options:</p>
+            <blockquote>
+            <dl class="docutils">
+            <dt><tt class="docutils literal">default</tt></dt>
+            <dd>Does nothing, and nothing can be restored (default).</dd>
+            <dt><tt class="docutils literal">copy</tt></dt>
+            <dd><p class="first">When applying a profile, copy the old values of all profile options to a
+            backup before setting them from the profile. These options are reset to
+            their old values using the backup when restoring.</p>
+            <p>Every profile has its own list of backed up values. If the backup
+            already exists (e.g. if <tt class="docutils literal"><span class="pre">apply-profile</span> name</tt> was called more than
+            once in a row), the existing backup is no changed. The restore operation
+            will remove the backup.</p>
+            <p>It's important to know that restoring does not &quot;undo&quot; setting an option,
+            but simply copies the old option value. Consider for example <tt class="docutils literal"><span class="pre">vf-add</span></tt>,
+            appends an entry to <tt class="docutils literal">vf</tt>. This mechanism will simply copy the entire
+            <tt class="docutils literal">vf</tt> list, and does _not_ execute the inverse of <tt class="docutils literal"><span class="pre">vf-add</span></tt> (that
+            would be <tt class="docutils literal"><span class="pre">vf-remove</span></tt>) on restoring.</p>
+            <p class="last">Note that if a profile contains recursive profiles (via the <tt class="docutils literal">profile</tt>
+            option), the options in these recursive profiles are treated as if they
+            were part of this profile. The referenced profile's backup list is not
+            used when creating or using the backup. Restoring a profile does not
+            restore referenced profiles, only the options of referenced profiles (as
+            if they were part of the main profile).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">copy-equal</span></tt></dt>
+            <dd>Similar to <tt class="docutils literal">copy</tt>, but restore an option only if it has the same value
+            as the value effectively set by the profile. This tries to deal with
+            the situation when the user does not want the option to be reset after
+            interactively changing it.</dd>
+            </dl>
+            </blockquote>
+            <div class="admonition admonition-example">
+            <p class="first admonition-title">Example</p>
+            <pre class="literal-block">
+            [something]
+            profile-restore=copy-equal
+            vf-add=rotate=90
+            </pre>
+            <p>Then running these commands will result in behavior as commented:</p>
+            <pre class="last literal-block">
+            set vf vflip
+            apply-profile something
+            vf-add=hflip
+            apply-profile something
+            # vf == vflip,rotate=90,hflip,rotate=90
+            apply-profile something restore
+            # vf == vflip
+            </pre>
+            </div>
+            </div>
             <div class="section" id="conditional-auto-profiles">
             <h2>Conditional auto profiles</h2>
             <p>Profiles which have the <tt class="docutils literal"><span class="pre">profile-cond</span></tt> option set are applied automatically
@@ -779,8 +840,13 @@
             <p>Whenever a property referenced by a profile condition changes, the condition
             is re-evaluated. If the return value of the condition changes from false or
             error to true, the profile is applied.</p>
-            <p>Note that profiles cannot be &quot;unapplied&quot;, so you may have to define inverse
-            profiles with inverse conditions do undo a profile.</p>
+            <p>This mechanism tries to &quot;unapply&quot; profiles once the condition changes from true
+            to false. If you want to use this, you need to set <tt class="docutils literal"><span class="pre">profile-restore</span></tt> for the
+            profile. Another possibility it to create another profile with an inverse
+            condition to undo the other profile.</p>
+            <p>Recursive profiles can be used. But it is discouraged to reference other
+            conditional profiles in a conditional profile, since this can lead to tricky
+            and unintuitive behavior.</p>
             <div class="admonition admonition-example">
             <p class="first admonition-title">Example</p>
             <p>Make only HD video look funny:</p>
@@ -791,24 +857,29 @@
             hue=-50
             </pre>
             <p>If you want the profile to be reverted if the condition goes to false again,
-            you need to do this by manually creating an inverse profile:</p>
+            you can set <tt class="docutils literal"><span class="pre">profile-restore</span></tt>:</p>
             <pre class="literal-block">
             [something]
-            profile-desc=Flip video when entering fullscreen
+            profile-desc=Mess up video when entering fullscreen
             profile-cond=fullscreen
-            vf=vflip
-            
-            [something2]
-            profile-desc=Inverse of [something]
-            profile-cond=not fullscreen
-            vf=
+            profile-restore=copy
+            vf-add=rotate=90
             </pre>
-            <p class="last">This sets the video filter chain to <tt class="docutils literal">vflip</tt> when entering fullscreen. The
-            first profile does not cause the filter to be removed when leaving
-            fullscreen. A second profile has to be defined, which is explicitly applied
-            on leaving fullscreen, and which explicitly clears the filter list. (This
-            would also clear the filter list at program start when starting the player
-            in windowed mode.)</p>
+            <p>This appends the <tt class="docutils literal">rotate</tt> filter to the video filter chain when entering
+            fullscreen. When leaving fullscreen, the <tt class="docutils literal">vf</tt> option is set to the value
+            it had before entering fullscreen. Note that this would also remove any
+            other filters that were added during fullscreen mode by the user. Avoiding
+            this is trickier, and could for example be solved by adding a second profile
+            with an inverse condition and operation:</p>
+            <pre class="last literal-block">
+            [something]
+            profile-cond=fullscreen
+            vf-add=&#64;rot:rotate=90
+            
+            [something-inv]
+            profile-cond=not fullscreen
+            vf-remove=&#64;rot
+            </pre>
             </div>
             <div class="admonition warning">
             <p class="first admonition-title">Warning</p>
@@ -10487,12 +10558,20 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">af-command</span> &lt;label&gt; &lt;command&gt; &lt;argument&gt;</tt></dt>
             <dd>Same as <tt class="docutils literal"><span class="pre">vf-command</span></tt>, but for audio filters.</dd>
-            <dt><tt class="docutils literal"><span class="pre">apply-profile</span> &lt;name&gt;</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">apply-profile</span> &lt;name&gt; [&lt;mode&gt;]</tt></dt>
             <dd><p class="first">Apply the contents of a named profile. This is like using <tt class="docutils literal">profile=name</tt>
             in a config file, except you can map it to a key binding to change it at
             runtime.</p>
-            <p class="last">There is no such thing as &quot;unapplying&quot; a profile - applying a profile
-            merely sets all option values listed within the profile.</p>
+            <p>The mode argument:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">default</tt></dt>
+            <dd>Apply the profile. Default if the argument is omitted.</dd>
+            <dt><tt class="docutils literal">restore</tt></dt>
+            <dd>Restore options set by a previous <tt class="docutils literal"><span class="pre">apply-profile</span></tt> command for this
+            profile. Only works if the profile has <tt class="docutils literal"><span class="pre">profile-restore</span></tt> set to a
+            relevant mode. Prints a warning if nothing could be done. See
+            <a class="reference internal" href="#runtime-profiles">Runtime profiles</a> for details.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">load-script</span> &lt;filename&gt;</tt></dt>
             <dd><p class="first">Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option. Whether this waits for
