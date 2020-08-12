@@ -3367,13 +3367,19 @@
             <dt><tt class="docutils literal"><span class="pre">--embeddedfonts=&lt;yes|no&gt;</span></tt></dt>
             <dd>Use fonts embedded in Matroska container files and ASS scripts (default:
             yes). These fonts can be used for SSA/ASS subtitle rendering.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--sub-pos=&lt;0-100&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-pos=&lt;0-150&gt;</span></tt></dt>
             <dd><p class="first">Specify the position of subtitles on the screen. The value is the vertical
-            position of the subtitle in % of the screen height.</p>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This affects ASS subtitles as well, and may lead to incorrect subtitle
-            rendering. Use with care, or use <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> instead.</p>
+            position of the subtitle in % of the screen height. 100 is the original
+            position, which is often not the absolute bottom of the screen, but with
+            some margin between the bottom and the subtitle. Values above 100 move the
+            subtitle further down.</p>
+            <div class="admonition admonition-warning last">
+            <p class="first admonition-title">Warning</p>
+            <p>Text subtitles (as opposed to image subtitles) may be cut off if the
+            value of the option is above 100. This is a libass restriction.</p>
+            <p>This affects ASS subtitles as well, and may lead to incorrect subtitle
+            rendering in addition to the problem above.</p>
+            <p class="last">Using <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> can achieve this in a better way.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-speed=&lt;0.1-10.0&gt;</span></tt></dt>
@@ -11885,6 +11891,22 @@
                     &quot;replaygain-album-peak&quot; MPV_FORMAT_DOUBLE
                     &quot;replaygain-album-gain&quot; MPV_FORMAT_DOUBLE
             </pre>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">current-tracks/...</span></tt></dt>
+            <dd><p class="first">This gives access to currently selected tracks. It redirects to the correct
+            entry in <tt class="docutils literal"><span class="pre">track-list</span></tt>.</p>
+            <p>The following sub-entries are defined: <tt class="docutils literal">video</tt>, <tt class="docutils literal">audio</tt>, <tt class="docutils literal">sub</tt>,
+            <tt class="docutils literal">sub2</tt></p>
+            <p>For example, <tt class="docutils literal"><span class="pre">current-tracks/audio/lang</span></tt> returns the current audio track's
+            language field (the same value as <tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt>).</p>
+            <p>A sub-entry is accessible only if a track of that type is actually selected.
+            Tracks selected via <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> never appear under this property.
+            <tt class="docutils literal"><span class="pre">current-tracks</span></tt> and <tt class="docutils literal"><span class="pre">current-tracks/</span></tt> are currently not accessible, and
+            will not return anything.</p>
+            <p class="last">Scripts etc. should not use this. They should use <tt class="docutils literal"><span class="pre">track-list</span></tt>, loop over
+            all tracks, and inspect the <tt class="docutils literal">selected</tt> field to test whether a track is
+            selected (or compare the <tt class="docutils literal">id</tt> field to the <tt class="docutils literal">video</tt> / <tt class="docutils literal">audio</tt> etc.
+            options).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">chapter-list</span></tt></dt>
             <dd><p class="first">List of chapters, current entry marked. Currently, the raw property value
