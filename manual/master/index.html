@@ -11519,6 +11519,10 @@
             <dt><tt class="docutils literal"><span class="pre">video-params/stereo-in</span></tt></dt>
             <dd>Source file stereo 3D mode. (See the <tt class="docutils literal">format</tt> video filter's
             <tt class="docutils literal"><span class="pre">stereo-in</span></tt> option.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-params/alpha</span></tt></dt>
+            <dd>Alpha type. If the format has no alpha channel, this will be unavailable
+            (but in future releases, it could change to <tt class="docutils literal">no</tt>). If alpha is
+            present, this is set to <tt class="docutils literal">straight</tt> or <tt class="docutils literal">premul</tt>.</dd>
             </dl>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -11541,6 +11545,8 @@
                 &quot;chroma-location&quot;   MPV_FORMAT_STRING
                 &quot;rotate&quot;            MPV_FORMAT_INT64
                 &quot;stereo-in&quot;         MPV_FORMAT_STRING
+                &quot;average-bpp&quot;       MPV_FORMAT_INT64
+                &quot;alpha&quot;             MPV_FORMAT_STRING
             </pre>
             </dd>
             <dt><tt class="docutils literal">dwidth</tt>, <tt class="docutils literal">dheight</tt></dt>
