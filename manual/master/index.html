@@ -8122,10 +8122,14 @@
             </dd>
             <dt><tt class="docutils literal">tct</tt></dt>
             <dd><p class="first">Color Unicode art video output driver that works on a text console.
-            Depends on support of true color by modern terminals to display the images
-            at full color range. On Windows it requires an ansi terminal such as mintty.</p>
+            By default depends on support of true color by modern terminals to display
+            the images at full color range, but 256-colors outout is also supported (see
+            below). On Windows it requires an ansi terminal such as mintty.</p>
             <p>Since mpv 0.30.0, you may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent
             performance.</p>
+            <p>Note: the TCT image output is not synchronized with other terminal output
+            from mpv, which can lead to broken images. The options <tt class="docutils literal"><span class="pre">--no-terminal</span></tt> or
+            <tt class="docutils literal"><span class="pre">--really-quiet</span></tt> can help with that.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--vo-tct-algo=&lt;algo&gt;</span></tt></dt>
             <dd><p class="first">Select how to write the pixels to the terminal.</p>
