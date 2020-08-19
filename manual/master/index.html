@@ -1193,6 +1193,25 @@
             <p><tt class="docutils literal"><span class="pre">edl://[edl</span> specification as in <span class="pre">edl-mpv.rst]</span></tt></p>
             <blockquote>
             Stitch together parts of multiple files and play them.</blockquote>
+            <p><tt class="docutils literal"><span class="pre">slice://start[-end]&#64;URL</span></tt></p>
+            <blockquote>
+            <p>Read a slice of a stream.</p>
+            <p><tt class="docutils literal">start</tt> and <tt class="docutils literal">end</tt> represent a byte range and accept
+            suffixes such as <tt class="docutils literal">KiB</tt> and <tt class="docutils literal">MiB</tt>. <tt class="docutils literal">end</tt> is optional.</p>
+            <p>Only works with seekable streams.</p>
+            <p>Examples:</p>
+            <pre class="literal-block">
+            mpv slice://1g-2g&#64;cap.ts
+            
+            This starts reading from cap.ts after seeking 1 GiB, then
+            reads until reaching 2 GiB or end of file.
+            
+            mpv slice://100m&#64;appending://cap.ts
+            
+            This starts reading from cap.ts after seeking 100MiB, then
+            reads until end of file.
+            </pre>
+            </blockquote>
             <p><tt class="docutils literal"><span class="pre">null://</span></tt></p>
             <blockquote>
             Simulate an empty file. If opened for writing, it will discard all data.
