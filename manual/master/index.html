@@ -1424,6 +1424,10 @@
             Note that if <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> is set before playback is started, the
             referenced tracks are always selected.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--subs-with-matching-audio=&lt;yes|no&gt;</span></tt></dt>
+            <dd>When autoselecting a subtitle track, select a non-forced one even if the selected
+            audio stream matches your preferred subtitle language (default: yes). Disable this
+            if you'd like to only show subtitles for foreign audio or onscreen text.</dd>
             </dl>
             </div>
             <div class="section" id="playback-control">
@@ -3674,9 +3678,12 @@
             <dd>Adjust subtitle timing is to remove minor gaps or overlaps between
             subtitles (if the difference is smaller than 210 ms, the gap or overlap
             is removed).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--sub-forced-only</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--sub-forced-only=&lt;auto|yes|no&gt;</span></tt></dt>
             <dd>Display only forced subtitles for the DVD subtitle stream selected by e.g.
-            <tt class="docutils literal"><span class="pre">--slang</span></tt>.</dd>
+            <tt class="docutils literal"><span class="pre">--slang</span></tt> (default: <tt class="docutils literal">auto</tt>). When set to <tt class="docutils literal">auto</tt>, enabled when the
+            <tt class="docutils literal"><span class="pre">--subs-with-matching-audio</span></tt> option is on and a non-forced stream is selected.
+            Enabling this will hide all subtitles in streams that don't make a distinction
+            between forced and unforced events within a stream.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-fps=&lt;rate&gt;</span></tt></dt>
             <dd><p class="first">Specify the framerate of the subtitle file (default: video fps). Affects
             text subtitles only.</p>
