@@ -7901,30 +7901,6 @@
             <p class="last">Apply a noise reduction algorithm to the video (default: 0; no noise
             reduction).</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-deint=&lt;-4-4&gt;</span></tt></dt>
-            <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
-            <p>Select deinterlacing mode (default: 0). In older versions (as well as
-            MPlayer/mplayer2) you could use this option to enable deinterlacing.
-            This doesn't work anymore, and deinterlacing is enabled with either
-            the <tt class="docutils literal">d</tt> key (by default mapped to the command <tt class="docutils literal">cycle deinterlace</tt>),
-            or the <tt class="docutils literal"><span class="pre">--deinterlace</span></tt> option. Also, to select the default deint mode,
-            you should use something like <tt class="docutils literal"><span class="pre">--vf-defaults=vdpaupp:deint-mode=temporal</span></tt>
-            instead of this sub-option.</p>
-            <dl class="last docutils">
-            <dt>0</dt>
-            <dd>Pick the <tt class="docutils literal">vdpaupp</tt> video filter default, which corresponds to 3.</dd>
-            <dt>1</dt>
-            <dd>Show only first field.</dd>
-            <dt>2</dt>
-            <dd>Bob deinterlacing.</dd>
-            <dt>3</dt>
-            <dd>Motion-adaptive temporal deinterlacing. May lead to A/V desync
-            with slow video hardware and/or high resolution.</dd>
-            <dt>4</dt>
-            <dd>Motion-adaptive temporal deinterlacing with edge-guided spatial
-            interpolation. Needs fast video hardware.</dd>
-            </dl>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--vo-vdpau-chroma-deint</span></tt></dt>
             <dd><p class="first">(Deprecated. See note about <tt class="docutils literal">vdpaupp</tt>.)</p>
             <p class="last">Makes temporal deinterlacers operate both on luma and chroma (default).
@@ -10476,7 +10452,9 @@
             again.</p>
             </dd>
             <dt><tt class="docutils literal">format</tt></dt>
-            <dd><p class="first">String that gives the type of the overlay. Accepts the following values:</p>
+            <dd><p class="first">String that gives the type of the overlay. Accepts the following values
+            (HTML rendering of this is broken, view the generated manpage instead,
+            or the raw RST source):</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">ass-events</span></tt></dt>
             <dd><p class="first">The <tt class="docutils literal">data</tt> parameter is a string. The string is split on the
@@ -10539,9 +10517,12 @@
             <p class="last">This feature is experimental, and may change in some way again.</p>
             </dd>
             </dl>
-            <p class="last">Note: always use named arguments (<tt class="docutils literal">mpv_command_node()</tt>). Scripts should
-            use the <tt class="docutils literal">mp.create_osd_overlay()</tt> helper instead of invoking this command
-            directly.</p>
+            <div class="admonition note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Always use named arguments (<tt class="docutils literal">mpv_command_node()</tt>). Lua scripts should
+            use the <tt class="docutils literal">mp.create_osd_overlay()</tt> helper instead of invoking this
+            command directly.</p>
+            </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">script-message</span> [&lt;arg1&gt; [&lt;arg2&gt; <span class="pre">[...]]]</span></tt></dt>
             <dd><p class="first">Send a message to all clients, and pass it the following list of arguments.
