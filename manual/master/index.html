@@ -11869,6 +11869,11 @@
             otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/selected</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt> if the track is currently decoded, <tt class="docutils literal">no</tt> otherwise.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/main-selection</span></tt></dt>
+            <dd>It indicates the selection order of tracks for the same type.
+            If a track is not selected, or is selected by the <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt>,
+            it is not available. For subtitle tracks, <tt class="docutils literal">0</tt> represents the <tt class="docutils literal">sid</tt>,
+            and <tt class="docutils literal">1</tt> represents the <tt class="docutils literal"><span class="pre">secondary-sid</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/ff-index</span></tt></dt>
             <dd>The stream index as usually used by the FFmpeg utilities. Note that
             this can be potentially wrong if a demuxer other than libavformat
@@ -11921,6 +11926,7 @@
                     &quot;default&quot;           MPV_FORMAT_FLAG
                     &quot;forced&quot;            MPV_FORMAT_FLAG
                     &quot;selected&quot;          MPV_FORMAT_FLAG
+                    &quot;main-selection&quot;    MPV_FORMAT_INT64
                     &quot;external&quot;          MPV_FORMAT_FLAG
                     &quot;external-filename&quot; MPV_FORMAT_STRING
                     &quot;codec&quot;             MPV_FORMAT_STRING
