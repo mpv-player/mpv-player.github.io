@@ -1203,6 +1203,7 @@
             <p>Read a slice of a stream.</p>
             <p><tt class="docutils literal">start</tt> and <tt class="docutils literal">end</tt> represent a byte range and accept
             suffixes such as <tt class="docutils literal">KiB</tt> and <tt class="docutils literal">MiB</tt>. <tt class="docutils literal">end</tt> is optional.</p>
+            <p>if <tt class="docutils literal">end</tt> starts with <tt class="docutils literal">+</tt>, it is considered as offset from <tt class="docutils literal">start</tt>.</p>
             <p>Only works with seekable streams.</p>
             <p>Examples:</p>
             <pre class="literal-block">
@@ -1210,6 +1211,11 @@
             
             This starts reading from cap.ts after seeking 1 GiB, then
             reads until reaching 2 GiB or end of file.
+            
+            mpv slice://1g-+2g&#64;cap.ts
+            
+            This starts reading from cap.ts after seeking 1 GiB, then
+            reads until reaching 3 GiB or end of file.
             
             mpv slice://100m&#64;appending://cap.ts
             
@@ -4996,7 +5002,7 @@
             <dt><tt class="docutils literal"><span class="pre">--osd-bar-h=&lt;0.1-50&gt;</span></tt></dt>
             <dd>Height of the OSD bar, in percentage of the screen height (default: 3.125).</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-back-color=&lt;color&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for OSD text background.</dd>
+            <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD text background.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt></dt>
             <dd>Gaussian blur factor. 0 means no blur applied (default).</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-bold=&lt;yes|no&gt;</span></tt></dt>
@@ -5004,7 +5010,7 @@
             <dt><tt class="docutils literal"><span class="pre">--osd-italic=&lt;yes|no&gt;</span></tt></dt>
             <dd>Format text on italic.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-border-color=&lt;color&gt;</span></tt></dt>
-            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--osd-color</span></tt>. Color used for the OSD font border.</p>
+            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the OSD font border.</p>
             <div class="admonition note last">
             <p class="first admonition-title">Note</p>
             <p class="last">ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt> is
@@ -7233,8 +7239,8 @@
             any advantages over normal textures. Note that hardware decoding overrides
             this flag. Could be removed any time.</dd>
             <dt><tt class="docutils literal"><span class="pre">--background=&lt;color&gt;</span></tt></dt>
-            <dd>Color used to draw parts of the mpv window not covered by video. See
-            <tt class="docutils literal"><span class="pre">--osd-color</span></tt> option how colors are defined.</dd>
+            <dd>Color used to draw parts of the mpv window not covered by video. See the
+            <tt class="docutils literal"><span class="pre">--sub-color</span></tt> option for how colors are defined.</dd>
             <dt><tt class="docutils literal"><span class="pre">--gpu-tex-pad-x</span></tt>, <tt class="docutils literal"><span class="pre">--gpu-tex-pad-y</span></tt></dt>
             <dd>Enlarge the video source textures by this many pixels. For debugging only
             (normally textures are sized exactly, but due to hardware decoding interop
@@ -12253,7 +12259,7 @@
             <tt class="docutils literal">&lt;name&gt;</tt>, except in situations in which the properties have different
             behavior or conflicting semantics.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">file-local-options/&lt;name&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">file-local-options/&lt;name&gt;</span></tt> (RW)</dt>
             <dd><p class="first">Similar to <tt class="docutils literal"><span class="pre">options/&lt;name&gt;</span></tt>, but when setting an option through this
             property, the option is reset to its old value once the current file has
             stopped playing. Trying to write an option while no file is playing (or
