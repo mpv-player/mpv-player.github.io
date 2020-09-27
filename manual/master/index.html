@@ -7491,7 +7491,34 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--external-file=&lt;file&gt;</span></tt></dt>
             <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--external-files-append</span></tt>. Each use of this
-            option will add a new external files.</dd>
+            option will add a new external file.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cover-art-files=&lt;file-list&gt;</span></tt></dt>
+            <dd><p class="first">Use an external file as cover art while playing audio. This makes it appear
+            on the track list and subject to automatic track selection. Options like
+            <tt class="docutils literal"><span class="pre">--audio-display</span></tt> control whether such tracks are supposed to be selected.</p>
+            <p>(The difference to loading a file with <tt class="docutils literal"><span class="pre">--external-files</span></tt> is that video
+            tracks will be marked as being pictures, which affects the auto-selection
+            method. If the passed file is a video, only the first frame will be decoded
+            and displayed. Enabling the cover art track during playback may show a
+            random frame if the source file is a video. Normally you're not supposed to
+            pass videos to this option, so this paragraph describes the behavior
+            coincidentally resulting from implementation details.)</p>
+            <p class="last">This is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--cover-art-file=&lt;file&gt;</span></tt></dt>
+            <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--cover-art-files-append</span></tt>. Each use of this
+            option will add a new external file.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--cover-art-auto=&lt;no|fuzzy&gt;</span></tt></dt>
+            <dd><p class="first">Whether to load _external_ cover art automatically (default: fuzzy). Similar
+            to <tt class="docutils literal"><span class="pre">--sub-auto</span></tt> and <tt class="docutils literal"><span class="pre">--audio-file-auto</span></tt>. However, it's currently limited
+            to picking up a whitelist of &quot;album art&quot; filenames (such as <tt class="docutils literal">cover.jpg</tt>),
+            so currently only the <tt class="docutils literal">fuzzy</tt> choice is available. In addition, if a video
+            already has tracks (which are not marked as cover art), external cover art
+            will not be loaded.</p>
+            <p>See <tt class="docutils literal"><span class="pre">--cover-art-files</span></tt> for details about what constitutes cover art.</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">--audio-display</span></tt> how to control display of cover art (this can be
+            used to disable cover art that is part of the file).</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--autoload-files=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Automatically load/select external files (default: yes).</p>
             <p>If set to <tt class="docutils literal">no</tt>, then do not automatically load external files as specified
