@@ -5261,6 +5261,19 @@
             <dd>Set the WebP compression level. Higher means better compression, but takes
             more CPU time. Note that this also affects the screenshot quality when used
             with lossy WebP files. The default is 4.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--screenshot-sw=&lt;yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Whether to use software rendering for screenshots (default: no).</p>
+            <p>If set to no, the screenshot will be rendered by the current VO if possible
+            (only vo_gpu currently). The advantage is that this will (probably) always
+            show up as in the video window, because the same code is used for rendering.
+            But since the renderer needs to be reinitialized, this can be slow and
+            interrupt playback. (Unless the <tt class="docutils literal">window</tt> mode is used with the
+            <tt class="docutils literal">screenshot</tt> command.)</p>
+            <p class="last">If set to yes, the software scaler is used to convert the video to RGB (or
+            whatever the target screenshot requires). In this case, conversion will
+            run in a separate thread and will probably not interrupt playback. The
+            software renderer may lack some capabilities, such as HDR rendering.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="software-scaler">
