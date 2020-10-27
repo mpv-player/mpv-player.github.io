@@ -173,6 +173,8 @@
             <dd>Toggle infinite looping.</dd>
             <dt>Ctrl + and Ctrl -</dt>
             <dd>Adjust audio delay (A/V sync) by +/- 0.1 seconds.</dd>
+            <dt>Shift+g and Shift+f</dt>
+            <dd>Adjust subtitle font size by +/- 10%.</dd>
             <dt>u</dt>
             <dd>Switch between applying no style overrides to SSA/ASS subtitles, and
             overriding them almost completely with the normal subtitle style. See
@@ -2165,6 +2167,10 @@
             <dd>Make mpv use the master manifest URL for formats like HLS and DASH,
             if available, allowing for video/audio selection in runtime (default:
             no). It's disabled (&quot;no&quot;) by default for performance reasons.</dd>
+            <dt><tt class="docutils literal"><span class="pre">ytdl_path=youtube-dl</span></tt></dt>
+            <dd>Configure path to youtube-dl executable or a compatible fork's.
+            The default &quot;youtube-dl&quot; looks for the executable in PATH. In a Windows
+            environment the suffix extension &quot;.exe&quot; is always appended.</dd>
             </dl>
             <div class="admonition admonition-why-do-the-option-names-mix-and last">
             <p class="first admonition-title">Why do the option names mix <tt class="docutils literal">_</tt> and <tt class="docutils literal">-</tt>?</p>
@@ -13293,8 +13299,15 @@
             <div class="section" id="commands">
             <h2>Commands</h2>
             <dl class="docutils">
-            <dt><tt class="docutils literal"><span class="pre">script-message-to</span> console type &lt;text&gt;</tt></dt>
-            <dd>Show the console and pre-fill it with the provided text.</dd>
+            <dt><tt class="docutils literal"><span class="pre">script-message-to</span> console type &lt;text&gt; [&lt;cursor_pos&gt;]</tt></dt>
+            <dd><p class="first">Show the console and pre-fill it with the provided text, optionally
+            specifying the initial cursor position as a positive integer starting from
+            1.</p>
+            <div class="admonition admonition-example-for-input-conf last">
+            <p class="first admonition-title">Example for input.conf</p>
+            <p class="last"><tt class="docutils literal">% <span class="pre">script-message-to</span> console type &quot;seek&nbsp; <span class="pre">absolute-percent&quot;</span> 6</tt></p>
+            </div>
+            </dd>
             </dl>
             </div>
             <div class="section" id="known-issues">
