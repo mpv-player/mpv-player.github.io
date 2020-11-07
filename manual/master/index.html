@@ -8222,6 +8222,70 @@
             <dd>Use 256 colors - for terminals which don't support true color.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal">sixel</tt></dt>
+            <dd><p class="first">Sixel graphics video output driver based on libsixel that works on a
+            console that has sixel graphics enabled such as <tt class="docutils literal">xterm</tt> or <tt class="docutils literal">mlterm</tt>.
+            Additionally some terminals have limitation on the dimensions, so may
+            not display images bigger than 1000x1000 for example. Make sure that
+            <tt class="docutils literal">img2sixel</tt> can display images of the corresponding resolution.
+            You may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent performance.</p>
+            <p>Note: the Sixel image output is not synchronized with other terminal output
+            from mpv, which can lead to broken images. The option <tt class="docutils literal"><span class="pre">--really-quiet</span></tt>
+            can help with that, and is recommended.</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-diffusion=&lt;algo&gt;</span></tt></dt>
+            <dd><p class="first">Selects the diffusion algorithm for dithering used by libsixel.
+            Can be one of the below list as per libsixel's documentation.</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Choose diffuse type automatically</dd>
+            <dt>none</dt>
+            <dd>Don't diffuse</dd>
+            <dt>atkinson</dt>
+            <dd>Diffuse with Bill Atkinson's method. (Default)</dd>
+            <dt>fs</dt>
+            <dd>Diffuse with Floyd-Steinberg method</dd>
+            <dt>jajuni</dt>
+            <dd>Diffuse with Jarvis, Judice &amp; Ninke method</dd>
+            <dt>stucki</dt>
+            <dd>Diffuse with Stucki's method</dd>
+            <dt>burkes</dt>
+            <dd>Diffuse with Burkes' method</dd>
+            <dt>arithmetic</dt>
+            <dd>Positionally stable arithmetic dither</dd>
+            <dt>xor</dt>
+            <dd>Positionally stable arithmetic xor based dither</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-width=&lt;width&gt;</span></tt>  <tt class="docutils literal"><span class="pre">--vo-sixel-height=&lt;height&gt;</span></tt></dt>
+            <dd>The output video resolution will be set to width and height
+            These default to 320x240 if not set. The terminal window must
+            be bigger than this resolution to have smooth playback.
+            Additionally the last row will be a blank line and can't be
+            used to display pixel data.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-fixedpalette=&lt;0|1&gt;</span></tt> (default: 0)</dt>
+            <dd>Use libsixel's built-in static palette using the XTERM256 profile
+            for dither.  Fixed palette uses 256 colors for dithering.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-reqcolors=&lt;colors&gt;</span></tt> (default: 256)</dt>
+            <dd>Setup libsixel to use required number of colors for dynamic palette.
+            This value depends on the console as well. Xterm supports 256.
+            Can set this to a lower value for faster performance.
+            This option has no effect if fixed palette is used.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-color-threshold=&lt;threshold&gt;</span></tt> (default: 0)</dt>
+            <dd>This threshold value is used in dynamic palette mode to
+            recompute the palette based on the scene changes.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-offset-top=&lt;top&gt;</span></tt> (default: 1)</dt>
+            <dd>The output video playback will start from the specified row number.
+            If this is greater than 1, then those many rows will be skipped.
+            This option can be used to shift video below in the terminal.
+            If it is greater than number of rows in terminal, then it is ignored.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-offset-left=&lt;left&gt;</span></tt> (default: 1)</dt>
+            <dd>The output video playback will start from the specified column number.
+            If this is greater than 1, then those many columns will be skipped.
+            This option can be used to shift video to the right in the terminal.
+            If it is greater than number of columns in terminal, then it is ignored.</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal">image</tt></dt>
             <dd><p class="first">Output each frame into an image file in the current directory. Each file
             takes the frame number padded with leading zeros as name.</p>
