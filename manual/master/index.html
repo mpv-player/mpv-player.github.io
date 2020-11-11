@@ -10102,7 +10102,7 @@
             </dd>
             <dt><tt class="docutils literal">playback_only</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
             <dd>Boolean indicating whether the process should be killed when playback
-            terminates (optional, default: yes). If enabled, stopping playback
+            terminates (optional, default: true). If enabled, stopping playback
             will automatically kill the process, and you can't start it outside of
             playback.</dd>
             <dt><tt class="docutils literal">capture_size</tt> (<tt class="docutils literal">MPV_FORMAT_INT64</tt>)</dt>
@@ -10118,7 +10118,7 @@
             <dd>Whether to run the process in detached mode (optional, default: no). In
             this mode, the process is run in a new process session, and the command
             does not wait for the process to terminate. If neither
-            <tt class="docutils literal">capture_stdout</tt> nor <tt class="docutils literal">capture_stderr</tt> have been set to <tt class="docutils literal">yes</tt>,
+            <tt class="docutils literal">capture_stdout</tt> nor <tt class="docutils literal">capture_stderr</tt> have been set to true,
             the command returns immediately after the new process has been started,
             otherwise the command will read as long as the pipes are open.</dd>
             <dt><tt class="docutils literal">env</tt> (<tt class="docutils literal">MPV_FORMAT_NODE_ARRAY[MPV_FORMAT_STRING]</tt>)</dt>
@@ -10138,8 +10138,8 @@
             silently discarded. Probably does not work on win32.</dd>
             <dt><tt class="docutils literal">passthrough_stdin</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
             <dd>If enabled, wire the new process' stdin to mpv's stdin (default: no).
-            Before mpv 0.33.0, this argument did not exist, but the default was if
-            it was set to <tt class="docutils literal">yes</tt>.</dd>
+            Before mpv 0.33.0, this argument did not exist, but the behavior was as
+            if this was set to true.</dd>
             </dl>
             <p>The command returns the following result (as <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt>):</p>
             <dl class="docutils">
@@ -10161,13 +10161,12 @@
             the process was terminated in an unusual way. The string <tt class="docutils literal">init</tt> if the
             process could not be started.</p>
             <p class="last">On Windows, <tt class="docutils literal">killed</tt> is only returned when the process has been
-            killed by mpv as a result of <tt class="docutils literal">playback_only</tt> being set to <tt class="docutils literal">yes</tt>.</p>
+            killed by mpv as a result of <tt class="docutils literal">playback_only</tt> being set to true.</p>
             </dd>
             <dt><tt class="docutils literal">killed_by_us</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
-            <dd>Set to <tt class="docutils literal">yes</tt> if the process has been killed by mpv, for example as a
-            result of <tt class="docutils literal">playback_only</tt> being set to <tt class="docutils literal">yes</tt>, aborting the command
-            (e.g. by <tt class="docutils literal">mp.abort_async_command()</tt>), or if the player is about to
-            exit.</dd>
+            <dd>Whether the process has been killed by mpv, for example as a result of
+            <tt class="docutils literal">playback_only</tt> being set to true, aborting the command (e.g. by
+            <tt class="docutils literal">mp.abort_async_command()</tt>), or if the player is about to exit.</dd>
             </dl>
             <p>Note that the command itself will always return success as long as the
             parameters are correct. Whether the process could be spawned or whether
@@ -10379,8 +10378,8 @@
             <dt>&lt;add&gt;</dt>
             <dd>Append the new filter chain to the previous one.</dd>
             <dt>&lt;toggle&gt;</dt>
-            <dd><p class="first">Check if the given filter (with the exact parameters) is already
-            in the video chain. If yes, remove the filter. If no, add the filter.
+            <dd><p class="first">Check if the given filter (with the exact parameters) is already in the
+            video chain. If it is, remove the filter. If it isn't, add the filter.
             (If several filters are passed to the command, this is done for
             each filter.)</p>
             <p class="last">A special variant is combining this with labels, and using <tt class="docutils literal">&#64;name</tt>
@@ -10627,13 +10626,13 @@
             between different OSD formats and builtin OSD is handled.</p>
             </dd>
             <dt><tt class="docutils literal">hidden</tt></dt>
-            <dd>If set to <tt class="docutils literal">yes</tt>/true, do not display this (default: no).</dd>
+            <dd>If set to true, do not display this (default: false).</dd>
             <dt><tt class="docutils literal">compute_bounds</tt></dt>
-            <dd><p class="first">If set to <tt class="docutils literal">yes</tt>/true, attempt to determine bounds and write them to
-            the command's result value as <tt class="docutils literal">x0</tt>, <tt class="docutils literal">x1</tt>, <tt class="docutils literal">y0</tt>, <tt class="docutils literal">y1</tt> rectangle
-            (default: no). If the rectangle is empty, not known, or somehow
-            degenerate, it is not set. <tt class="docutils literal">x1</tt>/<tt class="docutils literal">y1</tt> is the coordinate of the bottom
-            exclusive corner of the rectangle.</p>
+            <dd><p class="first">If set to true, attempt to determine bounds and write them to the
+            command's result value as <tt class="docutils literal">x0</tt>, <tt class="docutils literal">x1</tt>, <tt class="docutils literal">y0</tt>, <tt class="docutils literal">y1</tt> rectangle
+            (default: false). If the rectangle is empty, not known, or somehow
+            degenerate, it is not set. <tt class="docutils literal">x1</tt>/<tt class="docutils literal">y1</tt> is the coordinate of the
+            bottom exclusive corner of the rectangle.</p>
             <p>The result value may depend on the VO window size, and is based on the
             last known window size at the time of the call. This means the results
             may be different from what is actually rendered.</p>
@@ -10988,6 +10987,16 @@
             <dd>Happens on video output or filter reconfig.</dd>
             <dt><tt class="docutils literal"><span class="pre">audio-reconfig</span></tt> (<tt class="docutils literal">MPV_EVENT_AUDIO_RECONFIG</tt>)</dt>
             <dd>Happens on audio output or filter reconfig.</dd>
+            <dt><tt class="docutils literal"><span class="pre">property-change</span></tt> (<tt class="docutils literal">MPV_EVENT_PROPERTY_CHANGE</tt>)</dt>
+            <dd><p class="first">Happens when a property that is being observed changes value.</p>
+            <p>The event has the following fields:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal">name</tt></dt>
+            <dd>The name of the property.</dd>
+            <dt><tt class="docutils literal">data</tt></dt>
+            <dd>The new value of the property.</dd>
+            </dl>
+            </dd>
             </dl>
             <p>The following events also happen, but are deprecated: <tt class="docutils literal"><span class="pre">tracks-changed</span></tt>,
             <tt class="docutils literal"><span class="pre">track-switched</span></tt>, <tt class="docutils literal">pause</tt>, <tt class="docutils literal">unpause</tt>, <tt class="docutils literal"><span class="pre">metadata-update</span></tt>, <tt class="docutils literal">idle</tt>,
@@ -11184,11 +11193,13 @@
             <h2>Property list</h2>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
-            <p class="last">Most options can be set as runtime via properties as well. Just remove the
+            <p>Most options can be set as runtime via properties as well. Just remove the
             leading <tt class="docutils literal"><span class="pre">--</span></tt> from the option name. These are not documented below, see
             <a class="reference internal" href="#options">OPTIONS</a> instead. Only properties which do not exist as option with the
             same name, or which have very different behavior from the options are
             documented below.</p>
+            <p class="last">Properties marked as (RW) are writeable, while those that aren't are
+            read-only.</p>
             </div>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">audio-speed-correction</span></tt>, <tt class="docutils literal"><span class="pre">video-speed-correction</span></tt></dt>
@@ -11198,7 +11209,7 @@
             being <tt class="docutils literal">(raw - 1) * 100</tt> for the given raw property value.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">display-sync-active</span></tt></dt>
-            <dd>Return whether <tt class="docutils literal"><span class="pre">--video-sync=display</span></tt> is actually active.</dd>
+            <dd>Whether <tt class="docutils literal"><span class="pre">--video-sync=display</span></tt> is actually active.</dd>
             <dt><tt class="docutils literal">filename</tt></dt>
             <dd><p class="first">Currently played file, with path stripped. If this is an URL, try to undo
             percent encoding as well. (The result is not necessarily correct, but
@@ -11320,7 +11331,7 @@
             <dt><tt class="docutils literal"><span class="pre">time-remaining</span></tt></dt>
             <dd>Remaining length of the file in seconds. Note that the file duration is not
             always exactly known, so this is an estimate.</dd>
-            <dt><tt class="docutils literal"><span class="pre">audio-pts</span></tt> (R)</dt>
+            <dt><tt class="docutils literal"><span class="pre">audio-pts</span></tt></dt>
             <dd>Current audio playback position in current file in seconds. Unlike time-pos,
             this updates more often than once per frame. For audio-only files, it is
             mostly equivalent to time-pos, while for video-only files this property is
@@ -11361,11 +11372,11 @@
             <dt><tt class="docutils literal"><span class="pre">edition-list/count</span></tt></dt>
             <dd>Number of editions. If there are no editions, this can be 0 or 1 (1
             if there's a useless dummy edition).</dd>
-            <dt><tt class="docutils literal"><span class="pre">edition-list/N/id</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">edition-list/N/id</span></tt> (RW)</dt>
             <dd>Edition ID as integer. Use this to set the <tt class="docutils literal">edition</tt> property.
             Currently, this is the same as the edition index.</dd>
             <dt><tt class="docutils literal"><span class="pre">edition-list/N/default</span></tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if this is the default edition, <tt class="docutils literal">no</tt> otherwise.</dd>
+            <dd>Whether this is the default edition.</dd>
             <dt><tt class="docutils literal"><span class="pre">edition-list/N/title</span></tt></dt>
             <dd>Edition title as stored in the file. Not always available.</dd>
             </dl>
@@ -11435,19 +11446,19 @@
             <dt><tt class="docutils literal"><span class="pre">af-metadata/&lt;filter-label&gt;</span></tt></dt>
             <dd>Equivalent to <tt class="docutils literal"><span class="pre">vf-metadata/&lt;filter-label&gt;</span></tt>, but for audio filters.</dd>
             <dt><tt class="docutils literal"><span class="pre">idle-active</span></tt></dt>
-            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if no file is loaded, but the player is staying around
+            <dd><p class="first">Returns <tt class="docutils literal">yes</tt>/true if no file is loaded, but the player is staying around
             because of the <tt class="docutils literal"><span class="pre">--idle</span></tt> option.</p>
             <p class="last">(Renamed from <tt class="docutils literal">idle</tt>.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">core-idle</span></tt></dt>
-            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the playback core is paused, otherwise <tt class="docutils literal">no</tt>. This can
-            be different <tt class="docutils literal">pause</tt> in special situations, such as when the player
-            pauses itself due to low network cache.</p>
-            <p class="last">This also returns <tt class="docutils literal">yes</tt> if playback is restarting or if nothing is
-            playing at all. In other words, it's only <tt class="docutils literal">no</tt> if there's actually
+            <dd><p class="first">Whether the playback core is paused. This can differ from <tt class="docutils literal">pause</tt> in
+            special situations, such as when the player pauses itself due to low
+            network cache.</p>
+            <p class="last">This also returns <tt class="docutils literal">yes</tt>/true if playback is restarting or if nothing is
+            playing at all. In other words, it's only <tt class="docutils literal">no</tt>/false if there's actually
             video playing. (Behavior since mpv 0.7.0.)</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">cache-speed</span></tt> (R)</dt>
+            <dt><tt class="docutils literal"><span class="pre">cache-speed</span></tt></dt>
             <dd><p class="first">Current I/O read speed between the cache and the lower layer (like network).
             This gives the number bytes per seconds over a 1 second window (using
             the type <tt class="docutils literal">MPV_FORMAT_INT64</tt> for the client API).</p>
@@ -11462,12 +11473,12 @@
             <tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt> but returns the last timestamp of buffered
             data in demuxer.</dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-idle</span></tt></dt>
-            <dd>Returns <tt class="docutils literal">yes</tt> if the demuxer is idle, which means the demuxer cache is
-            filled to the requested amount, and is currently not reading more data.</dd>
+            <dd>Whether the demuxer is idle, which means that the demuxer cache is filled
+            to the requested amount, and is currently not reading more data.</dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-cache-state</span></tt></dt>
-            <dd><p class="first">Various undocumented or half-documented things.</p>
-            <p>Each entry in <tt class="docutils literal"><span class="pre">seekable-ranges</span></tt> represents a region in the demuxer cache
-            that can be seeked to. If there are multiple demuxers active, this only
+            <dd><p class="first">Each entry in <tt class="docutils literal"><span class="pre">seekable-ranges</span></tt> represents a region in the demuxer cache
+            that can be seeked to, with a <tt class="docutils literal">start</tt> and <tt class="docutils literal">end</tt> fields containing the
+            respective timestamps. If there are multiple demuxers active, this only
             returns information about the &quot;main&quot; demuxer, but might be changed in
             future to return unified information about all demuxers. The ranges are in
             arbitrary order. Often, ranges will overlap for a bit, before being joined.
@@ -11480,15 +11491,19 @@
             points to the beginning of the stream (BOF). This implies you cannot seek
             before this position at all. <tt class="docutils literal"><span class="pre">eof-cached</span></tt> indicates whether the seek range
             with the highest timestamp points to the end of the stream (EOF). If both
-            <tt class="docutils literal"><span class="pre">bof-cached</span></tt> and <tt class="docutils literal"><span class="pre">eof-cached</span></tt> are set to <tt class="docutils literal">yes</tt>, and there's only 1
-            cache range, the entire stream is cached.</p>
+            <tt class="docutils literal"><span class="pre">bof-cached</span></tt> and <tt class="docutils literal"><span class="pre">eof-cached</span></tt> are true, and there's only 1 cache range,
+            the entire stream is cached.</p>
             <p><tt class="docutils literal"><span class="pre">fw-bytes</span></tt> is the number of bytes of packets buffered in the range
             starting from the current decoding position. This is a rough estimate
             (may not account correctly for various overhead), and stops at the
             demuxer position (it ignores seek ranges after it).</p>
             <p><tt class="docutils literal"><span class="pre">file-cache-bytes</span></tt> is the number of bytes stored in the file cache. This
             includes all overhead, and possibly unused data (like pruned data). This
-            member is missing if the file cache is not active.</p>
+            member is missing if the file cache wasn't enabled with
+            <tt class="docutils literal"><span class="pre">--cache-on-disk=yes</span></tt>.</p>
+            <p><tt class="docutils literal"><span class="pre">cache-end</span></tt> is <tt class="docutils literal"><span class="pre">demuxer-cache-time</span></tt>. Missing if unavailable.</p>
+            <p><tt class="docutils literal"><span class="pre">reader-pts</span></tt> is the approximate timestamp of the start of the buffered
+            range. Missing if unavailable.</p>
             <p><tt class="docutils literal"><span class="pre">cache-duration</span></tt> is <tt class="docutils literal"><span class="pre">demuxer-cache-duration</span></tt>. Missing if unavailable.</p>
             <p><tt class="docutils literal"><span class="pre">raw-input-rate</span></tt> is the estimated input rate of the network layer (or any
             other byte-oriented input layer) in bytes per second. May be inaccurate or
@@ -11506,50 +11521,51 @@
                 &quot;eof-cached&quot;        MPV_FORMAT_FLAG
                 &quot;fw-bytes&quot;          MPV_FORMAT_INT64
                 &quot;file-cache-bytes&quot;  MPV_FORMAT_INT64
+                &quot;cache-end&quot;         MPV_FORMAT_DOUBLE
+                &quot;reader-pts&quot;        MPV_FORMAT_DOUBLE
                 &quot;cache-duration&quot;    MPV_FORMAT_DOUBLE
                 &quot;raw-input-rate&quot;    MPV_FORMAT_INT64
             </pre>
             <p>Other fields (might be changed or removed in the future):</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal">eof</tt></dt>
-            <dd>True if the reader thread has hit the end of the file.</dd>
+            <dd>Whether the reader thread has hit the end of the file.</dd>
             <dt><tt class="docutils literal">underrun</tt></dt>
-            <dd>True if the reader thread could not satisfy a decoder's request for a
+            <dd>Whether the reader thread could not satisfy a decoder's request for a
             new packet.</dd>
             <dt><tt class="docutils literal">idle</tt></dt>
-            <dd>True if the thread is currently not reading.</dd>
+            <dd>Whether the thread is currently not reading.</dd>
             <dt><tt class="docutils literal"><span class="pre">total-bytes</span></tt></dt>
             <dd>Sum of packet bytes (plus some overhead estimation) of the entire packet
             queue, including cached seekable ranges.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">demuxer-via-network</span></tt></dt>
-            <dd>Returns <tt class="docutils literal">yes</tt> if the stream demuxed via the main demuxer is most likely
-            played via network. What constitutes &quot;network&quot; is not always clear, might
-            be used for other types of untrusted streams, could be wrong in certain
-            cases, and its definition might be changing. Also, external files (like
-            separate audio files or streams) do not influence the value of this
-            property (currently).</dd>
-            <dt><tt class="docutils literal"><span class="pre">demuxer-start-time</span></tt> (R)</dt>
-            <dd>Returns the start time reported by the demuxer in fractional seconds.</dd>
+            <dd>Whether the stream demuxed via the main demuxer is most likely played via
+            network. What constitutes &quot;network&quot; is not always clear, might be used for
+            other types of untrusted streams, could be wrong in certain cases, and its
+            definition might be changing. Also, external files (like separate audio
+            files or streams) do not influence the value of this property (currently).</dd>
+            <dt><tt class="docutils literal"><span class="pre">demuxer-start-time</span></tt></dt>
+            <dd>The start time reported by the demuxer in fractional seconds.</dd>
             <dt><tt class="docutils literal"><span class="pre">paused-for-cache</span></tt></dt>
-            <dd>Returns <tt class="docutils literal">yes</tt> when playback is paused because of waiting for the cache.</dd>
+            <dd>Whether playback is paused because of waiting for the cache.</dd>
             <dt><tt class="docutils literal"><span class="pre">cache-buffering-state</span></tt></dt>
-            <dd>Return the percentage (0-100) of the cache fill status until the player
-            will unpause (related to <tt class="docutils literal"><span class="pre">paused-for-cache</span></tt>).</dd>
+            <dd>The percentage (0-100) of the cache fill status until the player will
+            unpause (related to <tt class="docutils literal"><span class="pre">paused-for-cache</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">eof-reached</span></tt></dt>
-            <dd>Returns <tt class="docutils literal">yes</tt> if end of playback was reached, <tt class="docutils literal">no</tt> otherwise. Note
-            that this is usually interesting only if <tt class="docutils literal"><span class="pre">--keep-open</span></tt> is enabled,
-            since otherwise the player will immediately play the next file (or exit
-            or enter idle mode), and in these cases the <tt class="docutils literal"><span class="pre">eof-reached</span></tt> property will
-            logically be cleared immediately after it's set.</dd>
+            <dd>Whether the end of playback was reached. Note that this is usually
+            interesting only if <tt class="docutils literal"><span class="pre">--keep-open</span></tt> is enabled, since otherwise the player
+            will immediately play the next file (or exit or enter idle mode), and in
+            these cases the <tt class="docutils literal"><span class="pre">eof-reached</span></tt> property will logically be cleared
+            immediately after it's set.</dd>
             <dt><tt class="docutils literal">seeking</tt></dt>
-            <dd>Returns <tt class="docutils literal">yes</tt> if the player is currently seeking, or otherwise trying
-            to restart playback. (It's possible that it returns <tt class="docutils literal">yes</tt> while a file
-            is loaded. This is because the same underlying code is used for seeking and
+            <dd>Whether the player is currently seeking, or otherwise trying to restart
+            playback. (It's possible that it returns <tt class="docutils literal">yes</tt>/true while a file is
+            loaded. This is because the same underlying code is used for seeking and
             resyncing.)</dd>
             <dt><tt class="docutils literal"><span class="pre">mixer-active</span></tt></dt>
-            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the audio mixer is active, <tt class="docutils literal">no</tt> otherwise.</p>
+            <dd><p class="first">Whether the audio mixer is active.</p>
             <p class="last">This option is relatively useless. Before mpv 0.18.1, it could be used to
             infer behavior of the <tt class="docutils literal">volume</tt> property.</p>
             </dd>
@@ -11601,12 +11617,12 @@
             <dt><tt class="docutils literal"><span class="pre">audio-out-params</span></tt></dt>
             <dd>Same as <tt class="docutils literal"><span class="pre">audio-params</span></tt>, but the format of the data written to the audio
             API.</dd>
-            <dt><tt class="docutils literal">colormatrix</tt> (R)</dt>
+            <dt><tt class="docutils literal">colormatrix</tt></dt>
             <dd>Redirects to <tt class="docutils literal"><span class="pre">video-params/colormatrix</span></tt>. This parameter (as well as
             similar ones) can be overridden with the <tt class="docutils literal">format</tt> video filter.</dd>
-            <dt><tt class="docutils literal"><span class="pre">colormatrix-input-range</span></tt> (R)</dt>
+            <dt><tt class="docutils literal"><span class="pre">colormatrix-input-range</span></tt></dt>
             <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">colormatrix-primaries</span></tt> (R)</dt>
+            <dt><tt class="docutils literal"><span class="pre">colormatrix-primaries</span></tt></dt>
             <dd>See <tt class="docutils literal">colormatrix</tt>.</dd>
             <dt><tt class="docutils literal">hwdec</tt> (RW)</dt>
             <dd><p class="first">Reflects the <tt class="docutils literal"><span class="pre">--hwdec</span></tt> option.</p>
@@ -11619,8 +11635,8 @@
             this purpose.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">hwdec-current</span></tt></dt>
-            <dd>Return the current hardware decoding in use. If decoding is active, return
-            one of the values used by the <tt class="docutils literal">hwdec</tt> option/property. <tt class="docutils literal">no</tt> indicates
+            <dd>The current hardware decoding in use. If decoding is active, return one of
+            the values used by the <tt class="docutils literal">hwdec</tt> option/property. <tt class="docutils literal">no</tt>/false indicates
             software decoding. If no decoder is loaded, the property is unavailable.</dd>
             <dt><tt class="docutils literal"><span class="pre">hwdec-interop</span></tt></dt>
             <dd><p class="first">This returns the currently loaded hardware decoding/output interop driver.
@@ -11737,13 +11753,18 @@
             are used on OSD, the information might be off by a few frames due to OSD
             redrawing and frame display being somewhat disconnected, and you might
             have to pause and force a redraw.</p>
-            <p>Sub-properties:</p>
-            <pre class="last literal-block">
-            video-frame-info/picture-type
-            video-frame-info/interlaced
-            video-frame-info/tff
-            video-frame-info/repeat
-            </pre>
+            <p>This has a number of sub-properties:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">video-frame-info/picture-type</span></tt></dt>
+            <dd>The type of the picture. It can be &quot;I&quot; (intra), &quot;P&quot; (predicted), &quot;B&quot;
+            (bi-dir predicted) or unavailable.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-frame-info/interlaced</span></tt></dt>
+            <dd>Whether the content of the frame is interlaced.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-frame-info/tff</span></tt></dt>
+            <dd>If the content is interlaced, whether the top field is displayed first.</dd>
+            <dt><tt class="docutils literal"><span class="pre">video-frame-info/repeat</span></tt></dt>
+            <dd>Whether the frame must be delayed when decoding.</dd>
+            </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">container-fps</span></tt></dt>
             <dd><p class="first">Container FPS. This can easily contain bogus values. For videos that use
@@ -11776,7 +11797,8 @@
             since setting the option, and the window size was not restricted in other
             ways. The property is unavailable if no video is active.</dd>
             <dt><tt class="docutils literal">focused</tt></dt>
-            <dd>Whether the window has focus. Currently works only on X11 and Wayland.</dd>
+            <dd>Whether the window has focus. Currently works only on X11, Wayland and
+            macOS.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-names</span></tt></dt>
             <dd>Names of the displays that the mpv window covers. On X11, these
             are the xrandr names (LVDS1, HDMI1, DP1, VGA1, etc.). On Windows, these
@@ -11797,9 +11819,9 @@
             versions, it returned the <tt class="docutils literal"><span class="pre">--display-fps</span></tt> option value.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">estimated-display-fps</span></tt></dt>
-            <dd>Only available if display-sync mode (as selected by <tt class="docutils literal"><span class="pre">--video-sync</span></tt>) is
-            active. Returns the actual rate at which display refreshes seem to occur,
-            measured by system time.</dd>
+            <dd>The actual rate at which display refreshes seem to occur, measured by
+            system time. Only available if display-sync mode (as selected by
+            <tt class="docutils literal"><span class="pre">--video-sync</span></tt>) is active.</dd>
             <dt><tt class="docutils literal"><span class="pre">vsync-jitter</span></tt></dt>
             <dd>Estimated deviation factor of the vsync duration.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-hidpi-scale</span></tt></dt>
@@ -11828,17 +11850,17 @@
             <p>Has the following sub-properties (which can be read as <tt class="docutils literal">MPV_FORMAT_NODE</tt>
             or Lua table with <tt class="docutils literal">mp.get_property_native</tt>):</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal">w</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">osd-dimensions/w</span></tt></dt>
             <dd>Size of the VO window in OSD render units (usually pixels, but may be
             scaled pixels with VOs like <tt class="docutils literal">xv</tt>).</dd>
-            <dt><tt class="docutils literal">h</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">osd-dimensions/h</span></tt></dt>
             <dd>Size of the VO window in OSD render units,</dd>
-            <dt><tt class="docutils literal">par</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">osd-dimensions/par</span></tt></dt>
             <dd>Pixel aspect ratio of the OSD (usually 1).</dd>
-            <dt><tt class="docutils literal">aspect</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">osd-dimensions/aspect</span></tt></dt>
             <dd>Display aspect ratio of the VO window. (Computing from the properties
             above.)</dd>
-            <dt><tt class="docutils literal">mt</tt>, <tt class="docutils literal">mb</tt>, <tt class="docutils literal">ml</tt>, <tt class="docutils literal">mr</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">osd-dimensions/mt</span></tt>, <tt class="docutils literal"><span class="pre">osd-dimensions/mb</span></tt>, <tt class="docutils literal"><span class="pre">osd-dimensions/ml</span></tt>, <tt class="docutils literal"><span class="pre">osd-dimensions/mr</span></tt></dt>
             <dd>OSD to video margins (top, bottom, left, right). This describes the
             area into which the video is rendered.</dd>
             </dl>
@@ -11846,9 +11868,9 @@
             VO window is not created or visible.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">sub-text</span></tt></dt>
-            <dd><p class="first">Return the current subtitle text regardless of sub visibility.
-            Formatting is stripped. If the subtitle is not text-based
-            (i.e. DVD/BD subtitles), an empty string is returned.</p>
+            <dd><p class="first">The current subtitle text regardless of sub visibility. Formatting is
+            stripped. If the subtitle is not text-based (i.e. DVD/BD subtitles), an
+            empty string is returned.</p>
             <p class="last">This property is experimental and might be removed in the future.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">sub-text-ass</span></tt></dt>
@@ -11863,14 +11885,14 @@
             <p class="last">This property is experimental and might be removed in the future.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">sub-start</span></tt></dt>
-            <dd>Return the current subtitle start time (in seconds). If there's multiple
-            current subtitles, returns the first start time. If no current subtitle is
-            present null is returned instead.</dd>
+            <dd>The current subtitle start time (in seconds). If there's multiple current
+            subtitles, returns the first start time. If no current subtitle is present
+            null is returned instead.</dd>
             <dt><tt class="docutils literal"><span class="pre">sub-end</span></tt></dt>
-            <dd>Return the current subtitle end time (in seconds). If there's multiple
-            current subtitles, return the last end time. If no current subtitle is
-            present, or if it's present but has unknown or incorrect duration, null
-            is returned instead.</dd>
+            <dd>The current subtitle end time (in seconds). If there's multiple current
+            subtitles, return the last end time. If no current subtitle is present, or
+            if it's present but has unknown or incorrect duration, null is returned
+            instead.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
             <dd><p class="first">Current position on playlist. The first entry is on position 0. Writing to
             this property may start playback at the new position.</p>
@@ -11931,11 +11953,11 @@
             <dt><tt class="docutils literal">playlist/N/filename</tt></dt>
             <dd>Filename of the Nth entry.</dd>
             <dt><tt class="docutils literal">playlist/N/playing</tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if the <tt class="docutils literal"><span class="pre">playlist-playing-pos</span></tt> property points to this entry,
-            unavailable or <tt class="docutils literal">no</tt> otherwise.</dd>
+            <dd><tt class="docutils literal">yes</tt>/true if the <tt class="docutils literal"><span class="pre">playlist-playing-pos</span></tt> property points to this
+            entry, <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
             <dt><tt class="docutils literal">playlist/N/current</tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if the <tt class="docutils literal"><span class="pre">playlist-current-pos</span></tt> property points to this entry,
-            unavailable or <tt class="docutils literal">no</tt> otherwise.</dd>
+            <dd><tt class="docutils literal">yes</tt>/true if the <tt class="docutils literal"><span class="pre">playlist-current-pos</span></tt> property points to this
+            entry, <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
             <dt><tt class="docutils literal">playlist/N/title</tt></dt>
             <dd>Name of the Nth entry. Only available if the playlist file contains
             such fields, and only if mpv's parser supports it for the given
@@ -11983,26 +12005,27 @@
             <dt><tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt></dt>
             <dd>Track language as identified by the file. Not always available.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/albumart</span></tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if this is a video track that consists of a single picture,
-            <tt class="docutils literal">no</tt> or unavailable otherwise. This is used for video tracks that are
-            really attached pictures in audio files.</dd>
+            <dd><tt class="docutils literal">yes</tt>/true if this is a video track that consists of a single
+            picture, <tt class="docutils literal">no</tt>/false or unavailable otherwise. This is used for video
+            tracks that are really attached pictures in audio files.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/default</span></tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if the track has the default flag set in the file, <tt class="docutils literal">no</tt>
-            otherwise.</dd>
+            <dd><tt class="docutils literal">yes</tt>/true if the track has the default flag set in the file,
+            <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/forced</span></tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if the track has the forced flag set in the file, <tt class="docutils literal">no</tt>
-            otherwise.</dd>
+            <dd><tt class="docutils literal">yes</tt>/true if the track has the forced flag set in the file,
+            <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/codec</span></tt></dt>
             <dd>The codec name used by this track, for example <tt class="docutils literal">h264</tt>. Unavailable
             in some rare cases.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/external</span></tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if the track is an external file, <tt class="docutils literal">no</tt> otherwise. This is
-            set for separate subtitle files.</dd>
+            <dd><tt class="docutils literal">yes</tt>/true if the track is an external file, <tt class="docutils literal">no</tt>/false or
+            unavailable otherwise. This is set for separate subtitle files.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/external-filename</span></tt></dt>
             <dd>The filename if the track is from an external file, unavailable
             otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/selected</span></tt></dt>
-            <dd><tt class="docutils literal">yes</tt> if the track is currently decoded, <tt class="docutils literal">no</tt> otherwise.</dd>
+            <dd><tt class="docutils literal">yes</tt>/true if the track is currently decoded, <tt class="docutils literal">no</tt>/false or
+            unavailable otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/main-selection</span></tt></dt>
             <dd>It indicates the selection order of tracks for the same type.
             If a track is not selected, or is selected by the <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt>,
@@ -12139,18 +12162,18 @@
             <p class="last">It's also possible to write the property using this format.</p>
             </dd>
             <dt><tt class="docutils literal">seekable</tt></dt>
-            <dd>Return whether it's generally possible to seek in the current file.</dd>
+            <dd>Whether it's generally possible to seek in the current file.</dd>
             <dt><tt class="docutils literal"><span class="pre">partially-seekable</span></tt></dt>
-            <dd><p class="first">Return <tt class="docutils literal">yes</tt> if the current file is considered seekable, but only because
-            the cache is active. This means small relative seeks may be fine, but larger
-            seeks may fail anyway. Whether a seek will succeed or not is generally not
-            known in advance.</p>
-            <p class="last">If this property returns true, <tt class="docutils literal">seekable</tt> will also return true.</p>
+            <dd><p class="first">Whether the current file is considered seekable, but only because the cache
+            is active. This means small relative seeks may be fine, but larger seeks
+            may fail anyway. Whether a seek will succeed or not is generally not known
+            in advance.</p>
+            <p class="last">If this property returns <tt class="docutils literal">yes</tt>/true, so will <tt class="docutils literal">seekable</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">playback-abort</span></tt></dt>
-            <dd>Return whether playback is stopped or is to be stopped. (Useful in obscure
-            situations like during <tt class="docutils literal">on_load</tt> hook processing, when the user can
-            stop playback, but the script has to explicitly end processing.)</dd>
+            <dd>Whether playback is stopped or is to be stopped. (Useful in obscure
+            situations like during <tt class="docutils literal">on_load</tt> hook processing, when the user can stop
+            playback, but the script has to explicitly end processing.)</dd>
             <dt><tt class="docutils literal"><span class="pre">cursor-autohide</span></tt> (RW)</dt>
             <dd>See <tt class="docutils literal"><span class="pre">--cursor-autohide</span></tt>. Setting this to a new value will always update
             the cursor, and reset the internal timer.</dd>
@@ -12178,9 +12201,9 @@
             <p class="last">A list of tags can be found here: <a class="reference external" href="http://docs.aegisub.org/latest/ASS_Tags/">http://docs.aegisub.org/latest/ASS_Tags/</a></p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vo-configured</span></tt></dt>
-            <dd>Return whether the VO is configured right now. Usually this corresponds to
-            whether the video window is visible. If the <tt class="docutils literal"><span class="pre">--force-window</span></tt> option is
-            used, this is usually always returns <tt class="docutils literal">yes</tt>.</dd>
+            <dd>Whether the VO is configured right now. Usually this corresponds to whether
+            the video window is visible. If the <tt class="docutils literal"><span class="pre">--force-window</span></tt> option is used, this
+            usually always returns <tt class="docutils literal">yes</tt>/true.</dd>
             <dt><tt class="docutils literal"><span class="pre">vo-passes</span></tt></dt>
             <dd><p class="first">Contains introspection about the VO's active render passes and their
             execution times. Not implemented by all VOs.</p>
@@ -12265,9 +12288,9 @@
             <p class="last">These properties shouldn't be used anymore.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">audio-device-list</span></tt></dt>
-            <dd><p class="first">Return the list of discovered audio devices. This is mostly for use with
-            the client API, and reflects what <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt> with the command
-            line player returns.</p>
+            <dd><p class="first">The list of discovered audio devices. This is mostly for use with the
+            client API, and reflects what <tt class="docutils literal"><span class="pre">--audio-device=help</span></tt> with the command line
+            player returns.</p>
             <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
             or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
             the following contents:</p>
@@ -12321,8 +12344,8 @@
             same key at the same time.)</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
-            <dd>Return the working directory of the mpv process. Can be useful for JSON IPC
-            users, because the command line player usually works with relative paths.</dd>
+            <dd>The working directory of the mpv process. Can be useful for JSON IPC users,
+            because the command line player usually works with relative paths.</dd>
             <dt><tt class="docutils literal"><span class="pre">protocol-list</span></tt></dt>
             <dd>List of protocol prefixes potentially recognized by the player. They are
             returned without trailing <tt class="docutils literal">://</tt> suffix (which is still always required).
@@ -12363,26 +12386,26 @@
             <dt><tt class="docutils literal"><span class="pre">input-key-list</span></tt></dt>
             <dd>List of <a class="reference internal" href="#key-names">Key names</a>, same as output by <tt class="docutils literal"><span class="pre">--input-keylist</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">mpv-version</span></tt></dt>
-            <dd>Return the mpv version/copyright string. Depending on how the binary was
-            built, it might contain either a release version, or just a git hash.</dd>
+            <dd>The mpv version/copyright string. Depending on how the binary was built, it
+            might contain either a release version, or just a git hash.</dd>
             <dt><tt class="docutils literal"><span class="pre">mpv-configuration</span></tt></dt>
-            <dd>Return the configuration arguments which were passed to the build system
+            <dd>The configuration arguments which were passed to the build system
             (typically the way <tt class="docutils literal">./waf configure ...</tt> was invoked).</dd>
             <dt><tt class="docutils literal"><span class="pre">ffmpeg-version</span></tt></dt>
-            <dd>Return the contents of the <tt class="docutils literal">av_version_info()</tt> API call. This is a string
-            which identifies the build in some way, either through a release version
-            number, or a git hash. This applies to Libav as well (the property is
-            still named the same.) This property is unavailable if mpv is linked against
-            older FFmpeg and Libav versions.</dd>
+            <dd>The contents of the <tt class="docutils literal">av_version_info()</tt> API call. This is a string which
+            identifies the build in some way, either through a release version number,
+            or a git hash. This applies to Libav as well (the property is still named
+            the same.) This property is unavailable if mpv is linked against older
+            FFmpeg and Libav versions.</dd>
             <dt><tt class="docutils literal"><span class="pre">libass-version</span></tt></dt>
-            <dd>Return the value of <tt class="docutils literal">ass_library_version()</tt>. This is an integer, encoded
-            in a somewhat weird form (apparently &quot;hex BCD&quot;), indicating the release
-            version of the libass library linked to mpv.</dd>
+            <dd>The value of <tt class="docutils literal">ass_library_version()</tt>. This is an integer, encoded in a
+            somewhat weird form (apparently &quot;hex BCD&quot;), indicating the release version
+            of the libass library linked to mpv.</dd>
             <dt><tt class="docutils literal"><span class="pre">options/&lt;name&gt;</span></tt> (RW)</dt>
-            <dd><p class="first">Read-only access to value of option <tt class="docutils literal"><span class="pre">--&lt;name&gt;</span></tt>. Most options can be
-            changed at runtime by writing to this property. Note that many options
-            require reloading the file for changes to take effect. If there is an
-            equivalent property, prefer setting the property instead.</p>
+            <dd><p class="first">The value of option <tt class="docutils literal"><span class="pre">--&lt;name&gt;</span></tt>. Most options can be changed at runtime by
+            writing to this property. Note that many options require reloading the file
+            for changes to take effect. If there is an equivalent property, prefer
+            setting the property instead.</p>
             <p class="last">There shouldn't be any reason to access <tt class="docutils literal"><span class="pre">options/&lt;name&gt;</span></tt> instead of
             <tt class="docutils literal">&lt;name&gt;</tt>, except in situations in which the properties have different
             behavior or conflicting semantics.</p>
@@ -12403,16 +12426,16 @@
             sub-properties - they may change radically in the feature.</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/name</span></tt></dt>
-            <dd>Returns the name of the option.</dd>
+            <dd>The name of the option.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/type</span></tt></dt>
-            <dd>Return the name of the option type, like <tt class="docutils literal">String</tt> or <tt class="docutils literal">Integer</tt>.
-            For many complex types, this isn't very accurate.</dd>
+            <dd>The name of the option type, like <tt class="docutils literal">String</tt> or <tt class="docutils literal">Integer</tt>. For many
+            complex types, this isn't very accurate.</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/set-from-commandline</span></tt></dt>
-            <dd>Return <tt class="docutils literal">yes</tt> if the option was set from the mpv command line,
-            <tt class="docutils literal">no</tt> otherwise. What this is set to if the option is e.g. changed
-            at runtime is left undefined (meaning it could change in the future).</dd>
+            <dd>Whether the option was set from the mpv command line. What this is set
+            to if the option is e.g. changed at runtime is left undefined (meaning
+            it could change in the future).</dd>
             <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/set-locally</span></tt></dt>
-            <dd>Return <tt class="docutils literal">yes</tt> if the option was set per-file. This is the case with
+            <dd>Whether the option was set per-file. This is the case with
             automatically loaded profiles, file-dir configs, and other cases. It
             means the option value will be restored to the value before playback
             start when playback ends.</dd>
@@ -12431,23 +12454,23 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">property-list</span></tt></dt>
-            <dd>Return the list of top-level properties.</dd>
+            <dd>The list of top-level properties.</dd>
             <dt><tt class="docutils literal"><span class="pre">profile-list</span></tt></dt>
-            <dd>Return the list of profiles and their contents. This is highly
-            implementation-specific, and may change any time. Currently, it returns
-            an array of options for each profile. Each option has a name and a value,
-            with the value currently always being a string. Note that the options array
-            is not a map, as order matters and duplicate entries are possible. Recursive
+            <dd>The list of profiles and their contents. This is highly
+            implementation-specific, and may change any time. Currently, it returns an
+            array of options for each profile. Each option has a name and a value, with
+            the value currently always being a string. Note that the options array is
+            not a map, as order matters and duplicate entries are possible. Recursive
             profiles are not expanded, and show up as special <tt class="docutils literal">profile</tt> options.</dd>
             <dt><tt class="docutils literal"><span class="pre">command-list</span></tt></dt>
-            <dd>Return the list of input commands. This returns an array of maps, where
-            each map node represents a command. This map currently only has a single
-            entry: <tt class="docutils literal">name</tt> for the name of the command. (This property is supposed to
-            be a replacement for <tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt>. The option dumps some more
+            <dd>The list of input commands. This returns an array of maps, where each map
+            node represents a command. This map currently only has a single entry:
+            <tt class="docutils literal">name</tt> for the name of the command. (This property is supposed to be a
+            replacement for <tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt>. The option dumps some more
             information, but it's a valid feature request to extend this property if
             needed.)</dd>
             <dt><tt class="docutils literal"><span class="pre">input-bindings</span></tt></dt>
-            <dd><p class="first">Return list of current input key bindings. This returns an array of maps,
+            <dd><p class="first">The list of current input key bindings. This returns an array of maps,
             where each map node represents a binding for a single key/command. This map
             has the following entries:</p>
             <dl class="docutils">
