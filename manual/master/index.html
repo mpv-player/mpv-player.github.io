@@ -8277,6 +8277,9 @@
             of pixels is rounded down to a multiple of number of cells (per axis),
             to take into account padding at the report - this only works correctly
             when the overall padding per axis is smaller than the number of cells.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-exit-clear=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
+            <dd>Whether or not to clear the terminal on quit. When set to no - the last
+            sixel image stays on screen after quit, with the cursor following it.</dd>
             </dl>
             <p>Sixel image quality options:</p>
             <dl class="last docutils">
@@ -8284,12 +8287,12 @@
             <dd><p class="first">Selects the dither algorithm which libsixel should apply.
             Can be one of the below list as per libsixel's documentation.</p>
             <dl class="last docutils">
-            <dt>auto</dt>
-            <dd>Choose diffuse type automatically</dd>
+            <dt>auto (Default)</dt>
+            <dd>Let libsixel choose the dithering method.</dd>
             <dt>none</dt>
             <dd>Don't diffuse</dd>
             <dt>atkinson</dt>
-            <dd>Diffuse with Bill Atkinson's method. (Default)</dd>
+            <dd>Diffuse with Bill Atkinson's method.</dd>
             <dt>fs</dt>
             <dd>Diffuse with Floyd-Steinberg method</dd>
             <dt>jajuni</dt>
@@ -8309,19 +8312,17 @@
             for dither. Fixed palette uses 256 colors for dithering. Note that
             using <tt class="docutils literal">no</tt> (at the time of writing) will slow down <tt class="docutils literal">xterm</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vo-sixel-reqcolors=&lt;colors&gt;</span></tt> (default: 256)</dt>
-            <dd>Set up libsixel to use required number of colors for dynamic palette.
-            This value depends on the terminal emulator as well. Xterm supports
-            256 colors.  Can set this to a lower value for faster performance.
-            This option has no effect if fixed palette is used.</dd>
+            <dd>Has no effect with fixed palette. Set up libsixel to use required
+            number of colors for dynamic palette. This value depends on the
+            terminal emulator as well. Xterm supports 256 colors. Can set this to
+            a lower value for faster performance.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vo-sixel-threshold=&lt;threshold&gt;</span></tt> (default: -1)</dt>
-            <dd>When using a dynamic palette, defines the threshold to change the
+            <dd>Has no effect with fixed palette. Defines the threshold to change the
             palette - as percentage of the number of colors, e.g. 20 will change
             the palette when the number of colors changed by 20%. It's a simple
             measure to reduce the number of palette changes, because it can be slow
-            in some terminals (<tt class="docutils literal">xterm</tt>), however, it seems that in <tt class="docutils literal">mlterm</tt> it
-            causes image corruption. The default (-1) will change the palette
-            on every frame and will have better quality, and no corruption in
-            <tt class="docutils literal">mlterm</tt>.</dd>
+            in some terminals (<tt class="docutils literal">xterm</tt>). The default (-1) will choose a palette
+            on every frame and will have better quality.</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">image</tt></dt>
