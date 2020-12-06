@@ -834,9 +834,11 @@
             ignored. This Lua code execution is not sandboxed.</p>
             <p>Any variables in condition expressions can reference properties. If an
             identifier is not already defined by Lua or mpv, it is interpreted as property.
-            For example, <tt class="docutils literal">pause</tt> would return the current pause status. If the variable
-            name contains any <tt class="docutils literal">_</tt> characters, they are turned into <tt class="docutils literal">-</tt>. For example,
-            <tt class="docutils literal">playback_time</tt> would return the property <tt class="docutils literal"><span class="pre">playback-time</span></tt>.</p>
+            For example, <tt class="docutils literal">pause</tt> would return the current pause status. You cannot
+            reference properties with <tt class="docutils literal">-</tt> this way since that would denote a subtraction,
+            but if the variable name contains any <tt class="docutils literal">_</tt> characters, they are turned into
+            <tt class="docutils literal">-</tt>. For example, <tt class="docutils literal">playback_time</tt> would return the property
+            <tt class="docutils literal"><span class="pre">playback-time</span></tt>.</p>
             <p>A more robust way to access properties is using <tt class="docutils literal">p.property_name</tt> or
             <tt class="docutils literal"><span class="pre">get(&quot;property-name&quot;,</span> default_value)</tt>. The automatic variable to property
             magic will break if a new identifier with the same name is introduced (for
@@ -4009,6 +4011,11 @@
             </div>
             <p class="last">See also <tt class="docutils literal"><span class="pre">--fs-screen</span></tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--screen-name=&lt;string&gt;</span></tt></dt>
+            <dd>In multi-monitor configurations, this option tells mpv which screen to
+            display the video on based on the screen name from the video backend. The
+            same caveats in the <tt class="docutils literal"><span class="pre">--screen</span></tt> option also apply here. This option is
+            ignored and does nothing if <tt class="docutils literal"><span class="pre">--screen</span></tt> is explicitly set.</dd>
             <dt><tt class="docutils literal"><span class="pre">--fullscreen</span></tt>, <tt class="docutils literal"><span class="pre">--fs</span></tt></dt>
             <dd>Fullscreen playback.</dd>
             <dt><tt class="docutils literal"><span class="pre">--fs-screen=&lt;all|current|0-32&gt;</span></tt></dt>
@@ -4027,6 +4034,11 @@
             </div>
             <p class="last">See also <tt class="docutils literal"><span class="pre">--screen</span></tt>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--fs-screen-name=&lt;string&gt;</span></tt></dt>
+            <dd>In multi-monitor configurations, this option tells mpv which screen to go
+            fullscreen to based on the screen name from the video backend. The same
+            caveats in the <tt class="docutils literal"><span class="pre">--fs-screen</span></tt> option also apply here. This option is
+            ignored and does nothing if <tt class="docutils literal"><span class="pre">--fs-screen</span></tt> is explicitly set.</dd>
             <dt><tt class="docutils literal"><span class="pre">--keep-open=&lt;yes|no|always&gt;</span></tt></dt>
             <dd><p class="first">Do not terminate when playing or seeking beyond the end of the file, and
             there is not next file to be played (and <tt class="docutils literal"><span class="pre">--loop</span></tt> is not used).
