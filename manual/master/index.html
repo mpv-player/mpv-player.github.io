@@ -4801,12 +4801,14 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--prefetch-playlist=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Prefetch next playlist entry while playback of the current entry is ending
-            (default: no). This merely opens the URL of the next playlist entry as soon
-            as the current URL is fully read.</p>
+            (default: no).</p>
+            <p>This does not prefill the cache with the video data of the next URL.
+            Prefetching video data is supported only for the current playlist entry,
+            and depends on the demuxer cache settings (on by default). This merely
+            opens the URL of the next playlist entry as soon the current URL is fully
+            read.</p>
             <p>This does <strong>not</strong> work with URLs resolved by the <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> wrapper,
             and it won't.</p>
-            <p>This does not affect HLS (<tt class="docutils literal">.m3u8</tt> URLs) - HLS prefetching depends on the
-            demuxer cache settings and is on by default.</p>
             <p>This can give subtly wrong results if per-file options are used, or if
             options are changed in the time window between prefetching start and next
             file played.</p>
@@ -6830,6 +6832,15 @@
             can be hidden. (default: regular)</p>
             <p class="last">macOS only.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--macos-geometry-calculation=&lt;visible|whole&gt;</span></tt></dt>
+            <dd><p class="first">This changes the rectangle which is used to calculate the screen position
+            and size of the window (default: visible). <tt class="docutils literal">visible</tt> takes the the menu
+            bar and Dock into account and the window is only positioned/sized within the
+            visible screen frame rectangle, <tt class="docutils literal">whole</tt> takes the whole screen frame
+            rectangle and ignores the menu bar and Dock. Other previous restrictions
+            still apply, like the window can't be placed on top of the menu bar etc.</p>
+            <p class="last">macOS only.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--android-surface-size=&lt;WxH&gt;</span></tt></dt>
             <dd><p class="first">Set dimensions of the rendering surface used by the Android gpu context.
             Needs to be set by the embedding application if the dimensions change during
@@ -7276,13 +7287,13 @@
             black).</dd>
             <dt>yes</dt>
             <dd>Try to create a framebuffer with alpha component. This only makes sense
-            if the video contains alpha information (which is extremely rare). May
-            not be supported on all platforms. If alpha framebuffers are
-            unavailable, it silently falls back on a normal framebuffer. Note that
-            if you set the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> option to a non-default value, a
-            format with alpha must be specified, or this won't work.
-            Whether this really works depends on the windowing system and desktop
-            environment.</dd>
+            if the video contains alpha information (which is extremely rare) or if
+            you make the background color transparent. May not be supported on all
+            platforms. If alpha framebuffers are unavailable, it silently falls
+            back on a normal framebuffer. Note that if you set the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt>
+            option to a non-default value, a format with alpha must be specified,
+            or this won't work. Whether this really works depends on the windowing
+            system and desktop environment.</dd>
             <dt>no</dt>
             <dd>Ignore alpha component.</dd>
             </dl>
@@ -13436,7 +13447,7 @@
             <dt>INSERT</dt>
             <dd>Toggle insert mode.</dd>
             <dt>Shift+INSERT</dt>
-            <dd>Paste text (uses the primary selection on X11).</dd>
+            <dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
             <dt>TAB</dt>
             <dd>Complete the command or property name at the cursor.</dd>
             <dt>Ctrl+C</dt>
@@ -13448,7 +13459,7 @@
             <dt>Ctrl+U</dt>
             <dd>Delete text from the cursor to the beginning of the line.</dd>
             <dt>Ctrl+V</dt>
-            <dd>Paste text (uses the clipboard on X11).</dd>
+            <dd>Paste text (uses the clipboard on X11 and Wayland).</dd>
             <dt>Ctrl+W</dt>
             <dd>Delete text from the cursor to the beginning of the current word.</dd>
             </dl>
