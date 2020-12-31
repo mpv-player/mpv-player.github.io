@@ -9779,8 +9779,8 @@
             <p><tt class="docutils literal">&lt;section&gt;</tt> (braced with <tt class="docutils literal">{</tt> and <tt class="docutils literal">}</tt>) is the input section for this
             command.</p>
             <p><tt class="docutils literal">&lt;command&gt;</tt> is the command itself. It consists of the command name and
-            multiple (or none) commands, all separated by whitespace. String arguments
-            need to be quoted with <tt class="docutils literal">&quot;</tt>. Details see <tt class="docutils literal">Flat command syntax</tt>.</p>
+            multiple (or none) arguments, all separated by whitespace. String arguments
+            should be quoted, typically with <tt class="docutils literal">&quot;</tt>. See <tt class="docutils literal">Flat command syntax</tt>.</p>
             <p>You can bind multiple commands to one key. For example:</p>
             <div class="line-block">
             <div class="line">a show-text &quot;command 1&quot; ; show-text &quot;command 2&quot;</div>
@@ -9860,16 +9860,24 @@
             <div class="line-block">
             <div class="line"><br /></div>
             <div class="line"><tt class="docutils literal">&lt;command&gt;&nbsp; ::= [&lt;prefixes&gt;] &lt;command_name&gt; <span class="pre">(&lt;argument&gt;)*</span></tt></div>
-            <div class="line"><tt class="docutils literal">&lt;argument&gt; ::= (&lt;string&gt; | &quot; &lt;quoted_string&gt; &quot;)</tt></div>
+            <div class="line"><tt class="docutils literal">&lt;argument&gt; ::= (&lt;unquoted&gt; | &quot; &lt;double_quoted&gt; &quot; | !X &lt;custom_quoted&gt; X!)</tt></div>
             </div>
             <p><tt class="docutils literal">command_name</tt> is an unquoted string with the command name itself. See
             <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a> for a list.</p>
-            <p>Arguments are separated by whitespace. This applies even to string arguments.
-            For this reason, string arguments should be quoted with <tt class="docutils literal">&quot;</tt>. If a string
-            argument contains spaces or certain special characters, quoting and possibly
-            escaping is mandatory, or the command cannot be parsed correctly.</p>
-            <p>Inside quotes, C-style escaping can be used. JSON escapes according to RFC 8259,
-            minus surrogate pair escapes, should be a safe subset that can be used.</p>
+            <p>Arguments are separated by whitespaces even if the command expects only one
+            argument. Arguments with whitespaces or other special characters must be quoted,
+            or the command cannot be parsed correctly.</p>
+            <p>Double quoted arguments start and end with <tt class="docutils literal">&quot;</tt>. Custom quotes start with <tt class="docutils literal">!</tt>
+            (exclamation mark) followed by any ASCII character, and end in the same pair in
+            reverse order, e.g. <tt class="docutils literal">!'foo'!</tt> or <tt class="docutils literal"><span class="pre">!-bar-!</span></tt>. The final pair sequence is not
+            allowed inside the string - in these examples <tt class="docutils literal">'!</tt> and <tt class="docutils literal"><span class="pre">-!</span></tt> respectively.</p>
+            <p>Custom quotes take their content literally, while inside double quotes
+            JSON/C-style escaping can be used. JSON escapes according to RFC 8259, minus
+            surrogate pair escapes, should be a safe subset that can be used.</p>
+            <p>Note that argument parsing and property expansion happen at different stages.
+            First, arguments are determined as described above, and then, where applicable,
+            properties are expanded - regardless of argument quoting. However, expansion
+            can still be prevented with <tt class="docutils literal">$&gt;</tt>. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
             </div>
             <div class="section" id="commands-specified-as-arrays">
             <h2>Commands specified as arrays</h2>
