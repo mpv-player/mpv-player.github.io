@@ -238,13 +238,13 @@
             <dd>Adjust gamma.</dd>
             <dt>7 and 8</dt>
             <dd>Adjust saturation.</dd>
-            <dt>Alt+0 (and command+0 on OSX)</dt>
+            <dt>Alt+0 (and command+0 on macOS)</dt>
             <dd>Resize video window to half its original size.</dd>
-            <dt>Alt+1 (and command+1 on OSX)</dt>
+            <dt>Alt+1 (and command+1 on macOS)</dt>
             <dd>Resize video window to its original size.</dd>
-            <dt>Alt+2 (and command+2 on OSX)</dt>
+            <dt>Alt+2 (and command+2 on macOS)</dt>
             <dd>Resize video window to double its original size.</dd>
-            <dt>command + f (OSX only)</dt>
+            <dt>command + f (macOS only)</dt>
             <dd>Toggle fullscreen (see also <tt class="docutils literal"><span class="pre">--fs</span></tt>).</dd>
             </dl>
             <p>(The following keys are valid if you have a keyboard with multimedia keys.)</p>
@@ -410,10 +410,10 @@
             <td>the global config path, if available (not on win32)</td>
             </tr>
             <tr><td><tt class="docutils literal">~~osxbundle/</tt></td>
-            <td>the OSX bundle resource path (OSX only)</td>
+            <td>the macOS bundle resource path (macOS only)</td>
             </tr>
             <tr><td><tt class="docutils literal">~~desktop/</tt></td>
-            <td>the path to the desktop (win32, OSX)</td>
+            <td>the path to the desktop (win32, macOS)</td>
             </tr>
             <tr><td><tt class="docutils literal">~~exe_dir</tt></td>
             <td>win32 only: the path to the directory containing the exe (for
@@ -1252,7 +1252,7 @@
             or file associations provided by desktop environments)</li>
             <li>if started from explorer.exe on Windows (technically, if it was started on
             Windows, and all of the stdout/stderr/stdin handles are unset)</li>
-            <li>started out of the bundle on OSX</li>
+            <li>started out of the bundle on macOS</li>
             <li>if you manually use <tt class="docutils literal"><span class="pre">--player-operation-mode=pseudo-gui</span></tt> on the command line</li>
             </ul>
             <p>This mode applies options from the builtin profile <tt class="docutils literal"><span class="pre">builtin-pseudo-gui</span></tt>, but
@@ -1285,7 +1285,7 @@
             <div class="section" id="linux-desktop-issues">
             <h1>Linux desktop issues</h1>
             <p>This subsection describes common problems on the Linux desktop. None of these
-            problems exist on systems like Windows or OSX.</p>
+            problems exist on systems like Windows or macOS.</p>
             <div class="section" id="disabling-screensaver">
             <h2>Disabling Screensaver</h2>
             <p>By default, mpv tries to disable the OS screensaver during playback (only if
@@ -2413,11 +2413,11 @@
             </tr>
             <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (OS X 10.8 and up),
+            <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (macOS 10.8 and up),
             or <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> (iOS 9.0 and up)</td>
             </tr>
             <tr class="field"><th class="field-name" colspan="2">videotoolbox-copy:</th></tr>
-            <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (OS X 10.8 or iOS 9.0 and up)</td>
+            <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (macOS 10.8 or iOS 9.0 and up)</td>
             </tr>
             <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt>,
             <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> or <tt class="docutils literal"><span class="pre">--gpu-context=dxinterop</span></tt>
@@ -3972,7 +3972,7 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-font-provider=&lt;auto|none|fontconfig&gt;</span></tt></dt>
             <dd><p class="first">Which libass font provider backend to use (default: auto). <tt class="docutils literal">auto</tt> will
             attempt to use the native font provider: fontconfig on Linux, CoreText on
-            OSX, DirectWrite on Windows. <tt class="docutils literal">fontconfig</tt> forces fontconfig, if libass
+            macOS, DirectWrite on Windows. <tt class="docutils literal">fontconfig</tt> forces fontconfig, if libass
             was built with support (if not, it behaves like <tt class="docutils literal">none</tt>).</p>
             <p class="last">The <tt class="docutils literal">none</tt> font provider effectively disables system fonts. It will still
             attempt to use embedded fonts (unless <tt class="docutils literal"><span class="pre">--embeddedfonts=no</span></tt> is set; this is
@@ -4028,9 +4028,9 @@
             <p class="last">This option works properly only with window managers which
             understand the EWMH <tt class="docutils literal">_NET_WM_FULLSCREEN_MONITORS</tt> hint.</p>
             </div>
-            <div class="admonition admonition-note-os-x">
-            <p class="first admonition-title">Note (OS X)</p>
-            <p class="last"><tt class="docutils literal">all</tt> does not work on OS X and will behave like <tt class="docutils literal">current</tt>.</p>
+            <div class="admonition admonition-note-macos">
+            <p class="first admonition-title">Note (macOS)</p>
+            <p class="last"><tt class="docutils literal">all</tt> does not work on macOS and will behave like <tt class="docutils literal">current</tt>.</p>
             </div>
             <p class="last">See also <tt class="docutils literal"><span class="pre">--screen</span></tt>.</p>
             </dd>
@@ -4132,7 +4132,7 @@
             Manager.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--ontop-level=&lt;window|system|desktop|level&gt;</span></tt></dt>
-            <dd><p class="first">(OS X only)
+            <dd><p class="first">(macOS only)
             Sets the level of an ontop window (default: window).</p>
             <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -4184,9 +4184,9 @@
             <p class="first admonition-title">Note</p>
             <p class="last">Generally only supported by GUI VOs. Ignored for encoding.</p>
             </div>
-            <!-- admonition: Note (OS X)
+            <!-- admonition: Note (macOS)
             
-            On Mac OS X the origin of the screen coordinate system is located on the
+            On macOS, the origin of the screen coordinate system is located on the
             bottom-left corner. For instance, ``0:0`` will place the window at the
             bottom-left of the screen. -->
             <div class="admonition admonition-note-x11">
@@ -4347,13 +4347,13 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--hidpi-window-scale</span></tt>, <tt class="docutils literal"><span class="pre">--no-hidpi-window-scale</span></tt></dt>
-            <dd>(OS X, Windows, X11, and Wayland only)
+            <dd>(macOS, Windows, X11, and Wayland only)
             Scale the window size according to the backing scale factor (default: yes).
             On regular HiDPI resolutions the window opens with double the size but appears
-            as having the same size as on non-HiDPI resolutions. This is the default OS X
-            behavior.</dd>
+            as having the same size as on non-HiDPI resolutions. This is enabled by
+            default on macOS.</dd>
             <dt><tt class="docutils literal"><span class="pre">--native-fs</span></tt>, <tt class="docutils literal"><span class="pre">--no-native-fs</span></tt></dt>
-            <dd>(OS X only)
+            <dd>(macOS only)
             Uses the native fullscreen mechanism of the OS (default: yes).</dd>
             <dt><tt class="docutils literal"><span class="pre">--monitorpixelaspect=&lt;ratio&gt;</span></tt></dt>
             <dd>Set the aspect of a single pixel of your monitor or TV screen (default:
@@ -4380,8 +4380,8 @@
             <p>On win32, the ID is interpreted as <tt class="docutils literal">HWND</tt>. Pass it as value cast to
             <tt class="docutils literal">intptr_t</tt>. mpv will create its own window, and set the wid window as
             parent, like with X11.</p>
-            <p>On OSX/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
-            to <tt class="docutils literal">intptr_t</tt>. mpv will create its own sub-view. Because OSX does not
+            <p>On macOS/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
+            to <tt class="docutils literal">intptr_t</tt>. mpv will create its own sub-view. Because macOS does not
             support window embedding of foreign processes, this works only with libmpv,
             and will crash when used from the command line.</p>
             <p class="last">On Android, the ID is interpreted as <tt class="docutils literal">android.view.Surface</tt>. Pass it as a
@@ -4933,7 +4933,7 @@
             driver. Necessary to use the OSC, or to select the buttons in DVD menus.
             Support depends on the VO in use.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-media-keys=&lt;yes|no&gt;</span></tt></dt>
-            <dd>(OS X and Windows only)
+            <dd>(macOS and Windows only)
             Enable/disable media keys support. Enabled by default (except for libmpv).</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-right-alt-gr</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-right-alt-gr</span></tt></dt>
             <dd>(Cocoa and Windows only)
@@ -6689,7 +6689,7 @@
             <dt><tt class="docutils literal"><span class="pre">--macos-force-dedicated-gpu=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Deactivates the automatic graphics switching and forces the dedicated GPU.
             (default: no)</p>
-            <p class="last">OS X only.</p>
+            <p class="last">macOS only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cocoa-cb-sw-renderer=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd><p class="first">Use the Apple Software Renderer when using cocoa-cb (default: auto). If set
@@ -6697,13 +6697,13 @@
             usual pixel format could not be created, <tt class="docutils literal">yes</tt> will always only use the
             software renderer, and <tt class="docutils literal">auto</tt> only falls back to the software renderer
             when the usual pixel format couldn't be created.</p>
-            <p class="last">OS X only.</p>
+            <p class="last">macOS only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cocoa-cb-10bit-context=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Creates a 10bit capable pixel format for the context creation (default: yes).
             Instead of 8bit integer framebuffer a 16bit half-float framebuffer is
             requested.</p>
-            <p class="last">OS X only.</p>
+            <p class="last">macOS only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--macos-title-bar-appearance=&lt;appearance&gt;</span></tt></dt>
             <dd><p class="first">Sets the appearance of the title bar (default: auto). Not all combinations
@@ -6826,7 +6826,7 @@
             1000ms since it's possible that Apple or the user changes the system
             defaults. Anything higher than 1000ms though seems too long and shouldn't be
             set anyway.
-            OS X and cocoa-cb only</dd>
+            (macOS and cocoa-cb only)</dd>
             <dt><tt class="docutils literal"><span class="pre">--macos-app-activation-policy=&lt;regular|accessory|prohibited&gt;</span></tt></dt>
             <dd><p class="first">Changes the App activation policy. With accessory the mpv icon in the Dock
             can be hidden. (default: regular)</p>
@@ -6857,7 +6857,7 @@
             <dt>auto</dt>
             <dd>auto-select (default)</dd>
             <dt>cocoa</dt>
-            <dd>Cocoa/OS X (deprecated, use --vo=libmpv instead)</dd>
+            <dd>Cocoa/macOS (deprecated, use --vo=libmpv instead)</dd>
             <dt>win</dt>
             <dd>Win32/WGL</dd>
             <dt>winvk</dt>
@@ -6950,7 +6950,7 @@
             conditions (adding a gamma boost for bright rooms).</p>
             <p>With ambient illuminance of 16 lux, mpv will pick the 1.0 gamma value (no
             boost), and slightly increase the boost up until 1.2 for 256 lux.</p>
-            <p class="last">NOTE: Only implemented on OS X.</p>
+            <p class="last">NOTE: Only implemented on macOS.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
@@ -7317,7 +7317,7 @@
             the renderer is going to wait for a while after rendering, instead of
             flipping GL front and backbuffers immediately (i.e. it doesn't call it
             in display-sync mode).</p>
-            <p class="last">On OSX this is always deactivated because it only causes performance
+            <p class="last">On macOS this is always deactivated because it only causes performance
             problems and other regressions.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gpu-dumb-mode=&lt;yes|no|auto&gt;</span></tt></dt>
@@ -7756,8 +7756,8 @@
             with fixed setups.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">coreaudio</tt> (Mac OS X only)</dt>
-            <dd><p class="first">Native Mac OS X audio output driver using AudioUnits and the CoreAudio
+            <dt><tt class="docutils literal">coreaudio</tt> (macOS only)</dt>
+            <dd><p class="first">Native macOS audio output driver using AudioUnits and the CoreAudio
             sound server.</p>
             <p>Automatically redirects to <tt class="docutils literal">coreaudio_exclusive</tt> when playing compressed
             formats.</p>
@@ -7780,8 +7780,8 @@
             extreme care.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">coreaudio_exclusive</tt> (Mac OS X only)</dt>
-            <dd>Native Mac OS X audio output driver using direct device access and
+            <dt><tt class="docutils literal">coreaudio_exclusive</tt> (macOS only)</dt>
+            <dd>Native macOS audio output driver using direct device access and
             exclusive mode (bypasses the sound server).</dd>
             <dt><tt class="docutils literal">openal</tt></dt>
             <dd><p class="first">OpenAL audio output driver. This is broken and does not work.</p>
@@ -8144,7 +8144,7 @@
             quality or performance by changing the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> option to
             <tt class="docutils literal">rgb16f</tt>, <tt class="docutils literal">rgb32f</tt> or <tt class="docutils literal">rgb</tt>. Known problems include Mesa/Intel not
             accepting <tt class="docutils literal">rgb16</tt>, Mesa sometimes not being compiled with float texture
-            support, and some OS X setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
+            support, and some macOS setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
             with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try enabling the
             <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> option.</p>
             </dd>
@@ -8386,7 +8386,7 @@
             </dl>
             </dd>
             <dt><tt class="docutils literal">libmpv</tt></dt>
-            <dd><p class="first">For use with libmpv direct embedding. As a special case, on OS X it
+            <dd><p class="first">For use with libmpv direct embedding. As a special case, on macOS it
             is used like a normal VO within mpv (cocoa-cb). Otherwise useless in any
             other contexts.
             (See <tt class="docutils literal">&lt;mpv/render.h&gt;</tt>.)</p>
@@ -15254,7 +15254,7 @@
     <footer>
       <div class='container'>
         <small class='pull-left text-muted copyright'>
-          &copy; 2012-2020 mpv.io
+          &copy; 2012-2021 mpv.io
         </small>
         <div class='social-icons pull-right'>
                     <a target="_blank" href="https://github.com/mpv-player/mpv"><i class='fa fa-github-alt'></i>
