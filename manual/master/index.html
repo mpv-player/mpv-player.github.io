@@ -6138,17 +6138,27 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
             <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
-            <tt class="docutils literal">0.0001</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
+            <tt class="docutils literal">0.01</tt>). This is calculated as <tt class="docutils literal">abs(disphz/vfps - 1) &lt; threshold</tt>,
             where <tt class="docutils literal">vfps</tt> is the speed-adjusted video FPS, and <tt class="docutils literal">disphz</tt> the
             display refresh rate. (The speed-adjusted video FPS is roughly equal to
             the normal video FPS, but with slowdown and speedup applied. This matters
             if you use <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> to make video run synchronously
             to the display FPS, or if you change the <tt class="docutils literal">speed</tt> property.)</p>
-            <p>The default is intended to almost always enable interpolation if the
-            playback rate is even slightly different from the display refresh rate. But
-            note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small deviations
-            in the rate can disable interpolation and introduce a discontinuity every
-            other minute.</p>
+            <p>The default is intended to enable interpolation in scenarios where
+            retiming with the <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> cannot adjust the speed of
+            the video sufficiently for smooth playback. For example if a video is
+            60.00 FPS and your display refresh rate is 59.94 Hz, interpolation will
+            never be activated, since the mismatch is within 1% of the refresh
+            rate. The default also handles the scenario when mpv cannot determine the
+            container FPS, such as during certain live streams, and may dynamically
+            toggle interpolation on and off. In this scenario, the default would be to
+            not use interpolation but rather to allow <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> to
+            retime the video to match display refresh rate. See
+            <tt class="docutils literal"><span class="pre">--video-sync-max-video-change</span></tt> for more information about how mpv
+            will retime video.</p>
+            <p>Also note that if you use e.g. <tt class="docutils literal"><span class="pre">--video-sync=display-vdrop</span></tt>, small
+            deviations in the rate can disable interpolation and introduce a
+            discontinuity every other minute.</p>
             <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-pbo</span></tt></dt>
@@ -7478,6 +7488,8 @@
             <p>For example, if this is set to 1, the video FPS is forced to an integer
             multiple of the display FPS, as long as the speed change does not exceed
             the value set by <tt class="docutils literal"><span class="pre">--video-sync-max-video-change</span></tt>.</p>
+            <p>See <tt class="docutils literal"><span class="pre">--interpolation-threshold</span></tt> for how this option affects
+            interpolation.</p>
             <p class="last">This is mostly for testing, and the option may be randomly changed in the
             future without notice.</p>
             </dd>
