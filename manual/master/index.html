@@ -352,6 +352,8 @@
             <p>Or in a script:</p>
             <p class="last"><tt class="docutils literal">mpv <span class="pre">--vf=foo:option1=%`expr</span> length <span class="pre">&quot;$NAME&quot;`%&quot;$NAME&quot;</span> test.avi</tt></p>
             </div>
+            <p>Note: where applicable with JSON-IPC, <tt class="docutils literal">%n%</tt> is the length in UTF-8 bytes,
+            after decoding the JSON data.</p>
             <p>Suboptions passed to the client API are also subject to escaping. Using
             <tt class="docutils literal">mpv_set_option_string()</tt> is exactly like passing <tt class="docutils literal"><span class="pre">--name=data</span></tt> to the
             command line (but without shell processing of the string). Some options
@@ -516,7 +518,7 @@
             </thead>
             <tbody valign="top">
             <tr><td>-set</td>
-            <td>Set a list of items (using the list separator, interprets escapes)</td>
+            <td>Set a list of items (using the list separator, escaped with backslash)</td>
             </tr>
             <tr><td>-append</td>
             <td>Append single item (does not interpret escapes)</td>
