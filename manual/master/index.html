@@ -4865,7 +4865,10 @@
             <dd>Specify input configuration file other than the default location in the mpv
             configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/input.conf</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-input-default-bindings</span></tt></dt>
-            <dd>Disable mpv default (built-in) key bindings.</dd>
+            <dd>Disable mpv default (built-in) key bindings. Currently this includes all
+            key bindings which <tt class="docutils literal">input.conf</tt> can override, like those added by scripts
+            using <tt class="docutils literal">mp.add_key_binding</tt> (but not <tt class="docutils literal">mp.add_forced_key_binding</tt>).
+            This might change in the future to exclude <tt class="docutils literal">mp.add_key_binding</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt></dt>
             <dd>Prints all commands that can be bound to keys.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-doubleclick-time=&lt;milliseconds&gt;</span></tt></dt>
@@ -10757,7 +10760,8 @@
             <dt><tt class="docutils literal"><span class="pre">script-message-to</span> &lt;target&gt; [&lt;arg1&gt; [&lt;arg2&gt; <span class="pre">[...]]]</span></tt></dt>
             <dd><p class="first">Same as <tt class="docutils literal"><span class="pre">script-message</span></tt>, but send it only to the client named
             <tt class="docutils literal">&lt;target&gt;</tt>. Each client (scripts etc.) has a unique name. For example,
-            Lua scripts can get their name via <tt class="docutils literal">mp.get_script_name()</tt>.</p>
+            Lua scripts can get their name via <tt class="docutils literal">mp.get_script_name()</tt>. Note that
+            client names only consist of alphanumeric characters and <tt class="docutils literal">_</tt>.</p>
             <p class="last">This command has a variable number of arguments, and cannot be used with
             named arguments.</p>
             </dd>
@@ -10766,7 +10770,8 @@
             bindings provided by external Lua scripts.</p>
             <p>The argument is the name of the binding.</p>
             <p>It can optionally be prefixed with the name of the script, using <tt class="docutils literal">/</tt> as
-            separator, e.g. <tt class="docutils literal"><span class="pre">script-binding</span> scriptname/bindingname</tt>.</p>
+            separator, e.g. <tt class="docutils literal"><span class="pre">script-binding</span> scriptname/bindingname</tt>. Note that script
+            names only consist of alphanumeric characters and <tt class="docutils literal">_</tt>.</p>
             <p>For completeness, here is how this command works internally. The details
             could change any time. On any matching key event, <tt class="docutils literal"><span class="pre">script-message-to</span></tt>
             or <tt class="docutils literal"><span class="pre">script-message</span></tt> is called (depending on whether the script name is
@@ -11335,6 +11340,8 @@
             quantities: fps and possibly rounded timestamps.)</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal">pid</tt></dt>
+            <dd>Process-id of mpv.</dd>
             <dt><tt class="docutils literal">path</tt></dt>
             <dd>Full path of the currently played file. Usually this is exactly the same
             string you pass on the mpv command line or the <tt class="docutils literal">loadfile</tt> command, even
@@ -11917,6 +11924,10 @@
             <tt class="docutils literal"><span class="pre">--video-sync</span></tt>) is active.</dd>
             <dt><tt class="docutils literal"><span class="pre">vsync-jitter</span></tt></dt>
             <dd>Estimated deviation factor of the vsync duration.</dd>
+            <dt><tt class="docutils literal"><span class="pre">display-width</span></tt>, <tt class="docutils literal"><span class="pre">display-height</span></tt></dt>
+            <dd>The current display's horizontal and vertical resolution in pixels. Whether
+            or not these values update as the mpv window changes displays depends on
+            the windowing backend. It may not be available on all platforms.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-hidpi-scale</span></tt></dt>
             <dd>The HiDPI scale factor as reported by the windowing backend. If no VO is
             active, or if the VO does not report a value, this property is unavailable.
@@ -11930,8 +11941,8 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">osd-width</span></tt>, <tt class="docutils literal"><span class="pre">osd-height</span></tt></dt>
             <dd><p class="first">Last known OSD width (can be 0). This is needed if you want to use the
-            <tt class="docutils literal"><span class="pre">overlay-add</span></tt> command. It gives you the actual OSD size, which can be
-            different from the window size in some cases.</p>
+            <tt class="docutils literal"><span class="pre">overlay-add</span></tt> command. It gives you the actual OSD/window size (not
+            including decorations drawn by the OS window manager).</p>
             <p class="last">Alias to <tt class="docutils literal"><span class="pre">osd-dimensions/w</span></tt> and <tt class="docutils literal"><span class="pre">osd-dimensions/h</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">osd-par</span></tt></dt>
@@ -13574,6 +13585,11 @@
             scripting backend to use for it. For Lua, it is <tt class="docutils literal">.lua</tt>. If the extension is
             not recognized, an error is printed. (If an error happens, the extension is
             either mistyped, or the backend was not compiled into your mpv binary.)</p>
+            <p>mpv internally loads the script's name by stripping the <tt class="docutils literal">.lua</tt> extension and
+            replacing all nonalphanumeric characters with <tt class="docutils literal">_</tt>. E.g., <tt class="docutils literal"><span class="pre">my-tools.lua</span></tt>
+            becomes <tt class="docutils literal">my_tools</tt>. If there are several scripts with the same name, it is
+            made unique by appending a number. This is the name returned by
+            <tt class="docutils literal">mp.get_script_name()</tt>.</p>
             <p>Entries with <tt class="docutils literal">.disable</tt> extension are always ignored.</p>
             <p>If a script is a directory (either if a directory is passed to <tt class="docutils literal"><span class="pre">--script</span></tt>,
             or any sub-directories in the script directory, such as for example
@@ -13976,10 +13992,10 @@
             <dd><p class="first">Return the name of the current script. The name is usually made of the
             filename of the script, with directory and file extension removed. If
             there are several scripts which would have the same name, it's made unique
-            by appending a number.</p>
+            by appending a number. Any nonalphanumeric characters are replaced with <tt class="docutils literal">_</tt>.</p>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
-            <p class="last">The script <tt class="docutils literal">/path/to/fooscript.lua</tt> becomes <tt class="docutils literal">fooscript</tt>.</p>
+            <p class="last">The script <tt class="docutils literal"><span class="pre">/path/to/foo-script.lua</span></tt> becomes <tt class="docutils literal">foo_script</tt>.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal">mp.get_script_directory()</tt></dt>
@@ -14211,7 +14227,7 @@
             <dt><tt class="docutils literal">mtime</tt></dt>
             <dd>time of last modification</dd>
             <dt><tt class="docutils literal">ctime</tt></dt>
-            <dd>time of last metadata change (Linux) / time of creation (Windows)</dd>
+            <dd>time of last metadata change</dd>
             <dt><tt class="docutils literal">is_file</tt></dt>
             <dd>Whether <tt class="docutils literal">path</tt> is a regular file (boolean)</dd>
             <dt><tt class="docutils literal">is_dir</tt></dt>
