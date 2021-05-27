@@ -7579,12 +7579,24 @@
             <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--cover-art-files-append</span></tt>. Each use of this
             option will add a new external file.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cover-art-auto=&lt;no|fuzzy&gt;</span></tt></dt>
-            <dd><p class="first">Whether to load _external_ cover art automatically (default: fuzzy). Similar
-            to <tt class="docutils literal"><span class="pre">--sub-auto</span></tt> and <tt class="docutils literal"><span class="pre">--audio-file-auto</span></tt>. However, it's currently limited
-            to picking up a whitelist of &quot;album art&quot; filenames (such as <tt class="docutils literal">cover.jpg</tt>),
-            so currently only the <tt class="docutils literal">fuzzy</tt> choice is available. In addition, if a video
-            already has tracks (which are not marked as cover art), external cover art
-            will not be loaded.</p>
+            <dd><p class="first">Whether to load _external_ cover art automatically. Similar to
+            <tt class="docutils literal"><span class="pre">--sub-auto</span></tt> and <tt class="docutils literal"><span class="pre">--audio-file-auto</span></tt>. If a video already has tracks
+            (which are not marked as cover art), external cover art will not be loaded.</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't automatically load cover art.</td>
+            </tr>
+            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with an image file extension.</td>
+            </tr>
+            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load cover art with a filename included in an internal whitelist,
+            such as <tt class="docutils literal">cover.jpg</tt>.</td>
+            </tr>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Union of exact and fuzzy (default).</td>
+            </tr>
+            </tbody>
+            </table>
             <p>See <tt class="docutils literal"><span class="pre">--cover-art-files</span></tt> for details about what constitutes cover art.</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">--audio-display</span></tt> how to control display of cover art (this can be
             used to disable cover art that is part of the file).</p>
