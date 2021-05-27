@@ -7262,14 +7262,15 @@
             <dt><tt class="docutils literal"><span class="pre">--icc-3dlut-size=&lt;r&gt;x&lt;g&gt;x&lt;b&gt;</span></tt></dt>
             <dd>Size of the 3D LUT generated from the ICC profile in each dimension.
             Default is 64x64x64. Sizes may range from 2 to 512.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--icc-contrast=&lt;0-1000000|inf&gt;</span></tt></dt>
-            <dd>Specifies an upper limit on the target device's contrast ratio. This is
-            detected automatically from the profile if possible, but for some profiles
-            it might be missing, causing the contrast to be assumed as infinite. As a
-            result, video may appear darker than intended. This only affects BT.1886
-            content. The default of 0 means no limit if the detected contrast is less
-            than 100000, and limits to 1000 otherwise. Use <tt class="docutils literal"><span class="pre">--icc-contrast=inf</span></tt> to
-            preserve the infinite contrast (most likely when using OLED displays).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-force-contrast=&lt;no|0-1000000|inf&gt;</span></tt></dt>
+            <dd>Override the target device's detected contrast ratio by a specific value.
+            This is detected automatically from the profile if possible, but for some
+            profiles it might be missing, causing the contrast to be assumed as
+            infinite. As a result, video may appear darker than intended. If this is
+            the case, setting this option might help. This only affects BT.1886
+            content. The default of <tt class="docutils literal">no</tt> means to use the profile values. The special
+            value <tt class="docutils literal">inf</tt> causes the BT.1886 curve to be treated as a pure power gamma
+            2.4 function.</dd>
             <dt><tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video|no&gt;</span></tt></dt>
             <dd><p class="first">Blend subtitles directly onto upscaled video frames, before interpolation
             and/or color management (default: no). Enabling this causes subtitles to be
@@ -11897,8 +11898,7 @@
             since setting the option, and the window size was not restricted in other
             ways. The property is unavailable if no video is active.</dd>
             <dt><tt class="docutils literal">focused</tt></dt>
-            <dd>Whether the window has focus. Currently works only on X11, Wayland and
-            macOS.</dd>
+            <dd>Whether the window has focus. Might not be supported by all VOs.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-names</span></tt></dt>
             <dd>Names of the displays that the mpv window covers. On X11, these
             are the xrandr names (LVDS1, HDMI1, DP1, VGA1, etc.). On Windows, these
