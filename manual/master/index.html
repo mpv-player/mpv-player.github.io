@@ -6234,6 +6234,11 @@
             results, as can missing or incorrect display FPS information (see
             <tt class="docutils literal"><span class="pre">--override-display-fps</span></tt>).</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-device=&lt;device</span> name&gt;</tt></dt>
+            <dd>The name of the Vulkan device to use for rendering and presentation. Use
+            <tt class="docutils literal"><span class="pre">--vulkan-device=help</span></tt> to see the list of available devices and their
+            names. If left unspecified, the first enumerated hardware Vulkan device will
+            be used.</dd>
             <dt><tt class="docutils literal"><span class="pre">--vulkan-swap-mode=&lt;mode&gt;</span></tt></dt>
             <dd><p class="first">Controls the presentation mode of the vulkan swapchain. This is similar
             to the <tt class="docutils literal"><span class="pre">--opengl-swapinterval</span></tt> option.</p>
@@ -6275,6 +6280,21 @@
             <dd>Disable the use of VkEvents, for debugging purposes or for compatibility
             with some older drivers / vulkan portability layers that don't provide
             working VkEvent support.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-display-display=&lt;n&gt;</span></tt></dt>
+            <dd>The index of the display, on the selected Vulkan device, to present on when
+            using the <tt class="docutils literal">displayvk</tt> GPU context. Use <tt class="docutils literal"><span class="pre">--vulkan-display-display=help</span></tt>
+            to see the list of available displays. If left unspecified, the first
+            enumerated display will be used.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-display-mode=&lt;n&gt;</span></tt></dt>
+            <dd>The index of the display mode, of the selected Vulkan display, to use when
+            using the <tt class="docutils literal">displayvk</tt> GPU context. Use <tt class="docutils literal"><span class="pre">--vulkan-display-mode=help</span></tt>
+            to see the list of available modes. If left unspecified, the first
+            enumerated mode will be used.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vulkan-display-plane=&lt;n&gt;</span></tt></dt>
+            <dd>The index of the plane, on the selected Vulkan device, to present on when
+            using the <tt class="docutils literal">displayvk</tt> GPU context. Use <tt class="docutils literal"><span class="pre">--vulkan-display-plane=help</span></tt>
+            to see the list of available planes. If left unspecified, the first
+            enumerated plane will be used.</dd>
             <dt><tt class="docutils literal"><span class="pre">--d3d11-exclusive-fs=&lt;yes|no&gt;</span></tt></dt>
             <dd>Switches the D3D11 swap chain fullscreen state to 'fullscreen' when
             fullscreen video is requested. Also known as &quot;exclusive fullscreen&quot; or
@@ -6896,6 +6916,10 @@
             <dd>VK_KHR_wayland_surface</dd>
             <dt>drm</dt>
             <dd>DRM/EGL</dd>
+            <dt>displayvk</dt>
+            <dd>VK_KHR_display. This backend is roughly the Vukan equivalent of
+            DRM/EGL, allowing for direct rendering via Vulkan without a display
+            manager.</dd>
             <dt>x11egl</dt>
             <dd>X11/EGL</dd>
             <dt>android</dt>
