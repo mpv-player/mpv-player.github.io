@@ -14544,7 +14544,8 @@
             <tt class="docutils literal">undefined</tt> if the variable is not defined.</dd>
             <dt><tt class="docutils literal">mp.utils.get_user_path(path)</tt></dt>
             <dd>Expands (mpv) meta paths like <tt class="docutils literal">~/x</tt>, <tt class="docutils literal"><span class="pre">~~/y</span></tt>, <tt class="docutils literal">~~desktop/z</tt> etc.
-            <tt class="docutils literal">read_file</tt>, <tt class="docutils literal">write_file</tt> and <tt class="docutils literal">require</tt> already use this internaly.</dd>
+            <tt class="docutils literal">read_file</tt>, <tt class="docutils literal">write_file</tt>, <tt class="docutils literal">append_file</tt> and <tt class="docutils literal">require</tt> already use
+            this internaly.</dd>
             <dt><tt class="docutils literal">mp.utils.read_file(fname [,max])</tt></dt>
             <dd>Returns the content of file <tt class="docutils literal">fname</tt> as string. If <tt class="docutils literal">max</tt> is provided and
             not negative, limit the read to <tt class="docutils literal">max</tt> bytes.</dd>
@@ -14552,8 +14553,12 @@
             <dd>(Over)write file <tt class="docutils literal">fname</tt> with text content <tt class="docutils literal">str</tt>. <tt class="docutils literal">fname</tt> must be
             prefixed with <tt class="docutils literal"><span class="pre">file://</span></tt> as simple protection against accidental arguments
             switch, e.g. <tt class="docutils literal"><span class="pre">mp.utils.write_file(&quot;file://~/abc.txt&quot;,</span> &quot;hello world&quot;)</tt>.</dd>
+            <dt><tt class="docutils literal">mp.utils.append_file(fname, str)</tt></dt>
+            <dd>Same as <tt class="docutils literal">mp.utils.write_file</tt> if the file <tt class="docutils literal">fname</tt> does not exist. If it
+            does exist then append instead of overwrite.</dd>
             </dl>
-            <p>Note: <tt class="docutils literal">read_file</tt> and <tt class="docutils literal">write_file</tt> throw on errors, allow text content only.</p>
+            <p>Note: <tt class="docutils literal">read_file</tt>, <tt class="docutils literal">write_file</tt> and <tt class="docutils literal">append_file</tt> throw on errors, allow
+            text content only.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">mp.get_time_ms()</tt></dt>
             <dd>Same as <tt class="docutils literal">mp.get_time()</tt> but in ms instead of seconds.</dd>
