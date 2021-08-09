@@ -88,6 +88,8 @@
             <p>The following listings are not necessarily complete. See <tt class="docutils literal">etc/input.conf</tt> for
             a list of default bindings. User <tt class="docutils literal">input.conf</tt> files and Lua scripts can
             define additional key bindings.</p>
+            <p>See also <tt class="docutils literal"><span class="pre">--input-test</span></tt> for interactive binding details by key, and the
+            <a class="reference internal" href="#stats">stats</a> built-in script for key bindings list (including print to terminal).</p>
             <div class="section" id="keyboard-control">
             <h2>Keyboard Control</h2>
             <dl class="docutils">
@@ -223,7 +225,7 @@
             file such as codec, framerate, number of dropped frames and so on. See
             <a class="reference internal" href="#stats">STATS</a> for more information.</dd>
             <dt>del</dt>
-            <dd>Cycles visibility between never / auto (mouse-move) / always</dd>
+            <dd>Cycle OSC visibility between never / auto (mouse-move) / always</dd>
             <dt>`</dt>
             <dd>Show the console. (ESC closes it again. See <a class="reference internal" href="#console">CONSOLE</a>.)</dd>
             </dl>
@@ -1030,7 +1032,7 @@
             <li><tt class="docutils literal">AV:</tt> or <tt class="docutils literal">V:</tt> (video only) or <tt class="docutils literal">A:</tt> (audio only)</li>
             <li>The current time position in <tt class="docutils literal">HH:MM:SS</tt> format (<tt class="docutils literal"><span class="pre">playback-time</span></tt> property)</li>
             <li>The total file duration (absent if unknown) (<tt class="docutils literal">duration</tt> property)</li>
-            <li>Playback speed, e.g. `` x2.0``. Only visible if the speed is not normal. This
+            <li>Playback speed, e.g. <tt class="docutils literal">x2.0</tt>. Only visible if the speed is not normal. This
             is the user-requested speed, and not the actual speed  (usually they should
             be the same, unless playback is too slow). (<tt class="docutils literal">speed</tt> property.)</li>
             <li>Playback percentage, e.g. <tt class="docutils literal">(13%)</tt>. How much of the file has been played.
@@ -2079,6 +2081,29 @@
             during playback.</li>
             <li><tt class="docutils literal"><span class="pre">--reset-on-next-file=all</span></tt>
             Try to reset all settings that were changed during playback.</li>
+            </ul>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--watch-later-options=option1,option2,...</span></tt></dt>
+            <dd><p class="first">The options that are saved in &quot;watch later&quot; files if they have been changed
+            since when mpv started. These values will be restored the next time the
+            files are played. The playback position is always saved as <tt class="docutils literal">start</tt>, so
+            adding <tt class="docutils literal">start</tt> to this list has no effect.</p>
+            <p>When removing options, existing watch later data won't be modified and will
+            still be applied fully, but new watch later data won't contain these
+            options.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            <div class="admonition admonition-examples last">
+            <p class="first admonition-title">Examples</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=fullscreen</span></tt>
+            Resuming a file won't restore the fullscreen state.</li>
+            <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=volume</span></tt>
+            <tt class="docutils literal"><span class="pre">--watch-later-options-remove=mute</span></tt>
+            Resuming a file won't restore the volume or mute state.</li>
+            <li><tt class="docutils literal"><span class="pre">--watch-later-options-clr</span></tt>
+            Resuming a file won't restore any option except the starting
+            position.</li>
             </ul>
             </div>
             </dd>
@@ -3201,13 +3226,25 @@
             do 7.1 would  be served by: <tt class="docutils literal"><span class="pre">--audio-channels=7.1,5.1,stereo</span></tt></p>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--audio-display=&lt;no|attachment&gt;</span></tt></dt>
-            <dd><p class="first">Setting this option to <tt class="docutils literal">attachment</tt> (default) will display image
-            attachments (e.g. album cover art) when playing audio files. It will
-            display the first image found, and additional images are available as
-            video tracks.</p>
-            <p>Setting this option to <tt class="docutils literal">no</tt> disables display of video entirely when
-            playing audio files.</p>
+            <dt><tt class="docutils literal"><span class="pre">--audio-display=&lt;no|embedded-first|external-first&gt;</span></tt></dt>
+            <dd><p class="first">Determines whether to display cover art when playing audio files and with
+            what priority. It will display the first image found, and additional images
+            are available as video tracks.</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Disable display of video entirely when playing audio
+            files.</td>
+            </tr>
+            <tr class="field"><th class="field-name">embedded-first:</th><td class="field-body">Display embedded images and external cover art, giving
+            priority to embedded images (default).</td>
+            </tr>
+            <tr class="field"><th class="field-name">external-first:</th><td class="field-body">Display embedded images and external cover art, giving
+            priority to external files.</td>
+            </tr>
+            </tbody>
+            </table>
             <p class="last">This option has no influence on files with normal video tracks.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--audio-files=&lt;files&gt;</span></tt></dt>
@@ -3294,7 +3331,7 @@
             </tr>
             <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with audio file extension.</td>
             </tr>
-            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all audio files containing media filename.</td>
+            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all audio files containing the media filename.</td>
             </tr>
             <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all audio files in the current and <tt class="docutils literal"><span class="pre">--audio-file-paths</span></tt>
             directories.</td>
@@ -3683,7 +3720,7 @@
             <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with subtitle file extension and possibly
             language suffixes (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all subs containing media filename.</td>
+            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all subs containing the media filename.</td>
             </tr>
             <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all subs in the current and <tt class="docutils literal"><span class="pre">--sub-file-paths</span></tt> directories.</td>
             </tr>
@@ -3784,6 +3821,15 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-visibility</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-visibility</span></tt></dt>
             <dd>Can be used to disable display of subtitles, but still select and decode
             them.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--secondary-sub-visibility</span></tt>, <tt class="docutils literal"><span class="pre">--no-secondary-sub-visibility</span></tt></dt>
+            <dd><p class="first">Can be used to disable display of secondary subtitles, but still select and
+            decode them.</p>
+            <div class="admonition note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">If <tt class="docutils literal"><span class="pre">--sub-visibility=no</span></tt>, secondary subtitles are hidden regardless of
+            <tt class="docutils literal"><span class="pre">--secondary-sub-visibility</span></tt>.</p>
+            </div>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-clear-on-seek</span></tt></dt>
             <dd>(Obscure, rarely useful.) Can be used to play broken mkv files with
             duplicate ReadOrder fields. ReadOrder is the first field in a
@@ -3794,6 +3840,12 @@
             <dt><tt class="docutils literal"><span class="pre">--teletext-page=&lt;1-999&gt;</span></tt></dt>
             <dd>This works for <tt class="docutils literal">dvb_teletext</tt> subtitle streams, and if FFmpeg has been
             compiled with support for it.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-past-video-end</span></tt></dt>
+            <dd><p class="first">After the last frame of video, if this option is enabled, subtitles will
+            continue to update based on audio timestamps. Otherwise, the subtitles
+            for the last video frame will stay onscreen.</p>
+            <p class="last">Default: disabled</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-font=&lt;name&gt;</span></tt></dt>
             <dd><p class="first">Specify font to use for subtitles that do not themselves
             specify a particular font. The default is <tt class="docutils literal"><span class="pre">sans-serif</span></tt>.</p>
@@ -3941,7 +3993,7 @@
             new regular expression, without having to fight escaping problems.</p>
             <p>List items are matched in order. If a regular expression matches, the
             process is stopped, and the subtitle line is discarded. The text matched
-            against is, currently, always the <tt class="docutils literal">Text</tt> field of ASS events (if the
+            against is, by default, the <tt class="docutils literal">Text</tt> field of ASS events (if the
             subtitle format is different, it is always converted). This may include
             formatting tags. Matching is case-insensitive, but how this is done depends
             on the libc, and most likely works in ASCII only. It does not work on
@@ -3962,6 +4014,15 @@
             sed, or some method to control case-sensitivity.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-filter-jsre-...=...</span></tt></dt>
+            <dd>Same as <tt class="docutils literal"><span class="pre">--sub-filter-regex</span></tt> but with JavaScript regular expressions.
+            Shares/affected-by all <tt class="docutils literal"><span class="pre">--sub-filter-regex-*</span></tt> control options (see below),
+            and also experimental. Requires only JavaScript support.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-filter-regex-plain=&lt;yes|no&gt;</span></tt></dt>
+            <dd>Whether to first convert the ASS &quot;Text&quot; field to plain-text (default: no).
+            This strips ASS tags and applies ASS directives, like <tt class="docutils literal">\N</tt> to new-line.
+            If the result is multi-line then the regexp anchors <tt class="docutils literal">^</tt> and <tt class="docutils literal">$</tt> match
+            each line, but still any match discards all lines.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-filter-regex-warn=&lt;yes|no&gt;</span></tt></dt>
             <dd>Log dropped lines with warning log level, instead of verbose (default: no).
             Helpful for testing.</dd>
@@ -4943,8 +5004,15 @@
             driver. Necessary to use the OSC, or to select the buttons in DVD menus.
             Support depends on the VO in use.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-media-keys=&lt;yes|no&gt;</span></tt></dt>
-            <dd>(macOS and Windows only)
-            Enable/disable media keys support. Enabled by default (except for libmpv).</dd>
+            <dd><p class="first">On systems where mpv can choose between receiving media keys or letting
+            the system handle them - this option controls whether mpv should receive
+            them.</p>
+            <p class="last">Default: yes (except for libmpv). macOS and Windows only, because elsewhere
+            mpv doesn't have a choice - the system decides whether to send media keys
+            to mpv. For instance, on X11 or Wayland, system-wide media keys are not
+            implemented. Whether media keys work when the mpv window is focused is
+            implementation-defined.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--input-right-alt-gr</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-right-alt-gr</span></tt></dt>
             <dd>(Cocoa and Windows only)
             Use the right Alt key as Alt Gr to produce special characters. If disabled,
@@ -6367,8 +6435,7 @@
             <p class="last">Currently only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=d3d11</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--wayland-app-id=&lt;string&gt;</span></tt></dt>
-            <dd>Set the client app id for Wayland-based video output methods. By default, &quot;mpv&quot;
-            is used.</dd>
+            <dd>Set the client app id for Wayland-based video output methods (default: <tt class="docutils literal">mpv</tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">--wayland-disable-vsync=&lt;yes|no&gt;</span></tt></dt>
             <dd>Disable vsync for the wayland contexts (default: no). Useful for benchmarking
             the wayland context when combined with <tt class="docutils literal"><span class="pre">video-sync=display-desync</span></tt>,
@@ -6379,7 +6446,7 @@
             resize events in the wayland contexts with the mouse. This is only active if
             there are no server side decorations from the compositor.</dd>
             <dt><tt class="docutils literal"><span class="pre">--wayland-edge-pixels-touch=&lt;value&gt;</span></tt></dt>
-            <dd>Defines the size of an edge border (default: 64) to initiate client side
+            <dd>Defines the size of an edge border (default: 32) to initiate client side
             resizes events in the wayland contexts with touch events.</dd>
             <dt><tt class="docutils literal"><span class="pre">--spirv-compiler=&lt;compiler&gt;</span></tt></dt>
             <dd><p class="first">Controls which compiler is used to translate GLSL to SPIR-V. This is
@@ -7601,7 +7668,7 @@
             <dt><tt class="docutils literal"><span class="pre">--cover-art-file=&lt;file&gt;</span></tt></dt>
             <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--cover-art-files-append</span></tt>. Each use of this
             option will add a new external file.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--cover-art-auto=&lt;no|fuzzy&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--cover-art-auto=&lt;no|exact|fuzzy|all&gt;</span></tt></dt>
             <dd><p class="first">Whether to load _external_ cover art automatically. Similar to
             <tt class="docutils literal"><span class="pre">--sub-auto</span></tt> and <tt class="docutils literal"><span class="pre">--audio-file-auto</span></tt>. If a video already has tracks
             (which are not marked as cover art), external cover art will not be loaded.</p>
@@ -7613,10 +7680,10 @@
             </tr>
             <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with an image file extension.</td>
             </tr>
-            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load cover art with a filename included in an internal whitelist,
-            such as <tt class="docutils literal">cover.jpg</tt>.</td>
+            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all cover art containing the media filename and filenames
+            in an internal whitelist, such as <tt class="docutils literal">cover.jpg</tt> (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">all:</th><td class="field-body">Union of exact and fuzzy (default).</td>
+            <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all images in the current directory.</td>
             </tr>
             </tbody>
             </table>
@@ -9863,6 +9930,11 @@
             <p>All key names can be combined with the modifiers <tt class="docutils literal">Shift</tt>, <tt class="docutils literal">Ctrl</tt>, <tt class="docutils literal">Alt</tt>,
             <tt class="docutils literal">Meta</tt>. They must be prefixed to the actual key name, where each modifier
             is followed by a <tt class="docutils literal">+</tt> (for example <tt class="docutils literal">ctrl+q</tt>).</p>
+            <p>The <tt class="docutils literal">Shift</tt> modifier requires some attention. For instance <tt class="docutils literal">Shift+2</tt> should
+            usually be specified as key-name <tt class="docutils literal">&#64;</tt> at <tt class="docutils literal">input.conf</tt>, and similarly the
+            combination <tt class="docutils literal">Alt+Shift+2</tt> is usually <tt class="docutils literal">Alt+&#64;</tt>, etc. Special key names like
+            <tt class="docutils literal">Shift+LEFT</tt> work as expected. If in doubt - use <tt class="docutils literal"><span class="pre">--input-test</span></tt> to check
+            how a key/combination is seen by mpv.</p>
             <p>Symbolic key names and modifier names are case-insensitive. Unicode key names
             are case-sensitive because input bindings typically respect the shift key.</p>
             <p>Another type of key names are hexadecimal key names, that serve as fallback
@@ -9915,24 +9987,30 @@
             <div class="line-block">
             <div class="line"><br /></div>
             <div class="line"><tt class="docutils literal">&lt;command&gt;&nbsp; ::= [&lt;prefixes&gt;] &lt;command_name&gt; <span class="pre">(&lt;argument&gt;)*</span></tt></div>
-            <div class="line"><tt class="docutils literal">&lt;argument&gt; ::= (&lt;unquoted&gt; | &quot; &lt;double_quoted&gt; &quot; | !X &lt;custom_quoted&gt; X!)</tt></div>
+            <div class="line"><tt class="docutils literal">&lt;argument&gt; ::= (&lt;unquoted&gt; | &quot; &lt;double_quoted&gt; &quot; | ' &lt;single_quoted&gt; ' | `X &lt;custom_quoted&gt; X`)</tt></div>
             </div>
             <p><tt class="docutils literal">command_name</tt> is an unquoted string with the command name itself. See
             <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a> for a list.</p>
             <p>Arguments are separated by whitespaces even if the command expects only one
             argument. Arguments with whitespaces or other special characters must be quoted,
             or the command cannot be parsed correctly.</p>
-            <p>Double quoted arguments start and end with <tt class="docutils literal">&quot;</tt>. Custom quotes start with <tt class="docutils literal">!</tt>
-            (exclamation mark) followed by any ASCII character, and end in the same pair in
-            reverse order, e.g. <tt class="docutils literal">!'foo'!</tt> or <tt class="docutils literal"><span class="pre">!-bar-!</span></tt>. The final pair sequence is not
-            allowed inside the string - in these examples <tt class="docutils literal">'!</tt> and <tt class="docutils literal"><span class="pre">-!</span></tt> respectively.</p>
-            <p>Custom quotes take their content literally, while inside double quotes
-            JSON/C-style escaping can be used. JSON escapes according to RFC 8259, minus
-            surrogate pair escapes, should be a safe subset that can be used.</p>
+            <p>Double quotes interpret JSON/C-style escaping, like <tt class="docutils literal">\t</tt> or <tt class="docutils literal">\&quot;</tt> or <tt class="docutils literal">\\</tt>.
+            JSON escapes according to RFC 8259, minus surrogate pair escapes. This is the
+            only form which allows newlines at the value - as <tt class="docutils literal">\n</tt>.</p>
+            <p>Single quotes take the content literally, and cannot include the single-quote
+            character at the value.</p>
+            <p>Custom quotes also take the content literally, but are more flexible than single
+            quotes. They start with <tt class="docutils literal">`</tt> (back-quote) followed by any ASCII character,
+            and end at the first occurance of the same pair in reverse order, e.g.
+            <tt class="docutils literal"><span class="pre">`-foo-`</span></tt> or <tt class="docutils literal">``bar``</tt>. The final pair sequence is not allowed at the
+            value - in these examples <tt class="docutils literal"><span class="pre">-`</span></tt> and <tt class="docutils literal">``</tt> respectively. In the second
+            example the last character of the value also can't be a back-quote.</p>
+            <p>Mixed quoting at the same argument, like <tt class="docutils literal"><span class="pre">'foo'&quot;bar&quot;</span></tt>, is not supported.</p>
             <p>Note that argument parsing and property expansion happen at different stages.
             First, arguments are determined as described above, and then, where applicable,
             properties are expanded - regardless of argument quoting. However, expansion
-            can still be prevented with <tt class="docutils literal">$&gt;</tt>. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
+            can still be prevented with the <tt class="docutils literal">raw</tt> prefix or <tt class="docutils literal">$&gt;</tt>. See <a class="reference internal" href="#input-command-prefixes">Input Command
+            Prefixes</a> and <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
             </div>
             <div class="section" id="commands-specified-as-arrays">
             <h2>Commands specified as arrays</h2>
@@ -9951,6 +10029,8 @@
             quotes and escaping. The array command APIs mentioned above pass strings
             directly to the argument parsers, or can sidestep them by the ability to pass
             non-string values.</p>
+            <p>Property expansion is disabled by default for these APIs. This can be changed
+            with the <tt class="docutils literal"><span class="pre">expand-properties</span></tt> prefix. See <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a>.</p>
             <p>Sometimes commands have string arguments, that in turn are actually parsed by
             other components (e.g. filter strings with <tt class="docutils literal">vf add</tt>) - in these cases, you
             you would have to double-escape in input.conf, but not with the array APIs.</p>
@@ -9971,6 +10051,8 @@
             to use APIs that pass arguments as arrays.</p>
             <p>Named arguments are not supported in the &quot;flat&quot; input.conf syntax, which means
             you cannot use them for key bindings in input.conf at all.</p>
+            <p>Property expansion is disabled by default for these APIs. This can be changed
+            with the <tt class="docutils literal"><span class="pre">expand-properties</span></tt> prefix. See <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a>.</p>
             </div>
             <div class="section" id="list-of-input-commands">
             <h2>List of Input Commands</h2>
@@ -10168,6 +10250,10 @@
             <dd>Stop playback and replace the internal playlist with the new one.</dd>
             <dt>&lt;append&gt;</dt>
             <dd>Append the new playlist at the end of the current internal playlist.</dd>
+            <dt>&lt;append-play&gt;</dt>
+            <dd>Append the new playlist, and if nothing is currently playing, start
+            playback. (Always starts with the new playlist, even if the internal
+            playlist was not empty before running this command.)</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-clear</span></tt></dt>
@@ -10362,14 +10448,29 @@
             the current track. (Works on external subtitle files only.)</p>
             <p class="last">This works by unloading and re-adding the subtitle track.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-step</span> &lt;skip&gt;</tt></dt>
-            <dd>Change subtitle timing such, that the subtitle event after the next
+            <dt><tt class="docutils literal"><span class="pre">sub-step</span> &lt;skip&gt; &lt;flags&gt;</tt></dt>
+            <dd><p class="first">Change subtitle timing such, that the subtitle event after the next
             <tt class="docutils literal">&lt;skip&gt;</tt> subtitle events is displayed. <tt class="docutils literal">&lt;skip&gt;</tt> can be negative to step
-            backwards.</dd>
-            <dt><tt class="docutils literal"><span class="pre">sub-seek</span> &lt;skip&gt;</tt></dt>
+            backwards.</p>
+            <p>Secondary argument:</p>
+            <dl class="last docutils">
+            <dt>primary (default)</dt>
+            <dd>Steps through the primary subtitles.</dd>
+            <dt>secondary</dt>
+            <dd>Steps through the secondary subtitles.</dd>
+            </dl>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">sub-seek</span> &lt;skip&gt; &lt;flags&gt;</tt></dt>
             <dd><p class="first">Seek to the next (skip set to 1) or the previous (skip set to -1) subtitle.
             This is similar to <tt class="docutils literal"><span class="pre">sub-step</span></tt>, except that it seeks video and audio
             instead of adjusting the subtitle delay.</p>
+            <p>Secondary argument:</p>
+            <dl class="docutils">
+            <dt>primary (default)</dt>
+            <dd>Seeks through the primary subtitles.</dd>
+            <dt>secondary</dt>
+            <dd>Seeks through the secondary subtitles.</dd>
+            </dl>
             <p class="last">For embedded subtitles (like with Matroska), this works only with subtitle
             events that have already been displayed, or are within a short prefetch
             range.</p>
@@ -10548,7 +10649,7 @@
             <div class="admonition admonition-example-for-input-conf">
             <p class="first admonition-title">Example for input.conf</p>
             <ul class="last simple">
-            <li><tt class="docutils literal">a vf set flip</tt> turn video upside-down on the <tt class="docutils literal">a</tt> key</li>
+            <li><tt class="docutils literal">a vf set vflip</tt> turn the video upside-down on the <tt class="docutils literal">a</tt> key</li>
             <li><tt class="docutils literal">b vf set &quot;&quot;</tt> remove all video filters on <tt class="docutils literal">b</tt></li>
             <li><tt class="docutils literal">c vf toggle gradfun</tt> toggle debanding on <tt class="docutils literal">c</tt></li>
             </ul>
@@ -11921,6 +12022,14 @@
             set with this property. Setting <tt class="docutils literal">1</tt> will resize to original video size
             (or to be exact, the size the video filters output). <tt class="docutils literal">2</tt> will set the
             double size, <tt class="docutils literal">0.5</tt> halves the size.</p>
+            <p>Note that setting a value identical to its previous value will not resize
+            the window. That's because this property mirrors the <tt class="docutils literal"><span class="pre">window-scale</span></tt>
+            option, and setting an option to its previous value is ignored. If this
+            value is set while the window is in a fullscreen, the multiplier is not
+            applied until the window is taken out of that state. Writing this property
+            to a maximized window can unmaximize the window depending on the OS and
+            window manager. If the window does not unmaximize, the multiplier will be
+            applied if the user unmaximizes the window later.</p>
             <p>See <tt class="docutils literal"><span class="pre">current-window-scale</span></tt> for the value derived from the actual window
             size.</p>
             <p class="last">Since mpv 0.31.0, this always returns the previously set value (or the
@@ -11928,11 +12037,18 @@
             Before mpv 0.31.0, this returned what <tt class="docutils literal"><span class="pre">current-window-scale</span></tt> returns now,
             after the window was created.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">current-window-scale</span></tt></dt>
-            <dd>The <tt class="docutils literal"><span class="pre">window-scale</span></tt> value calculated from the current window size. This
+            <dt><tt class="docutils literal"><span class="pre">current-window-scale</span></tt> (RW)</dt>
+            <dd><p class="first">The <tt class="docutils literal"><span class="pre">window-scale</span></tt> value calculated from the current window size. This
             has the same value as <tt class="docutils literal"><span class="pre">window-scale</span></tt> if the window size was not changed
             since setting the option, and the window size was not restricted in other
-            ways. The property is unavailable if no video is active.</dd>
+            ways. If the window is fullscreened, this will return the scale value
+            calculated from the last non-fullscreen size of the window. The property
+            is unavailable if no video is active.</p>
+            <p class="last">When setting this property in the fullscreen or maximized state, the behavior
+            is the same as window-scale. In all ther cases, setting the value of this
+            property will always resize the window. This does not affect the value of
+            <tt class="docutils literal"><span class="pre">window-scale</span></tt>.</p>
+            </dd>
             <dt><tt class="docutils literal">focused</tt></dt>
             <dd>Whether the window has focus. Might not be supported by all VOs.</dd>
             <dt><tt class="docutils literal"><span class="pre">display-names</span></tt></dt>
@@ -12043,11 +12159,15 @@
             <dd>The current subtitle start time (in seconds). If there's multiple current
             subtitles, returns the first start time. If no current subtitle is present
             null is returned instead.</dd>
+            <dt><tt class="docutils literal"><span class="pre">secondary-sub-start</span></tt></dt>
+            <dd>Same as <tt class="docutils literal"><span class="pre">sub-start</span></tt>, but for the secondary subtitles.</dd>
             <dt><tt class="docutils literal"><span class="pre">sub-end</span></tt></dt>
             <dd>The current subtitle end time (in seconds). If there's multiple current
             subtitles, return the last end time. If no current subtitle is present, or
             if it's present but has unknown or incorrect duration, null is returned
             instead.</dd>
+            <dt><tt class="docutils literal"><span class="pre">secondary-sub-end</span></tt></dt>
+            <dd>Same as <tt class="docutils literal"><span class="pre">sub-end</span></tt>, but for the secondary subtitles.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
             <dd><p class="first">Current position on playlist. The first entry is on position 0. Writing to
             this property may start playback at the new position.</p>
@@ -12162,7 +12282,8 @@
             <dt><tt class="docutils literal"><span class="pre">track-list/N/albumart</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt>/true if this is a video track that consists of a single
             picture, <tt class="docutils literal">no</tt>/false or unavailable otherwise. This is used for video
-            tracks that are really attached pictures in audio files.</dd>
+            tracks that are really images embedded in audio files and for external
+            cover art.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/default</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt>/true if the track has the default flag set in the file,
             <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
@@ -12668,7 +12789,7 @@
             caveats with some properties (due to historical reasons):</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">vid</tt>, <tt class="docutils literal">aid</tt>, <tt class="docutils literal">sid</tt></dt>
-            <dd><p class="first">While playback is active, these result the actually active tracks. For
+            <dd><p class="first">While playback is active, these return the actually active tracks. For
             example, if you set <tt class="docutils literal">aid=5</tt>, and the currently played file contains no
             audio track with ID 5, the <tt class="docutils literal">aid</tt> property will return <tt class="docutils literal">no</tt>.</p>
             <p class="last">Before mpv 0.31.0, you could set existing tracks at runtime only.</p>
@@ -12683,8 +12804,8 @@
             change. On the other hand, the next video to be played will fail, because
             the initial filter chain cannot be created.</p>
             <p class="last">This behavior changed in mpv 0.31.0. Before this, the new value was rejected
-            <em>iff</em> video (for <tt class="docutils literal">vf</tt>) or audio (for <tt class="docutils literal">af</tt>) was active. If playback was
-            not active, the behavior was the same as the current behavior.</p>
+            <em>iff</em> a video (for <tt class="docutils literal">vf</tt>) or an audio (for <tt class="docutils literal">af</tt>) track was active. If
+            playback was not active, the behavior was the same as the current one.</p>
             </dd>
             <dt><tt class="docutils literal">playlist</tt></dt>
             <dd>The property is read-only and returns the current internal playlist. The
@@ -12713,8 +12834,11 @@
             <dd>shows the filename of the current file when pressing the <tt class="docutils literal">i</tt> key</dd>
             </dl>
             </div>
-            <p>Within <tt class="docutils literal">input.conf</tt>, property expansion can be inhibited by putting the
-            <tt class="docutils literal">raw</tt> prefix in front of commands.</p>
+            <p>Whether property expansion is enabled by default depends on which API is used
+            (see <a class="reference internal" href="#flat-command-syntax">Flat command syntax</a>, <a class="reference internal" href="#commands-specified-as-arrays">Commands specified as arrays</a> and <a class="reference internal" href="#named-arguments">Named
+            arguments</a>), but it can always be enabled with the <tt class="docutils literal"><span class="pre">expand-properties</span></tt>
+            prefix or disabled with the <tt class="docutils literal">raw</tt> prefix, as described in <a class="reference internal" href="#input-command-prefixes">Input Command
+            Prefixes</a>.</p>
             <p>The following expansions are supported:</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">${NAME}</tt></dt>
@@ -12847,7 +12971,8 @@
             </dd>
             <dt>title</dt>
             <dd><div class="first line-block">
-            <div class="line">Displays current media-title, filename, or custom title</div>
+            <div class="line">Displays current media-title, filename, custom title, or target chapter
+            name while hovering the seekbar.</div>
             </div>
             <table border="1" class="last docutils">
             <colgroup>
@@ -13085,12 +13210,12 @@
             </dd>
             <dt><tt class="docutils literal">seekbarkeyframes</tt></dt>
             <dd><p class="first">Default: yes</p>
-            <p class="last">Controls the mode used to seek when dragging the seekbar (default: true). If
-            set to true, default seeking mode is used (usually keyframes, but player
-            defaults and heuristics can change it to exact). If set to false, exact
-            seeking on mouse drags will be used instead. Keyframes are preferred, but
-            exact seeks may be useful in cases where keyframes cannot be found. Note
-            that using exact seeks can potentially make mouse dragging much slower.</p>
+            <p class="last">Controls the mode used to seek when dragging the seekbar. If set to <tt class="docutils literal">yes</tt>,
+            default seeking mode is used (usually keyframes, but player defaults and
+            heuristics can change it to exact). If set to <tt class="docutils literal">no</tt>, exact seeking on
+            mouse drags will be used instead. Keyframes are preferred, but exact seeks
+            may be useful in cases where keyframes cannot be found. Note that using
+            exact seeks can potentially make mouse dragging much slower.</p>
             </dd>
             <dt><tt class="docutils literal">seekrangestyle</tt></dt>
             <dd><p class="first">Default: inverted</p>
@@ -13248,6 +13373,11 @@
             <dd><p class="first">Default: no</p>
             <p class="last">Set to <tt class="docutils literal">yes</tt> to reduce festivity (i.e. disable santa hat in December.)</p>
             </dd>
+            <dt><tt class="docutils literal">livemarkers</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Update chapter markers positions on duration changes, e.g. live streams.
+            The updates are unoptimized - consider disabling it on very low-end systems.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="script-commands">
@@ -13306,7 +13436,7 @@
             <table border="1" class="docutils">
             <colgroup>
             <col width="13%" />
-            <col width="87%" />
+            <col width="88%" />
             </colgroup>
             <tbody valign="top">
             <tr><td>1</td>
@@ -13319,6 +13449,9 @@
             <td>Input cache stats</td>
             </tr>
             <tr><td>4</td>
+            <td>Active key bindings (scroll)</td>
+            </tr>
+            <tr><td>0</td>
             <td>Internal stuff (scroll)</td>
             </tr>
             </tbody>
@@ -13353,12 +13486,6 @@
             <div class="section" id="id3">
             <h3>Configurable Options</h3>
             <dl class="docutils">
-            <dt><tt class="docutils literal">key_oneshot</tt></dt>
-            <dd>Default: i</dd>
-            <dt><tt class="docutils literal">key_toggle</tt></dt>
-            <dd><p class="first">Default: I</p>
-            <p class="last">Key bindings to display stats.</p>
-            </dd>
             <dt><tt class="docutils literal">key_page_1</tt></dt>
             <dd>Default: 1</dd>
             <dt><tt class="docutils literal">key_page_2</tt></dt>
@@ -13366,7 +13493,9 @@
             <dt><tt class="docutils literal">key_page_3</tt></dt>
             <dd>Default: 3</dd>
             <dt><tt class="docutils literal">key_page_4</tt></dt>
-            <dd><p class="first">Default: 4</p>
+            <dd>Default: 4</dd>
+            <dt><tt class="docutils literal">key_page_0</tt></dt>
+            <dd><p class="first">Default: 0</p>
             <p class="last">Key bindings for page switching while stats are displayed.</p>
             </dd>
             <dt><tt class="docutils literal">key_scroll_up</tt></dt>
@@ -13454,18 +13583,32 @@
             </div>
             <div class="section" id="different-key-bindings">
             <h3>Different key bindings</h3>
-            <p>A different key binding can be defined with the aforementioned options
-            <tt class="docutils literal">key_oneshot</tt> and <tt class="docutils literal">key_toggle</tt> but also with commands in <tt class="docutils literal">input.conf</tt>,
-            for example:</p>
+            <p>Additional keys can be configured in <tt class="docutils literal">input.conf</tt> to display the stats:</p>
             <pre class="literal-block">
             e script-binding stats/display-stats
             E script-binding stats/display-stats-toggle
             </pre>
-            <p>Using <tt class="docutils literal">input.conf</tt>, it is also possible to directly display a certain page:</p>
+            <p>And to display a certain page directly:</p>
             <pre class="literal-block">
             i script-binding stats/display-page-1
             e script-binding stats/display-page-2
             </pre>
+            </div>
+            <div class="section" id="active-key-bindings-page">
+            <h3>Active key bindings page</h3>
+            <p>Lists the active key bindings and the commands they're bound to, excluding the
+            interactive keys of the stats script itself. See also <tt class="docutils literal"><span class="pre">--input-test</span></tt> for more
+            detailed view of each binding.</p>
+            <p>The keys are grouped automatically using a simple analysis of the command
+            string, and one should not expect documentation-level grouping accuracy,
+            however, it should still be reasonably useful.</p>
+            <p>Using <tt class="docutils literal"><span class="pre">--idle</span> <span class="pre">--script-opts=stats-bindlist=yes</span></tt> will print the list to the
+            terminal and quit immediately. By default long lines are shortened to 79 chars,
+            and terminal escape sequences are enabled. A different length limit can be
+            set by changing <tt class="docutils literal">yes</tt> to a number (at least 40), and escape sequences can be
+            disabled by adding <tt class="docutils literal">-</tt> before the value, e.g. <tt class="docutils literal"><span class="pre">...=-yes</span></tt> or <tt class="docutils literal"><span class="pre">...=-120</span></tt>.</p>
+            <p>Like with <tt class="docutils literal"><span class="pre">--input-test</span></tt>, the list includes bindings from <tt class="docutils literal">input.conf</tt> and
+            from user scripts. Use <cite>--no-config`</cite> to list only built-in bindings.</p>
             </div>
             <div class="section" id="internal-stuff-page">
             <h3>Internal stuff page</h3>
