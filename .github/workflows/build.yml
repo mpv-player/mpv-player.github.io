@@ -1,0 +1,47 @@
+name: build
+
+# https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow
+on:
+  workflow_dispatch:
+  push:
+    branches: ["ci"]
+
+jobs:
+  webpage:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Checkout build sources
+        uses: actions/checkout@v2
+        with:
+          repository: mpv-player/mpv.io
+
+      - name: Checkout build result repository
+        uses: actions/checkout@v2
+        with:
+          repository: mpv-player/mpv-player.github.io
+          ref: master
+          path: build
+          fetch-depth: 0
+
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docutils-common
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "2.1"
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Build site and manual
+        run: |
+          rake travis
+
+      - name: Push results
+        run: |
+          pushd build
+          git push origin master
+          popd
