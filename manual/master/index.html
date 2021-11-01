@@ -386,8 +386,9 @@
             need to escape special characters. To work this around, the path can be
             additionally wrapped in the fixed-length syntax, e.g. <tt class="docutils literal">%n%string_of_length_n</tt>
             (see above).</p>
-            <p>Some mpv options interpret paths starting with <tt class="docutils literal">~</tt>. Currently, the prefix
-            <tt class="docutils literal">~~/</tt> expands to the mpv configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).
+            <p>Some mpv options interpret paths starting with <tt class="docutils literal">~</tt>.
+            Currently, the prefix <tt class="docutils literal">~~home/</tt> expands to the mpv configuration directory
+            (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).
             <tt class="docutils literal">~/</tt> expands to the user's home directory. (The trailing <tt class="docutils literal">/</tt> is always
             required.) The following paths are currently recognized:</p>
             <table border="1" class="docutils">
@@ -402,13 +403,17 @@
             </thead>
             <tbody valign="top">
             <tr><td><tt class="docutils literal">~~/</tt></td>
-            <td>mpv config dir (for example <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>)</td>
+            <td>If the subpath exists in any of the mpv's config directories
+            the path of the existing file/dir is returned. Otherwise this
+            is equivalent to <tt class="docutils literal">~~home/</tt>.
+            Note that if --no-config is used <tt class="docutils literal"><span class="pre">~~/foobar</span></tt> will resolve to
+            <tt class="docutils literal">foobar</tt> which can be unexpected.</td>
             </tr>
             <tr><td><tt class="docutils literal">~/</tt></td>
             <td>user home directory root (similar to shell, <tt class="docutils literal">$HOME</tt>)</td>
             </tr>
             <tr><td><tt class="docutils literal">~~home/</tt></td>
-            <td>same as <tt class="docutils literal">~~/</tt></td>
+            <td>mpv config dir (for example <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>)</td>
             </tr>
             <tr><td><tt class="docutils literal">~~global/</tt></td>
             <td>the global config path, if available (not on win32)</td>
@@ -419,11 +424,11 @@
             <tr><td><tt class="docutils literal">~~desktop/</tt></td>
             <td>the path to the desktop (win32, macOS)</td>
             </tr>
-            <tr><td><tt class="docutils literal">~~exe_dir</tt></td>
+            <tr><td><tt class="docutils literal">~~exe_dir/</tt></td>
             <td>win32 only: the path to the directory containing the exe (for
             config file purposes; <tt class="docutils literal">$MPV_HOME</tt> overrides it)</td>
             </tr>
-            <tr><td><tt class="docutils literal">~~old_home</tt></td>
+            <tr><td><tt class="docutils literal">~~old_home/</tt></td>
             <td>do not use</td>
             </tr>
             </tbody>
@@ -2097,12 +2102,12 @@
             <p class="first admonition-title">Examples</p>
             <ul class="last simple">
             <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=fullscreen</span></tt>
-            Resuming a file won't restore the fullscreen state.</li>
+            The fullscreen state won't be saved to watch later files.</li>
             <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=volume</span></tt>
             <tt class="docutils literal"><span class="pre">--watch-later-options-remove=mute</span></tt>
-            Resuming a file won't restore the volume or mute state.</li>
+            The volume and mute state won't be saved to watch later files.</li>
             <li><tt class="docutils literal"><span class="pre">--watch-later-options-clr</span></tt>
-            Resuming a file won't restore any option except the starting
+            No option will be saved to watch later files except the starting
             position.</li>
             </ul>
             </div>
@@ -2218,9 +2223,11 @@
             if available, allowing for video/audio selection in runtime (default:
             no). It's disabled (&quot;no&quot;) by default for performance reasons.</dd>
             <dt><tt class="docutils literal"><span class="pre">ytdl_path=youtube-dl</span></tt></dt>
-            <dd>Configure path to youtube-dl executable or a compatible fork's.
-            The default &quot;youtube-dl&quot; looks for the executable in PATH. In a Windows
-            environment the suffix extension &quot;.exe&quot; is always appended.</dd>
+            <dd>Configure paths to youtube-dl's executable or a compatible fork's. The
+            paths should be separated by : on Unix and ; on Windows. mpv looks in
+            order for the configured paths in PATH and in mpv's config directory.
+            The defaults are &quot;yt-dlp&quot;, &quot;yt-dlp_x86&quot; and &quot;youtube-dl&quot;. On Windows
+            the suffix extension &quot;.exe&quot; is always appended.</dd>
             </dl>
             <div class="admonition admonition-why-do-the-option-names-mix-and last">
             <p class="first admonition-title">Why do the option names mix <tt class="docutils literal">_</tt> and <tt class="docutils literal">-</tt>?</p>
@@ -4926,10 +4933,14 @@
             <dd>Specify input configuration file other than the default location in the mpv
             configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/input.conf</span></tt>).</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-input-default-bindings</span></tt></dt>
-            <dd>Disable mpv default (built-in) key bindings. Currently this includes all
-            key bindings which <tt class="docutils literal">input.conf</tt> can override, like those added by scripts
-            using <tt class="docutils literal">mp.add_key_binding</tt> (but not <tt class="docutils literal">mp.add_forced_key_binding</tt>).
-            This might change in the future to exclude <tt class="docutils literal">mp.add_key_binding</tt>.</dd>
+            <dd>Disable default-level (&quot;weak&quot;) key bindings. These are bindings which config
+            files like <tt class="docutils literal">input.conf</tt> can override. It currently affects the builtin key
+            bindings, and keys which scripts bind using <tt class="docutils literal">mp.add_key_binding</tt> (but not
+            <tt class="docutils literal">mp.add_forced_key_binding</tt> because this overrides <tt class="docutils literal">input.conf</tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--no-input-builtin-bindings</span></tt></dt>
+            <dd>Disable loading of built-in key bindings during start-up. This option is
+            applied only during (lib)mpv initialization, and if used then it will not
+            be not possible to enable them later. May be useful to libmpv clients.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt></dt>
             <dd>Prints all commands that can be bound to keys.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-doubleclick-time=&lt;milliseconds&gt;</span></tt></dt>
@@ -6578,7 +6589,7 @@
             <dd><p class="first">Specifies that this shader should be treated as a compute shader, with
             the block size bw and bh. The compute shader will be dispatched with
             however many blocks are necessary to completely tile over the output.
-            Within each block, there will bw tw*th threads, forming a single work
+            Within each block, there will be tw*th threads, forming a single work
             group. In other words: tw and th specify the work group size, which can
             be different from the block size. So for example, a compute shader with
             bw, bh = 32 and tw, th = 8 running on a 500x500 texture would dispatch
@@ -7017,12 +7028,6 @@
             <dd>Only allow desktop/core GL</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--opengl-restrict=&lt;version&gt;</span></tt></dt>
-            <dd>Restricts all OpenGL versions above a certain version. Versions are encoded
-            in hundreds, i.e. OpenGL 4.5 -&gt; 450. As an example, --opengl-restrict=300
-            would restrict OpenGL 3.0 and higher, effectively only allowing 2.x
-            contexts. Note that this only imposes a limit on context creation APIs, the
-            actual OpenGL context may still have a higher OpenGL version. (Default: 0)</dd>
             <dt><tt class="docutils literal"><span class="pre">--fbo-format=&lt;fmt&gt;</span></tt></dt>
             <dd><p class="first">Selects the internal format of textures used for FBOs. The format can
             influence performance and quality of the video output. <tt class="docutils literal">fmt</tt> can be one
@@ -8355,7 +8360,7 @@
             <dt><tt class="docutils literal">tct</tt></dt>
             <dd><p class="first">Color Unicode art video output driver that works on a text console.
             By default depends on support of true color by modern terminals to display
-            the images at full color range, but 256-colors outout is also supported (see
+            the images at full color range, but 256-colors output is also supported (see
             below). On Windows it requires an ansi terminal such as mintty.</p>
             <p>Since mpv 0.30.0, you may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent
             performance.</p>
@@ -8555,8 +8560,12 @@
             <dd>Select the connector to use (usually this is a monitor.) If <tt class="docutils literal">&lt;name&gt;</tt>
             is empty or <tt class="docutils literal">auto</tt>, mpv renders the output on the first available
             connector. Use <tt class="docutils literal"><span class="pre">--drm-connector=help</span></tt> to get a list of available
-            connectors. When using multiple graphic cards, use the <tt class="docutils literal">&lt;gpu_number&gt;</tt>
-            argument to disambiguate.
+            connectors. The <tt class="docutils literal">&lt;gpu_number&gt;</tt> argument can be used to disambiguate
+            multiple graphic cards, but is deprecated in favor of <tt class="docutils literal"><span class="pre">--drm-device</span></tt>.
+            (default: empty)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--drm-device=&lt;path&gt;</span></tt></dt>
+            <dd>Select the DRM device file to use. If specified this overrides automatic
+            card selection and any card number specified <tt class="docutils literal"><span class="pre">--drm-connector</span></tt>.
             (default: empty)</dd>
             <dt><tt class="docutils literal"><span class="pre">--drm-mode=&lt;preferred|highest|N|WxH[&#64;R]&gt;</span></tt></dt>
             <dd><p class="first">Mode to use (resolution and frame rate).
@@ -8864,7 +8873,7 @@
             for each option. The options are not documented here, because they are
             merely passed to librubberband. Look at the librubberband documentation
             to learn what each option does:
-            <a class="reference external" href="http://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html">http://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html</a>
+            <a class="reference external" href="https://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html">https://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html</a>
             (The mapping of the mpv rubberband filter sub-option names and values to
             those of librubberband follows a simple pattern: <tt class="docutils literal">&quot;Option&quot; + Name + Value</tt>.)</p>
             <p>This filter supports the following <tt class="docutils literal"><span class="pre">af-command</span></tt> commands:</p>
@@ -8968,7 +8977,7 @@
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p>To get a full list of available video filters, see <tt class="docutils literal"><span class="pre">--vf=help</span></tt> and
-            <a class="reference external" href="http://ffmpeg.org/ffmpeg-filters.html">http://ffmpeg.org/ffmpeg-filters.html</a> .</p>
+            <a class="reference external" href="https://ffmpeg.org/ffmpeg-filters.html">https://ffmpeg.org/ffmpeg-filters.html</a> .</p>
             <p>Also, keep in mind that most actual filters are available via the <tt class="docutils literal">lavfi</tt>
             wrapper, which gives you access to most of libavfilter's filters. This
             includes all filters that have been ported from MPlayer to libavfilter.</p>
@@ -9330,7 +9339,7 @@
             <dd><p class="first">If libavfilter inserts filters for pixel format conversion, this
             option gives the flags which should be passed to libswscale. This
             option is numeric and takes a bit-wise combination of <tt class="docutils literal">SWS_</tt> flags.</p>
-            <p class="last">See <tt class="docutils literal"><span class="pre">http://git.videolan.org/?p=ffmpeg.git;a=blob;f=libswscale/swscale.h</span></tt>.</p>
+            <p class="last">See <tt class="docutils literal"><span class="pre">https://git.videolan.org/?p=ffmpeg.git;a=blob;f=libswscale/swscale.h</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal">&lt;o&gt;</tt></dt>
             <dd><p class="first">Set AVFilterGraph options. These should be documented by FFmpeg.</p>
@@ -9540,7 +9549,7 @@
             <col class="field-body" />
             <tbody valign="top">
             <tr class="field"><th class="field-name">no:</th><td class="field-body">Use the API as it was interpreted by older Mesa drivers. While
-            this interpretation was more obvious and inuitive, it was
+            this interpretation was more obvious and intuitive, it was
             apparently wrong, and not shared by Intel driver developers.</td>
             </tr>
             <tr class="field"><th class="field-name">yes:</th><td class="field-body">Use Intel interpretation of surface forward and backwards
@@ -9690,7 +9699,7 @@
             user. Some types of accesses might query the filter multiple times,
             which leads to lost frames.</dd>
             <dt><tt class="docutils literal">print=yes|no</tt></dt>
-            <dd>Print computed fingerprints the the terminal (default: no). This is
+            <dd>Print computed fingerprints to the terminal (default: no). This is
             mostly for testing and such. Scripts should use <tt class="docutils literal"><span class="pre">vf-metadata</span></tt> to
             read information from this filter instead.</dd>
             </dl>
@@ -10130,10 +10139,14 @@
             <dd>Add the given value to the property or option. On overflow or underflow,
             clamp the property to the maximum. If <tt class="docutils literal">&lt;value&gt;</tt> is omitted, assume <tt class="docutils literal">1</tt>.</dd>
             <dt><tt class="docutils literal">cycle &lt;name&gt; [&lt;value&gt;]</tt></dt>
-            <dd>Cycle the given property or option. The second argument can be <tt class="docutils literal">up</tt> or
+            <dd><p class="first">Cycle the given property or option. The second argument can be <tt class="docutils literal">up</tt> or
             <tt class="docutils literal">down</tt> to set the cycle direction. On overflow, set the property back to
             the minimum, on underflow set it to the maximum. If <tt class="docutils literal">up</tt> or <tt class="docutils literal">down</tt> is
-            omitted, assume <tt class="docutils literal">up</tt>.</dd>
+            omitted, assume <tt class="docutils literal">up</tt>.</p>
+            <p class="last">Whether or not key-repeat is enabled by default depends on the property.
+            Currently properties with continuous values are repeatable by default (like
+            <tt class="docutils literal">volume</tt>), while discrete values are not (like <tt class="docutils literal"><span class="pre">osd-level</span></tt>).</p>
+            </dd>
             <dt><tt class="docutils literal">multiply &lt;name&gt; &lt;value&gt;</tt></dt>
             <dd>Similar to <tt class="docutils literal">add</tt>, but multiplies the property or option with the numeric
             value.</dd>
@@ -10310,9 +10323,9 @@
             command line arguments following. This is just like the <tt class="docutils literal">run</tt> command
             argument list.</p>
             <p class="last">The first array entry is either an absolute path to the executable, or
-            a filename with no path components, in which case the <tt class="docutils literal">PATH</tt>
-            environment variable. On Unix, this is equivalent to <tt class="docutils literal">posix_spawnp</tt>
-            and <tt class="docutils literal">execvp</tt> behavior.</p>
+            a filename with no path components, in which case the executable is
+            searched in the directories in the <tt class="docutils literal">PATH</tt> environment variable. On
+            Unix, this is equivalent to <tt class="docutils literal">posix_spawnp</tt> and <tt class="docutils literal">execvp</tt> behavior.</p>
             </dd>
             <dt><tt class="docutils literal">playback_only</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
             <dd>Boolean indicating whether the process should be killed when playback
@@ -11331,7 +11344,9 @@
             This is the default for <tt class="docutils literal">input.conf</tt> commands.</dd>
             <dt><tt class="docutils literal">repeatable</tt></dt>
             <dd>For some commands, keeping a key pressed doesn't run the command repeatedly.
-            This prefix forces enabling key repeat in any case.</dd>
+            This prefix forces enabling key repeat in any case. For a list of commands:
+            the first command determines the repeatability of the whole list (up to and
+            including version 0.33 - a list was always repeatable).</dd>
             <dt><tt class="docutils literal">async</tt></dt>
             <dd>Allow asynchronous execution (if possible). Note that only a few commands
             will support this (usually this is explicitly documented). Some commands
@@ -12279,11 +12294,14 @@
             <dd>Track title as it is stored in the file. Not always available.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt></dt>
             <dd>Track language as identified by the file. Not always available.</dd>
-            <dt><tt class="docutils literal"><span class="pre">track-list/N/albumart</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/image</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt>/true if this is a video track that consists of a single
-            picture, <tt class="docutils literal">no</tt>/false or unavailable otherwise. This is used for video
-            tracks that are really images embedded in audio files and for external
-            cover art.</dd>
+            picture, <tt class="docutils literal">no</tt>/false or unavailable otherwise. The heuristic used to
+            determine if a stream is an image doesn't attempt to detect images in
+            codecs normally used for videos. Otherwise, it is reliable.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/albumart</span></tt></dt>
+            <dd><tt class="docutils literal">yes</tt>/true if this is an image embedded in an audio file or external
+            cover art, <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/default</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt>/true if the track has the default flag set in the file,
             <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
@@ -12355,6 +12373,7 @@
                     &quot;src-id&quot;            MPV_FORMAT_INT64
                     &quot;title&quot;             MPV_FORMAT_STRING
                     &quot;lang&quot;              MPV_FORMAT_STRING
+                    &quot;image&quot;             MPV_FORMAT_FLAG
                     &quot;albumart&quot;          MPV_FORMAT_FLAG
                     &quot;default&quot;           MPV_FORMAT_FLAG
                     &quot;forced&quot;            MPV_FORMAT_FLAG
@@ -12388,14 +12407,8 @@
             <tt class="docutils literal">sub2</tt></p>
             <p>For example, <tt class="docutils literal"><span class="pre">current-tracks/audio/lang</span></tt> returns the current audio track's
             language field (the same value as <tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt>).</p>
-            <p>A sub-entry is accessible only if a track of that type is actually selected.
-            Tracks selected via <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> never appear under this property.
-            <tt class="docutils literal"><span class="pre">current-tracks</span></tt> and <tt class="docutils literal"><span class="pre">current-tracks/</span></tt> are currently not accessible, and
-            will not return anything.</p>
-            <p class="last">Scripts etc. should not use this. They should use <tt class="docutils literal"><span class="pre">track-list</span></tt>, loop over
-            all tracks, and inspect the <tt class="docutils literal">selected</tt> field to test whether a track is
-            selected (or compare the <tt class="docutils literal">id</tt> field to the <tt class="docutils literal">video</tt> / <tt class="docutils literal">audio</tt> etc.
-            options).</p>
+            <p class="last">If tracks of the requested type are selected via <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt>, the
+            first one is returned.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">chapter-list</span></tt></dt>
             <dd><p class="first">List of chapters, current entry marked. Currently, the raw property value
@@ -12467,13 +12480,14 @@
             <div class="admonition admonition-example">
             <p class="first admonition-title">Example</p>
             <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--osd-status-msg='This</span> is <span class="pre">${osd-ass-cc/0}{\\b1}bold</span> text'</tt></li>
-            <li><tt class="docutils literal"><span class="pre">show-text</span> &quot;This is <span class="pre">${osd-ass-cc/0}{\b1}bold</span> text&quot;</tt></li>
+            <li><tt class="docutils literal"><span class="pre">--osd-msg3='This</span> is <span class="pre">${osd-ass-cc/0}{\\b1}bold</span> text'</tt></li>
+            <li><tt class="docutils literal"><span class="pre">show-text</span> &quot;This is <span class="pre">${osd-ass-cc/0}{\\b1}bold</span> text&quot;</tt></li>
             </ul>
             </div>
             <p>Any ASS override tags as understood by libass can be used.</p>
             <p>Note that you need to escape the <tt class="docutils literal">\</tt> character, because the string is
-            processed for C escape sequences before passing it to the OSD code.</p>
+            processed for C escape sequences before passing it to the OSD code. See
+            <a class="reference internal" href="#flat-command-syntax">Flat command syntax</a> for details.</p>
             <p class="last">A list of tags can be found here: <a class="reference external" href="http://docs.aegisub.org/latest/ASS_Tags/">http://docs.aegisub.org/latest/ASS_Tags/</a></p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vo-configured</span></tt></dt>
@@ -13652,36 +13666,59 @@
             <dd>Show the console.</dd>
             <dt>ESC</dt>
             <dd>Hide the console.</dd>
-            <dt>ENTER</dt>
+            <dt>ENTER, Ctrl+J and Ctrl+M</dt>
             <dd>Run the typed command.</dd>
             <dt>Shift+ENTER</dt>
             <dd>Type a literal newline character.</dd>
-            <dt>Ctrl+LEFT and Ctrl+RIGHT</dt>
-            <dd>Move cursor to previous/next word.</dd>
-            <dt>UP and DOWN</dt>
-            <dd>Navigate command history.</dd>
+            <dt>LEFT and Ctrl+B</dt>
+            <dd>Move the cursor to the previous character.</dd>
+            <dt>RIGHT and Ctrl+F</dt>
+            <dd>Move the cursor to the next character.</dd>
+            <dt>Ctrl+LEFT and Alt+B</dt>
+            <dd>Move the cursor to the beginning of the current word, or if between words,
+            to the beginning of the previous word.</dd>
+            <dt>Ctrl+RIGHT and Alt+F</dt>
+            <dd>Move the cursor to the end of the current word, or if between words, to the
+            end of the next word.</dd>
+            <dt>HOME and Ctrl+A</dt>
+            <dd>Move the cursor to the start of the current line.</dd>
+            <dt>END and Ctrl+E</dt>
+            <dd>Move the cursor to the end of the current line.</dd>
+            <dt>BACKSPACE and Ctrl+H</dt>
+            <dd>Delete the previous character.</dd>
+            <dt>Ctrl+D</dt>
+            <dd>Hide the console if the current line is empty, otherwise delete the next
+            character.</dd>
+            <dt>Ctrl+BACKSPACE and Ctrl+W</dt>
+            <dd>Delete text from the cursor to the beginning of the current word, or if
+            between words, to the beginning of the previous word.</dd>
+            <dt>Ctrl+DEL and Alt+D</dt>
+            <dd>Delete text from the cursor to the end of the current word, or if between
+            words, to the end of the next word.</dd>
+            <dt>Ctrl+U</dt>
+            <dd>Delete text from the cursor to the beginning of the current line.</dd>
+            <dt>Ctrl+K</dt>
+            <dd>Delete text from the cursor to the end of the current line.</dd>
+            <dt>Ctrl+C</dt>
+            <dd>Clear the current line.</dd>
+            <dt>UP and Ctrl+P</dt>
+            <dd>Move back in the command history.</dd>
+            <dt>DOWN and Ctrl+N</dt>
+            <dd>Move forward in the command history.</dd>
             <dt>PGUP</dt>
             <dd>Go to the first command in the history.</dd>
             <dt>PGDN</dt>
-            <dd>Stop navigating command history.</dd>
+            <dd>Stop navigating the command history.</dd>
             <dt>INSERT</dt>
             <dd>Toggle insert mode.</dd>
-            <dt>Shift+INSERT</dt>
-            <dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
-            <dt>TAB</dt>
-            <dd>Complete the command or property name at the cursor.</dd>
-            <dt>Ctrl+C</dt>
-            <dd>Clear current line.</dd>
-            <dt>Ctrl+K</dt>
-            <dd>Delete text from the cursor to the end of the line.</dd>
-            <dt>Ctrl+L</dt>
-            <dd>Clear all log messages from the console.</dd>
-            <dt>Ctrl+U</dt>
-            <dd>Delete text from the cursor to the beginning of the line.</dd>
             <dt>Ctrl+V</dt>
             <dd>Paste text (uses the clipboard on X11 and Wayland).</dd>
-            <dt>Ctrl+W</dt>
-            <dd>Delete text from the cursor to the beginning of the current word.</dd>
+            <dt>Shift+INSERT</dt>
+            <dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
+            <dt>TAB and Ctrl+I</dt>
+            <dd>Complete the command or property name at the cursor.</dd>
+            <dt>Ctrl+L</dt>
+            <dd>Clear all log messages from the console.</dd>
             </dl>
             </div>
             <div class="section" id="commands">
@@ -14151,7 +14188,7 @@
             </dd>
             </dl>
             <p>Note that these are methods, and you have to call them using <tt class="docutils literal">:</tt> instead
-            of <tt class="docutils literal">.</tt> (Refer to <a class="reference external" href="http://www.lua.org/manual/5.2/manual.html#3.4.9">http://www.lua.org/manual/5.2/manual.html#3.4.9</a> .)</p>
+            of <tt class="docutils literal">.</tt> (Refer to <a class="reference external" href="https://www.lua.org/manual/5.2/manual.html#3.4.9">https://www.lua.org/manual/5.2/manual.html#3.4.9</a> .)</p>
             <p>Example:</p>
             <pre class="last literal-block">
             seconds = 0
@@ -14275,7 +14312,7 @@
             </dd>
             <dt><tt class="docutils literal">mp.get_osd_size()</tt></dt>
             <dd><p class="first">Returns a tuple of <tt class="docutils literal">osd_width, osd_height, osd_par</tt>. The first two give
-            the size of the OSD in pixels (for video ouputs like <tt class="docutils literal"><span class="pre">--vo=xv</span></tt>, this may
+            the size of the OSD in pixels (for video outputs like <tt class="docutils literal"><span class="pre">--vo=xv</span></tt>, this may
             be &quot;scaled&quot; pixels). The third is the display pixel aspect ratio.</p>
             <p class="last">May return invalid/nonsense values if OSD is not initialized yet.</p>
             </dd>
@@ -14420,7 +14457,7 @@
             the Unix epoch (Unix time).
             The booleans <tt class="docutils literal">is_file</tt> and <tt class="docutils literal">is_dir</tt> are provided as a convenience;
             they can be and are derived from <tt class="docutils literal">mode</tt>.</p>
-            <p class="last">On error (eg. path does not exist), <tt class="docutils literal">nil, error</tt> is returned.</p>
+            <p class="last">On error (e.g. path does not exist), <tt class="docutils literal">nil, error</tt> is returned.</p>
             </dd>
             <dt><tt class="docutils literal">utils.split_path(path)</tt></dt>
             <dd>Split a path into directory component and filename component, and return
@@ -14593,7 +14630,7 @@
             <p>The scripting backend which mpv currently uses is MuJS - a compatible minimal
             ES5 interpreter. As such, <tt class="docutils literal">String.substring</tt> is implemented for instance,
             while the common but non-standard <tt class="docutils literal">String.substr</tt> is not. Please consult the
-            MuJS pages on language features and platform support - <a class="reference external" href="http://mujs.com">http://mujs.com</a> .</p>
+            MuJS pages on language features and platform support - <a class="reference external" href="https://mujs.com">https://mujs.com</a> .</p>
             </div>
             <div class="section" id="unsupported-lua-apis-and-their-js-alternatives">
             <h2>Unsupported Lua APIs and their JS alternatives</h2>
@@ -14658,7 +14695,8 @@
             <p><tt class="docutils literal"><span class="pre">mp.msg.trace(...)</span></tt></p>
             <p><tt class="docutils literal">mp.utils.getcwd()</tt> (LE)</p>
             <p><tt class="docutils literal">mp.utils.readdir(path [, filter])</tt> (LE)</p>
-            <p><tt class="docutils literal">mp.utils.file_info(path)</tt> (LE)</p>
+            <p><tt class="docutils literal">mp.utils.file_info(path)</tt> (LE) Note: like lua - this does NOT expand
+            meta-paths like <tt class="docutils literal"><span class="pre">~~/foo</span></tt> (other JS file functions do expand meta paths).</p>
             <p><tt class="docutils literal">mp.utils.split_path(path)</tt></p>
             <p><tt class="docutils literal">mp.utils.join_path(p1, p2)</tt></p>
             <p><tt class="docutils literal">mp.utils.subprocess(t)</tt></p>
@@ -14688,7 +14726,7 @@
             <dt><tt class="docutils literal">mp.utils.get_user_path(path)</tt></dt>
             <dd>Expands (mpv) meta paths like <tt class="docutils literal">~/x</tt>, <tt class="docutils literal"><span class="pre">~~/y</span></tt>, <tt class="docutils literal">~~desktop/z</tt> etc.
             <tt class="docutils literal">read_file</tt>, <tt class="docutils literal">write_file</tt>, <tt class="docutils literal">append_file</tt> and <tt class="docutils literal">require</tt> already use
-            this internaly.</dd>
+            this internally.</dd>
             <dt><tt class="docutils literal">mp.utils.read_file(fname [,max])</tt></dt>
             <dd>Returns the content of file <tt class="docutils literal">fname</tt> as string. If <tt class="docutils literal">max</tt> is provided and
             not negative, limit the read to <tt class="docutils literal">max</tt> bytes.</dd>
@@ -14774,10 +14812,14 @@
             <div class="section" id="custom-initialization">
             <h2>Custom initialization</h2>
             <p>After mpv initializes the JavaScript environment for a script but before it
-            loads the script - it tries to run the file <tt class="docutils literal">.init.js</tt> at the root of the mpv
+            loads the script - it tries to run the file <tt class="docutils literal">init.js</tt> at the root of the mpv
             configuration directory. Code at this file can update the environment further
             for all scripts. E.g. if it contains <tt class="docutils literal"><span class="pre">mp.module_paths.push(&quot;/foo&quot;)</span></tt> then
-            <tt class="docutils literal">require</tt> at all scripts will search global module id's also at <tt class="docutils literal">/foo</tt>.</p>
+            <tt class="docutils literal">require</tt> at all scripts will search global module id's also at <tt class="docutils literal">/foo</tt>
+            (do NOT do <tt class="docutils literal">mp.module_paths = <span class="pre">[&quot;/foo&quot;];</span></tt> because this will remove existing
+            paths - like <tt class="docutils literal"><span class="pre">&lt;script-dir&gt;/modules</span></tt> for scripts which load from a directory).</p>
+            <p>The custom-init file is ignored if mpv is invoked with <tt class="docutils literal"><span class="pre">--no-config</span></tt>.</p>
+            <p>Before mpv 0.34, the file name was <tt class="docutils literal">.init.js</tt> (with dot) at the same dir.</p>
             </div>
             <div class="section" id="the-event-loop">
             <h2>The event loop</h2>
@@ -14913,7 +14955,7 @@
             <p>Because events can occur at any time, it may be difficult at times to determine
             which response goes with which command. Commands may optionally include a
             <tt class="docutils literal">request_id</tt> which, if provided in the command request, will be copied
-            verbatim into the response. mpv does not intrepret the <tt class="docutils literal">request_id</tt> in any
+            verbatim into the response. mpv does not interpret the <tt class="docutils literal">request_id</tt> in any
             way; it is solely for the use of the requester. The only requirement is that
             the <tt class="docutils literal">request_id</tt> field must be an integer (a number without fractional parts
             in the range <tt class="docutils literal"><span class="pre">-2^63..2^63-1</span></tt>). Using other types is deprecated and will
@@ -15169,9 +15211,9 @@
             mpv, further documentation is spread over a few places:</p>
             <ul class="simple">
             <li><a class="reference external" href="https://github.com/mpv-player/mpv/blob/master/libmpv/client.h">https://github.com/mpv-player/mpv/blob/master/libmpv/client.h</a></li>
-            <li><a class="reference external" href="http://mpv.io/manual/master/#options">http://mpv.io/manual/master/#options</a></li>
-            <li><a class="reference external" href="http://mpv.io/manual/master/#list-of-input-commands">http://mpv.io/manual/master/#list-of-input-commands</a></li>
-            <li><a class="reference external" href="http://mpv.io/manual/master/#properties">http://mpv.io/manual/master/#properties</a></li>
+            <li><a class="reference external" href="https://mpv.io/manual/master/#options">https://mpv.io/manual/master/#options</a></li>
+            <li><a class="reference external" href="https://mpv.io/manual/master/#list-of-input-commands">https://mpv.io/manual/master/#list-of-input-commands</a></li>
+            <li><a class="reference external" href="https://mpv.io/manual/master/#properties">https://mpv.io/manual/master/#properties</a></li>
             <li><a class="reference external" href="https://github.com/mpv-player/mpv-examples/tree/master/libmpv">https://github.com/mpv-player/mpv-examples/tree/master/libmpv</a></li>
             </ul>
             </div>
