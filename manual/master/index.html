@@ -6007,8 +6007,9 @@
             </div>
             <div class="section" id="gpu-renderer-options">
             <h2>GPU renderer options</h2>
-            <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> and
-            <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> only, which are the only VOs that implement them.</p>
+            <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>,
+            <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> and <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, which are the only VOs that implement
+            them.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--scale=&lt;filter&gt;</span></tt></dt>
             <dd><p class="first">The filter function to use when upscaling video.</p>
@@ -6167,6 +6168,11 @@
             <tt class="docutils literal">bilinear</tt> is used instead of whatever is set with <tt class="docutils literal"><span class="pre">--scale</span></tt>. Bilinear
             will reproduce the source image perfectly if no scaling is performed.
             Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--builtin-scalers</span></tt></dt>
+            <dd>Allow using faster built-in replacements for common scalers such as
+            <tt class="docutils literal">nearest</tt>, <tt class="docutils literal">bilinear</tt> or <tt class="docutils literal">bicubic</tt>. These have the disadvantage of
+            not being configurable, unlike normal scaler kernels. Defaults to
+            enabled. (This option only affects <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size when
             downscaling. Increases quality, but reduces performance while downscaling.</p>
@@ -6234,6 +6240,14 @@
             discontinuity every other minute.</p>
             <p class="last">Set this to <tt class="docutils literal"><span class="pre">-1</span></tt> to disable this logic.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--interpolation-preserve</span></tt></dt>
+            <dd>Preserve the previous frames' interpolated results even when renderer
+            parameters are changed - with the exception of options related to
+            cropping and video placement, which always invalidate the cache. Enabling
+            this option makes dynamic updates of renderer settings slightly smoother at
+            the cost of slightly higher latency in response to such changes. Defaults
+            to on. (Only affects <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, note that <tt class="docutils literal"><span class="pre">-vo=gpu</span></tt> always
+            invalidates interpolated frames)</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-pbo</span></tt></dt>
             <dd>Enable use of PBOs. On some drivers this can be faster, especially if the
             source video size is huge (e.g. so called &quot;4K&quot; video). On other drivers it
@@ -6725,7 +6739,7 @@
             values will sharpen the image (but add more ringing and aliasing). Negative
             values will blur the image. If your GPU is powerful enough, consider
             alternatives like the <tt class="docutils literal">ewa_lanczossharp</tt> scale filter, or the
-            <tt class="docutils literal"><span class="pre">--scale-blur</span></tt> option.</dd>
+            <tt class="docutils literal"><span class="pre">--scale-blur</span></tt> option. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--opengl-glfinish</span></tt></dt>
             <dd>Call <tt class="docutils literal">glFinish()</tt> before swapping buffers (default: disabled). Slower,
             but might improve results when doing framedropping. Can completely ruin
@@ -7062,6 +7076,29 @@
             boost), and slightly increase the boost up until 1.2 for 256 lux.</p>
             <p class="last">NOTE: Only implemented on macOS.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--image-lut=&lt;file&gt;</span></tt></dt>
+            <dd>Specifies a custom LUT file (in Adobe .cube format) to apply to the colors
+            during image decoding. The exact interpretation of the LUT depends on
+            the value of <tt class="docutils literal"><span class="pre">--image-lut-type</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--image-lut-type=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Controls the interpretation of color values fed to and from the LUT
+            specified as <tt class="docutils literal"><span class="pre">--image-lut</span></tt>. Valid values are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Chooses the interpretation of the LUT automatically from tagged
+            metadata, and otherwise falls back to <tt class="docutils literal">native</tt>. (Default)</dd>
+            <dt>native</dt>
+            <dd>Applied to the raw image contents in its native colorspace, before
+            decoding to RGB. For example, for a HDR10 image, this would be fed
+            PQ-encoded YCbCr values in the range 0.0 - 1.0.</dd>
+            <dt>normalized</dt>
+            <dd>Applied to the normalized RGB image contents, after decoding from
+            its native color encoding, but before linearization.</dd>
+            <dt>conversion</dt>
+            <dd>Fully replaces the color decoding. A LUT of this type should ingest the
+            image's native colorspace and output normalized non-linear RGB.</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
             this colorspace when ICC color management is not being used. Valid values
@@ -7177,6 +7214,11 @@
             to <tt class="docutils literal">mobius</tt> or even <tt class="docutils literal">clip</tt>.</p>
             </div>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--target-lut=&lt;file&gt;</span></tt></dt>
+            <dd>Specifies a custom LUT file (in Adobe .cube format) to apply to the colors
+            before display on-screen. This LUT is fed values in normalized RGB, after
+            encoding into the target colorspace, so after the application of
+            <tt class="docutils literal"><span class="pre">--target-trc</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--tone-mapping=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Specifies the algorithm used for tone-mapping images onto the target
             display. This is relevant for both HDR-&gt;SDR conversion as well as gamut
@@ -7258,6 +7300,13 @@
             probably also perform horribly on some drivers, so enable at your own risk.
             The special value <tt class="docutils literal">auto</tt> (default) will enable HDR peak computation
             automatically if compute shaders and SSBOs are supported.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--allow-delayed-peak-detect</span></tt></dt>
+            <dd>When using <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt>, allow delaying the detected peak by a
+            frame when beneficial for performance. In particular, this is required to
+            avoid an unnecessary FBO indirection when no advanced rendering is required
+            otherwise. Has no effect if there already is an indirect pass, such as when
+            advanced scaling is enabled. Defaults to on. (Only affects
+            <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, note that <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> always delays the peak.)</dd>
             <dt><tt class="docutils literal"><span class="pre">--hdr-peak-decay-rate=&lt;1.0..1000.0&gt;</span></tt></dt>
             <dd>The decay rate used for the HDR peak detection algorithm (default: 100.0).
             This is only relevant when <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> is enabled. Higher values
@@ -7367,6 +7416,30 @@
             content. The default of <tt class="docutils literal">no</tt> means to use the profile values. The special
             value <tt class="docutils literal">inf</tt> causes the BT.1886 curve to be treated as a pure power gamma
             2.4 function.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--lut=&lt;file&gt;</span></tt></dt>
+            <dd>Specifies a custom LUT (in Adobe .cube format) to apply to the colors
+            as part of color conversion. The exact interpretation depends on the value
+            of <tt class="docutils literal"><span class="pre">--lut-type</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--lut-type=&lt;value&gt;</span></tt></dt>
+            <dd><p class="first">Controls the interpretation of color values fed to and from the LUT
+            specified as <tt class="docutils literal"><span class="pre">--lut</span></tt>. Valid values are:</p>
+            <dl class="last docutils">
+            <dt>auto</dt>
+            <dd>Chooses the interpretation of the LUT automatically from tagged
+            metadata, and otherwise falls back to <tt class="docutils literal">native</tt>. (Default)</dd>
+            <dt>native</dt>
+            <dd>Applied to raw image contents in its native RGB colorspace (non-linear
+            light), before conversion to the output color space.</dd>
+            <dt>normalized</dt>
+            <dd>Applied to the normalized RGB image contents, in linear light, before
+            conversion to the output color space.</dd>
+            <dt>conversion</dt>
+            <dd>Fully replaces the conversion from the image color space to the output
+            color space. If such a LUT is present, it has the highest priority, and
+            overrides any ICC profiles, as well as options related to tone mapping
+            and output colorimetry (<tt class="docutils literal"><span class="pre">--target-prim</span></tt>, <tt class="docutils literal"><span class="pre">--target-trc</span></tt> etc.).</dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video|no&gt;</span></tt></dt>
             <dd><p class="first">Blend subtitles directly onto upscaled video frames, before interpolation
             and/or color management (default: no). Enabling this causes subtitles to be
@@ -8274,6 +8347,16 @@
             support, and some macOS setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
             with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try enabling the
             <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> option.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">gpu-next</span></tt></dt>
+            <dd><p class="first">Experimental video renderer based on <tt class="docutils literal">libplacebo</tt>. This supports almost
+            the same set of features as <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for a
+            list.</p>
+            <p>Currently, this only supports <tt class="docutils literal"><span class="pre">--gpu-api=vulkan</span></tt>, and no hardware
+            decoding. Unlike <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, the FBO formats are not tunable, but you can
+            still set <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> to forcibly disable their use.</p>
+            <p class="last">Should generally be faster and higher quality, but some features may still
+            be missing or misbehave. Expect (and report!) bugs.</p>
             </dd>
             <dt><tt class="docutils literal">sdl</tt></dt>
             <dd><p class="first">SDL 2.0+ Render video output driver, depending on system with or without
