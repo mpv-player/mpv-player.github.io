@@ -6168,11 +6168,6 @@
             <tt class="docutils literal">bilinear</tt> is used instead of whatever is set with <tt class="docutils literal"><span class="pre">--scale</span></tt>. Bilinear
             will reproduce the source image perfectly if no scaling is performed.
             Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--builtin-scalers</span></tt></dt>
-            <dd>Allow using faster built-in replacements for common scalers such as
-            <tt class="docutils literal">nearest</tt>, <tt class="docutils literal">bilinear</tt> or <tt class="docutils literal">bicubic</tt>. These have the disadvantage of
-            not being configurable, unlike normal scaler kernels. Defaults to
-            enabled. (This option only affects <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
             <dd><p class="first">When using convolution based filters, extend the filter size when
             downscaling. Increases quality, but reduces performance while downscaling.</p>
@@ -7099,6 +7094,10 @@
             image's native colorspace and output normalized non-linear RGB.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--target-colorspace-hint`</span></tt></dt>
+            <dd>Automatically configure the output colorspace of the display to pass
+            through the input values of the stream (e.g. for HDR passthrough), if
+            possible. Requires a supporting driver and <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
             this colorspace when ICC color management is not being used. Valid values
