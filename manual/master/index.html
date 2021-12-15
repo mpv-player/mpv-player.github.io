@@ -2887,10 +2887,9 @@
             <blockquote>
             <ul class="simple">
             <li><tt class="docutils literal">gpu</tt>: requires at least OpenGL 4.4 or Vulkan.</li>
+            <li><tt class="docutils literal">libmpv</tt>: The libmpv render API has optional support.</li>
             </ul>
             </blockquote>
-            <p>(In particular, this can't be made work with <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>, but the libmpv
-            render API has optional support.)</p>
             <p class="last">Using video filters of any kind that write to the image data (or output
             newly allocated frames) will silently disable the DR code path.</p>
             </dd>
@@ -7563,9 +7562,9 @@
             always immediately started after the previous frame was displayed. On the
             other hand, setting a too high value can reduce responsiveness with low
             FPS value.</p>
-            <p>For client API users using the render API (or the deprecated <tt class="docutils literal"><span class="pre">opengl-cb</span></tt>
-            API), this option is interesting, because you can stop the render API
-            from limiting your FPS (see <tt class="docutils literal">mpv_render_context_render()</tt> documentation).</p>
+            <p>This option is interesting for client API users using the render API
+            because you can stop it from limiting your FPS
+            (see <tt class="docutils literal">mpv_render_context_render()</tt> documentation).</p>
             <p class="last">This applies only to audio timing modes (e.g. <tt class="docutils literal"><span class="pre">--video-sync=audio</span></tt>). In
             other modes (<tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt>), video timing relies on vsync
             blocking, and this option is not used.</p>
@@ -11327,10 +11326,8 @@
             </dl>
             </dd>
             </dl>
-            <p>The following events also happen, but are deprecated: <tt class="docutils literal"><span class="pre">tracks-changed</span></tt>,
-            <tt class="docutils literal"><span class="pre">track-switched</span></tt>, <tt class="docutils literal">pause</tt>, <tt class="docutils literal">unpause</tt>, <tt class="docutils literal"><span class="pre">metadata-update</span></tt>, <tt class="docutils literal">idle</tt>,
-            <tt class="docutils literal">tick</tt>, <tt class="docutils literal"><span class="pre">chapter-change</span></tt>. Use <tt class="docutils literal">mpv_observe_property()</tt>
-            (Lua: <tt class="docutils literal">mp.observe_property()</tt>) instead.</p>
+            <p>The following events also happen, but are deprecated: <tt class="docutils literal">idle</tt>, <tt class="docutils literal">tick</tt>
+            Use <tt class="docutils literal">mpv_observe_property()</tt> (Lua: <tt class="docutils literal">mp.observe_property()</tt>) instead.</p>
             </div>
             <div class="section" id="hooks">
             <h3>Hooks</h3>
@@ -14321,15 +14318,6 @@
             <p>These also live in the <tt class="docutils literal">mp</tt> module, but are documented separately as they
             are useful only in special situations.</p>
             <dl class="docutils">
-            <dt><tt class="docutils literal">mp.suspend()</tt></dt>
-            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
-            with mpv 0.23.0 (no replacement).</dd>
-            <dt><tt class="docutils literal">mp.resume()</tt></dt>
-            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
-            with mpv 0.23.0 (no replacement).</dd>
-            <dt><tt class="docutils literal">mp.resume_all()</tt></dt>
-            <dd>This function has been deprecated in mpv 0.21.0 and does nothing starting
-            with mpv 0.23.0 (no replacement).</dd>
             <dt><tt class="docutils literal">mp.get_wakeup_pipe()</tt></dt>
             <dd>Calls <tt class="docutils literal">mpv_get_wakeup_pipe()</tt> and returns the read end of the wakeup
             pipe. This is deprecated, but still works. (See <tt class="docutils literal">client.h</tt> for details.)</dd>
@@ -14730,9 +14718,6 @@
             <p><tt class="docutils literal">utils.parse_json(str [, trail])</tt>  JS: <tt class="docutils literal">JSON.parse(str)</tt></p>
             <p><tt class="docutils literal">utils.format_json(v)</tt>  JS: <tt class="docutils literal">JSON.stringify(v)</tt></p>
             <p><tt class="docutils literal">utils.to_string(v)</tt>  see <tt class="docutils literal">dump</tt> below.</p>
-            <p><tt class="docutils literal">mp.suspend()</tt> JS: none (deprecated).</p>
-            <p><tt class="docutils literal">mp.resume()</tt> JS: none (deprecated).</p>
-            <p><tt class="docutils literal">mp.resume_all()</tt> JS: none (deprecated).</p>
             <p><tt class="docutils literal">mp.get_next_timeout()</tt> see event loop below.</p>
             <p><tt class="docutils literal"><span class="pre">mp.dispatch_events([allow_wait])</span></tt> see event loop below.</p>
             </div>
