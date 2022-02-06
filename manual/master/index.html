@@ -2751,7 +2751,7 @@
             non-default value is used, this will be different from the window size, so
             video will be either cut off, or black bars are added.</p>
             <p class="last">This value is multiplied with the value derived from <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> and
-            the normal video aspect aspect ratio. This option is disabled if the
+            the normal video aspect ratio. This option is disabled if the
             <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-align-x=&lt;-1-1&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-align-y=&lt;-1-1&gt;</span></tt></dt>
@@ -8380,7 +8380,7 @@
             <dd><p class="first">Experimental video renderer based on <tt class="docutils literal">libplacebo</tt>. This supports almost
             the same set of features as <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for a
             list.</p>
-            <p>Currently, this only supports Vulkan, OpenGL and no hardware
+            <p>Currently, this only supports Vulkan, OpenGL, D3D11 and no hardware
             decoding. Unlike <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, the FBO formats are not tunable, but you can
             still set <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> to forcibly disable their use.</p>
             <p class="last">Should generally be faster and higher quality, but some features may still
@@ -12858,12 +12858,16 @@
             <dt><tt class="docutils literal"><span class="pre">property-list</span></tt></dt>
             <dd>The list of top-level properties.</dd>
             <dt><tt class="docutils literal"><span class="pre">profile-list</span></tt></dt>
-            <dd>The list of profiles and their contents. This is highly
+            <dd><p class="first">The list of profiles and their contents. This is highly
             implementation-specific, and may change any time. Currently, it returns an
             array of options for each profile. Each option has a name and a value, with
             the value currently always being a string. Note that the options array is
             not a map, as order matters and duplicate entries are possible. Recursive
-            profiles are not expanded, and show up as special <tt class="docutils literal">profile</tt> options.</dd>
+            profiles are not expanded, and show up as special <tt class="docutils literal">profile</tt> options.</p>
+            <p class="last">The <tt class="docutils literal"><span class="pre">profile-restore</span></tt> field is currently missing if it holds the default
+            value (either because it was not set, or set explicitly to <tt class="docutils literal">default</tt>),
+            but in the future it might hold the value <tt class="docutils literal">default</tt>.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">command-list</span></tt></dt>
             <dd>The list of input commands. This returns an array of maps, where each map
             node represents a command. This map currently only has a single entry:
@@ -14835,9 +14839,9 @@
             <dd>Returns the value of the host environment variable <tt class="docutils literal">name</tt>, or
             <tt class="docutils literal">undefined</tt> if the variable is not defined.</dd>
             <dt><tt class="docutils literal">mp.utils.get_user_path(path)</tt></dt>
-            <dd>Expands (mpv) meta paths like <tt class="docutils literal">~/x</tt>, <tt class="docutils literal"><span class="pre">~~/y</span></tt>, <tt class="docutils literal">~~desktop/z</tt> etc.
-            <tt class="docutils literal">read_file</tt>, <tt class="docutils literal">write_file</tt>, <tt class="docutils literal">append_file</tt> and <tt class="docutils literal">require</tt> already use
-            this internally.</dd>
+            <dd>Trivial wrapper of the <tt class="docutils literal"><span class="pre">expand-path</span></tt> mpv command, returns a string.
+            <tt class="docutils literal">read_file</tt>, <tt class="docutils literal">write_file</tt>, <tt class="docutils literal">append_file</tt> and <tt class="docutils literal">require</tt> already
+            expand the path internally and accept mpv meta-paths like <tt class="docutils literal">~~desktop/foo</tt>.</dd>
             <dt><tt class="docutils literal">mp.utils.read_file(fname [,max])</tt></dt>
             <dd>Returns the content of file <tt class="docutils literal">fname</tt> as string. If <tt class="docutils literal">max</tt> is provided and
             not negative, limit the read to <tt class="docutils literal">max</tt> bytes.</dd>
