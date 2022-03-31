@@ -820,15 +820,15 @@
             <pre class="literal-block">
             [something]
             profile-restore=copy-equal
-            vf-add=rotate=90
+            vf-add=rotate=PI/2  # rotate by 90 degrees
             </pre>
             <p>Then running these commands will result in behavior as commented:</p>
             <pre class="last literal-block">
             set vf vflip
             apply-profile something
-            vf-add=hflip
+            vf add hflip
             apply-profile something
-            # vf == vflip,rotate=90,hflip,rotate=90
+            # vf == vflip,rotate=PI/2,hflip,rotate=PI/2
             apply-profile something restore
             # vf == vflip
             </pre>
@@ -882,7 +882,7 @@
             profile-desc=Mess up video when entering fullscreen
             profile-cond=fullscreen
             profile-restore=copy
-            vf-add=rotate=90
+            vf-add=rotate=PI/2  # rotate by 90 degrees
             </pre>
             <p>This appends the <tt class="docutils literal">rotate</tt> filter to the video filter chain when entering
             fullscreen. When leaving fullscreen, the <tt class="docutils literal">vf</tt> option is set to the value
@@ -893,7 +893,7 @@
             <pre class="last literal-block">
             [something]
             profile-cond=fullscreen
-            vf-add=&#64;rot:rotate=90
+            vf-add=&#64;rot:rotate=PI/2
             
             [something-inv]
             profile-cond=not fullscreen
@@ -2391,24 +2391,36 @@
             <dd><p class="first">Specify the hardware video decoding API that should be used if possible.
             Whether hardware decoding is actually done depends on the video codec. If
             hardware decoding is not possible, mpv will fall back on software decoding.</p>
-            <p>Hardware decoding is not enabled by default, because it is typically an
-            additional source of errors. It is worth using only if your CPU is too
-            slow to decode a specific video.</p>
+            <p>Hardware decoding is not enabled by default, to keep the out-of-the-box
+            configuration as reliable as possible. However, when using modern hardware,
+            hardware video decoding should work correctly, offering reduced CPU usage,
+            and possibly lower power consumption. On older systems, it may be necessary
+            to use hardware decoding due to insufficient CPU resources; and even on
+            modern systems, sufficiently complex content (eg: 4K60 AV1) may require it.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p>Use the <tt class="docutils literal">Ctrl+h</tt> shortcut to toggle hardware decoding at runtime. It
             toggles this option between <tt class="docutils literal">auto</tt> and <tt class="docutils literal">no</tt>.</p>
-            <p class="last">Always enabling HW decoding by putting it into the config file is
-            discouraged. If you use the Ubuntu package, delete <tt class="docutils literal">/etc/mpv/mpv.conf</tt>,
-            as the package tries to enable HW decoding by default by setting
-            <tt class="docutils literal">hwdec=vaapi</tt> (which is less than ideal, and may even cause
-            sub-optimal wrappers to be used). Or at least change it to
-            <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt>.</p>
+            <p>If you decide you want to use hardware decoding by default, the general
+            recommendation is to try out decoding with the command line option, and
+            prove to yourself that it works as desired for the content you care
+            about. After that, you can add it to your config file.</p>
+            <p>When testing, you should start by using <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt> as it will
+            limit itself to choosing from hwdecs that are actively supported by the
+            development team. If that doesn't result in working hardare decoding,
+            you can try <tt class="docutils literal">hwdec=auto</tt> to have it attempt to load every possible
+            hwdec, but if <tt class="docutils literal"><span class="pre">auto-safe</span></tt> didn't work, you will probably need to know
+            exactly which hwdec matches your hardware and read up on that entry
+            below.</p>
+            <p>If <tt class="docutils literal"><span class="pre">auto-safe</span></tt> or <tt class="docutils literal">auto</tt> produced the desired results, we recommend
+            just sticking with that and only setting a specific hwdec in your config
+            file if it is really necessary.</p>
+            <p class="last">If you use the Ubuntu package, keep in mind that their
+            <tt class="docutils literal">/etc/mpv/mpv.conf</tt> contains <tt class="docutils literal">hwdec=vaapi</tt>, which is less than
+            ideal as it may not be the right choice for your system, and it may end
+            up using an inefficient wrapper library under the covers. We recommend
+            removing this line or deleting the file altogether.</p>
             </div>
-            <p>Use one of the auto modes if you want to enable hardware decoding.
-            Explicitly selecting the mode is mostly meant for testing and debugging.
-            It's a bad idea to put explicit selection into the config file if you
-            want thing to just keep working after updates and so on.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Even if enabled, hardware decoding is still only white-listed for some
@@ -2423,8 +2435,7 @@
             <tt class="docutils literal">Ctrl+h</tt> default binding to enable it at runtime.</li>
             <li>If you're not sure, but want hardware decoding always enabled by
             default, put <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt> into your <tt class="docutils literal">mpv.conf</tt>, and
-            acknowledge that this use case is not &quot;really&quot; supported and may cause
-            problems.</li>
+            acknowledge that this may cause problems.</li>
             <li>If you want to test available hardware decoding methods, pass
             <tt class="docutils literal"><span class="pre">--hwdec=auto</span> <span class="pre">--hwdec-codecs=all</span></tt> and look at the terminal output.</li>
             <li>If you're a developer, or want to perform elaborate tests, you may
@@ -2446,13 +2457,17 @@
             </tr>
             <tr class="field"><th class="field-name">auto-copy:</th><td class="field-body">enable best hw decoder with copy-back (see below)</td>
             </tr>
-            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with X11, or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
+            </tbody>
+            </table>
+            <p>Actively supported hwdecs:</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt> or
+            <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> (Windows 8+ only)</td>
             </tr>
-            <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
-            </tr>
-            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
-            </tr>
-            <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
+            <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows 8+ only)</td>
             </tr>
             <tr class="field"><th class="field-name">videotoolbox:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (macOS 10.8 and up),
             or <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> (iOS 9.0 and up)</td>
@@ -2460,16 +2475,30 @@
             <tr class="field"><th class="field-name" colspan="2">videotoolbox-copy:</th></tr>
             <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (macOS 10.8 or iOS 9.0 and up)</td>
             </tr>
+            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
+            </tr>
+            <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
+            </tr>
+            <tr class="field"><th class="field-name">nvdec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
+            </tr>
+            <tr class="field"><th class="field-name">nvdec-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>Other hwdecs (only use if you know you have to):</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
             <tr class="field"><th class="field-name">dxva2:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt>,
             <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> or <tt class="docutils literal"><span class="pre">--gpu-context=dxinterop</span></tt>
             (Windows only)</td>
             </tr>
             <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt> or
-            <tt class="docutils literal"><span class="pre">--gpu-context=angle</span></tt> (Windows 8+ only)</td>
+            <tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with X11, or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
             </tr>
-            <tr class="field"><th class="field-name">d3d11va-copy:</th><td class="field-body">copies video back to system RAM (Windows 8+ only)</td>
+            <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
             <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> (Android only)</td>
             </tr>
@@ -2479,10 +2508,6 @@
             <tr class="field"><th class="field-name">mmal:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Raspberry Pi only - default if available)</td>
             </tr>
             <tr class="field"><th class="field-name">mmal-copy:</th><td class="field-body">copies video back to system RAM (Raspberry Pi only)</td>
-            </tr>
-            <tr class="field"><th class="field-name">nvdec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
-            </tr>
-            <tr class="field"><th class="field-name">nvdec-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
             </tr>
             <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
             </tr>
@@ -2521,7 +2546,7 @@
             filters and VOs.</p>
             <p>Because these copy the decoded video back to system RAM, they're often less
             efficient than the direct modes, and may not help too much over software
-            decoding.</p>
+            decoding if you are short on CPU resources.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Most non-copy methods only work with the OpenGL GPU backend. Currently,
@@ -2546,7 +2571,12 @@
             <p>In theory, hardware decoding does not reduce video quality (at least
             for the codecs h264 and HEVC). However, due to restrictions in video
             output APIs, as well as bugs in the actual hardware decoders, there can
-            be some loss, or even blatantly incorrect results.</p>
+            be some loss, or even blatantly incorrect results. This has largely
+            ceased to be a problem with modern hardware, but there is a lot of
+            hardware out there, so caveat emptor. Known problems are discussed
+            below, but the list cannot be considered exhaustive, as even hwdecs that
+            work well on certain hardware generations may be problematic on other
+            ones.</p>
             <p>In some cases, RGB conversion is forced, which means the RGB conversion
             is performed by the hardware decoding API, instead of the shaders
             used by <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. This means certain colorspaces may not display
@@ -2559,9 +2589,6 @@
             support newer colorspaces like BT.2020 correctly. However, <tt class="docutils literal">vdpau</tt>
             doesn't support 10 bit or HDR encodings, so these limitations are
             unlikely to be relevant.</p>
-            <p><tt class="docutils literal">vaapi</tt> and <tt class="docutils literal">d3d11va</tt> are safe. Enabling deinterlacing (or simply
-            their respective post-processing filters) will possibly at least reduce
-            color quality by converting the output to a 8 bit format.</p>
             <p><tt class="docutils literal">dxva2</tt> is not safe. It appears to always use BT.601 for forced RGB
             conversion, but actual behavior depends on the GPU drivers. Some drivers
             appear to convert to limited range RGB, which gives a faded appearance.
@@ -2579,18 +2606,9 @@
             may be lossy, depending on how chroma sub-sampling is done during
             conversion. It also discards the top left pixel of each frame for
             some reason.</p>
-            <p>All other methods, in particular the copy-back methods (like
-            <tt class="docutils literal"><span class="pre">dxva2-copy</span></tt> etc.) should hopefully be safe, although they can still
-            cause random decoding issues. At the very least, they shouldn't affect
-            the colors of the image.</p>
-            <p>In particular, <tt class="docutils literal"><span class="pre">auto-copy</span></tt> will only select &quot;safe&quot; modes
-            (although potentially slower than other methods), but there's still no
-            guarantee the chosen hardware decoder will actually work correctly.</p>
-            <p class="last">In general, it's very strongly advised to avoid hardware decoding
-            unless <strong>absolutely</strong> necessary, i.e. if your CPU is insufficient to
-            decode the file in questions. If you run into any weird decoding issues,
-            frame glitches or discoloration, and you have <tt class="docutils literal"><span class="pre">--hwdec</span></tt> turned on,
-            the first thing you should try is disabling it.</p>
+            <p class="last">If you run into any weird decoding issues, frame glitches or
+            discoloration, and you have <tt class="docutils literal"><span class="pre">--hwdec</span></tt> turned on, the first thing you
+            should try is disabling it.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gpu-hwdec-interop=&lt;auto|all|no|name&gt;</span></tt></dt>
@@ -4427,10 +4445,12 @@
             <dd>Set the aspect of a single pixel of your monitor or TV screen (default:
             1). A value of 1 means square pixels (correct for (almost?) all LCDs). See
             also <tt class="docutils literal"><span class="pre">--monitoraspect</span></tt> and <tt class="docutils literal"><span class="pre">--video-aspect-override</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--stop-screensaver</span></tt>, <tt class="docutils literal"><span class="pre">--no-stop-screensaver</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--stop-screensaver=&lt;yes|no|always&gt;</span></tt></dt>
             <dd><p class="first">Turns off the screensaver (or screen blanker and similar mechanisms) at
-            startup and turns it on again on exit (default: yes). The screensaver is
-            always re-enabled when the player is paused.</p>
+            startup and turns it on again on exit (default: yes). When using <tt class="docutils literal">yes</tt>,
+            the screensaver will re-enable when playback is not active. <tt class="docutils literal">always</tt> will
+            always disable the screensaver. Note that stopping the screensaver is only
+            possible if a video output is available (i.e. there is an open mpv window).</p>
             <p class="last">This is not supported on all video outputs or platforms. Sometimes it is
             implemented, but does not work (especially with Linux &quot;desktops&quot;). Read the
             <a class="reference internal" href="#disabling-screensaver">Disabling Screensaver</a> section very carefully.</p>
@@ -8145,6 +8165,39 @@
             </div>
             <p>Available video output drivers are:</p>
             <dl class="docutils">
+            <dt><tt class="docutils literal">gpu</tt></dt>
+            <dd><p class="first">General purpose, customizable, GPU-accelerated video output driver. It
+            supports extended scaling methods, dithering, color management, custom
+            shaders, HDR, and more.</p>
+            <p>See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for options specific to this VO.</p>
+            <p>By default, it tries to use fast and fail-safe settings. Use the
+            <tt class="docutils literal"><span class="pre">gpu-hq</span></tt> profile to use this driver with defaults set to high quality
+            rendering. The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=gpu-hq</span></tt> and its
+            contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=gpu-hq</span></tt>.</p>
+            <p>This VO abstracts over several possible graphics APIs and windowing
+            contexts, which can be influenced using the <tt class="docutils literal"><span class="pre">--gpu-api</span></tt> and
+            <tt class="docutils literal"><span class="pre">--gpu-context</span></tt> options.</p>
+            <p>Hardware decoding over OpenGL-interop is supported to some degree. Note
+            that in this mode, some corner case might not be gracefully handled, and
+            color space conversion and chroma upsampling is generally in the hand of
+            the hardware decoder APIs.</p>
+            <p class="last"><tt class="docutils literal">gpu</tt> makes use of FBOs by default. Sometimes you can achieve better
+            quality or performance by changing the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> option to
+            <tt class="docutils literal">rgb16f</tt>, <tt class="docutils literal">rgb32f</tt> or <tt class="docutils literal">rgb</tt>. Known problems include Mesa/Intel not
+            accepting <tt class="docutils literal">rgb16</tt>, Mesa sometimes not being compiled with float texture
+            support, and some macOS setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
+            with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try enabling the
+            <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> option.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">gpu-next</span></tt></dt>
+            <dd><p class="first">Experimental video renderer based on <tt class="docutils literal">libplacebo</tt>. This supports almost
+            the same set of features as <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for a
+            list.</p>
+            <p>Should generally be faster and higher quality, but some features may still
+            be missing or misbehave. Expect (and report!) bugs. See here for a list of
+            known differences and bugs:</p>
+            <p class="last"><a class="reference external" href="https://github.com/mpv-player/mpv/wiki/GPU-Next-vs-GPU">https://github.com/mpv-player/mpv/wiki/GPU-Next-vs-GPU</a></p>
+            </dd>
             <dt><tt class="docutils literal">xv</tt> (X11 only)</dt>
             <dd><p class="first">Uses the XVideo extension to enable hardware-accelerated display. This is
             the most compatible VO on X, but may be low-quality, and has issues with
@@ -8206,7 +8259,9 @@
             </dd>
             <dt><tt class="docutils literal">vdpau</tt> (X11 only)</dt>
             <dd><p class="first">Uses the VDPAU interface to display and optionally also decode video.
-            Hardware decoding is used with <tt class="docutils literal"><span class="pre">--hwdec=vdpau</span></tt>.</p>
+            Hardware decoding is used with <tt class="docutils literal"><span class="pre">--hwdec=vdpau</span></tt>. Note that there is
+            absolutely no reason to use this, other than compatibility. We strongly
+            recommend that you use <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--hwdec=nvdec</span></tt> instead.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Earlier versions of mpv (and MPlayer, mplayer2) provided sub-options
@@ -8352,40 +8407,6 @@
             <dd>Always resize the backbuffer to window size.</dd>
             </dl>
             </dd>
-            <dt><tt class="docutils literal">gpu</tt></dt>
-            <dd><p class="first">General purpose, customizable, GPU-accelerated video output driver. It
-            supports extended scaling methods, dithering, color management, custom
-            shaders, HDR, and more.</p>
-            <p>See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for options specific to this VO.</p>
-            <p>By default, it tries to use fast and fail-safe settings. Use the
-            <tt class="docutils literal"><span class="pre">gpu-hq</span></tt> profile to use this driver with defaults set to high quality
-            rendering. The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=gpu-hq</span></tt> and its
-            contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=gpu-hq</span></tt>.</p>
-            <p>This VO abstracts over several possible graphics APIs and windowing
-            contexts, which can be influenced using the <tt class="docutils literal"><span class="pre">--gpu-api</span></tt> and
-            <tt class="docutils literal"><span class="pre">--gpu-context</span></tt> options.</p>
-            <p>Hardware decoding over OpenGL-interop is supported to some degree. Note
-            that in this mode, some corner case might not be gracefully handled, and
-            color space conversion and chroma upsampling is generally in the hand of
-            the hardware decoder APIs.</p>
-            <p class="last"><tt class="docutils literal">gpu</tt> makes use of FBOs by default. Sometimes you can achieve better
-            quality or performance by changing the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> option to
-            <tt class="docutils literal">rgb16f</tt>, <tt class="docutils literal">rgb32f</tt> or <tt class="docutils literal">rgb</tt>. Known problems include Mesa/Intel not
-            accepting <tt class="docutils literal">rgb16</tt>, Mesa sometimes not being compiled with float texture
-            support, and some macOS setups being very slow with <tt class="docutils literal">rgb16</tt> but fast
-            with <tt class="docutils literal">rgb32f</tt>. If you have problems, you can also try enabling the
-            <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> option.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">gpu-next</span></tt></dt>
-            <dd><p class="first">Experimental video renderer based on <tt class="docutils literal">libplacebo</tt>. This supports almost
-            the same set of features as <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for a
-            list.</p>
-            <p>Currently, this only supports Vulkan, OpenGL, D3D11 and no hardware
-            decoding. Unlike <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, the FBO formats are not tunable, but you can
-            still set <tt class="docutils literal"><span class="pre">--gpu-dumb-mode=yes</span></tt> to forcibly disable their use.</p>
-            <p class="last">Should generally be faster and higher quality, but some features may still
-            be missing or misbehave. Expect (and report!) bugs.</p>
-            </dd>
             <dt><tt class="docutils literal">sdl</tt></dt>
             <dd><p class="first">SDL 2.0+ Render video output driver, depending on system with or without
             hardware acceleration. Should work on all platforms supported by SDL 2.0.
@@ -8406,12 +8427,8 @@
             <dt><tt class="docutils literal">vaapi</tt></dt>
             <dd><p class="first">Intel VA API video output driver with support for hardware decoding. Note
             that there is absolutely no reason to use this, other than compatibility.
-            This is low quality, and has issues with OSD.</p>
-            <div class="admonition note">
-            <p class="first admonition-title">Note</p>
-            <p class="last">This driver is for compatibility with crappy systems. You can
-            use vaapi hardware decoding with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> too.</p>
-            </div>
+            This is low quality, and has issues with OSD. We strongly recommend that
+            you use <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--hwdec=vaapi</span></tt> instead.</p>
             <p>The following global options are supported by this video output:</p>
             <dl class="last docutils">
             <dt><tt class="docutils literal"><span class="pre">--vo-vaapi-scaling=&lt;algorithm&gt;</span></tt></dt>
@@ -10337,7 +10354,7 @@
             <dd>Playback is stopped. If idle mode (<tt class="docutils literal"><span class="pre">--idle</span></tt>) is enabled, the player
             will enter idle mode, otherwise it will exit.</dd>
             </dl>
-            <p>This comm and is similar to <tt class="docutils literal">loadfile</tt> in that it only manipulates the
+            <p>This command is similar to <tt class="docutils literal">loadfile</tt> in that it only manipulates the
             state of what to play next, without waiting until the current file is
             unloaded, and the next one is loaded.</p>
             <p class="last">Setting <tt class="docutils literal"><span class="pre">playlist-pos</span></tt> or similar properties can have a similar effect to
@@ -10443,9 +10460,9 @@
             </dd>
             <dt><tt class="docutils literal">playback_only</tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>)</dt>
             <dd>Boolean indicating whether the process should be killed when playback
-            terminates (optional, default: true). If enabled, stopping playback
-            will automatically kill the process, and you can't start it outside of
-            playback.</dd>
+            of the current playlist entry terminates (optional, default: true). If
+            enabled, stopping playback will automatically kill the process, and you
+            can't start it outside of playback.</dd>
             <dt><tt class="docutils literal">capture_size</tt> (<tt class="docutils literal">MPV_FORMAT_INT64</tt>)</dt>
             <dd>Integer setting the maximum number of stdout plus stderr bytes that can
             be captured (optional, default: 64MB). If the number of bytes exceeds
@@ -10485,11 +10502,13 @@
             <p>The command returns the following result (as <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt>):</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">status</tt> (<tt class="docutils literal">MPV_FORMAT_INT64</tt>)</dt>
-            <dd><p class="first">The raw exit status of the process. It will be negative on error. The
-            meaning of negative values is undefined, other than meaning error (and
-            does not correspond to OS low level exit status values).</p>
-            <p class="last">On Windows, it can happen that a negative return value is returned
-            even if the process exits gracefully, because the win32 <tt class="docutils literal">UINT</tt> exit
+            <dd><p class="first">Typically this is the process exit code (0 or positive) if the process
+            terminates normally, or negative for other errors (failed to start,
+            terminated by mpv, and others).  The meaning of negative values is
+            undefined, other than meaning error (and does not correspond to OS low
+            level exit status values).</p>
+            <p class="last">On Windows, it can happen that a negative return value is returned even
+            if the process terminates normally, because the win32 <tt class="docutils literal">UINT</tt> exit
             code is assigned to an <tt class="docutils literal">int</tt> variable before being set as <tt class="docutils literal">int64_t</tt>
             field in the result map. This might be fixed later.</p>
             </dd>
@@ -10498,9 +10517,9 @@
             <dt><tt class="docutils literal">stderr</tt> (<tt class="docutils literal">MPV_FORMAT_BYTE_ARRAY</tt>)</dt>
             <dd>Same as <tt class="docutils literal">stdout</tt>, but for stderr.</dd>
             <dt><tt class="docutils literal">error_string</tt> (<tt class="docutils literal">MPV_FORMAT_STRING</tt>)</dt>
-            <dd><p class="first">Empty string if the process exited gracefully. The string <tt class="docutils literal">killed</tt> if
-            the process was terminated in an unusual way. The string <tt class="docutils literal">init</tt> if the
-            process could not be started.</p>
+            <dd><p class="first">Empty string if the process terminated normally. The string <tt class="docutils literal">killed</tt>
+            if the process was terminated in an unusual way. The string <tt class="docutils literal">init</tt> if
+            the process could not be started.</p>
             <p class="last">On Windows, <tt class="docutils literal">killed</tt> is only returned when the process has been
             killed by mpv as a result of <tt class="docutils literal">playback_only</tt> being set to true.</p>
             </dd>
@@ -10513,15 +10532,20 @@
             parameters are correct. Whether the process could be spawned or whether
             it was somehow killed or returned an error status has to be queried from
             the result value.</p>
-            <p>This command can be asynchronously aborted via API.</p>
-            <p>In all cases, the subprocess will be terminated on player exit. Also see
-            <a class="reference internal" href="#asynchronous-command-details">Asynchronous command details</a>. Only the <tt class="docutils literal">run</tt> command can start
-            processes in a truly detached way.</p>
+            <p>This command can be asynchronously aborted via API. Also see <a class="reference internal" href="#asynchronous-command-details">Asynchronous
+            command details</a>. Only the <tt class="docutils literal">run</tt> command can start processes in a truly
+            detached way.</p>
+            <div class="admonition note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">The subprocess will always be terminated on player exit if it
+            wasn't started in detached mode, even if <tt class="docutils literal">playback_only</tt> is
+            false.</p>
+            </div>
             <div class="admonition admonition-warning">
             <p class="first admonition-title">Warning</p>
-            <p class="last">Don't forget to set the <tt class="docutils literal">playback_only</tt> field if you want the command
-            run while the player is in idle mode, or if you don't want that end of
-            playback kills the command.</p>
+            <p class="last">Don't forget to set the <tt class="docutils literal">playback_only</tt> field to false if you want
+            the command to run while the player is in idle mode, or if you don't
+            want the end of playback to kill the command.</p>
             </div>
             <div class="admonition admonition-example last">
             <p class="first admonition-title">Example</p>
