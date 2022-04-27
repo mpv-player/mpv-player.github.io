@@ -138,7 +138,8 @@
             <dd>Stop playing and quit.</dd>
             <dt>Q</dt>
             <dd>Like <tt class="docutils literal">q</tt>, but store the current playback position. Playing the same file
-            later will resume at the old playback position if possible.</dd>
+            later will resume at the old playback position if possible. See
+            <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>.</dd>
             <dt>/ and *</dt>
             <dd>Decrease/increase volume.</dd>
             <dt>9 and 0</dt>
@@ -1104,6 +1105,29 @@
             (results can be mixed)</li>
             </ul>
             </div>
+            <div class="section" id="resuming-playback">
+            <h1>RESUMING PLAYBACK</h1>
+            <p>mpv is capable of storing the playback position of the currently playing file
+            and resume from there the next time that file is played. This is done with the
+            commands <tt class="docutils literal"><span class="pre">quit-watch-later</span></tt> (bound to Shift+Q by default) and
+            <tt class="docutils literal"><span class="pre">write-watch-later-config</span></tt>, and with the <tt class="docutils literal"><span class="pre">--save-position-on-quit</span></tt> option.</p>
+            <p>The difference between always quitting with a key bound to <tt class="docutils literal"><span class="pre">quit-watch-later</span></tt>
+            and using <tt class="docutils literal"><span class="pre">--save-position-on-quit</span></tt> is that the latter will save the playback
+            position even when mpv is closed with a method other than a keybinding, for
+            example if you shutdown your system without closing mpv beforehand, unless of
+            course mpv is terminated abruptly and doesn't have the time to save (e.g. with
+            the KILL Unix signal).</p>
+            <p>mpv also stores options other than the playback position when they have been
+            modified after playback began, for example the volume and the fullscreen state,
+            and restores their values the next time the file is played. Which options are
+            saved can be configured with the <tt class="docutils literal"><span class="pre">--watch-later-options</span></tt> option.</p>
+            <p>When playing multiple playlist entries, mpv checks if one them has a resume
+            config file associated, and if it finds one it restarts playback from it. For
+            example, if you use <tt class="docutils literal"><span class="pre">quit-watch-later</span></tt> on the 5th episode of a show, and
+            later play all the episodes, mpv will automatically resume playback from
+            episode 5.</p>
+            <p>More options to configure this functionality are listed in <a class="reference internal" href="#watch-later">Watch Later</a>.</p>
+            </div>
             <div class="section" id="protocols">
             <h1>PROTOCOLS</h1>
             <p><tt class="docutils literal"><span class="pre">http://...</span></tt>, <tt class="docutils literal"><span class="pre">https://</span></tt>, ...</p>
@@ -1999,21 +2023,6 @@
             environment variables (<tt class="docutils literal">MPV_HOME</tt>) are also ignored.</p>
             <p class="last">Note that the <tt class="docutils literal"><span class="pre">--no-config</span></tt> option takes precedence over this option.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--save-position-on-quit</span></tt></dt>
-            <dd><p class="first">Always save the current playback position on quit. When this file is
-            played again later, the player will seek to the old playback position on
-            start. This does not happen if playback of a file is stopped in any other
-            way than quitting. For example, going to the next file in the playlist
-            will not save the position, and start playback at beginning the next time
-            the file is played.</p>
-            <p class="last">This behavior is disabled by default, but is always available when quitting
-            the player with Shift+Q.</p>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--watch-later-directory=&lt;path&gt;</span></tt></dt>
-            <dd><p class="first">The directory in which to store the &quot;watch later&quot; temporary files.</p>
-            <p class="last">The default is a subdirectory named &quot;watch_later&quot; underneath the
-            config directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).</p>
-            </dd>
             <dt><tt class="docutils literal"><span class="pre">--dump-stats=&lt;filename&gt;</span></tt></dt>
             <dd><p class="first">Write certain statistics to the given file. The file is truncated on
             opening. The file will contain raw samples, each with a timestamp. To
@@ -2048,16 +2057,6 @@
             <dt><tt class="docutils literal"><span class="pre">--merge-files</span></tt></dt>
             <dd>Pretend that all files passed to mpv are concatenated into a single, big
             file. This uses timeline/EDL support internally.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--no-resume-playback</span></tt></dt>
-            <dd>Do not restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
-            subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>).
-            See <tt class="docutils literal"><span class="pre">quit-watch-later</span></tt> input command.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--resume-playback-check-mtime</span></tt></dt>
-            <dd>Only restore the playback position from the <tt class="docutils literal">watch_later</tt> configuration
-            subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>) if the file's
-            modification time is the same as at the time of saving. This may prevent
-            skipping forward in files with the same name which have different content.
-            (Default: <tt class="docutils literal">no</tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--profile=&lt;profile1,profile2,...&gt;</span></tt></dt>
             <dd>Use the given profile(s), <tt class="docutils literal"><span class="pre">--profile=help</span></tt> displays a list of the
             defined profiles.</dd>
@@ -2089,41 +2088,6 @@
             </ul>
             </div>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--watch-later-options=option1,option2,...</span></tt></dt>
-            <dd><p class="first">The options that are saved in &quot;watch later&quot; files if they have been changed
-            since when mpv started. These values will be restored the next time the
-            files are played. The playback position is always saved as <tt class="docutils literal">start</tt>, so
-            adding <tt class="docutils literal">start</tt> to this list has no effect.</p>
-            <p>When removing options, existing watch later data won't be modified and will
-            still be applied fully, but new watch later data won't contain these
-            options.</p>
-            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
-            <div class="admonition admonition-examples last">
-            <p class="first admonition-title">Examples</p>
-            <ul class="last simple">
-            <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=fullscreen</span></tt>
-            The fullscreen state won't be saved to watch later files.</li>
-            <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=volume</span></tt>
-            <tt class="docutils literal"><span class="pre">--watch-later-options-remove=mute</span></tt>
-            The volume and mute state won't be saved to watch later files.</li>
-            <li><tt class="docutils literal"><span class="pre">--watch-later-options-clr</span></tt>
-            No option will be saved to watch later files except the starting
-            position.</li>
-            </ul>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt></dt>
-            <dd><p class="first">Prepend the watch later config files with the name of the file they refer
-            to. This is simply written as comment on the top of the file.</p>
-            <div class="admonition warning last">
-            <p class="first admonition-title">Warning</p>
-            <p class="last">This option may expose privacy-sensitive information and is thus
-            disabled by default.</p>
-            </div>
-            </dd>
-            <dt><tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt></dt>
-            <dd>Ignore path (i.e. use filename only) when using watch later feature.
-            (Default: disabled)</dd>
             <dt><tt class="docutils literal"><span class="pre">--show-profile=&lt;profile&gt;</span></tt></dt>
             <dd>Show the description and content of a profile. Lists all profiles if no
             parameter is provided.</dd>
@@ -2272,10 +2236,9 @@
             binding (default: yes). By default, the <tt class="docutils literal">i</tt> key is used (<tt class="docutils literal">I</tt> to make
             the overlay permanent).</dd>
             <dt><tt class="docutils literal"><span class="pre">--load-osd-console=&lt;yes|no&gt;</span></tt></dt>
-            <dd>Enable the builtin script that shows a console on a key binding and lets
-            you enter commands (default: yes). By default,. The <tt class="docutils literal">´</tt> key is used to
-            show the console, and <tt class="docutils literal">ESC</tt> to hide it again. (This is based on  a user
-            script called <tt class="docutils literal">repl.lua</tt>.)</dd>
+            <dd>Enable the built-in script that shows a console on a key binding and lets
+            you enter commands (default: yes). The <tt class="docutils literal">`</tt> key is used to show the
+            console by default, and <tt class="docutils literal">ESC</tt> to hide it again.</dd>
             <dt><tt class="docutils literal"><span class="pre">--load-auto-profiles=&lt;yes|no|auto&gt;</span></tt></dt>
             <dd>Enable the builtin script that does auto profiles (default: auto). See
             <a class="reference internal" href="#conditional-auto-profiles">Conditional auto profiles</a> for details. <tt class="docutils literal">auto</tt> will load the script,
@@ -2285,6 +2248,71 @@
             options are changed. This option should not normally be used directly, but
             only by mpv internally, or mpv-provided scripts, config files, or .desktop
             files. See <a class="reference internal" href="#pseudo-gui-mode">PSEUDO GUI MODE</a> for details.</dd>
+            </dl>
+            </div>
+            <div class="section" id="watch-later">
+            <h2>Watch Later</h2>
+            <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">--save-position-on-quit</span></tt></dt>
+            <dd><p class="first">Always save the current playback position on quit. When this file is
+            played again later, the player will seek to the old playback position on
+            start. This does not happen if playback of a file is stopped in any other
+            way than quitting. For example, going to the next file in the playlist
+            will not save the position, and start playback at beginning the next time
+            the file is played.</p>
+            <p>This behavior is disabled by default, but is always available when quitting
+            the player with Shift+Q.</p>
+            <p class="last">See <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--watch-later-directory=&lt;path&gt;</span></tt></dt>
+            <dd><p class="first">The directory in which to store the &quot;watch later&quot; temporary files.</p>
+            <p class="last">The default is a subdirectory named &quot;watch_later&quot; underneath the
+            config directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--no-resume-playback</span></tt></dt>
+            <dd>Do not restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
+            subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--resume-playback-check-mtime</span></tt></dt>
+            <dd>Only restore the playback position from the <tt class="docutils literal">watch_later</tt> configuration
+            subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>) if the file's
+            modification time is the same as at the time of saving. This may prevent
+            skipping forward in files with the same name which have different content.
+            (Default: <tt class="docutils literal">no</tt>)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--watch-later-options=option1,option2,...</span></tt></dt>
+            <dd><p class="first">The options that are saved in &quot;watch later&quot; files if they have been changed
+            since when mpv started. These values will be restored the next time the
+            files are played. The playback position is always saved as <tt class="docutils literal">start</tt>, so
+            adding <tt class="docutils literal">start</tt> to this list has no effect.</p>
+            <p>When removing options, existing watch later data won't be modified and will
+            still be applied fully, but new watch later data won't contain these
+            options.</p>
+            <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+            <div class="admonition admonition-examples last">
+            <p class="first admonition-title">Examples</p>
+            <ul class="last simple">
+            <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=fullscreen</span></tt>
+            The fullscreen state won't be saved to watch later files.</li>
+            <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=volume</span></tt>
+            <tt class="docutils literal"><span class="pre">--watch-later-options-remove=mute</span></tt>
+            The volume and mute state won't be saved to watch later files.</li>
+            <li><tt class="docutils literal"><span class="pre">--watch-later-options-clr</span></tt>
+            No option will be saved to watch later files except the starting
+            position.</li>
+            </ul>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt></dt>
+            <dd><p class="first">Prepend the watch later config files with the name of the file they refer
+            to. This is simply written as comment on the top of the file.</p>
+            <div class="admonition warning last">
+            <p class="first admonition-title">Warning</p>
+            <p class="last">This option may expose privacy-sensitive information and is thus
+            disabled by default.</p>
+            </div>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt></dt>
+            <dd>Ignore path (i.e. use filename only) when using watch later feature.
+            (Default: disabled)</dd>
             </dl>
             </div>
             <div class="section" id="video">
@@ -2407,7 +2435,7 @@
             about. After that, you can add it to your config file.</p>
             <p>When testing, you should start by using <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt> as it will
             limit itself to choosing from hwdecs that are actively supported by the
-            development team. If that doesn't result in working hardare decoding,
+            development team. If that doesn't result in working hardware decoding,
             you can try <tt class="docutils literal">hwdec=auto</tt> to have it attempt to load every possible
             hwdec, but if <tt class="docutils literal"><span class="pre">auto-safe</span></tt> didn't work, you will probably need to know
             exactly which hwdec matches your hardware and read up on that entry
@@ -2896,6 +2924,16 @@
             a fallback happens, parts of the file will be skipped, approximately by to
             the number of packets that could not be decoded. Values below an unspecified
             count will not have this problem, because mpv retains the packets.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-film-grain=&lt;auto|cpu|gpu&gt;</span></tt></dt>
+            <dd><p class="first">Enables film grain application on the GPU. If video decoding is done on
+            the CPU, doing film grain application on the GPU can speed up decoding.
+            This option can also help hardware decoding, as it can reduce the number
+            of frame copies done.</p>
+            <p class="last">By default, it's set to <tt class="docutils literal">auto</tt>, so if the VO supports film grain
+            application, then it will be treated as <tt class="docutils literal">gpu</tt>. If the VO does not
+            support this, then it will be treated as <tt class="docutils literal">cpu</tt>, regardless of the setting.
+            Currently, only <tt class="docutils literal"><span class="pre">gpu-next</span></tt> supports film grain application.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-dr=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Enable direct rendering (default: yes). If this is set to <tt class="docutils literal">yes</tt>, the
@@ -3900,14 +3938,7 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-italic=&lt;yes|no&gt;</span></tt></dt>
             <dd>Format text on italic.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-border-color=&lt;color&gt;</span></tt></dt>
-            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the sub font border.</p>
-            <div class="admonition note last">
-            <p class="first admonition-title">Note</p>
-            <p class="last">ignored when <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt> is
-            specified (or more exactly: when that option is not set to completely
-            transparent).</p>
-            </div>
-            </dd>
+            <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the sub font border.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-border-size=&lt;size&gt;</span></tt></dt>
             <dd><p class="first">Size of the sub font border in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
             for details). A value of 0 disables borders.</p>
@@ -3968,7 +3999,7 @@
             <dt><tt class="docutils literal"><span class="pre">--sub-justify=&lt;auto|left|center|right&gt;</span></tt></dt>
             <dd>Control how multi line subs are justified irrespective of where they
             are aligned (default: <tt class="docutils literal">auto</tt> which justifies as defined by
-            <tt class="docutils literal"><span class="pre">--sub-align-y</span></tt>).
+            <tt class="docutils literal"><span class="pre">--sub-align-x</span></tt>).
             Left justification is recommended to make the subs easier to read
             as it is easier for the eyes.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-ass-justify=&lt;yes|no&gt;</span></tt></dt>
@@ -3976,7 +4007,14 @@
             if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is not set to <tt class="docutils literal">no</tt>.
             Default: <tt class="docutils literal">no</tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-shadow-color=&lt;color&gt;</span></tt></dt>
-            <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text shadow.</dd>
+            <dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text shadow.</p>
+            <div class="admonition note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">ignored when <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt> is
+            specified (or more exactly: when that option is not set to completely
+            transparent).</p>
+            </div>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--sub-shadow-offset=&lt;size&gt;</span></tt></dt>
             <dd><p class="first">Displacement of the sub text shadow in scaled pixels (see
             <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details). A value of 0 disables shadows.</p>
@@ -5129,6 +5167,9 @@
             message <tt class="docutils literal">file:</tt> followed by a space and the currently played filename.</p>
             <p class="last">See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-playing-msg-duration=&lt;time&gt;</span></tt></dt>
+            <dd>Set the duration of <tt class="docutils literal"><span class="pre">osd-playing-msg</span></tt> in ms. If this is unset,
+            <tt class="docutils literal"><span class="pre">osd-playing-msg</span></tt> stays on screen for the duration of <tt class="docutils literal"><span class="pre">osd-duration</span></tt>.</dd>
             <dt><tt class="docutils literal"><span class="pre">--osd-bar-align-x=&lt;-1-1&gt;</span></tt></dt>
             <dd>Position of the OSD bar. -1 is far left, 0 is centered, 1 is far right.
             Fractional values (like 0.5) are allowed.</dd>
@@ -5255,6 +5296,8 @@
             <tr class="field"><th class="field-name">jpeg:</th><td class="field-body">JPEG (alias for jpg)</td>
             </tr>
             <tr class="field"><th class="field-name">webp:</th><td class="field-body">WebP</td>
+            </tr>
+            <tr class="field"><th class="field-name">jxl:</th><td class="field-body">JPEG XL</td>
             </tr>
             </tbody>
             </table>
@@ -5394,6 +5437,14 @@
             <dd>Set the WebP compression level. Higher means better compression, but takes
             more CPU time. Note that this also affects the screenshot quality when used
             with lossy WebP files. The default is 4.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--screenshot-jxl-distance=&lt;0-15&gt;</span></tt></dt>
+            <dd>Set the JPEG XL Butteraugli distance. Lower means better quality. Lossless
+            is 0.0, and 1.0 is approximately equivalent to JPEG quality 90 for
+            photographic content. Use 0.1 for &quot;visually lossless&quot; screenshots. The
+            default is 1.0.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--screenshot-jxl-effort=&lt;1-9&gt;</span></tt></dt>
+            <dd>Set the JPEG XL compression effort. Higher effort (usually) means better
+            compression, but takes more CPU time. The default is 3.</dd>
             <dt><tt class="docutils literal"><span class="pre">--screenshot-sw=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Whether to use software rendering for screenshots (default: no).</p>
             <p>If set to no, the screenshot will be rendered by the current VO if possible
@@ -7790,10 +7841,9 @@
             <tbody valign="top">
             <tr class="field"><th class="field-name">no:</th><td class="field-body">Don't automatically load cover art.</td>
             </tr>
-            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with an image file extension.</td>
+            <tr class="field"><th class="field-name">exact:</th><td class="field-body">Load the media filename with an image file extension (default).</td>
             </tr>
-            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all cover art containing the media filename and filenames
-            in an internal whitelist, such as <tt class="docutils literal">cover.jpg</tt> (default).</td>
+            <tr class="field"><th class="field-name">fuzzy:</th><td class="field-body">Load all cover art containing the media filename.</td>
             </tr>
             <tr class="field"><th class="field-name">all:</th><td class="field-body">Load all images in the current directory.</td>
             </tr>
@@ -7802,6 +7852,12 @@
             <p>See <tt class="docutils literal"><span class="pre">--cover-art-files</span></tt> for details about what constitutes cover art.</p>
             <p class="last">See <tt class="docutils literal"><span class="pre">--audio-display</span></tt> how to control display of cover art (this can be
             used to disable cover art that is part of the file).</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--cover-art-whitelist=&lt;no|yes&gt;</span></tt></dt>
+            <dd><p class="first">Whether to load filenames in an internal whitelist, such as <tt class="docutils literal">cover.jpg</tt>,
+            as cover art. If <tt class="docutils literal"><span class="pre">cover-art-auto</span></tt> is set to <tt class="docutils literal">no</tt>, the whitelisted
+            filenames are never loaded even if this option is set to <tt class="docutils literal">yes</tt>.</p>
+            <p class="last">Default: <tt class="docutils literal">yes</tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--autoload-files=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Automatically load/select external files (default: yes).</p>
@@ -7952,7 +8008,7 @@
             default for this option is <tt class="docutils literal"><span class="pre">auto-safe</span></tt>, which makes this audio output
             explicitly reject multichannel output, as there is no way to detect
             whether a certain channel layout is actually supported.</p>
-            <p class="last">You can also try <a class="reference external" href="http://git.io/vfuAy">using the upmix plugin</a>.
+            <p class="last">You can also try <a class="reference external" href="https://github.com/mpv-player/mpv/wiki/ALSA-Surround-Sound-and-Upmixing">using the upmix plugin</a>.
             This setup enables multichannel audio on the <tt class="docutils literal">default</tt> device
             with automatic upmixing with shared access, so playing stereo
             and multichannel audio at the same time will work as expected.</p>
@@ -8779,6 +8835,26 @@
             <p class="last">Note: this option is only available with DRM atomic support.
             (default: display resolution)</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--drm-vrr-enabled=&lt;no|yes|auto&gt;</span></tt></dt>
+            <dd><p class="first">Toggle use of Variable Refresh Rate (VRR), aka Freesync or Adaptive Sync
+            on compatible systems. VRR allows for the display to be refreshed at any
+            rate within a range (usually ~40Hz-60Hz for 60Hz displays). This can help
+            with playback of 24/25/50fps content. Support depends on the use of a
+            compatible monitor, GPU, and a sufficiently new kernel with drivers
+            that support the feature.</p>
+            <table class="last docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">no:</th><td class="field-body">Do not attempt to enable VRR. (default)</td>
+            </tr>
+            <tr class="field"><th class="field-name">yes:</th><td class="field-body">Attempt to enable VRR, whether the capability is reported or not.</td>
+            </tr>
+            <tr class="field"><th class="field-name">auto:</th><td class="field-body">Attempt to enable VRR if support is reported.</td>
+            </tr>
+            </tbody>
+            </table>
+            </dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal">mediacodec_embed</tt> (Android)</dt>
@@ -9397,6 +9473,9 @@
             <dt><tt class="docutils literal">&lt;dolbyvision=yes|no&gt;</tt></dt>
             <dd>Whether or not to include Dolby Vision metadata (default: yes). If
             disabled, any Dolby Vision metadata will be stripped from frames.</dd>
+            <dt><tt class="docutils literal"><span class="pre">&lt;film-grain=yes|no&gt;</span></tt></dt>
+            <dd>Whether or not to include film grain metadata (default: yes). If
+            disabled, any film grain metadata will be stripped from frames.</dd>
             <dt><tt class="docutils literal"><span class="pre">&lt;stereo-in&gt;</span></tt></dt>
             <dd>Set the stereo mode the video is assumed to be encoded in. Use
             <tt class="docutils literal"><span class="pre">--vf=format:stereo-in=help</span></tt> to list all available modes. Check with
@@ -10569,7 +10648,7 @@
             <dt><tt class="docutils literal"><span class="pre">quit-watch-later</span> [&lt;code&gt;]</tt></dt>
             <dd>Exit player, and store current playback position. Playing that file later
             will seek to the previous position on start. The (optional) argument is
-            exactly as in the <tt class="docutils literal">quit</tt> command.</dd>
+            exactly as in the <tt class="docutils literal">quit</tt> command. See <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>.</dd>
             <dt><tt class="docutils literal"><span class="pre">sub-add</span> &lt;url&gt; [&lt;flags&gt; [&lt;title&gt; <span class="pre">[&lt;lang&gt;]]]</span></tt></dt>
             <dd><p class="first">Load the given subtitle file or stream. By default, it is selected as
             current subtitle  after loading.</p>
@@ -12546,7 +12625,7 @@
             <p class="last">If tracks of the requested type are selected via <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt>, the
             first one is returned.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">chapter-list</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">chapter-list</span></tt> (RW)</dt>
             <dd><p class="first">List of chapters, current entry marked. Currently, the raw property value
             is useless.</p>
             <p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based chapter
@@ -12624,7 +12703,8 @@
             <p>Note that you need to escape the <tt class="docutils literal">\</tt> character, because the string is
             processed for C escape sequences before passing it to the OSD code. See
             <a class="reference internal" href="#flat-command-syntax">Flat command syntax</a> for details.</p>
-            <p class="last">A list of tags can be found here: <a class="reference external" href="http://docs.aegisub.org/latest/ASS_Tags/">http://docs.aegisub.org/latest/ASS_Tags/</a></p>
+            <p class="last">A list of tags can be found here:
+            <a class="reference external" href="https://aeg-dev.github.io/AegiSite/docs/3.2/ass_tags/">https://aeg-dev.github.io/AegiSite/docs/3.2/ass_tags/</a></p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">vo-configured</span></tt></dt>
             <dd>Whether the VO is configured right now. Usually this corresponds to whether
