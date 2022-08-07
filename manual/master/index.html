@@ -1325,31 +1325,13 @@
             a VO using the OS GUI API is active). <tt class="docutils literal"><span class="pre">--stop-screensaver=no</span></tt> disables this.</p>
             <p>A common problem is that Linux desktop environments ignore the standard
             screensaver APIs on which mpv relies. In particular, mpv uses the Screen Saver
-            extension (XSS) on X11, and the idle-inhibit on Wayland.</p>
-            <p>GNOME is one of the worst offenders, and ignores even the now widely supported
-            idle-inhibit protocol. (This is either due to a combination of malice and
-            incompetence, but since implementing this protocol would only take a few lines
-            of code, it is most likely the former. You will also notice how GNOME advocates
-            react offended whenever their sabotage is pointed out, which indicates either
-            hypocrisy, or even worse ignorance.)</p>
-            <p>Such incompatible desktop environments (i.e. which ignore standards) typically
-            require using a DBus API. This is ridiculous in several ways. The immediate
-            practical problem is that it would require adding a quite unwieldy dependency
-            for a DBus library, somehow integrating its mainloop into mpv, and other
-            generally unacceptable things.</p>
-            <p>However, since mpv does not officially support GNOME, this is not much of a
-            problem. If you are one of those miserable users who want to use mpv on GNOME,
-            report a bug on the GNOME issue tracker:
-            <a class="reference external" href="https://gitlab.gnome.org/groups/GNOME/-/issues">https://gitlab.gnome.org/groups/GNOME/-/issues</a></p>
-            <p>Alternatively, you may be able to write a Lua script that calls the
-            <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> command line program. (By the way, this a command line
-            program is an utterly horrible kludge that tries to identify your DE, and then
-            tries to send the correct DBus command via a DBus CLI tool.) If you find the
-            idea of having to write a script just so your screensaver doesn't kick in
-            ridiculous, do not use GNOME, or use GNOME video software instead of mpv (good
-            luck).</p>
+            extension (XSS) on X11, and the idle-inhibit protocol on Wayland.</p>
+            <p>GNOME in particular still ignores the idle-inhibit protocol, and has its own
+            D-Bus interfaces for display power management, which mpv does not support.</p>
             <p>Before mpv 0.33.0, the X11 backend ran <tt class="docutils literal"><span class="pre">xdg-screensaver</span> reset</tt> in 10 second
-            intervals when not paused. This hack was removed in 0.33.0.</p>
+            intervals when not paused in order to support screensaver inhibition in these
+            environments. This functionality was removed in 0.33.0, but it is possible to
+            call the <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> command line program from a user script instead.</p>
             </div>
             </div>
             <div class="section" id="options">
@@ -1623,11 +1605,11 @@
             </tr>
             <tr class="field"><th class="field-name">absolute:</th><td class="field-body">Use precise seeks if the seek is to an absolute position in the
             file, such as a chapter seek, but not for relative seeks like
-            the default behavior of arrow keys (default).</td>
+            the default behavior of arrow keys.</td>
             </tr>
             <tr class="field"><th class="field-name">default:</th><td class="field-body">Like <tt class="docutils literal">absolute</tt>, but enable hr-seeks in audio-only cases. The
             exact behavior is implementation specific and may change with
-            new releases.</td>
+            new releases (default).</td>
             </tr>
             <tr class="field"><th class="field-name">yes:</th><td class="field-body">Use precise seeks whenever possible.</td>
             </tr>
@@ -2503,7 +2485,7 @@
             <tr class="field"><th class="field-name" colspan="2">videotoolbox-copy:</th></tr>
             <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back into system RAM (macOS 10.8 or iOS 9.0 and up)</td>
             </tr>
-            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> (Linux only)</td>
+            <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vaapi-wayland</span></tt> (Linux only)</td>
             </tr>
             <tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
@@ -4544,6 +4526,20 @@
             <p><tt class="docutils literal">no</tt> sets <tt class="docutils literal">_NET_WM_BYPASS_COMPOSITOR</tt> to 0, which is the default value
             as declared by the EWMH specification, i.e. no change is done.</p>
             <p class="last"><tt class="docutils literal">never</tt> asks the window manager to never disable the compositor.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--x11-present=&lt;no|auto|yes&gt;</span></tt></dt>
+            <dd><p class="first">Whether or not to use presentation statistics from X11's presentation
+            extension (default: <tt class="docutils literal">auto</tt>).</p>
+            <p>mpv asks X11 for present events which it then may use for more accurate
+            frame presentation. This only has an effect if <tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt>
+            is being used.</p>
+            <p>The auto option enumerates XRandr providers for autodetection. If amd, radeon,
+            intel, or nouveau (the standard x86 Mesa drivers) is found and nvidia is NOT
+            found, presentation feedback is enabled. Other drivers are not assumed to
+            work, so they are not enabled automatically.</p>
+            <p class="last"><tt class="docutils literal">yes</tt> or <tt class="docutils literal">no</tt> can still be passed regardless to enable/disable this
+            mechanism in case there is good/bad behavior with whatever your combination
+            of hardware/drivers/etc. happens to be.</p>
             </dd>
             </dl>
             </div>
@@ -8480,6 +8476,13 @@
             <dd>Instruct SDL to switch the monitor video mode when going fullscreen.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">vaapi-wayland</span></tt></dt>
+            <dd>Experimental Wayland output driver designed for use with VA API hardware decoding.
+            The driver is designed to avoid any GPU to CPU copies, and to perform scaling and
+            color space conversion using fixed-function hardware, if available,
+            rather than GPU shaders. This frees up GPU resources for other tasks.
+            Currently this driver is experimental and only works with the <tt class="docutils literal"><span class="pre">--hwdec=vaapi</span></tt> driver;
+            OSD is also not supported. Supported compositors : Weston and Sway.</dd>
             <dt><tt class="docutils literal">vaapi</tt></dt>
             <dd><p class="first">Intel VA API video output driver with support for hardware decoding. Note
             that there is absolutely no reason to use this, other than compatibility.
@@ -10564,7 +10567,7 @@
             instead. (Unlike the underlying OS mechanisms, the mpv command cannot
             start a process with empty environment. Fortunately, that is completely
             useless.) The format of the list is as in the <tt class="docutils literal">execle()</tt> syscall. Each
-            string item defines an environment variable as in <tt class="docutils literal">NANME=VALUE</tt>.</p>
+            string item defines an environment variable as in <tt class="docutils literal">NAME=VALUE</tt>.</p>
             <p class="last">On Lua, you may use <tt class="docutils literal">utils.get_env_list()</tt> to retrieve the current
             environment if you e.g. simply want to add a new variable.</p>
             </dd>
@@ -11659,7 +11662,7 @@
             <h2>Property list</h2>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
-            <p>Most options can be set as runtime via properties as well. Just remove the
+            <p>Most options can be set at runtime via properties as well. Just remove the
             leading <tt class="docutils literal"><span class="pre">--</span></tt> from the option name. These are not documented below, see
             <a class="reference internal" href="#options">OPTIONS</a> instead. Only properties which do not exist as option with the
             same name, or which have very different behavior from the options are
@@ -13493,6 +13496,10 @@
             <dd><p class="first">Default: yes</p>
             <p class="last">Enable the OSC when fullscreen</p>
             </dd>
+            <dt><tt class="docutils literal">idlescreen</tt></dt>
+            <dd><p class="first">Default: yes</p>
+            <p class="last">Show the mpv logo and message when idle</p>
+            </dd>
             <dt><tt class="docutils literal">scalewindowed</tt></dt>
             <dd><p class="first">Default: 1.0</p>
             <p class="last">Scale factor of the OSC when windowed.</p>
@@ -13552,6 +13559,13 @@
             <dt><tt class="docutils literal">timems</tt></dt>
             <dd><p class="first">Default: no</p>
             <p class="last">Display timecodes with milliseconds</p>
+            </dd>
+            <dt><tt class="docutils literal">tcspace</tt></dt>
+            <dd><p class="first">Default: 100 (allowed: 50-200)</p>
+            <p class="last">Adjust space reserved for timecodes (current time and time remaining) in
+            the <tt class="docutils literal">bottombar</tt> and <tt class="docutils literal">topbar</tt> layouts. The timecode width depends on the
+            font, and with some fonts the spacing near the timecodes becomes too small.
+            Use values above 100 to increase that spacing, or below 100 to decrease it.</p>
             </dd>
             <dt><tt class="docutils literal">visibility</tt></dt>
             <dd><p class="first">Default: auto (auto hide/show on mouse move)</p>
@@ -13623,6 +13637,11 @@
             Use <tt class="docutils literal">no</tt> to disable chapter display on hover. Otherwise it's a lua
             <tt class="docutils literal">string.format</tt> template and <tt class="docutils literal">%s</tt> is replaced with the actual name.</p>
             </dd>
+            <dt><tt class="docutils literal">unicodeminus</tt></dt>
+            <dd><p class="first">Default: no</p>
+            <p class="last">Use a Unicode minus sign instead of an ASCII hyphen when displaying
+            the remaining playback time.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="script-commands">
@@ -13645,6 +13664,9 @@
             b script-message osc-visibility auto
             </pre>
             <dl class="docutils">
+            <dt><tt class="docutils literal"><span class="pre">osc-idlescreen</span></tt></dt>
+            <dd>Controls the visibility of the mpv logo on idle. Valid arguments are <tt class="docutils literal">yes</tt>,
+            <tt class="docutils literal">no</tt>, and <tt class="docutils literal">cycle</tt> to toggle between yes and no.</dd>
             <dt><tt class="docutils literal"><span class="pre">osc-playlist</span></tt>, <tt class="docutils literal"><span class="pre">osc-chapterlist</span></tt>, <tt class="docutils literal"><span class="pre">osc-tracklist</span></tt></dt>
             <dd>Shows a limited view of the respective type of list using the OSC. First
             argument is duration in seconds.</dd>
@@ -14167,8 +14189,9 @@
             </blockquote>
             <p>Returns a table with undefined contents, which can be used as argument for
             <tt class="docutils literal">mp.abort_async_command</tt>.</p>
-            <p class="last">If starting the command failed for some reason, <tt class="docutils literal">nil, error</tt> is returned,
+            <p>If starting the command failed for some reason, <tt class="docutils literal">nil, error</tt> is returned,
             and <tt class="docutils literal">fn</tt> is called indicating failure, using the same error value.</p>
+            <p class="last"><tt class="docutils literal">fn</tt> is always called asynchronously, even if the command failed to start.</p>
             </dd>
             <dt><tt class="docutils literal">mp.abort_async_command(t)</tt></dt>
             <dd>Abort a <tt class="docutils literal">mp.command_native_async</tt> call. The argument is the return value
@@ -14873,7 +14896,7 @@
             <p><tt class="docutils literal">mp.commandv(arg1, arg2, <span class="pre">...)</span></tt> (LE)</p>
             <p><tt class="docutils literal">mp.command_native(table [,def])</tt> (LE)</p>
             <p><tt class="docutils literal">id = mp.command_native_async(table [,fn])</tt> (LE) Notes: <tt class="docutils literal">id</tt> is true-thy on
-            success, <tt class="docutils literal">fn</tt> is called always a-sync, <tt class="docutils literal">error</tt> is empty string on success.</p>
+            success, <tt class="docutils literal">error</tt> is empty string on success.</p>
             <p><tt class="docutils literal">mp.abort_async_command(id)</tt></p>
             <p><tt class="docutils literal">mp.get_property(name [,def])</tt> (LE)</p>
             <p><tt class="docutils literal">mp.get_property_osd(name [,def])</tt> (LE)</p>
