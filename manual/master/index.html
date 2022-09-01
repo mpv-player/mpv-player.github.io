@@ -2939,7 +2939,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-bitexact</span></tt></dt>
             <dd>Only use bit-exact algorithms in all decoding steps (for codec testing).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-fast</span></tt> (MPEG-2, MPEG-4, and H.264 only)</dt>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-fast</span></tt> (MPEG-1/2 and H.264 only)</dt>
             <dd>Enable optimizations which do not comply with the format specification and
             potentially cause problems, like simpler dequantization, simpler motion
             compensation, assuming use of the default quantization matrix, assuming YUV
@@ -2961,12 +2961,14 @@
             <dd>Show even broken/corrupt frames (default: no). If this option is set to
             no, libavcodec won't output frames that were either decoded before an
             initial keyframe was decoded, or frames that are recognized as corrupted.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-skiploopfilter=&lt;skipvalue&gt;</span> (H.264 only)</tt></dt>
-            <dd><p class="first">Skips the loop filter (AKA deblocking) during H.264 decoding. Since
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-skiploopfilter=&lt;skipvalue&gt;</span></tt> (H.264, HEVC only)</dt>
+            <dd><p class="first">Skips the loop filter (AKA deblocking) during decoding. Since
             the filtered frame is supposed to be used as reference for decoding
             dependent frames, this has a worse effect on quality than not doing
             deblocking on e.g. MPEG-2 video. But at least for high bitrate HDTV,
-            this provides a big speedup with little visible quality loss.</p>
+            this provides a big speedup with little visible quality loss.
+            Codecs other than H.264 or HEVC may have partial support for this option
+            (often only <tt class="docutils literal">all</tt> and <tt class="docutils literal">none</tt>).</p>
             <p><tt class="docutils literal">&lt;skipvalue&gt;</tt> can be one of the following:</p>
             <table class="last docutils field-list" frame="void" rules="none">
             <col class="field-name" />
@@ -2988,7 +2990,7 @@
             </tbody>
             </table>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-skipidct=&lt;skipvalue&gt;</span> <span class="pre">(MPEG-1/2</span> only)</tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-skipidct=&lt;skipvalue&gt;</span></tt> (MPEG-1/2/4 only)</dt>
             <dd>Skips the IDCT step. This degrades quality a lot in almost all cases
             (see skiploopfilter for available skip values).</dd>
             <dt><tt class="docutils literal"><span class="pre">--vd-lavc-skipframe=&lt;skipvalue&gt;</span></tt></dt>
@@ -3007,7 +3009,7 @@
             Normally, this is autodetected by libavcodec. But if the bitstream contains
             no x264 version info (or it was somehow skipped), and the stream was in fact
             encoded by an old x264 version (build 150 or earlier), and if the stream
-            uses <tt class="docutils literal">4:4:4</tt> chroma, then libavcodec will by default show corrupted video.
+            uses 4:4:4 chroma, then libavcodec will by default show corrupted video.
             This option sets the libavcodec <tt class="docutils literal">x264_build</tt> option to <tt class="docutils literal">150</tt>, which
             means that if the stream contains no version info, or was not encoded by
             x264 at all, it assumes it was encoded by the old version. Enabling this
