@@ -7357,6 +7357,10 @@
             <dd>Specifies the local contrast coefficient at the display peak. Defaults
             to 0.5, which means that in-gamut values will be about half as bright
             as when clipping.</dd>
+            <dt>bt.2390</dt>
+            <dd>Specifies the offset for the knee point. Defaults to 1.0, which is
+            higher than the value from the original ITU-R specification (0.5).
+            (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
             <dt>gamma</dt>
             <dd>Specifies the exponent of the function. Defaults to 1.8.</dd>
             <dt>linear</dt>
@@ -9635,7 +9639,7 @@
             <p class="first admonition-title">Example:</p>
             <pre class="last literal-block">
             import vapoursynth as vs
-            core = vs.get_core()
+            from vapoursynth import core
             core.std.AddBorders(video_in, 10, 10, 20, 20).set_output()
             </pre>
             </div>
