@@ -2516,7 +2516,8 @@
             </tr>
             <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
             </tr>
-            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> (Android only)</td>
+            <tr class="field"><th class="field-name">mediacodec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span> <span class="pre">--gpu-context=android</span></tt>
+            or <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> (Android only)</td>
             </tr>
             <tr class="field"><th class="field-name" colspan="2">mediacodec-copy:</th></tr>
             <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back to system RAM (Android only)</td>
@@ -2613,6 +2614,10 @@
             completely ordinary video sources.</p>
             <p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
             <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>.</p>
+            <p><tt class="docutils literal">mediacodec</tt> is not safe. It forces RGB conversion (not with <tt class="docutils literal"><span class="pre">-copy</span></tt>)
+            and how well it handles non-standard colorspaces is not known.
+            In the rare cases where 10-bit is supported the bit depth of the output
+            will be reduced to 8.</p>
             <p><tt class="docutils literal">cuda</tt> should usually be safe, but depending on how a file/stream
             has been mixed, it has been reported to corrupt the timestamps causing
             glitched, flashing frames. It can also sometimes cause massive
@@ -4503,7 +4508,7 @@
             <p class="last">On Android, the ID is interpreted as <tt class="docutils literal">android.view.Surface</tt>. Pass it as a
             value cast to <tt class="docutils literal">intptr_t</tt>. Use with <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> and
             <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for direct rendering using MediaCodec, or with
-            <tt class="docutils literal"><span class="pre">--vo=gpu</span> <span class="pre">--gpu-context=android</span></tt> (with or without <tt class="docutils literal"><span class="pre">--hwdec=mediacodec-copy</span></tt>).</p>
+            <tt class="docutils literal"><span class="pre">--vo=gpu</span> <span class="pre">--gpu-context=android</span></tt> (with or without <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt>).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--no-window-dragging</span></tt></dt>
             <dd>Don't move the window when clicking on it and moving the mouse pointer.</dd>
@@ -8873,8 +8878,8 @@
             <p>Since this video output driver uses native decoding and rendering routines,
             many of mpv's features (subtitle rendering, OSD/OSC, video filters, etc)
             are not available with this driver.</p>
-            <p class="last">To use hardware decoding with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> instead, use
-            <tt class="docutils literal"><span class="pre">--hwdec=mediacodec-copy</span></tt> along with <tt class="docutils literal"><span class="pre">--gpu-context=android</span></tt>.</p>
+            <p class="last">To use hardware decoding with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> instead, use <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt>
+            or <tt class="docutils literal"><span class="pre">mediacodec-copy</span></tt> along with <tt class="docutils literal"><span class="pre">--gpu-context=android</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal">wlshm</tt> (Wayland only)</dt>
             <dd><p class="first">Shared memory video output driver without hardware acceleration that works
