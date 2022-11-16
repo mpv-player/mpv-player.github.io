@@ -4440,6 +4440,11 @@
             <tt class="docutils literal">vdpau</tt>, <tt class="docutils literal">direct3d</tt>), this can be slightly faster or slower,
             depending on GPU drivers and hardware. For other VOs, this just makes
             rendering slower.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--force-render</span></tt></dt>
+            <dd>Forces mpv to always render frames regardless of the visibility of the
+            window. Currently only affects X11 and Wayland VOs since they are the
+            only ones that have this optimization (i.e. everything else always renders
+            regardless of visibility).</dd>
             <dt><tt class="docutils literal"><span class="pre">--force-window-position</span></tt></dt>
             <dd>Forcefully move mpv's video output window to default location whenever
             there is a change in video parameters, video stream or file. This used to
@@ -6534,6 +6539,11 @@
             just prevents the mpv window from being larger than the size of the monitor when
             it first renders. This option will take precedence over any <tt class="docutils literal">autofit</tt> or
             <tt class="docutils literal">geometry</tt> type settings if the configure bounds are used.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--wayland-content-type=&lt;auto|none|photo|video|game&gt;</span></tt></dt>
+            <dd>If supported by the compositor, mpv will send a hint using the content-type
+            protocol telling the compositor what type of content is being displayed. <tt class="docutils literal">auto</tt>
+            (default) will automatically switch between telling the compositor the content
+            is a photo, video or possibly none depending on internal heuristics.</dd>
             <dt><tt class="docutils literal"><span class="pre">--wayland-disable-vsync=&lt;yes|no&gt;</span></tt></dt>
             <dd>Disable mpv's internal vsync for Wayland-based video output (default: no).
             This is mainly useful for benchmarking wayland VOs when combined with
