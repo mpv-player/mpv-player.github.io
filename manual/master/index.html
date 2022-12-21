@@ -8606,9 +8606,11 @@
             <dt><tt class="docutils literal">sixel</tt></dt>
             <dd><p class="first">Graphical output for the terminal, using sixels. Tested with <tt class="docutils literal">mlterm</tt> and
             <tt class="docutils literal">xterm</tt>.</p>
-            <p>Note: the Sixel image output is not synchronized with other terminal output
-            from mpv, which can lead to broken images. The option <tt class="docutils literal"><span class="pre">--really-quiet</span></tt>
-            can help with that, and is recommended.</p>
+            <p>Note: the Sixel image output is not synchronized with other terminal
+            output from mpv, which can lead to broken images.
+            The option <tt class="docutils literal"><span class="pre">--really-quiet</span></tt> can help with that, and is recommended.
+            On some platforms, using the <tt class="docutils literal"><span class="pre">--vo-sixel-buffered</span></tt> option may work as
+            well.</p>
             <p>You may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent performance.</p>
             <p>Note: at the time of writing, <tt class="docutils literal">xterm</tt> does not enable sixel by default -
             launching it as <tt class="docutils literal">xterm <span class="pre">-ti</span> 340</tt> is one way to enable it. Also, <tt class="docutils literal">xterm</tt>
@@ -8644,11 +8646,22 @@
             of pixels is rounded down to a multiple of number of cells (per axis),
             to take into account padding at the report - this only works correctly
             when the overall padding per axis is smaller than the number of cells.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-draw-clear=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
-            <dd>Whether or not to clear the terminal while drawing frames.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-exit-clear=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
-            <dd>Whether or not to clear the terminal on quit. When set to no - the last
-            sixel image stays on screen after quit, with the cursor following it.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-config-clear=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
+            <dd>Whether or not to clear the terminal whenever the output is
+            reconfigured (e.g. when video size changes).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-alt-screen=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
+            <dd><p class="first">Whether or not to use the alternate screen buffer and return the
+            terminal to its previous state on exit. When set to no, the last
+            sixel image stays on screen after quit, with the cursor following it.</p>
+            <p class="last"><tt class="docutils literal"><span class="pre">--vo-sixel-exit-clear</span></tt> is a deprecated alias for this option and
+            may be removed in the future.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-sixel-buffered=&lt;yes|no&gt;</span></tt> (default: no)</dt>
+            <dd>Buffers the full output sequence before writing it to the terminal.
+            On POSIX platforms, this can help prevent interruption (including from
+            other applications) and thus broken images, but may come at a
+            performance cost with some terminals and is subject to implementation
+            details.</dd>
             </dl>
             <p>Sixel image quality options:</p>
             <dl class="last docutils">
