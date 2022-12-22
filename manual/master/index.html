@@ -8603,6 +8603,39 @@
             <dd>Use 256 colors - for terminals which don't support true color.</dd>
             </dl>
             </dd>
+            <dt><tt class="docutils literal">kitty</tt></dt>
+            <dd><p class="first">Graphical output for the terminal, using the kitty graphics protocol.
+            Tested with kitty and Konsole.</p>
+            <p>You may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent performance.</p>
+            <p>Kitty size and alignment options:</p>
+            <dl class="last docutils">
+            <dt><tt class="docutils literal"><span class="pre">--vo-kitty-cols=&lt;columns&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--vo-kitty-rows=&lt;rows&gt;</span></tt> (default: 0)</dt>
+            <dd>Specify the terminal size in character cells, otherwise (0) read it
+            from the terminal, or fall back to 80x25.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-kitty-width=&lt;width&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--vo-kitty-height=&lt;height&gt;</span></tt> (default: 0)</dt>
+            <dd>Specify the available size in pixels, otherwise (0) read it from the
+            terminal, or fall back to 320x240.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-kitty-left=&lt;col&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--vo-kitty-top=&lt;row&gt;</span></tt> (default: 0)</dt>
+            <dd>Specify the position in character cells where the image starts (1 is
+            the first column or row). If 0 (default) then try to automatically
+            determine it according to the other values and the image aspect ratio
+            and zoom.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-kitty-config-clear=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
+            <dd>Whether or not to clear the terminal whenever the output is
+            reconfigured (e.g. when video size changes).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-kitty-alt-screen=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
+            <dd>Whether or not to use the alternate screen buffer and return the
+            terminal to its previous state on exit. When set to no, the last
+            kitty image stays on screen after quit, with the cursor following it.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--vo-kitty-use-shm=&lt;yes|no&gt;</span></tt> (default: no)</dt>
+            <dd><p class="first">Use shared memory objects to transfer image data to the terminal.
+            This is much faster than sending the data as escape codes, but is not
+            supported by as many terminals. It also only works on the local machine
+            and not via e.g. SSH connections.</p>
+            <p class="last">This option is not implemented on Windows.</p>
+            </dd>
+            </dl>
+            </dd>
             <dt><tt class="docutils literal">sixel</tt></dt>
             <dd><p class="first">Graphical output for the terminal, using sixels. Tested with <tt class="docutils literal">mlterm</tt> and
             <tt class="docutils literal">xterm</tt>.</p>
