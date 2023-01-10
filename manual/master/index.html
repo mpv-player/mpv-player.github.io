@@ -2267,8 +2267,8 @@
             <dt><tt class="docutils literal"><span class="pre">--watch-later-options=option1,option2,...</span></tt></dt>
             <dd><p class="first">The options that are saved in &quot;watch later&quot; files if they have been changed
             since when mpv started. These values will be restored the next time the
-            files are played. The playback position is always saved as <tt class="docutils literal">start</tt>, so
-            adding <tt class="docutils literal">start</tt> to this list has no effect.</p>
+            files are played. Note that the playback position is saved via the <tt class="docutils literal">start</tt>
+            option.</p>
             <p>When removing options, existing watch later data won't be modified and will
             still be applied fully, but new watch later data won't contain these
             options.</p>
@@ -2282,8 +2282,7 @@
             <tt class="docutils literal"><span class="pre">--watch-later-options-remove=mute</span></tt>
             The volume and mute state won't be saved to watch later files.</li>
             <li><tt class="docutils literal"><span class="pre">--watch-later-options-clr</span></tt>
-            No option will be saved to watch later files except the starting
-            position.</li>
+            No option will be saved to watch later files.</li>
             </ul>
             </div>
             </dd>
@@ -7756,6 +7755,16 @@
             <tr class="field"><th class="field-name" colspan="2">display-resample-desync:</th></tr>
             <tr class="field"><td>&nbsp;</td><td class="field-body">Like the previous mode, but no A/V compensation.</td>
             </tr>
+            <tr class="field"><th class="field-name">display-tempo:</th><td class="field-body">Same as <tt class="docutils literal"><span class="pre">display-resample</span></tt>, but apply audio speed
+            changes to audio filters instead of resampling to avoid
+            the change in pitch. Beware that some audio filters
+            don't do well with a speed close to 1. It is recommend
+            to use a conditional profile to automatically switch to
+            <tt class="docutils literal"><span class="pre">display-resample</span></tt> when speed gets too close to 1 for
+            your filter setup. Use (speed * video_speed_correction)
+            to get the actual playback speed in the condition.
+            See <a class="reference internal" href="#conditional-auto-profiles">Conditional auto profiles</a> for details.</td>
+            </tr>
             <tr class="field"><th class="field-name">display-vdrop:</th><td class="field-body">Drop or repeat video frames to compensate desyncing
             video. (Although it should have the same effects as
             <tt class="docutils literal">audio</tt>, the implementation is very different.)</td>
@@ -7795,8 +7804,10 @@
             <p>The default settings are not loose enough to speed up 23.976 fps video to
             25 fps. We consider the pitch change too extreme to allow this behavior
             by default. Set this option to a value of <tt class="docutils literal">5</tt> to enable it.</p>
-            <p class="last">Note that in the <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> mode, audio speed will
-            additionally be changed by a small amount if necessary for A/V sync. See
+            <p>Note that <tt class="docutils literal"><span class="pre">--video-sync=display-tempo</span></tt> avoids this pitch change.</p>
+            <p class="last">Also note that in the <tt class="docutils literal"><span class="pre">--video-sync=display-resample</span></tt> or
+            <tt class="docutils literal"><span class="pre">--video-sync=display-tempo</span></tt> mode, audio speed will additionally be
+            changed by a small amount if necessary for A/V sync. See
             <tt class="docutils literal"><span class="pre">--video-sync-max-audio-change</span></tt>.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--video-sync-max-audio-change=&lt;value&gt;</span></tt></dt>
