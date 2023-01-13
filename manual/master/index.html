@@ -4505,8 +4505,9 @@
             window fully. The value <tt class="docutils literal">0</tt> is interpreted specially, and mpv will
             draw directly on the root window.</p>
             <p>On win32, the ID is interpreted as <tt class="docutils literal">HWND</tt>. Pass it as value cast to
-            <tt class="docutils literal">intptr_t</tt>. mpv will create its own window, and set the wid window as
-            parent, like with X11.</p>
+            <tt class="docutils literal">uint32_t</tt> (all Windows handles are 32-bit), this is important as mpv will
+            not accept negative values. mpv will create its own window and set the
+            wid window as parent, like with X11.</p>
             <p>On macOS/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
             to <tt class="docutils literal">intptr_t</tt>. mpv will create its own sub-view. Because macOS does not
             support window embedding of foreign processes, this works only with libmpv,
