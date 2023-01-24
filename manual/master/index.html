@@ -2929,8 +2929,8 @@
             support this, then it will be treated as <tt class="docutils literal">cpu</tt>, regardless of the setting.
             Currently, only <tt class="docutils literal"><span class="pre">gpu-next</span></tt> supports film grain application.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-dr=&lt;yes|no&gt;</span></tt></dt>
-            <dd><p class="first">Enable direct rendering (default: yes). If this is set to <tt class="docutils literal">yes</tt>, the
+            <dt><tt class="docutils literal"><span class="pre">--vd-lavc-dr=&lt;auto|yes|no&gt;</span></tt></dt>
+            <dd><p class="first">Enable direct rendering (default: auto). If this is set to <tt class="docutils literal">yes</tt>, the
             video will be decoded directly to GPU video memory (or staging buffers).
             This can speed up video upload, and may help with large resolutions or
             slow hardware. This works only with the following VOs:</p>
@@ -2940,6 +2940,9 @@
             <li><tt class="docutils literal">libmpv</tt>: The libmpv render API has optional support.</li>
             </ul>
             </blockquote>
+            <p>The <tt class="docutils literal">auto</tt> option will try to guess whether DR can improve performance
+            on your particular hardware. Currently this enables it on AMD or NVIDIA
+            if using OpenGL or unconditionally if using Vulkan.</p>
             <p class="last">Using video filters of any kind that write to the image data (or output
             newly allocated frames) will silently disable the DR code path.</p>
             </dd>
