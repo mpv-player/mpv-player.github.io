@@ -10447,6 +10447,8 @@
             </dd>
             <dt><tt class="docutils literal">set &lt;name&gt; &lt;value&gt;</tt></dt>
             <dd>Set the given property or option to the given value.</dd>
+            <dt><tt class="docutils literal">del &lt;name&gt;</tt></dt>
+            <dd>Delete the given property. Most properties cannot be deleted.</dd>
             <dt><tt class="docutils literal">add &lt;name&gt; [&lt;value&gt;]</tt></dt>
             <dd>Add the given value to the property or option. On overflow or underflow,
             clamp the property to the maximum. If <tt class="docutils literal">&lt;value&gt;</tt> is omitted, assume <tt class="docutils literal">1</tt>.</dd>
@@ -12954,6 +12956,20 @@
             <p class="last">(There is no way to ensure synchronization if two scripts try to update the
             same key at the same time.)</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">user-data</span></tt> (RW)</dt>
+            <dd><p class="first">This is a recursive key/value map of arbitrary nodes shared between clients for
+            general use (i.e. scripts, IPC clients, host applications, etc).
+            The player itself does not use any data in it (although some builtin scripts may).
+            The property is not preserved across player restarts.</p>
+            <p>This is a more powerful replacement for <tt class="docutils literal"><span class="pre">shared-script-properties</span></tt>.</p>
+            <p>Sub-paths can be accessed directly; e.g. <tt class="docutils literal"><span class="pre">user-data/my-script/state/a</span></tt> can be
+            read, written, or observed.</p>
+            <p>The top-level object itself cannot be written directly; write to sub-paths instead.</p>
+            <p class="last">Converting this property or its sub-properties to strings will give a JSON
+            representation. If converting a leaf-level object (i.e. not a map or array)
+            and not using raw mode, the underlying content will be given (e.g. strings will be
+            printed directly, rather than quoted and JSON-escaped).</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
             <dd>The working directory of the mpv process. Can be useful for JSON IPC users,
             because the command line player usually works with relative paths.</dd>
@@ -14304,6 +14320,11 @@
             of that command (which starts asynchronous execution of the command).
             Whether this works and how long it takes depends on the command and the
             situation. The abort call itself is asynchronous. Does not return anything.</dd>
+            <dt><tt class="docutils literal">mp.del_property(name [,def])</tt></dt>
+            <dd><p class="first">Delete the given property. See <tt class="docutils literal">mp.get_property</tt> and <a class="reference internal" href="#properties">Properties</a> for more
+            information about properties. Most properties cannot be deleted.</p>
+            <p class="last">Returns true on success, or <tt class="docutils literal">nil, error</tt> on error.</p>
+            </dd>
             <dt><tt class="docutils literal">mp.get_property(name [,def])</tt></dt>
             <dd><p class="first">Return the value of the given property as string. These are the same
             properties as used in input.conf. See <a class="reference internal" href="#properties">Properties</a> for a list of
@@ -15004,6 +15025,7 @@
             <p><tt class="docutils literal">id = mp.command_native_async(table [,fn])</tt> (LE) Notes: <tt class="docutils literal">id</tt> is true-thy on
             success, <tt class="docutils literal">error</tt> is empty string on success.</p>
             <p><tt class="docutils literal">mp.abort_async_command(id)</tt></p>
+            <p><tt class="docutils literal">mp.del_property(name)</tt> (LE)</p>
             <p><tt class="docutils literal">mp.get_property(name [,def])</tt> (LE)</p>
             <p><tt class="docutils literal">mp.get_property_osd(name [,def])</tt> (LE)</p>
             <p><tt class="docutils literal">mp.get_property_bool(name [,def])</tt> (LE)</p>
@@ -15360,8 +15382,8 @@
             {&quot;request_id&quot;:123,&quot;error&quot;:&quot;success&quot;,&quot;data&quot;:null}
             </pre>
             <p>By design, you will not get a confirmation that the command was started. If a
-            command is long running, sending the message will lead to any reply until much
-            later when the command finishes.</p>
+            command is long running, sending the message will not lead to any reply until
+            much later when the command finishes.</p>
             <p>Some commands execute synchronously, but these will behave like asynchronous
             commands that finished execution immediately.</p>
             <p>Cancellation of asynchronous commands is available in the libmpv API, but has
