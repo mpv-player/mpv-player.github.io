@@ -6558,13 +6558,13 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--wayland-app-id=&lt;string&gt;</span></tt></dt>
             <dd>Set the client app id for Wayland-based video output methods (default: <tt class="docutils literal">mpv</tt>).</dd>
-            <dt><tt class="docutils literal"><span class="pre">--wayland-configure-bounds=&lt;yes|no&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--wayland-configure-bounds=&lt;auto|yes|no&gt;</span></tt></dt>
             <dd>Controls whether or not mpv opts into the configure bounds event if sent by the
-            compositor (default: yes). This restricts the initial size of the mpv window to
+            compositor (default: auto). This restricts the initial size of the mpv window to
             a certain maximum size intended by the compositor. In most cases, this simply
             just prevents the mpv window from being larger than the size of the monitor when
-            it first renders. This option will take precedence over any <tt class="docutils literal">autofit</tt> or
-            <tt class="docutils literal">geometry</tt> type settings if the configure bounds are used.</dd>
+            it first renders. With the default value of <tt class="docutils literal">auto</tt>, configure-bounds will
+            silently be ignored if any <tt class="docutils literal">autofit</tt> or <tt class="docutils literal">geometry</tt> type option is also set.</dd>
             <dt><tt class="docutils literal"><span class="pre">--wayland-content-type=&lt;auto|none|photo|video|game&gt;</span></tt></dt>
             <dd>If supported by the compositor, mpv will send a hint using the content-type
             protocol telling the compositor what type of content is being displayed. <tt class="docutils literal">auto</tt>
