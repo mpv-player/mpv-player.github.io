@@ -4110,6 +4110,14 @@
             name does not match, it may prefer not to render any text that uses the
             missing font.)</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--sub-fonts-dir=&lt;path&gt;</span></tt></dt>
+            <dd><p class="first">Font files in this directory are used by mpv/libass for subtitles. Useful
+            if you do not want to install fonts to your system. Note that files in this
+            directory are loaded into memory before being used by mpv. If you have a
+            lot of fonts, consider using fonts.conf (see <a class="reference internal" href="#files">FILES</a> section) to include
+            additional mpv user settings.</p>
+            <p class="last">If this option is not specified, <tt class="docutils literal"><span class="pre">~~/fonts</span></tt> will be used by default.</p>
+            </dd>
             </dl>
             </div>
             <div class="section" id="window">
@@ -5319,6 +5327,8 @@
             <dt><tt class="docutils literal"><span class="pre">--osd-font-provider=&lt;...&gt;</span></tt></dt>
             <dd>See <tt class="docutils literal"><span class="pre">--sub-font-provider</span></tt> for details and accepted values. Note that
             unlike subtitles, OSD never uses embedded fonts from media files.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--osd-fonts-dir=&lt;path&gt;</span></tt></dt>
+            <dd>See <tt class="docutils literal"><span class="pre">--sub-fonts-dir</span></tt> for details.  Defaults to <tt class="docutils literal"><span class="pre">~~/fonts</span></tt>.</dd>
             </dl>
             </div>
             <div class="section" id="screenshot">
@@ -15844,11 +15854,8 @@
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/subfont.ttf</span></tt></dt>
             <dd>fallback subtitle font</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/fonts/</span></tt></dt>
-            <dd>Font files in this directory are used by mpv/libass for subtitles. Useful
-            if you do not want to install fonts to your system. Note that files in this
-            directory are loaded into memory before being used by mpv. If you have a
-            lot of fonts, consider using fonts.conf (see above) to include additional
-            fonts, which is more memory-efficient.</dd>
+            <dd>Default location for <tt class="docutils literal"><span class="pre">--sub-fonts-dir</span></tt> (see <a class="reference internal" href="#subtitles">Subtitles</a>) and
+            <tt class="docutils literal"><span class="pre">--osd-fonts-dir</span></tt> (see <a class="reference internal" href="#osd">OSD</a>).</dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt></dt>
             <dd><p class="first">All files in this directory are loaded as if they were passed to the
             <tt class="docutils literal"><span class="pre">--script</span></tt> option. They are loaded in alphabetical order.</p>
