@@ -4433,9 +4433,9 @@
             or unmaximize, the video window if the current VO supports it. See
             <tt class="docutils literal"><span class="pre">--window-minimized</span></tt> for further remarks.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cursor-autohide=&lt;number|no|always&gt;</span></tt></dt>
-            <dd>Make mouse cursor automatically hide after given number of milliseconds.
-            <tt class="docutils literal">no</tt> will disable cursor autohide. <tt class="docutils literal">always</tt> means the cursor will stay
-            hidden.</dd>
+            <dd>Make mouse cursor automatically hide after given number of milliseconds
+            (default: 1000 ms). <tt class="docutils literal">no</tt> will disable cursor autohide. <tt class="docutils literal">always</tt>
+            means the cursor will stay hidden.</dd>
             <dt><tt class="docutils literal"><span class="pre">--cursor-autohide-fs-only</span></tt></dt>
             <dd>If this option is given, the cursor is always visible in windowed mode. In
             fullscreen mode, the cursor is shown or hidden according to
@@ -4459,6 +4459,12 @@
             <dd>Forcefully move mpv's video output window to default location whenever
             there is a change in video parameters, video stream or file. This used to
             be the default behavior. Currently only affects X11 VOs.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--auto-window-resize=&lt;yes|no&gt;</span></tt></dt>
+            <dd>(Wayland, Win32, and X11)
+            By default, mpv will automatically resize itself if the video's size changes
+            (i.e. advancing forward in a playlist). Setting this to <tt class="docutils literal">no</tt> disables this
+            behavior so the window size never changes automatically. This option does
+            not have any impact on the <tt class="docutils literal"><span class="pre">--autofit</span></tt> or <tt class="docutils literal"><span class="pre">--geometry</span></tt> options.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>, <tt class="docutils literal"><span class="pre">--keepaspect</span></tt></dt>
             <dd><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> will always stretch the video to window size, and will
             disable the window manager hints that force the window aspect ratio.
@@ -4486,8 +4492,7 @@
             <dd>(macOS, Windows, X11, and Wayland only)
             Scale the window size according to the backing scale factor (default: yes).
             On regular HiDPI resolutions the window opens with double the size but appears
-            as having the same size as on non-HiDPI resolutions. This is enabled by
-            default on macOS.</dd>
+            as having the same size as on non-HiDPI resolutions.</dd>
             <dt><tt class="docutils literal"><span class="pre">--native-fs</span></tt>, <tt class="docutils literal"><span class="pre">--no-native-fs</span></tt></dt>
             <dd>(macOS only)
             Uses the native fullscreen mechanism of the OS (default: yes).</dd>
