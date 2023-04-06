@@ -843,9 +843,10 @@
             <h2>Conditional auto profiles</h2>
             <p>Profiles which have the <tt class="docutils literal"><span class="pre">profile-cond</span></tt> option set are applied automatically
             if the associated condition matches (unless auto profiles are disabled). The
-            option takes a string, which is interpreted as Lua condition. If evaluating the
-            expression returns true, the profile is applied, if it returns false, it is
-            ignored. This Lua code execution is not sandboxed.</p>
+            option takes a string, which is interpreted as Lua expression. If the
+            expression evaluates as truthy, the profile is applied. If the expression
+            errors or evaluates as falsy, the profile is not applied. This Lua code
+            execution is not sandboxed.</p>
             <p>Any variables in condition expressions can reference properties. If an
             identifier is not already defined by Lua or mpv, it is interpreted as property.
             For example, <tt class="docutils literal">pause</tt> would return the current pause status. You cannot
@@ -862,12 +863,12 @@
             cause errors if used in expressions. These are logged in verbose mode, and the
             expression is considered to be false.</p>
             <p>Whenever a property referenced by a profile condition changes, the condition
-            is re-evaluated. If the return value of the condition changes from false or
-            error to true, the profile is applied.</p>
-            <p>This mechanism tries to &quot;unapply&quot; profiles once the condition changes from true
-            to false. If you want to use this, you need to set <tt class="docutils literal"><span class="pre">profile-restore</span></tt> for the
-            profile. Another possibility it to create another profile with an inverse
-            condition to undo the other profile.</p>
+            is re-evaluated. If the return value of the condition changes from falsy or
+            error to truthy, the profile is applied.</p>
+            <p>This mechanism tries to &quot;unapply&quot; profiles once the condition changes from
+            truthy to falsy or error. If you want to use this, you need to set
+            <tt class="docutils literal"><span class="pre">profile-restore</span></tt> for the profile. Another possibility it to create another
+            profile with an inverse condition to undo the other profile.</p>
             <p>Recursive profiles can be used. But it is discouraged to reference other
             conditional profiles in a conditional profile, since this can lead to tricky
             and unintuitive behavior.</p>
