@@ -433,6 +433,14 @@
             <td>win32 only: the path to the directory containing the exe (for
             config file purposes; <tt class="docutils literal">$MPV_HOME</tt> overrides it)</td>
             </tr>
+            <tr><td><tt class="docutils literal">~~cache/</tt></td>
+            <td>the path to application cache data (<tt class="docutils literal"><span class="pre">~/.cache/mpv/</span></tt>)
+            On some platforms, this will be the same as <tt class="docutils literal">~~home/</tt>.</td>
+            </tr>
+            <tr><td><tt class="docutils literal">~~state/</tt></td>
+            <td>the path to application state data (<tt class="docutils literal"><span class="pre">~/.local/state/mpv/</span></tt>)
+            On some platforms, this will be the same as <tt class="docutils literal">~~home/</tt>.</td>
+            </tr>
             <tr><td><tt class="docutils literal">~~old_home/</tt></td>
             <td>do not use</td>
             </tr>
@@ -2253,8 +2261,9 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--watch-later-directory=&lt;path&gt;</span></tt></dt>
             <dd><p class="first">The directory in which to store the &quot;watch later&quot; temporary files.</p>
-            <p class="last">The default is a subdirectory named &quot;watch_later&quot; underneath the
-            config directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).</p>
+            <p class="last">If this option is unset, the files will be stored in a subdirectory
+            named &quot;watch_later&quot; underneath the local state directory
+            (usually <tt class="docutils literal"><span class="pre">~/.local/state/mpv/</span></tt>).</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--no-resume-playback</span></tt></dt>
             <dd>Do not restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
@@ -5807,7 +5816,6 @@
             <dd><p class="first">Write packet data to a temporary file, instead of keeping them in memory.
             This makes sense only with <tt class="docutils literal"><span class="pre">--cache</span></tt>. If the normal cache is disabled,
             this option is ignored.</p>
-            <p>You need to set <tt class="docutils literal"><span class="pre">--cache-dir</span></tt> to use this.</p>
             <p>The cache file is append-only. Even if the player appears to prune data, the
             file space freed by it is not reused. The cache file is deleted when
             playback is closed.</p>
@@ -5827,7 +5835,8 @@
             continue to use the cache file that was opened first.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-dir=&lt;path&gt;</span></tt></dt>
-            <dd><p class="first">Directory where to create temporary files (default: none).</p>
+            <dd><p class="first">Directory where to create temporary files. Cache is stored in the system's
+            cache directory (usually <tt class="docutils literal"><span class="pre">~/.cache/mpv</span></tt>) if this is unset.</p>
             <p class="last">Currently, this is used for <tt class="docutils literal"><span class="pre">--cache-on-disk</span></tt> only.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--cache-pause=&lt;yes|no&gt;</span></tt></dt>
@@ -7550,14 +7559,18 @@
             <p class="last">Applications using libmpv with the render API need to provide the ICC
             profile via <tt class="docutils literal">MPV_RENDER_PARAM_ICC_PROFILE</tt>.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--icc-cache-dir=&lt;dirname&gt;</span></tt></dt>
-            <dd><p class="first">Store and load the 3D LUTs created from the ICC profile in this directory.
-            This can be used to speed up loading, since LittleCMS 2 can take a while to
-            create a 3D LUT. Note that these files contain uncompressed LUTs. Their
-            size depends on the <tt class="docutils literal"><span class="pre">--icc-3dlut-size</span></tt>, and can be very big.</p>
+            <dt><tt class="docutils literal"><span class="pre">--icc-cache</span></tt></dt>
+            <dd><p class="first">Store and load 3D LUTs created from the ICC profile on disk in the
+            cache directory. This can be used to speed up loading, since LittleCMS
+            2 can take a while to create a 3D LUT. Note that these files contain
+            uncompressed LUTs. Their size depends on the <tt class="docutils literal"><span class="pre">--icc-3dlut-size</span></tt>, and
+            can be very big.</p>
             <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
             stick around indefinitely.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--icc-cache-dir</span></tt></dt>
+            <dd>The directory where icc cache is stored. Cache is stored in the system's
+            cache directory (usually <tt class="docutils literal"><span class="pre">~/.cache/mpv</span></tt>) if this is unset.</dd>
             <dt><tt class="docutils literal"><span class="pre">--icc-intent=&lt;value&gt;</span></tt></dt>
             <dd><p class="first">Specifies the ICC intent used for the color transformation (when using
             <tt class="docutils literal"><span class="pre">--icc-profile</span></tt>).</p>
@@ -7683,15 +7696,18 @@
             if nothing uses features which require FBOs.</p>
             <p class="last">This option might be silently removed in the future.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache-dir=&lt;dirname&gt;</span></tt></dt>
-            <dd><p class="first">Store and load compiled GLSL shaders in this directory. Normally, shader
-            compilation is very fast, so this is usually not needed. It mostly matters
+            <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache</span></tt></dt>
+            <dd><p class="first">Store and load compiled GLSL shaders in the cache directory. Normally, shader
+            compilation is very fast, so this is not usually needed. It mostly matters
             for GPU APIs that require internally recompiling shaders to other languages,
             for example anything based on ANGLE or Vulkan. Enabling this can improve
             startup performance on these platforms.</p>
             <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
             stick around indefinitely.</p>
             </dd>
+            <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache-dir</span></tt></dt>
+            <dd>The directory where gpu shader cache is stored. Cache is stored in the system's
+            cache directory (usually <tt class="docutils literal"><span class="pre">~/.cache/mpv</span></tt>) if this is unset.</dd>
             </dl>
             </div>
             <div class="section" id="miscellaneous">
@@ -15859,7 +15875,7 @@
             <p>The <tt class="docutils literal"><span class="pre">--load-scripts=no</span></tt> option disables loading these files.</p>
             <p class="last">See <a class="reference internal" href="#script-location">Script location</a> for details.</p>
             </dd>
-            <dt><tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">~/.local/state/mpv/watch_later/</span></tt></dt>
             <dd><p class="first">Contains temporary config files needed for resuming playback of files with
             the watch later feature. See for example the <tt class="docutils literal">Q</tt> key binding, or the
             <tt class="docutils literal"><span class="pre">quit-watch-later</span></tt> input command.</p>
