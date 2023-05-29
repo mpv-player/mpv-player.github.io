@@ -2510,6 +2510,10 @@
             </tr>
             <tr class="field"><th class="field-name">drm-copy:</th><td class="field-body">copies video back to system RAM (Linux only)</td>
             </tr>
+            <tr class="field"><th class="field-name">vulkan:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> (Any platform with Vulkan Video Decoding)</td>
+            </tr>
+            <tr class="field"><th class="field-name">vulkan-copy:</th><td class="field-body">copies video back to system RAM (Any platform with Vulkan Video Decoding)</td>
+            </tr>
             </tbody>
             </table>
             <p>Other hwdecs (only use if you know you have to):</p>
@@ -2578,7 +2582,8 @@
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Most non-copy methods only work with the OpenGL GPU backend. Currently,
-            only the <tt class="docutils literal">vaapi</tt>, <tt class="docutils literal">nvdec</tt> and <tt class="docutils literal">cuda</tt> methods work with Vulkan.</p>
+            only the <tt class="docutils literal">vaapi</tt>, <tt class="docutils literal">nvdec</tt>, <tt class="docutils literal">cuda</tt> and <tt class="docutils literal">vulkan</tt> methods work with
+            Vulkan.</p>
             </div>
             <p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, requires Mesa 11, and most
             likely works with Intel and AMD GPUs only. It also requires the opengl EGL
@@ -9384,9 +9389,14 @@
             <dt><tt class="docutils literal">&lt;fmt&gt;</tt></dt>
             <dd><p class="first">Image format name, e.g. rgb15, bgr24, 420p, etc. (default: don't change).</p>
             <p>This filter always performs conversion to the given format.</p>
-            <div class="admonition note last">
+            <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">For a list of available formats, use <tt class="docutils literal"><span class="pre">--vf=format=fmt=help</span></tt>.</p>
+            </div>
+            <div class="admonition note last">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Conversion between hardware formats is supported in some cases.
+            eg: <tt class="docutils literal">cuda</tt> to <tt class="docutils literal">vulkan</tt>, or <tt class="docutils literal">vaapi</tt> to <tt class="docutils literal">vulkan</tt>.</p>
             </div>
             </dd>
             <dt><tt class="docutils literal">&lt;convert=yes|no&gt;</tt></dt>
@@ -9407,6 +9417,8 @@
             converter.</p>
             <p>If input and output video parameters are the same, conversion is always
             skipped.</p>
+            <p>When converting between hardware formats, this parameter has no effect,
+            and the only conversion that is done is the format conversion.</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
             <dl class="last docutils">
