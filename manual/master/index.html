@@ -6892,6 +6892,11 @@
             <dd>Add some extra noise to the image. This significantly helps cover up
             remaining quantization artifacts. Higher numbers add more noise. (Default
             48)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--corner-rounding=&lt;0..1&gt;</span></tt></dt>
+            <dd>If set to a value above 0.0, the output will be rendered with rounded
+            corners, as if an alpha transparency mask had been applied. The value
+            indicates the relative fraction of the side length to round - a value of
+            1.0 rounds the corners as much as possible. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
             <dt><tt class="docutils literal"><span class="pre">--sharpen=&lt;value&gt;</span></tt></dt>
             <dd>If set to a value other than 0, enable an unsharp masking filter. Positive
             values will sharpen the image (but add more ringing and aliasing). Negative
@@ -7507,16 +7512,36 @@
             <dt>auto</dt>
             <dd>Choose the best mode automatically. (Default)</dd>
             <dt>clip</dt>
-            <dd>Hard-clip to the gamut (per-channel).</dd>
-            <dt>warn</dt>
-            <dd>Simply highlight out-of-gamut pixels.</dd>
-            <dt>desaturate</dt>
-            <dd>Chromatically desaturate out-of-gamut colors towards white.</dd>
-            <dt>darken</dt>
-            <dd>Linearly darken the entire image, then clip to the color volume. Unlike
-            <tt class="docutils literal">clip</tt>, this does not destroy detail in saturated regions, but comes
-            at the cost of sometimes significantly lowering output brightness.
+            <dd>Hard-clip to the gamut (per-channel). Very low quality, but free.</dd>
+            <dt>perceptual</dt>
+            <dd>Performs a perceptually balanced gamut mapping using a soft knee
+            function to roll-off clipped regions, and a hue shifting function to
+            preserve saturation. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+            <dt>relative</dt>
+            <dd>Performs relative colorimetric clipping, while maintaining an
+            exponential relationship between brightness and chromaticity.
             (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+            <dt>saturation</dt>
+            <dd>Performs simple RGB-&gt;RGB saturation mapping. The input R/G/B channels
+            are mapped directly onto the output R/G/B channels. Will never clip,
+            but will distort all hues and/or result in a faded look.
+            (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+            <dt>absolute</dt>
+            <dd>Performs absolute colorimetric clipping. Like <tt class="docutils literal">relative</tt>, but does
+            not adapt the white point. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+            <dt>desaturate</dt>
+            <dd>Performs constant-luminance colorimetric clipping, desaturing colors
+            towards white until they're in-range.</dd>
+            <dt>darken</dt>
+            <dd>Uniformly darkens the input slightly to prevent clipping on blown-out
+            highlights, then clamps colorimetrically to the input gamut boundary,
+            biased slightly to preserve chromaticity over luminance.
+            (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+            <dt>warn</dt>
+            <dd>Performs no gamut mapping, but simply highlights out-of-gamut pixels.</dd>
+            <dt>linear</dt>
+            <dd>Linearly/uniformly desaturates the image in order to bring the entire
+            image into the target gamut. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
             </dl>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--hdr-compute-peak=&lt;auto|yes|no&gt;</span></tt></dt>
