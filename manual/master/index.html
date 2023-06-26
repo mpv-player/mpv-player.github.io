@@ -1359,10 +1359,13 @@
             <h2>Track Selection</h2>
             <dl class="docutils">
             <dt><tt class="docutils literal"><span class="pre">--alang=&lt;languagecode[,languagecode,...]&gt;</span></tt></dt>
-            <dd><p class="first">Specify a priority list of audio languages to use. Different container
-            formats employ different language codes. DVDs use ISO 639-1 two-letter
-            language codes, Matroska, MPEG-TS and NUT use ISO 639-2 three-letter
-            language codes, while OGM uses a free-form identifier. See also <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
+            <dd><p class="first">Specify a priority list of audio languages to use, as IETF language tags.
+            Equivalent ISO 639-1 two-letter and ISO 639-2 three-letter codes are treated the same.
+            The first tag in the list whose language matches a track in the file will be used.
+            A track that matches more subtags will be preferred over one that matches fewer,
+            with preference given to earlier subtags over later ones. See also <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
+            <p>The special value &quot;auto&quot; can be included anywhere in the list,
+            and is equivalent to the user's OS-level list of preferred languages.</p>
             <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
@@ -1375,10 +1378,7 @@
             </div>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--slang=&lt;languagecode[,languagecode,...]&gt;</span></tt></dt>
-            <dd><p class="first">Specify a priority list of subtitle languages to use. Different container
-            formats employ different language codes. DVDs use ISO 639-1 two letter
-            language codes, Matroska uses ISO 639-2 three letter language codes while
-            OGM uses a free-form identifier. See also <tt class="docutils literal"><span class="pre">--sid</span></tt>.</p>
+            <dd><p class="first">Equivalent to <tt class="docutils literal"><span class="pre">--alang</span></tt>, for subtitle tracks (default: auto).</p>
             <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
             <div class="admonition admonition-examples last">
             <p class="first admonition-title">Examples</p>
@@ -1387,6 +1387,8 @@
             a DVD and falls back on English if Hungarian is not available.</li>
             <li><tt class="docutils literal">mpv <span class="pre">--slang=jpn</span> example.mkv</tt> plays a Matroska file with Japanese
             subtitles.</li>
+            <li><tt class="docutils literal">mpv <span class="pre">--slang=pt-BR</span> example.mkv</tt> plays a Matroska file with Brazilian
+            Portuguese subtitles if available, and otherwise any Portuguese subtitles.</li>
             </ul>
             </div>
             </dd>
@@ -1475,9 +1477,15 @@
             referenced tracks are always selected.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--subs-with-matching-audio=&lt;yes|no&gt;</span></tt></dt>
-            <dd>When autoselecting a subtitle track, select a non-forced one even if the selected
-            audio stream matches your preferred subtitle language (default: yes). Disable this
-            if you'd like to only show subtitles for foreign audio or onscreen text.</dd>
+            <dd>When autoselecting a subtitle track, select a full/non-forced one even if the selected
+            audio stream matches your preferred subtitle language (default: no).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--subs-fallback=&lt;yes|default|no&gt;</span></tt></dt>
+            <dd>When autoselecting a subtitle track, if no tracks match your preferred languages,
+            select a full track even if it doesn't match your preferred subtitle language (default: no).
+            Setting this to <cite>default</cite> means that only streams flagged as <cite>default</cite> will be selected.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--subs-fallback-forced=&lt;yes|no&gt;</span></tt></dt>
+            <dd>When autoselecting a subtitle track, if no tracks match your preferred languages,
+            select a forced track that matches the language of the selected audio track (default: yes).</dd>
             </dl>
             </div>
             <div class="section" id="playback-control">
@@ -12591,6 +12599,8 @@
             instead.</dd>
             <dt><tt class="docutils literal"><span class="pre">secondary-sub-end</span></tt></dt>
             <dd>Same as <tt class="docutils literal"><span class="pre">sub-end</span></tt>, but for the secondary subtitles.</dd>
+            <dt><tt class="docutils literal"><span class="pre">sub-forced-only-cur</span></tt></dt>
+            <dd>Read-only - whether the current subtitle track is being shown in forced-only mode.</dd>
             <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
             <dd><p class="first">Current position on playlist. The first entry is on position 0. Writing to
             this property may start playback at the new position.</p>
@@ -12716,6 +12726,9 @@
             <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/forced</span></tt></dt>
             <dd><tt class="docutils literal">yes</tt>/true if the track has the forced flag set in the file,
+            <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
+            <dt><tt class="docutils literal"><span class="pre">track-list/N/auto-forced-only</span></tt></dt>
+            <dd><tt class="docutils literal">yes</tt>/true if the track was autoselected in forced-only mode,
             <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
             <dt><tt class="docutils literal"><span class="pre">track-list/N/codec</span></tt></dt>
             <dd>The codec name used by this track, for example <tt class="docutils literal">h264</tt>. Unavailable
