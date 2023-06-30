@@ -2424,7 +2424,7 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--display-fps=&lt;fps&gt;</span></tt></dt>
             <dd>Deprecated alias for <tt class="docutils literal"><span class="pre">--override-display-fps</span></tt>.</dd>
-            <dt><tt class="docutils literal"><span class="pre">--hwdec=&lt;api&gt;</span></tt></dt>
+            <dt><tt class="docutils literal"><span class="pre">--hwdec=&lt;api1,api2,...|no|auto|auto-safe|auto-copy&gt;</span></tt></dt>
             <dd><p class="first">Specify the hardware video decoding API that should be used if possible.
             Whether hardware decoding is actually done depends on the video codec. If
             hardware decoding is not possible, mpv will fall back on software decoding.</p>
@@ -2479,7 +2479,8 @@
             need any of the other possible option values.</li>
             </ul>
             </div>
-            <p><tt class="docutils literal">&lt;api&gt;</tt> can be one of the following:</p>
+            <p>This option accepts a comma delimited list of <tt class="docutils literal">api</tt> types, along with certain
+            special values:</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
             <col class="field-body" />
@@ -2496,6 +2497,12 @@
             </tr>
             </tbody>
             </table>
+            <div class="admonition note">
+            <p class="first admonition-title">Note</p>
+            <p class="last">Special values can be mixed with api names. eg: <tt class="docutils literal">vaapi,auto</tt> will try
+            and use the <tt class="docutils literal">vaapi</tt> hwdec, and if that fails, will run through the
+            normal <tt class="docutils literal">auto</tt> logic.</p>
+            </div>
             <p>Actively supported hwdecs:</p>
             <table class="docutils field-list" frame="void" rules="none">
             <col class="field-name" />
