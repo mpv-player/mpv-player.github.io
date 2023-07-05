@@ -5165,6 +5165,11 @@
             <dd>Permit mpv to receive pointer events reported by the video output
             driver. Necessary to use the OSC, or to select the buttons in DVD menus.
             Support depends on the VO in use.</dd>
+            <dt><tt class="docutils literal"><span class="pre">--input-cursor-passthrough</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-cursor-passthrough</span></tt></dt>
+            <dd>(X11 and Wayland only)
+            Tell the backend windowing system to allow pointer events to passthrough
+            the mpv window. This allows windows under mpv to instead receive pointer
+            events as if the mpv window was never there.</dd>
             <dt><tt class="docutils literal"><span class="pre">--input-media-keys=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">On systems where mpv can choose between receiving media keys or letting
             the system handle them - this option controls whether mpv should receive
@@ -7643,10 +7648,10 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--icc-cache</span></tt></dt>
             <dd><p class="first">Store and load 3D LUTs created from the ICC profile on disk in the
-            cache directory. This can be used to speed up loading, since LittleCMS
-            2 can take a while to create a 3D LUT. Note that these files contain
-            uncompressed LUTs. Their size depends on the <tt class="docutils literal"><span class="pre">--icc-3dlut-size</span></tt>, and
-            can be very big.</p>
+            cache directory (Default: <tt class="docutils literal">yes</tt>). This can be used to speed up loading,
+            since LittleCMS 2 can take a while to create a 3D LUT. Note that these
+            files contain uncompressed LUTs. Their size depends on the
+            <tt class="docutils literal"><span class="pre">--icc-3dlut-size</span></tt>, and can be very big.</p>
             <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
             stick around indefinitely.</p>
             </dd>
@@ -7781,11 +7786,11 @@
             <p class="last">This option might be silently removed in the future.</p>
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache</span></tt></dt>
-            <dd><p class="first">Store and load compiled GLSL shaders in the cache directory. Normally, shader
-            compilation is very fast, so this is not usually needed. It mostly matters
-            for GPU APIs that require internally recompiling shaders to other languages,
-            for example anything based on ANGLE or Vulkan. Enabling this can improve
-            startup performance on these platforms.</p>
+            <dd><p class="first">Store and load compiled GLSL shaders in the cache directory (Default: <tt class="docutils literal">yes</tt>).
+            Normally, shader compilation is very fast, so this is not usually needed.
+            It mostly matters for GPU APIs that require internally recompiling shaders to
+            other languages, for example anything based on ANGLE or Vulkan. Enabling this
+            can improve startup performance on these platforms.</p>
             <p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
             stick around indefinitely.</p>
             </dd>
