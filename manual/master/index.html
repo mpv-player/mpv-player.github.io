@@ -2000,9 +2000,9 @@
             <dt><tt class="docutils literal"><span class="pre">--version,</span> <span class="pre">-V</span></tt></dt>
             <dd>Print version string and exit.</dd>
             <dt><tt class="docutils literal"><span class="pre">--no-config</span></tt></dt>
-            <dd><p class="first">Do not load default configuration files. This prevents loading of both the
-            user-level and system-wide <tt class="docutils literal">mpv.conf</tt> and <tt class="docutils literal">input.conf</tt> files. Other
-            configuration files are blocked as well, such as resume playback files.</p>
+            <dd><p class="first">Do not load default configuration or any user files. This prevents loading of
+            both the user-level and system-wide <tt class="docutils literal">mpv.conf</tt> and <tt class="docutils literal">input.conf</tt> files. Other
+            user files are blocked as well, such as resume playback files and cache files.</p>
             <div class="admonition note">
             <p class="first admonition-title">Note</p>
             <p class="last">Files explicitly requested by command line options, like
@@ -5065,6 +5065,12 @@
             <p class="last">Opening is still slow, because for unknown, idiotic, and unnecessary reasons
             libarchive opens all volumes anyway when playing the main file, even though
             mpv iterated no archive entries yet.</p>
+            </dd>
+            <dt><tt class="docutils literal"><span class="pre">--directory-mode=&lt;recursive|lazy|ignore&gt;</span></tt></dt>
+            <dd><p class="first">When opening a directory, open subdirectories recursively, lazily or not at
+            all (default: recursive).</p>
+            <p class="last">Values other then <tt class="docutils literal">recursive</tt> can lead to problems with resuming playlists
+            (<a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>) and possibly other things.</p>
             </dd>
             </dl>
             </div>
