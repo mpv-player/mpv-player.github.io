@@ -15921,12 +15921,31 @@
             </div>
             <div class="section" id="files">
             <h1>FILES</h1>
-            <p>For Windows-specifics, see <a class="reference internal" href="#files-on-windows">FILES ON WINDOWS</a> section.</p>
+            <p>Note that this section assumes Linux/BSD. On other platforms the paths may be different.
+            For Windows-specifics, see <a class="reference internal" href="#files-on-windows">FILES ON WINDOWS</a> section.</p>
             <dl class="docutils">
             <dt><tt class="docutils literal">/usr/local/etc/mpv/mpv.conf</tt></dt>
             <dd>mpv system-wide settings (depends on <tt class="docutils literal"><span class="pre">--prefix</span></tt> passed to configure - mpv
             in default configuration will use <tt class="docutils literal">/usr/local/etc/mpv/</tt> as config
             directory, while most Linux distributions will set it to <tt class="docutils literal">/etc/mpv/</tt>).</dd>
+            <dt><tt class="docutils literal"><span class="pre">~/.cache/mpv</span></tt></dt>
+            <dd><p class="first">The standard cache directory. Certain options within mpv may cause it to write
+            cache files to disk. This can be overridden by environment variables, in
+            ascending order:</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">1:</th><td class="field-body">If <tt class="docutils literal">$XDG_CACHE_HOME</tt> is set, then the derived cache directory
+            will be <tt class="docutils literal">$XDG_CACHE_HOME/mpv</tt>.</td>
+            </tr>
+            <tr class="field"><th class="field-name">2:</th><td class="field-body">If <tt class="docutils literal">$MPV_HOME</tt> is set, then the derived cache directory will be
+            <tt class="docutils literal">$MPV_HOME</tt>.</td>
+            </tr>
+            </tbody>
+            </table>
+            <p class="last">If the directory does not exist, mpv will try to create it automatically.</p>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">~/.config/mpv</span></tt></dt>
             <dd><p class="first">The standard configuration directory. This can be overridden by environment
             variables, in ascending order:</p>
@@ -15947,7 +15966,9 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">~/.mpv/</span></tt></dt>
             <dd><p class="first">The original (pre 0.5.0) configuration directory. It will continue to be
-            read if present.</p>
+            read if present. If this directory is present and the standard configuration
+            directory is not present, then cache files and watch later config files will
+            also be written to this directory.</p>
             <p class="last">If both this directory and the standard configuration directory are
             present, configuration will be read from both with the standard
             configuration directory content taking precedence. However, you should
@@ -15979,6 +16000,19 @@
             <dd><p class="first">Contains temporary config files needed for resuming playback of files with
             the watch later feature. See for example the <tt class="docutils literal">Q</tt> key binding, or the
             <tt class="docutils literal"><span class="pre">quit-watch-later</span></tt> input command.</p>
+            <p>This can be overridden by environment variables, in ascending order:</p>
+            <table class="docutils field-list" frame="void" rules="none">
+            <col class="field-name" />
+            <col class="field-body" />
+            <tbody valign="top">
+            <tr class="field"><th class="field-name">1:</th><td class="field-body">If <tt class="docutils literal">$XDG_STATE_HOME</tt> is set, then the derived watch later directory
+            will be <tt class="docutils literal">$XDG_STATE_HOME/mpv/watch_later</tt>.</td>
+            </tr>
+            <tr class="field"><th class="field-name">2:</th><td class="field-body">If <tt class="docutils literal">$MPV_HOME</tt> is set, then the derived watch later directory will be
+            <tt class="docutils literal">$MPV_HOME/watch_later</tt>.</td>
+            </tr>
+            </tbody>
+            </table>
             <p class="last">Each file is a small config file which is loaded if the corresponding media
             file is loaded. It contains the playback position and some (not necessarily
             all) settings that were changed during playback. The filenames are hashed
@@ -16006,15 +16040,16 @@
             <p>You can find the exact path by running <tt class="docutils literal">echo <span class="pre">%APPDATA%\mpv\mpv.conf</span></tt> in cmd.exe.</p>
             <p>Other config files (such as <tt class="docutils literal">input.conf</tt>) are in the same directory. See the
             <a class="reference internal" href="#files">FILES</a> section above.</p>
+            <p>The cache directory is located at <tt class="docutils literal"><span class="pre">%LOCALAPPDATA%/mpv</span></tt>.</p>
             <p>The environment variable <tt class="docutils literal">$MPV_HOME</tt> completely overrides these, like on
             UNIX.</p>
             <p>If a directory named <tt class="docutils literal">portable_config</tt> next to the mpv.exe exists, all
-            config will be loaded from this directory only. Watch later config files are
-            written to this directory as well. (This exists on Windows only and is redundant
-            with <tt class="docutils literal">$MPV_HOME</tt>. However, since Windows is very scripting unfriendly, a
-            wrapper script just setting <tt class="docutils literal">$MPV_HOME</tt>, like you could do it on other
-            systems, won't work. <tt class="docutils literal">portable_config</tt> is provided for convenience to get
-            around this restriction.)</p>
+            config will be loaded from this directory only. Watch later config files and
+            cache files are written to this directory as well. (This exists on Windows
+            only and is redundant with <tt class="docutils literal">$MPV_HOME</tt>. However, since Windows is very
+            scripting unfriendly, a wrapper script just setting <tt class="docutils literal">$MPV_HOME</tt>, like you
+            could do it on other systems, won't work. <tt class="docutils literal">portable_config</tt> is provided for
+            convenience to get around this restriction.)</p>
             <p>Config files located in the same directory as <tt class="docutils literal">mpv.exe</tt> are loaded with
             lower priority. Some config files are loaded only once, which means that
             e.g. of 2 <tt class="docutils literal">input.conf</tt> files located in two config directories, only the
@@ -16025,6 +16060,13 @@
             future.</p>
             <p>Note that mpv likes to mix <tt class="docutils literal">/</tt> and <tt class="docutils literal">\</tt> path separators for simplicity.
             kernel32.dll accepts this, but cmd.exe does not.</p>
+            </div>
+            <div class="section" id="files-on-macos">
+            <h1>FILES ON MACOS</h1>
+            <p>On macOS the watch later directory is located at <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>
+            and the cache directory is set to <tt class="docutils literal">~/Library/Caches/io.mpv/</tt>. These directories
+            can't be overwritten by enviroment variables.
+            Everything else is the same as <a class="reference internal" href="#files">FILES</a>.</p>
             </div>
           </div>
         </div>
