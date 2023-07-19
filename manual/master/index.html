@@ -7643,6 +7643,17 @@
             exceeds the low threshold, mpv will make the averaging filter more
             aggressive, up to the limit of the high threshold (at which point the
             filter becomes instant).</dd>
+            <dt><tt class="docutils literal"><span class="pre">--hdr-contrast-recovery=&lt;0.0..2.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--hdr-contrast-smoothness=&lt;1.0..100.0&gt;</span></tt></dt>
+            <dd>Enables the HDR contrast recovery algorithm, which is to designed to
+            enhance contrast of HDR video after tone mapping. The strength (default:
+            0.0) indicates the degree of contrast recovery, with 0.0 being completely
+            disabled and 1.0 being 100% strength. Values higher than 1.0 are allowed,
+            but may result in excessive sharpening. The smoothness (default: 3.5)
+            indicates the degree to which the HDR source is low-passed in order to
+            obtain contrast information - a value of 2.0 corresponds to 2x downscaling.
+            Users on low DPI displays (&lt;= 100) may want to lower this value, while
+            users on very high DPI displays (&quot;retina&quot;) may want to increase it. (Only
+            for <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt>)</dd>
             <dt><tt class="docutils literal"><span class="pre">--use-embedded-icc-profile</span></tt></dt>
             <dd>Load the embedded ICC profile contained in media files such as PNG images.
             (Default: yes). Note that this option only works when also using a display
