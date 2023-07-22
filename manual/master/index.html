@@ -5587,16 +5587,17 @@
             </dd>
             <dt><tt class="docutils literal"><span class="pre">--screenshot-sw=&lt;yes|no&gt;</span></tt></dt>
             <dd><p class="first">Whether to use software rendering for screenshots (default: no).</p>
-            <p>If set to no, the screenshot will be rendered by the current VO if possible
-            (only vo_gpu currently). The advantage is that this will (probably) always
+            <p>If set to no, the screenshot will be rendered by the current VO (only vo_gpu
+            or vo_gpu_next currently). The advantage is that this will (probably) always
             show up as in the video window, because the same code is used for rendering.
             But since the renderer needs to be reinitialized, this can be slow and
-            interrupt playback. (Unless the <tt class="docutils literal">window</tt> mode is used with the
-            <tt class="docutils literal">screenshot</tt> command.)</p>
+            interrupt playback.</p>
             <p class="last">If set to yes, the software scaler is used to convert the video to RGB (or
             whatever the target screenshot requires). In this case, conversion will
             run in a separate thread and will probably not interrupt playback. The
-            software renderer may lack some capabilities, such as HDR rendering.</p>
+            software renderer may lack some capabilities, such as HDR rendering.
+            If <tt class="docutils literal">window</tt> mode is used, the image will also be scaled in software
+            which may not accurately reflect the actual visible result.</p>
             </dd>
             </dl>
             </div>
@@ -10636,8 +10637,7 @@
             behavior depends on the selected video output.</dd>
             <dt>&lt;window&gt;</dt>
             <dd>Save the contents of the mpv window. Typically scaled, with OSD and
-            subtitles. The exact behavior depends on the selected video output, and
-            if no support is available, this will act like <tt class="docutils literal">video</tt>.</dd>
+            subtitles. The exact behavior depends on the selected video output.</dd>
             <dt>&lt;each-frame&gt;</dt>
             <dd>Take a screenshot each frame. Issue this command again to stop taking
             screenshots. Note that you should disable frame-dropping when using
