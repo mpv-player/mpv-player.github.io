@@ -7623,6 +7623,18 @@
             otherwise. Has no effect if there already is an indirect pass, such as when
             advanced scaling is enabled. Defaults to on. (Only affects
             <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, note that <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> always delays the peak.)</dd>
+            <dt><tt class="docutils literal"><span class="pre">--hdr-peak-percentile=&lt;0.0..100.0&gt;</span></tt></dt>
+            <dd><p class="first">Which percentile of the input image brightness histogram to consider as the
+            true peak of the scene. If this is set to 100 (default), the
+            brightest pixel is measured. Otherwise, the top of the frequency
+            distribution is progressively cut off. Setting this too low will cause
+            clipping of very bright details, but can improve the dynamic brightness
+            range of scenes with very bright isolated highlights. Values other than 100
+            come with a small performance penalty. (Only for <a href="#id1"><span class="problematic" id="id2">``</span></a>--vo=gpu-next`)</p>
+            <div class="last system-message" id="id1">
+            <p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">mpv/DOCS/man/options.rst</tt>, line 6694); <em><a href="#id2">backlink</a></em></p>
+            Inline literal start-string without end-string.</div>
+            </dd>
             <dt><tt class="docutils literal"><span class="pre">--hdr-peak-decay-rate=&lt;1.0..1000.0&gt;</span></tt></dt>
             <dd>The decay rate used for the HDR peak detection algorithm (default: 100.0).
             This is only relevant when <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> is enabled. Higher values
@@ -13971,7 +13983,7 @@
             <p>This builtin script displays information and statistics for the currently
             played file. It is enabled by default if mpv was compiled with Lua support.
             It can be disabled entirely using the <tt class="docutils literal"><span class="pre">--load-stats-overlay=no</span></tt> option.</p>
-            <div class="section" id="id1">
+            <div class="section" id="id3">
             <h2>Usage</h2>
             <p>The following key bindings are active by default unless something else is
             already bound to them:</p>
@@ -14031,12 +14043,12 @@
             </tbody>
             </table>
             </div>
-            <div class="section" id="id2">
+            <div class="section" id="id4">
             <h2>Configuration</h2>
             <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/stats.conf</span></tt>
             placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
             option. The configuration syntax is described in <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a>.</p>
-            <div class="section" id="id3">
+            <div class="section" id="id5">
             <h3>Configurable Options</h3>
             <dl class="docutils">
             <dt><tt class="docutils literal">key_page_1</tt></dt>
@@ -14282,14 +14294,14 @@
             <li>The cursor keys move between Unicode code-points, not grapheme clusters</li>
             </ul>
             </div>
-            <div class="section" id="id4">
+            <div class="section" id="id6">
             <h2>Configuration</h2>
             <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/console.conf</span></tt>
             placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
             option. The configuration syntax is described in <a class="reference internal" href="#on-screen-controller">ON SCREEN CONTROLLER</a>.</p>
             <p>Key bindings can be changed in a standard way, see for example stats.lua
             documentation.</p>
-            <div class="section" id="id5">
+            <div class="section" id="id7">
             <h3>Configurable Options</h3>
             <dl class="docutils">
             <dt><tt class="docutils literal">scale</tt></dt>
@@ -15131,7 +15143,7 @@
             <p>JavaScript support in mpv is near identical to its Lua support. Use this section
             as reference on differences and availability of APIs, but otherwise you should
             refer to the Lua documentation for API details and general scripting in mpv.</p>
-            <div class="section" id="id6">
+            <div class="section" id="id8">
             <h2>Example</h2>
             <p>JavaScript code which leaves fullscreen mode when the player is paused:</p>
             <pre class="literal-block">
@@ -15570,7 +15582,7 @@
             <p>Currently, only &quot;proper&quot; commands (as listed by <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>)
             support named arguments.</p>
             </div>
-            <div class="section" id="id7">
+            <div class="section" id="id9">
             <h2>Commands</h2>
             <p>In addition to the commands described in <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>, a few
             extra commands can also be used as part of the protocol:</p>
