@@ -1,194 +1,184 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset='utf-8'>
-    <meta content='width=device-width, initial-scale=1' name='viewport'>
-    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
-    <meta content='a free, open source, and cross-platform media player' name='description'>
-    <meta content='mpv, mplayer, download, media player, player download, encoder, video, video player, multimedia, multicast, Windows, Linux, Unix, BSD, Mac, macOS, OS X, OSX, Streaming, DVD, Matroska, MPEG, MPEG2, MPEG4, H264, DivX, MKV, m2ts, open source, free software, floss, free' name='keywords'>
-    <link href='/images/favicon-5d3b2a52.png' rel='icon' type='image/png'>
-    <title>mpv.io | Bug reports</title>
-    <link href="/stylesheets/all-5783234c.css" media="screen" rel="stylesheet" type="text/css" />
-    <script src="/javascripts/all-c9046e4d.js" type="text/javascript"></script>
-  </head>
-  <body class='bug-reports bug-reports_index'>
-    <div class='navbar navbar-inverse navbar-static-top' role='navigation'>
-      <div class='container'>
-        <div class='navbar-header'>
-          <a class='hidden-xs navbar-brand' href='/'>
-            <img width="40" height="40" src="/images/mpv-logo-128-0baae5aa.png" />
-            <span class='title'>mpv</span>
-            <i class='fa fa-home'></i>
-          </a>
-        </div>
-        <div class='pull-right'>
-          <ul class='nav navbar-nav'>
-            <li>
-                        <a href="/installation"><i class='fa fa-cloud-download'></i>
-              Installation
-              </a>
-    
-            </li>
-            <!-- %li{nav_class(guides_path)} -->
-            <!-- = link_to guides_path do -->
-            <!-- %i.fa.fa-book -->
-            <!-- Guides -->
-            <li>
-                        <a href="/manual"><i class='fa fa-book'></i>
-              Reference
-              </a>
-    
-            </li>
-            <li class='selected'>
-                        <a href="/bug-reports"><i class='fa fa-bug'></i>
-              Bug Reports
-              </a>
-    
-            </li>
-            <li>
-                        <a href="/community"><i class='fa fa-comments'></i>
-              Community
-              </a>
-    
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class='main-content'>
-      <div class='container'>
-        <h1>
-          <i class='fa fa-bug'></i>
-          Bug reports
-        </h1>
-        <h3 id="issue-tracker">Issue tracker</h3>
-        
-        <p>The issue tracker is located on <a href="https://github.com/mpv-player/mpv/issues">GitHub</a>.
-        Report bugs and feature requests there. You can also ask on the IRC channel.</p>
-        
-        <p>Please provide enough information so that the bug can be reproduced without
-        much trouble. Also include any details that could help us hunt down the bug.
-        Use your common sense for this: if it looks a platform specific bug, include
-        you OS version; if it's a video display problem, include video card model
-        and video driver type and version; etc.</p>
-        
-        <p>This guide goes on with recurring scenarios and which information might be
-        needed to properly isolate the bug.</p>
-        
-        <h3 id="compilation-failures">Compilation failures</h3>
-        
-        <ul>
-          <li>
-            <p>Paste the content of the <code>config.log</code> file that waf creates in the
-        <code>build</code> directory.</p>
-          </li>
-          <li>
-            <p>Paste the compilation error result from <code>./waf build</code> if you went past
-        the configure step.</p>
-          </li>
-        </ul>
-        
-        <h3 id="mind-the-config">Mind the config</h3>
-        
-        <ul>
-          <li>
-            <p>Make sure it's actually a bug. A lot of times users forget they added
-        something in their config file and think mpv is misbehaving. Always try
-        to use the <code>--no-config</code> CLI option before reporting.</p>
-          </li>
-          <li>
-            <p>If <code>--no-config</code> removes the buggy behavior, the bug is triggered by a 
-        particular set of options. Work your way through your config file
-        and add the options manually one-by-one <em>together</em> with <code>--no-config</code> until
-        you find the smallest set of options that triggers the bug. Include the
-        <code>./mpv [options] file</code> command in your bug report.</p>
-          </li>
-        </ul>
-        
-        <h3 id="bugs-related-to-specific-files-and-formats">Bugs related to specific files and formats:</h3>
-        
-        <ul>
-          <li>
-            <p>If the bug is related to a particular format or container, make sure that
-        it works with <code>ffplay</code> or <code>avplay</code> compiled against the same FFmpeg
-        or Libav version you compiled mpv against.</p>
-          </li>
-          <li>
-            <p>Include a sample that triggers the bug. If the file is too large, you can try
-        cutting a sample to avoid uploading the entire file. Test whether the small
-        file still works and still triggers the problem.</p>
-        
-            <p>Cutting the sample can sometimes cause the file not to work anymore (usually
-        the case for mp4), or the bug not to be triggered (e.g. when the bug is
-        related to seeking).</p>
-        
-            <p>To cut a sample you can use the <code>dd</code> UNIX command, like follows:</p>
-        
-            <p><code>dd if=sample-file of=small-sample-file bs=1024 count=10000</code></p>
-        
-            <p>The above command will copy the first <code>block size (bs) x count</code> bytes of
-        the input file (<code>if</code>) to the output file (<code>of</code>).</p>
-        
-            <p>Unfortunately the mpv project doesn't have a private FTP to host files since
-        it would cost money, so you will have to host the file on a server of yours.
-        Using a hosting service is also ok but make sure it doesn't need people to
-        queue in order to download stuff (Dropbox and datafilehost.com are
-        recommended).</p>
-        
-            <p>If the bug can be triggered with ffmpeg/ffplay/avconv/avplay, you can upload
-        the sample to the ffmpeg samples FTP. See http://ffmpeg.org/bugreports.html.</p>
-          </li>
-        </ul>
-        
-        <h3 id="crashes--segmentation-faults">Crashes / Segmentation faults</h3>
-        
-        <ul>
-          <li>
-            <p>Include the stacktrace. On UNIX systems you can get the stacktrace with the
-        following steps:</p>
-        
-            <ul>
-              <li>Start mpv within gdb: <code>gdb mpv</code></li>
-              <li>Run it with: <code>run --no-config [options] file</code></li>
-              <li>Perform any operation that triggers the crash</li>
-              <li>Type <code>thread apply all backtrace</code> and include its result in your
-        report.</li>
-            </ul>
-        
-            <p>On macOS if you are running the application bundle <code>mpv.app</code> the system
-        will automatically generate a backtrace among other user useful information
-        as part of the "Crash Report". You can just paste that in that case.</p>
-          </li>
-        </ul>
-        
-        <h3 id="regressions--functionality-that-once-worked">Regressions / functionality that once worked:</h3>
-        
-        <ul>
-          <li>
-            <p>Please provide a git commit from the past (or a mpv version in case of
-        stable releases) where you recall the functionality used to work correctly.</p>
-          </li>
-          <li>
-            <p>BONUS: If you want to be extra nice you can perform a binary search with
-        <code>git bisect</code> to find the exact commit that broke this functionality.</p>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <footer>
-      <div class='container'>
-        <small class='pull-left text-muted copyright'>
-          &copy; 2012-2023 mpv.io
-        </small>
-        <div class='social-icons pull-right'>
-                    <a target="_blank" href="https://github.com/mpv-player/mpv"><i class='fa fa-github-alt'></i>
-          </a>
+<head>
+<meta charset='utf-8'>
+<meta content='width=device-width, initial-scale=1' name='viewport'>
+<meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+<meta content='a free, open source, and cross-platform media player' name='description'>
+<meta content='mpv, mplayer, download, media player, player download, encoder, video, video player, multimedia, multicast, Windows, Linux, Unix, BSD, Mac, macOS, OS X, OSX, Streaming, DVD, Matroska, MPEG, MPEG2, MPEG4, H264, DivX, MKV, m2ts, open source, free software, floss, free' name='keywords'>
+<link href='/images/favicon-5d3b2a52.png' rel='icon' type='image/png'>
+<title>mpv.io | Bug reports</title>
+<link href="/stylesheets/all-5c90cc15.css" rel="stylesheet" />
+<script src="/javascripts/all-58be2b4c.js"></script>
+</head>
+<body class='bug-reports bug-reports_index'>
+<div class='navbar navbar-inverse navbar-static-top' role='navigation'>
+<div class='container'>
+<div class='navbar-header'>
+<a class='hidden-xs navbar-brand' href='/'>
+<img width="40" height="40" src="/images/mpv-logo-128-0baae5aa.png" alt="Mpv logo 128" />
+<span class='title'>mpv</span>
+<i class='fa fa-home'></i>
+</a>
+</div>
+<div class='pull-right'>
+<ul class='nav navbar-nav'>
+<li>
+<a href="/installation"><i class='fa fa-cloud-download'></i>
+Installation
+</a></li>
+<!-- %li{nav_class(guides_path)} -->
+<!-- = link_to guides_path do -->
+<!-- %i.fa.fa-book -->
+<!-- Guides -->
+<li>
+<a href="/manual"><i class='fa fa-book'></i>
+Reference
+</a></li>
+<li class='selected'>
+<a href="/bug-reports"><i class='fa fa-bug'></i>
+Bug Reports
+</a></li>
+<li>
+<a href="/community"><i class='fa fa-comments'></i>
+Community
+</a></li>
+</ul>
+</div>
+</div>
+</div>
 
-                    <a target="_blank" href="https://twitter.com/mpv_player"><i class='fa fa-twitter'></i>
-          </a>
+<div class='main-content'>
+<div class='container'>
+<h1>
+<i class='fa fa-bug'></i>
+Bug reports
+</h1>
+<h3 id="issue-tracker">Issue tracker</h3>
 
-        </div>
-      </div>
-    </footer>
-  </body>
+<p>The issue tracker is located on <a href="https://github.com/mpv-player/mpv/issues">GitHub</a>.
+Report bugs and feature requests there. You can also ask on the IRC channel.</p>
+
+<p>Please provide enough information so that the bug can be reproduced without
+much trouble. Also include any details that could help us hunt down the bug.
+Use your common sense for this: if it looks a platform specific bug, include
+your OS version; if it's a video display problem, include GPU model, video
+driver type and version; etc.</p>
+
+<p>This guide goes on with recurring scenarios and which information might be
+needed to properly isolate the bug.</p>
+
+<h3 id="compilation-failures">Compilation failures</h3>
+
+<ul>
+  <li>
+    <p>Paste the content of the <code>meson-logs/meson-log.txt</code> file that is created in
+your build directory.</p>
+  </li>
+  <li>
+    <p>Paste the compilation error result from <code>ninja</code> if you went past
+the configure step.</p>
+  </li>
+</ul>
+
+<h3 id="mind-the-config">Mind the config</h3>
+
+<ul>
+  <li>
+    <p>Make sure it's actually a bug. A lot of times users forget they added
+something in their config file and think mpv is misbehaving. Always try
+to use the <code>--no-config</code> option before reporting.</p>
+  </li>
+  <li>
+    <p>If <code>--no-config</code> removes the buggy behavior, the bug is triggered by a 
+particular set of options. Work your way through your config file
+and add the options manually one-by-one <em>together</em> with <code>--no-config</code> until
+you find the smallest set of options that triggers the bug. Include the
+<code>./mpv [options] file</code> command in your bug report.</p>
+  </li>
+</ul>
+
+<h3 id="bugs-related-to-specific-files-and-formats">Bugs related to specific files and formats:</h3>
+
+<ul>
+  <li>
+    <p>If the bug is related to a particular format or container, make sure that
+it works with <code>ffplay</code> compiled against the same FFmpeg version you
+compiled mpv against.</p>
+  </li>
+  <li>
+    <p>Include a sample that triggers the bug. If the file is too large, you can try
+cutting a sample to avoid uploading the entire file. Test whether the small
+file still works and still triggers the problem.</p>
+
+    <p>Cutting the sample can sometimes cause the file not to work anymore (usually
+the case for mp4), or the bug not to be triggered (e.g. when the bug is
+related to seeking).</p>
+
+    <p>To cut a sample you can use the <code>dd</code> UNIX command, like follows:</p>
+
+    <p><code>dd if=sample-file of=small-sample-file bs=1024 count=10000</code></p>
+
+    <p>The above command will copy the first <code>block size (bs) x count</code> bytes of
+the input file (<code>if</code>) to the output file (<code>of</code>).</p>
+
+    <p>Unfortunately the mpv project doesn't have a private FTP to host files since
+it would cost money, so you will have to host the file on a server of yours.
+Using a hosting service is also ok but make sure it doesn't need people to
+queue in order to download stuff.</p>
+
+    <p>If the bug can be triggered with ffmpeg/ffplay, you can upload
+the sample to the ffmpeg samples FTP. See http://ffmpeg.org/bugreports.html.</p>
+  </li>
+</ul>
+
+<h3 id="crashes--segmentation-faults">Crashes / Segmentation faults</h3>
+
+<ul>
+  <li>
+    <p>Include the stacktrace. On UNIX systems you can get the stacktrace with the
+following steps:</p>
+
+    <ul>
+      <li>Start mpv within gdb: <code>gdb mpv</code></li>
+      <li>Run it with: <code>run --no-config [options] file</code></li>
+      <li>Perform any operation that triggers the crash</li>
+      <li>Type <code>thread apply all backtrace</code> and include its result in your
+report.</li>
+    </ul>
+
+    <p>On macOS if you are running the application bundle <code>mpv.app</code> the system
+will automatically generate a backtrace among other user useful information
+as part of the "Crash Report". You can just paste that in that case.</p>
+  </li>
+</ul>
+
+<h3 id="regressions--functionality-that-once-worked">Regressions / functionality that once worked:</h3>
+
+<ul>
+  <li>
+    <p>Please provide a git commit from the past (or a mpv version in case of
+stable releases) where you recall the functionality used to work correctly.</p>
+  </li>
+  <li>
+    <p>BONUS: If you want to be extra nice you can perform a binary search with
+<code>git bisect</code> to find the exact commit that broke this functionality.</p>
+  </li>
+</ul>
+
+</div>
+</div>
+
+<footer>
+<div class='container'>
+<small class='pull-left text-muted copyright'>
+&copy; 2012-2023 mpv.io
+</small>
+<div class='social-icons pull-right'>
+<a href="https://github.com/mpv-player/mpv" target="_blank"><i class='fa fa-github-alt'></i>
+</a><a href="https://twitter.com/mpv_player" target="_blank"><i class='fa fa-twitter'></i>
+</a></div>
+</div>
+</footer>
+</body>
 </html>
