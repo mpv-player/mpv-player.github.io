@@ -2193,7 +2193,7 @@ no). It's disabled (&quot;no&quot;) by default for performance reasons.</dd>
 paths should be separated by : on Unix and ; on Windows. mpv looks in
 order for the configured paths in PATH and in mpv's config directory.
 The defaults are &quot;yt-dlp&quot;, &quot;yt-dlp_x86&quot; and &quot;youtube-dl&quot;. On Windows
-the suffix extension &quot;.exe&quot; is always appended.</dd>
+the suffix extension is not necessary, but only &quot;.exe&quot; is acceptable.</dd>
 </dl>
 <div class="admonition admonition-why-do-the-option-names-mix-and last">
 <p class="first admonition-title">Why do the option names mix <tt class="docutils literal">_</tt> and <tt class="docutils literal">-</tt>?</p>
@@ -4615,6 +4615,9 @@ work, so they are not enabled automatically.</p>
 mechanism in case there is good/bad behavior with whatever your combination
 of hardware/drivers/etc. happens to be.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--x11-wid-title</span></tt> <tt class="docutils literal"><span class="pre">--no-x11-wid-title</span></tt></dt>
+<dd>Whether or not to set the window title when mpv is embedded on X11 (default:
+<tt class="docutils literal">no</tt>).</dd>
 </dl>
 </div>
 <div class="section" id="disc-devices">
@@ -5835,6 +5838,9 @@ properties, e.g. <tt class="docutils literal"><span class="pre">--term-playing-m
 <tt class="docutils literal">file:</tt> followed by a space and the currently played filename.</p>
 <p class="last">See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--term-remaining-playtime</span></tt>, <tt class="docutils literal"><span class="pre">--no-term-remaining-playtime</span></tt></dt>
+<dd>When printing out the time on the terminal, show the remaining time adjusted by
+playback speed. Default: <tt class="docutils literal">yes</tt></dd>
 <dt><tt class="docutils literal"><span class="pre">--term-status-msg=&lt;string&gt;</span></tt></dt>
 <dd>Print out a custom string during playback instead of the standard status
 line. Expands properties. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</dd>
@@ -9980,6 +9986,11 @@ the <tt class="docutils literal"><span class="pre">--fps</span></tt> command lin
 </dd>
 <dt><tt class="docutils literal">display_fps</tt></dt>
 <dd>Refresh rate of the current display. Note that this value can be 0.</dd>
+<dt><tt class="docutils literal">display_res</tt></dt>
+<dd>Resolution of the current display. This is an integer array with the
+first entry corresponding to the width and the second entry coresponding
+to the height. These values can be 0. Note that this will not respond to
+monitor changes and may not work on all platforms.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">vavpp</tt></dt>
@@ -12417,6 +12428,9 @@ odd or confusing. Can be unavailable with some formats.</dd>
 <dd>Video size as integers, scaled for correct aspect ratio.</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/aspect</span></tt></dt>
 <dd>Display aspect ratio as float.</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/aspect-name</span></tt></dt>
+<dd>Display aspect ratio name as string. The name coresponds to motion
+picture film format that introduced given aspect ratio in film.</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/par</span></tt></dt>
 <dd>Pixel aspect ratio.</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/colormatrix</span></tt></dt>
@@ -12719,6 +12733,10 @@ during state changes, or if <tt class="docutils literal"><span class="pre">playl
 </dd>
 <dt><tt class="docutils literal"><span class="pre">playlist-count</span></tt></dt>
 <dd>Number of total playlist entries.</dd>
+<dt><tt class="docutils literal"><span class="pre">playlist-path</span></tt></dt>
+<dd>The original path of the playlist for the current entry before mpv expanded
+the entries. Unavailable if the file was not originally associated with a
+playlist in some way.</dd>
 <dt><tt class="docutils literal">playlist</tt></dt>
 <dd><p class="first">Playlist, current entry marked. Currently, the raw property value is
 useless.</p>
@@ -12745,6 +12763,10 @@ media-title other then then filename has been acquired.</dd>
 that is unique for the entire life time of the current mpv core
 instance. Other commands, events, etc. use this as <tt class="docutils literal">playlist_entry_id</tt>
 fields.</dd>
+<dt><tt class="docutils literal"><span class="pre">playlist/N/playlist-path</span></tt></dt>
+<dd>The original path of the playlist for this entry before mpv expanded
+it. Unavailable if the file was not originally associated with a playlist
+in some way.</dd>
 </dl>
 <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
 or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
