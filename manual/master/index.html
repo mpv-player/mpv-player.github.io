@@ -7630,12 +7630,12 @@ distribution is progressively cut off. Setting this too low will cause
 clipping of very bright details, but can improve the dynamic brightness
 range of scenes with very bright isolated highlights. Values other than 100
 come with a small performance penalty. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
-<dt><tt class="docutils literal"><span class="pre">--hdr-peak-decay-rate=&lt;1.0..1000.0&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--hdr-peak-decay-rate=&lt;0.0..1000.0&gt;</span></tt></dt>
 <dd>The decay rate used for the HDR peak detection algorithm (default: 100.0).
 This is only relevant when <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> is enabled. Higher values
 make the peak decay more slowly, leading to more stable values at the cost
 of more &quot;eye adaptation&quot;-like effects (although this is mitigated somewhat
-by <tt class="docutils literal"><span class="pre">--hdr-scene-threshold</span></tt>). A value of 1.0 (the lowest possible) disables
+by <tt class="docutils literal"><span class="pre">--hdr-scene-threshold</span></tt>). A value of 0.0 (the lowest possible) disables
 all averaging, meaning each frame's value is used directly as measured,
 but doing this is not recommended for &quot;noisy&quot; sources since it may lead
 to excessive flicker. (In signal theory terms, this controls the time
