@@ -9453,6 +9453,12 @@ the <tt class="docutils literal">lavfi</tt> filter, which uses a very similar sy
 historically) to specify filters and their parameters.</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">--vf</span></tt> can only take a single track as input, even if the filter supports
+dynamic input. Filters that require multiple inputs can't be used.
+Use <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> for such a use case. This also applies for <tt class="docutils literal"><span class="pre">--af</span></tt>.</p>
+</div>
 <p>Filters can be manipulated at run time. You can use <tt class="docutils literal">&#64;</tt> labels as described
 above in combination with the <tt class="docutils literal">vf</tt> command (see <a class="reference internal" href="#command-interface">COMMAND INTERFACE</a>) to get
 more control over this. Initially disabled filters with <tt class="docutils literal">!</tt> are useful for
@@ -12674,6 +12680,10 @@ coordinates should be ignored when this value is false, because the
 video backends update them only when the pointer hovers the window.</dd>
 </dl>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">sub-ass-extradata</span></tt></dt>
+<dd>The current ASS subtitle track's extradata. There is no formatting done.
+The extradata is returned as a string as-is. This property is not
+available for non-ASS subtitle tracks.</dd>
 <dt><tt class="docutils literal"><span class="pre">sub-text</span></tt></dt>
 <dd>The current subtitle text regardless of sub visibility. Formatting is
 stripped. If the subtitle is not text-based (i.e. DVD/BD subtitles), an
