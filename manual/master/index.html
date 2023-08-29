@@ -1359,8 +1359,6 @@ Equivalent ISO 639-1 two-letter and ISO 639-2 three-letter codes are treated the
 The first tag in the list whose language matches a track in the file will be used.
 A track that matches more subtags will be preferred over one that matches fewer,
 with preference given to earlier subtags over later ones. See also <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
-<p>The special value &quot;auto&quot; can be included anywhere in the list,
-and is equivalent to the user's OS-level list of preferred languages.</p>
 <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition admonition-examples last">
 <p class="first admonition-title">Examples</p>
@@ -1373,7 +1371,7 @@ audio.</li>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--slang=&lt;languagecode[,languagecode,...]&gt;</span></tt></dt>
-<dd><p class="first">Equivalent to <tt class="docutils literal"><span class="pre">--alang</span></tt>, for subtitle tracks (default: auto).</p>
+<dd><p class="first">Equivalent to <tt class="docutils literal"><span class="pre">--alang</span></tt>, for subtitle tracks.</p>
 <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition admonition-examples last">
 <p class="first admonition-title">Examples</p>
@@ -1474,13 +1472,20 @@ referenced tracks are always selected.</p>
 <dt><tt class="docutils literal"><span class="pre">--subs-with-matching-audio=&lt;yes|no&gt;</span></tt></dt>
 <dd>When autoselecting a subtitle track, select a full/non-forced one even if the selected
 audio stream matches your preferred subtitle language (default: yes).</dd>
+<dt><tt class="docutils literal"><span class="pre">--subs-match-os-language=&lt;yes|no&gt;</span></tt></dt>
+<dd>When autoselecting a subtitle track, select the track that matches the language of your OS
+if the audio stream is in a different language if suitable (default track or a forced track
+under the right conditions). Note that if <tt class="docutils literal"><span class="pre">-slang</span></tt> is set, this will be completely ignored
+(default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--subs-fallback=&lt;yes|default|no&gt;</span></tt></dt>
 <dd>When autoselecting a subtitle track, if no tracks match your preferred languages,
 select a full track even if it doesn't match your preferred subtitle language (default: default).
 Setting this to <cite>default</cite> means that only streams flagged as <cite>default</cite> will be selected.</dd>
-<dt><tt class="docutils literal"><span class="pre">--subs-fallback-forced=&lt;yes|no&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--subs-fallback-forced=&lt;yes|no|always&gt;</span></tt></dt>
 <dd>When autoselecting a subtitle track, if no tracks match your preferred languages,
-select a forced track that matches the language of the selected audio track (default: yes).</dd>
+select a forced track that matches the language of the selected audio track (default: yes).
+<cite>always</cite> will always select a forced track if possible, regardles if the language matches the
+selected audio track or not.</dd>
 </dl>
 </div>
 <div class="section" id="playback-control">
