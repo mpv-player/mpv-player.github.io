@@ -1471,7 +1471,9 @@ referenced tracks are always selected.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--subs-with-matching-audio=&lt;yes|no&gt;</span></tt></dt>
 <dd>When autoselecting a subtitle track, select a full/non-forced one even if the selected
-audio stream matches your preferred subtitle language (default: yes).</dd>
+audio stream matches your preferred subtitle language (default: yes). If this option is
+set to <tt class="docutils literal">no</tt>, a non-forced subtitle track that matches the audio language will never be
+autoselected by mpv regardless of the value of <tt class="docutils literal"><span class="pre">--slang</span></tt> or <tt class="docutils literal"><span class="pre">--subs-fallback</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--subs-match-os-language=&lt;yes|no&gt;</span></tt></dt>
 <dd>When autoselecting a subtitle track, select the track that matches the language of your OS
 if the audio stream is in a different language if suitable (default track or a forced track
@@ -3867,12 +3869,11 @@ particular subtitles in mkv files) are always assumed to be UTF-8.</p>
 <dd>Adjust subtitle timing is to remove minor gaps or overlaps between
 subtitles (if the difference is smaller than 210 ms, the gap or overlap
 is removed).</dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-forced-only=&lt;auto|yes|no&gt;</span></tt></dt>
-<dd>Display only forced subtitles for the DVD subtitle stream selected by e.g.
-<tt class="docutils literal"><span class="pre">--slang</span></tt> (default: <tt class="docutils literal">auto</tt>). When set to <tt class="docutils literal">auto</tt>, enabled when the
-<tt class="docutils literal"><span class="pre">--subs-with-matching-audio</span></tt> option is on and a non-forced stream is selected.
-Enabling this will hide all subtitles in streams that don't make a distinction
-between forced and unforced events within a stream.</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-forced-events-only=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enabling this displays only forced events within subtitle streams. Only
+some bitmap subtitle formats (such as DVD or PGS) are capable of having a
+mixture of forced and unforced events within the stream. Enabling this on
+text subtitles will cause no subtitles to be displayed (default: <tt class="docutils literal">no</tt>).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-fps=&lt;rate&gt;</span></tt></dt>
 <dd><p class="first">Specify the framerate of the subtitle file (default: video fps). Affects
 text subtitles only.</p>
@@ -12515,6 +12516,45 @@ MPV_FORMAT_NODE_MAP
     &quot;alpha&quot;             MPV_FORMAT_STRING
 </pre>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata</span></tt></dt>
+<dd><p class="first">Video HDR metadata per frame, including peak detection result.
+This has a number of sub-properties:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/min-luma</span></tt></dt>
+<dd>Minimum luminance, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-luma</span></tt></dt>
+<dd>Maximum luminance, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-cll</span></tt></dt>
+<dd>Maximum content light level, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-fall</span></tt></dt>
+<dd>Maximum frame average light level, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/scene-max-r</span></tt></dt>
+<dd>MaxRGB of a scene for R component, as reported by HDR10+ metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/scene-max-g</span></tt></dt>
+<dd>MaxRGB of a scene for G component, as reported by HDR10+ metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/scene-max-b</span></tt></dt>
+<dd>MaxRGB of a scene for B component, as reported by HDR10+ metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-pq-y</span></tt></dt>
+<dd>Maximum PQ luminance of a frame, as reported by peak detection (in PQ, 0-1)</dd>
+<dt><tt class="docutils literal"><span class="pre">hdr-metadata/avg-pq-y</span></tt></dt>
+<dd>Average PQ luminance of a frame, as reported by peak detection (in PQ, 0-1)</dd>
+</dl>
+<p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+the following contents:</p>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_MAP
+    &quot;min-luma&quot;     MPV_FORMAT_DOUBLE
+    &quot;max-luma&quot;     MPV_FORMAT_DOUBLE
+    &quot;max-cll&quot;      MPV_FORMAT_DOUBLE
+    &quot;max-fall&quot;     MPV_FORMAT_DOUBLE
+    &quot;scene-max-r&quot;  MPV_FORMAT_DOUBLE
+    &quot;scene-max-g&quot;  MPV_FORMAT_DOUBLE
+    &quot;scene-max-b&quot;  MPV_FORMAT_DOUBLE
+    &quot;max-pq-y&quot;     MPV_FORMAT_DOUBLE
+    &quot;avg-pq-y&quot;     MPV_FORMAT_DOUBLE
+</pre>
+</dd>
 <dt><tt class="docutils literal">dwidth</tt>, <tt class="docutils literal">dheight</tt></dt>
 <dd><p class="first">Video display size. This is the video size after filters and aspect scaling
 have been applied. The actual video window size can still be different
@@ -12718,8 +12758,6 @@ if it's present but has unknown or incorrect duration, null is returned
 instead.</dd>
 <dt><tt class="docutils literal"><span class="pre">secondary-sub-end</span></tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">sub-end</span></tt>, but for the secondary subtitles.</dd>
-<dt><tt class="docutils literal"><span class="pre">sub-forced-only-cur</span></tt></dt>
-<dd>Read-only - whether the current subtitle track is being shown in forced-only mode.</dd>
 <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
 <dd><p class="first">Current position on playlist. The first entry is on position 0. Writing to
 this property may start playback at the new position.</p>
@@ -12853,9 +12891,6 @@ cover art, <tt class="docutils literal">no</tt>/false or unavailable otherwise.<
 <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/forced</span></tt></dt>
 <dd><tt class="docutils literal">yes</tt>/true if the track has the forced flag set in the file,
-<tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
-<dt><tt class="docutils literal"><span class="pre">track-list/N/auto-forced-only</span></tt></dt>
-<dd><tt class="docutils literal">yes</tt>/true if the track was autoselected in forced-only mode,
 <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/codec</span></tt></dt>
 <dd>The codec name used by this track, for example <tt class="docutils literal">h264</tt>. Unavailable
