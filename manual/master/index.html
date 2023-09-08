@@ -2821,8 +2821,11 @@ system memory support all values between 0 and 359.</p>
 <dd>Crop the video by starting at the x, y offset for w, h pixels. The crop is
 applied to the source video rectangle (before anamorphic stretch) by the VO.
 A crop rectangle that is not within the video rectangle will be ignored.
-This works with hwdec, unlike the equivalent 'lavfi-crop'. Setting the crop
-to '0x0' disables it.</dd>
+This works with hwdec, unlike the equivalent 'lavfi-crop'. When offset is
+omitted, the central area will be cropped. Setting the crop to empty one
+<tt class="docutils literal"><span class="pre">--video-crop=0x0+0+0</span></tt> overrides container crop and disables cropping.
+Setting the crop to <tt class="docutils literal"><span class="pre">--video-crop=0</span></tt> disables manual cropping and restores
+the container crop if it's specified.</dd>
 <dt><tt class="docutils literal"><span class="pre">--video-zoom=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Adjust the video display scale factor by the given value. The parameter is
 given log 2. For example, <tt class="docutils literal"><span class="pre">--video-zoom=0</span></tt> is unscaled,
@@ -3069,6 +3072,13 @@ x264 at all, it assumes it was encoded by the old version. Enabling this
 option is pretty safe if you want your broken files to work, but in theory
 this can break on streams not encoded by x264, or if a stream encoded by a
 newer x264 version contains no version info.</dd>
+<dt><tt class="docutils literal"><span class="pre">--vd-apply-cropping</span></tt></dt>
+<dd>Certain video codecs support cropping, meaning that only a sub-rectangle of
+the decoded frame is intended for display. This option controls how cropping
+is handled by libavcodec. Cropping during decoding has certain limitations
+with regards to alignment and hardware decoding. If this option is enabled,
+decoder will apply the crop. Disabled by default, VO will apply the crop in
+a more robust way.</dd>
 <dt><tt class="docutils literal"><span class="pre">--swapchain-depth=&lt;N&gt;</span></tt></dt>
 <dd>Allow up to N in-flight frames. This essentially controls the frame
 latency. Increasing the swapchain depth can improve pipelining and prevent
@@ -3873,10 +3883,11 @@ removed in mpv 0.24.0.</p>
 particular subtitles in mkv files) are always assumed to be UTF-8.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-fix-timing=&lt;yes|no&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-fix-timing=&lt;auto|yes|no&gt;</span></tt></dt>
 <dd>Adjust subtitle timing is to remove minor gaps or overlaps between
 subtitles (if the difference is smaller than 210 ms, the gap or overlap
-is removed).</dd>
+is removed). The <tt class="docutils literal">auto</tt> value enables this for non-text subtitles such
+as PGS or DVD (default: <tt class="docutils literal">auto</tt>).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-forced-events-only=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enabling this displays only forced events within subtitle streams. Only
 some bitmap subtitle formats (such as DVD or PGS) are capable of having a
