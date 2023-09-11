@@ -3078,8 +3078,7 @@ newer x264 version contains no version info.</dd>
 the decoded frame is intended for display. This option controls how cropping
 is handled by libavcodec. Cropping during decoding has certain limitations
 with regards to alignment and hardware decoding. If this option is enabled,
-decoder will apply the crop. Disabled by default, VO will apply the crop in
-a more robust way.</dd>
+decoder will apply the crop, else VO will handle it. Enabled by default.</dd>
 <dt><tt class="docutils literal"><span class="pre">--swapchain-depth=&lt;N&gt;</span></tt></dt>
 <dd>Allow up to N in-flight frames. This essentially controls the frame
 latency. Increasing the swapchain depth can improve pipelining and prevent
@@ -3884,11 +3883,10 @@ removed in mpv 0.24.0.</p>
 particular subtitles in mkv files) are always assumed to be UTF-8.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-fix-timing=&lt;auto|yes|no&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-fix-timing=&lt;yes|no&gt;</span></tt></dt>
 <dd>Adjust subtitle timing is to remove minor gaps or overlaps between
 subtitles (if the difference is smaller than 210 ms, the gap or overlap
-is removed). The <tt class="docutils literal">auto</tt> value enables this for non-text subtitles such
-as PGS or DVD (default: <tt class="docutils literal">auto</tt>).</dd>
+is removed).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-forced-events-only=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enabling this displays only forced events within subtitle streams. Only
 some bitmap subtitle formats (such as DVD or PGS) are capable of having a
