@@ -6272,9 +6272,13 @@ but adds more ringing.</p>
 <p class="last">(This filter is an alias for <tt class="docutils literal">jinc</tt>-windowed <tt class="docutils literal">jinc</tt>)</p>
 </dd>
 <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
-<dd>A slightly sharpened version of ewa_lanczos, preconfigured to use an
-ideal radius and parameter. If your hardware can run it, this is
-probably what you should use by default.</dd>
+<dd>A slightly sharpened version of ewa_lanczos. If your hardware can run
+it, this is probably what you should use by default.</dd>
+<dt><tt class="docutils literal">ewa_lanczos4sharpest</tt></dt>
+<dd>Very sharp scaler, but also slightly slower than <tt class="docutils literal">ewa_lanczossharp</tt>.
+Prone to ringing, so it's recommended to combine this with an
+anti-ringing shader. On <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, setting this filter enables
+built-in anti-ringing, so no extra action needs to be taken.</dd>
 <dt><tt class="docutils literal">mitchell</tt></dt>
 <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
 <tt class="docutils literal"><span class="pre">--scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">--scale-param2</span></tt>. This filter is very good at
@@ -6336,12 +6340,12 @@ never interpolate, thus behaving as if the regular nearest neighbour
 algorithm was used. Defaults to 0.0.</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--scale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-wblur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wblur=&lt;value&gt;</span></tt></dt>
-<dd>Kernel/window scaling factor (also known as a blur factor). Decreasing this
-makes the result sharper, increasing it makes it blurrier (default 0). If
-set to 0, the kernel's preferred blur factor is used. Note that setting
-this too low (eg. 0.5) leads to bad results. It's generally recommended to
-stick to values between 0.8 and 1.2.</dd>
+<dt><tt class="docutils literal"><span class="pre">--scale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-blur=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-blur=&lt;value&gt;</span></tt></dt>
+<dd>Kernel scaling factor (also known as a blur factor). Decreasing this makes
+the result sharper, increasing it makes it blurrier (default 0). If set to
+0, the kernel's preferred blur factor is used. Note that setting this too
+low (eg. 0.5) leads to bad results. It's generally recommended to stick to
+values between 0.8 and 1.2.</dd>
 <dt><tt class="docutils literal"><span class="pre">--scale-clamp=&lt;0.0-1.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-clamp</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt></dt>
 <dd>Specifies a weight bias to multiply into negative coefficients. Specifying
 <tt class="docutils literal"><span class="pre">--scale-clamp=1</span></tt> has the effect of removing negative weights completely,
@@ -13737,6 +13741,9 @@ name while hovering the seekbar.</div>
 </tr>
 <tr><td>shift+L-click</td>
 <td>show available audio/sub tracks</td>
+</tr>
+<tr><td>mouse wheel</td>
+<td>cycle audio/sub tracks forward/backwards</td>
 </tr>
 </tbody>
 </table>
