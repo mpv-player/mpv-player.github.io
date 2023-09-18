@@ -8767,25 +8767,6 @@ you use <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with
 <dd><tt class="docutils literal"><span class="pre">non-linear</span> anamorphic scaling</tt></dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--vo-vaapi-deint-mode=&lt;mode&gt;</span></tt></dt>
-<dd><p class="first">Select deinterlacing algorithm. Note that by default deinterlacing is
-initially always off, and needs to be enabled with the <tt class="docutils literal">d</tt> key
-(default key binding for <tt class="docutils literal">cycle deinterlace</tt>).</p>
-<p>This option doesn't apply if libva supports video post processing (vpp).
-In this case, the default for <tt class="docutils literal"><span class="pre">deint-mode</span></tt> is <tt class="docutils literal">no</tt>, and enabling
-deinterlacing via user interaction using the methods mentioned above
-actually inserts the <tt class="docutils literal">vavpp</tt> video filter. If vpp is not actually
-supported with the libva backend in use, you can use this option to
-forcibly enable VO based deinterlacing.</p>
-<dl class="last docutils">
-<dt>no</dt>
-<dd>Don't allow deinterlacing (default for newer libva).</dd>
-<dt>first-field</dt>
-<dd>Show only first field.</dd>
-<dt>bob</dt>
-<dd>bob deinterlacing (default for older libva).</dd>
-</dl>
-</dd>
 <dt><tt class="docutils literal"><span class="pre">--vo-vaapi-scaled-osd=&lt;yes|no&gt;</span></tt></dt>
 <dd>If enabled, then the OSD is rendered at video resolution and scaled to
 display resolution. By default, this is disabled, and the OSD is
@@ -12923,6 +12904,10 @@ no hard guarantee.</dd>
 <dd>If this track is being decoded, the human-readable decoder name,</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-w</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/demux-h</span></tt></dt>
 <dd>Video size hint as indicated by the container. (Not always accurate.)</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/demux-crop-x</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/demux-crop-y</span></tt></dt>
+<dd>Crop offset of the source video frame.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/demux-crop-w</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/demux-crop-h</span></tt></dt>
+<dd>Video size after cropping.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-channel-count</span></tt></dt>
 <dd>Number of audio channels as indicated by the container. (Not always
 accurate - in particular, the track could be decoded as a different
@@ -12974,6 +12959,10 @@ MPV_FORMAT_NODE_ARRAY
         &quot;decoder-desc&quot;      MPV_FORMAT_STRING
         &quot;demux-w&quot;           MPV_FORMAT_INT64
         &quot;demux-h&quot;           MPV_FORMAT_INT64
+        &quot;demux-crop-x&quot;      MPV_FORMAT_INT64
+        &quot;demux-crop-y&quot;      MPV_FORMAT_INT64
+        &quot;demux-crop-w&quot;      MPV_FORMAT_INT64
+        &quot;demux-crop-h&quot;      MPV_FORMAT_INT64
         &quot;demux-channel-count&quot; MPV_FORMAT_INT64
         &quot;demux-channels&quot;    MPV_FORMAT_STRING
         &quot;demux-samplerate&quot;  MPV_FORMAT_INT64
