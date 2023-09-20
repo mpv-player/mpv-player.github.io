@@ -6253,15 +6253,14 @@ them.</p>
 <dd><p class="first">The filter function to use when upscaling video.</p>
 <dl class="docutils">
 <dt><tt class="docutils literal">bilinear</tt></dt>
-<dd>Bilinear hardware texture filtering (fastest, very low quality). This
-is the default for compatibility reasons.</dd>
+<dd>Bilinear hardware texture filtering (fastest, very low quality). This is
+the default when using the <tt class="docutils literal">fast</tt> profile.</dd>
 <dt><tt class="docutils literal">spline36</tt></dt>
-<dd>Mid quality and speed. This is the default when using <tt class="docutils literal"><span class="pre">gpu-hq</span></tt>.</dd>
+<dd>Mid quality and speed.</dd>
 <dt><tt class="docutils literal">lanczos</tt></dt>
-<dd><p class="first">Lanczos scaling. Provides mid quality and speed. Generally worse than
-<tt class="docutils literal">spline36</tt>, but it results in a slightly sharper image which is good
-for some content types. The number of taps can be controlled with
-<tt class="docutils literal"><span class="pre">scale-radius</span></tt>, but is best left unchanged.</p>
+<dd><p class="first">Lanczos scaling. Provides good balance between quality and performance.
+This is the default for <tt class="docutils literal">scale</tt>. The number of taps can be controlled
+with <tt class="docutils literal"><span class="pre">scale-radius</span></tt>, but is best left unchanged.</p>
 <p class="last">(This filter is an alias for <tt class="docutils literal">sinc</tt>-windowed <tt class="docutils literal">sinc</tt>)</p>
 </dd>
 <dt><tt class="docutils literal">ewa_lanczos</tt></dt>
@@ -6272,8 +6271,8 @@ but adds more ringing.</p>
 <p class="last">(This filter is an alias for <tt class="docutils literal">jinc</tt>-windowed <tt class="docutils literal">jinc</tt>)</p>
 </dd>
 <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
-<dd>A slightly sharpened version of ewa_lanczos. If your hardware can run
-it, this is probably what you should use by default.</dd>
+<dd>A slightly sharpened version of ewa_lanczos. This is the default when
+using the <tt class="docutils literal"><span class="pre">high-quality</span></tt> profile.</dd>
 <dt><tt class="docutils literal">ewa_lanczos4sharpest</tt></dt>
 <dd>Very sharp scaler, but also slightly slower than <tt class="docutils literal">ewa_lanczossharp</tt>.
 Prone to ringing, so it's recommended to combine this with an
@@ -6282,7 +6281,7 @@ built-in anti-ringing, so no extra action needs to be taken.</dd>
 <dt><tt class="docutils literal">mitchell</tt></dt>
 <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
 <tt class="docutils literal"><span class="pre">--scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">--scale-param2</span></tt>. This filter is very good at
-downscaling (see <tt class="docutils literal"><span class="pre">--dscale</span></tt>).</dd>
+downscaling. This is the default for <tt class="docutils literal"><span class="pre">--dscale</span></tt>.</dd>
 <dt><tt class="docutils literal">catmull_rom</tt></dt>
 <dd>Catmull-Rom. A Cubic filter in the same vein as <tt class="docutils literal">mitchell</tt>, where
 the <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters are <tt class="docutils literal">0.0</tt> and <tt class="docutils literal">0.5</tt> respectively.
@@ -6307,15 +6306,15 @@ mpv --scale=help
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--cscale=&lt;filter&gt;</span></tt></dt>
 <dd>As <tt class="docutils literal"><span class="pre">--scale</span></tt>, but for interpolating chroma information. If the image is
-not subsampled, this option is ignored entirely.</dd>
+not subsampled, this option is ignored entirely. If this option is unset,
+the filter implied by <tt class="docutils literal"><span class="pre">--scale</span></tt> will be applied.</dd>
 <dt><tt class="docutils literal"><span class="pre">--dscale=&lt;filter&gt;</span></tt></dt>
-<dd>Like <tt class="docutils literal"><span class="pre">--scale</span></tt>, but apply these filters on downscaling instead. If this
-option is unset, the filter implied by <tt class="docutils literal"><span class="pre">--scale</span></tt> will be applied.</dd>
+<dd>Like <tt class="docutils literal"><span class="pre">--scale</span></tt>, but apply these filters on downscaling instead.</dd>
 <dt><tt class="docutils literal"><span class="pre">--tscale=&lt;filter&gt;</span></tt></dt>
 <dd><p class="first">The filter used for interpolating the temporal axis (frames). This is only
 used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
 <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
-get a list). The default is <tt class="docutils literal">mitchell</tt>.</p>
+get a list). The default is <tt class="docutils literal">oversample</tt>.</p>
 <p class="last">Common <tt class="docutils literal"><span class="pre">--tscale</span></tt> choices include <tt class="docutils literal">oversample</tt>, <tt class="docutils literal">linear</tt>,
 <tt class="docutils literal">catmull_rom</tt>, <tt class="docutils literal">mitchell</tt>, <tt class="docutils literal">gaussian</tt>, or <tt class="docutils literal">bicubic</tt>. These are
 listed in increasing order of smoothness/blurriness, with <tt class="docutils literal">bicubic</tt>
@@ -6418,16 +6417,17 @@ will reproduce the source image perfectly if no scaling is performed.
 Enabled by default. Note that this option never affects <tt class="docutils literal"><span class="pre">--cscale</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--correct-downscaling</span></tt></dt>
 <dd><p class="first">When using convolution based filters, extend the filter size when
-downscaling. Increases quality, but reduces performance while downscaling.</p>
+downscaling. Increases quality, but reduces performance while downscaling.
+Enabled by default.</p>
 <p>This will perform slightly sub-optimally for anamorphic video (but still
 better than without it) since it will extend the size to match only the
 milder of the scale factors between the axes.</p>
-<p class="last">Note: this option is ignored when using bilinear downscaling (the default).</p>
+<p class="last">Note: this option is ignored when using bilinear downscaling with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--linear-downscaling</span></tt></dt>
 <dd>Scale in linear light when downscaling. It should only be used with a
 <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> that has at least 16 bit precision. This option
-has no effect on HDR content.</dd>
+has no effect on HDR content. Enabled by default.</dd>
 <dt><tt class="docutils literal"><span class="pre">--linear-upscaling</span></tt></dt>
 <dd>Scale in linear light when upscaling. Like <tt class="docutils literal"><span class="pre">--linear-downscaling</span></tt>, it
 should only be used with a <tt class="docutils literal"><span class="pre">--fbo-format</span></tt> that has at least 16 bits
@@ -6436,7 +6436,7 @@ purposes. Users are advised to either enable <tt class="docutils literal"><span 
 keep both options disabled (i.e. scaling in gamma light).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt></dt>
 <dd>When upscaling, use a sigmoidal color transform to avoid emphasizing
-ringing artifacts. This is incompatible with and replaces
+ringing artifacts. Enabled by default. This is incompatible with and replaces
 <tt class="docutils literal"><span class="pre">--linear-upscaling</span></tt>. (Note that sigmoidization also requires
 linearization, so the <tt class="docutils literal">LINEAR</tt> rendering step fires in both cases)</dd>
 <dt><tt class="docutils literal"><span class="pre">--sigmoid-center</span></tt></dt>
@@ -6496,7 +6496,7 @@ invalidates interpolated frames)</dd>
 source video size is huge (e.g. so called &quot;4K&quot; video). On other drivers it
 might be slower or cause latency issues.</dd>
 <dt><tt class="docutils literal"><span class="pre">--dither-depth=&lt;N|no|auto&gt;</span></tt></dt>
-<dd><p class="first">Set dither target depth to N. Default: no.</p>
+<dd><p class="first">Set dither target depth to N. Default: auto.</p>
 <dl class="docutils">
 <dt>no</dt>
 <dd>Disable any dithering done by mpv.</dd>
@@ -9003,13 +9003,7 @@ backend.</p>
 </dd>
 <dt><tt class="docutils literal">rpi</tt> (Raspberry Pi)</dt>
 <dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
-<p>This is deprecated. Use <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> instead, which is the default and
-provides the same functionality. The <tt class="docutils literal">rpi</tt> VO will be removed in
-mpv 0.23.0. Its functionality was folded into --vo=gpu, which now uses
-RPI hardware decoding by treating it as a hardware overlay (without applying
-GL filtering). Also to be changed in 0.23.0: the --fs flag will be reset to
-&quot;no&quot; by default (like on the other platforms).</p>
-<p>The following deprecated global options are supported by this video output:</p>
+<p>The following global options are supported by this video output:</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">--rpi-display=&lt;number&gt;</span></tt></dt>
 <dd>Select the display number on which the video overlay should be shown
@@ -15866,13 +15860,13 @@ mpv, further documentation is spread over a few places:</p>
 <h1>C PLUGINS</h1>
 <p>You can write C plugins for mpv. These use the libmpv API, although they do not
 use the libmpv library itself.</p>
-<p>They are available on Linux/BSD platforms only and enabled by default if the
-compiler supports linking with the <tt class="docutils literal"><span class="pre">-rdynamic</span></tt> flag.</p>
+<p>They are enabled by default if compiler supports linking with the <tt class="docutils literal"><span class="pre">-rdynamic</span></tt>
+flag on Linux/BSD platforms. On Windows the are always enabled.</p>
 <div class="section" id="c-plugins-location">
 <h2>C plugins location</h2>
 <p>C plugins are put into the mpv scripts directory in its config directory
-(see the <a class="reference internal" href="#files">FILES</a> section for details). They must have a <tt class="docutils literal">.so</tt> file extension.
-They can also be explicitly loaded with the <tt class="docutils literal"><span class="pre">--script</span></tt> option.</p>
+(see the <a class="reference internal" href="#files">FILES</a> section for details). They must have a <tt class="docutils literal">.so</tt> or <tt class="docutils literal">.dll</tt>
+file extension. They can also be explicitly loaded with the <tt class="docutils literal"><span class="pre">--script</span></tt> option.</p>
 </div>
 <div class="section" id="api">
 <h2>API</h2>
@@ -15902,6 +15896,9 @@ before playback begins.</p>
 <p>The current implementation requires that your plugins are <strong>not</strong> linked against
 libmpv. What your plugins use are not symbols from a libmpv binary, but
 symbols from the mpv host binary.</p>
+<p>On Windows to make symbols from the host binary available, you have to define
+MPV_CPLUGIN_DYNAMIC_SYM when compiling cplugin. This will load symbols
+dynamically, before calling <tt class="docutils literal">mpv_open_cplugin()</tt>.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples</h2>
