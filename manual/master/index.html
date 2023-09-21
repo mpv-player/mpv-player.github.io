@@ -768,7 +768,7 @@ demuxer-readahead-secs=20
 [slow]
 profile-desc=&quot;some profile name&quot;
 # reference a builtin profile
-profile=gpu-hq
+profile=high-quality
 
 [fast]
 vo=vdpau
@@ -1895,7 +1895,7 @@ expensive work to step forward by 1 frame.</li>
 <p>Tuning:</p>
 <ul class="last simple">
 <li>Remove all <tt class="docutils literal"><span class="pre">--vf</span></tt>/<tt class="docutils literal"><span class="pre">--af</span></tt> filters you have set. Disable hardware
-decoding. Disable idiotic nonsense like SPDIF passthrough.</li>
+decoding. Disable functions like SPDIF passthrough.</li>
 <li>Increasing <tt class="docutils literal"><span class="pre">--video-reversal-buffer</span></tt> might help if reversal queue
 overflow is reported, which may happen in high bitrate video, or video
 with large GOP. Hardware decoding mostly ignores this, and you need to
@@ -2825,7 +2825,7 @@ A crop rectangle that is not within the video rectangle will be ignored.
 This works with hwdec, unlike the equivalent 'lavfi-crop'. When offset is
 omitted, the central area will be cropped. Setting the crop to empty one
 <tt class="docutils literal"><span class="pre">--video-crop=0x0+0+0</span></tt> overrides container crop and disables cropping.
-Setting the crop to <tt class="docutils literal"><span class="pre">--video-crop=0</span></tt> disables manual cropping and restores
+Setting the crop to <tt class="docutils literal"><span class="pre">--video-crop=&quot;&quot;</span></tt> disables manual cropping and restores
 the container crop if it's specified.</dd>
 <dt><tt class="docutils literal"><span class="pre">--video-zoom=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Adjust the video display scale factor by the given value. The parameter is
@@ -6255,8 +6255,6 @@ them.</p>
 <dt><tt class="docutils literal">bilinear</tt></dt>
 <dd>Bilinear hardware texture filtering (fastest, very low quality). This is
 the default when using the <tt class="docutils literal">fast</tt> profile.</dd>
-<dt><tt class="docutils literal">spline36</tt></dt>
-<dd>Mid quality and speed.</dd>
 <dt><tt class="docutils literal">lanczos</tt></dt>
 <dd><p class="first">Lanczos scaling. Provides good balance between quality and performance.
 This is the default for <tt class="docutils literal">scale</tt>. The number of taps can be controlled
@@ -6280,21 +6278,24 @@ anti-ringing shader. On <tt class="docutils literal"><span class="pre">--vo=gpu-
 built-in anti-ringing, so no extra action needs to be taken.</dd>
 <dt><tt class="docutils literal">mitchell</tt></dt>
 <dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
-<tt class="docutils literal"><span class="pre">--scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">--scale-param2</span></tt>. This filter is very good at
-downscaling. This is the default for <tt class="docutils literal"><span class="pre">--dscale</span></tt>.</dd>
+<tt class="docutils literal"><span class="pre">--scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">--scale-param2</span></tt>.</dd>
+<dt><tt class="docutils literal">hermite</tt></dt>
+<dd>Hermite spline. Similar to <tt class="docutils literal">bicubic</tt> but with <tt class="docutils literal">B</tt> set to <tt class="docutils literal">0.0</tt>.
+This filter has the special property of having a support of radius 1.0,
+making it very fast in comparison, but prone to blocking. This is the
+default for <tt class="docutils literal"><span class="pre">--dscale</span></tt>.</dd>
 <dt><tt class="docutils literal">catmull_rom</tt></dt>
 <dd>Catmull-Rom. A Cubic filter in the same vein as <tt class="docutils literal">mitchell</tt>, where
 the <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters are <tt class="docutils literal">0.0</tt> and <tt class="docutils literal">0.5</tt> respectively.
-This filter is sharper than <tt class="docutils literal">mitchell</tt>, but it results in mild
-ringing. Like <tt class="docutils literal">mitchell</tt>, this filter is good at downscaling (see
-<tt class="docutils literal"><span class="pre">--dscale</span></tt>).</dd>
+This filter is sharper than <tt class="docutils literal">mitchell</tt>, but it results in more
+ringing.</dd>
 <dt><tt class="docutils literal">oversample</tt></dt>
 <dd>A version of nearest neighbour that (naively) oversamples pixels, so
 that pixels overlapping edges get linearly interpolated instead of
 rounded. This essentially removes the small imperfections and judder
 artifacts caused by nearest-neighbour interpolation, in exchange for
-adding some blur. This filter is good at temporal interpolation, and
-also known as &quot;smoothmotion&quot; (see <tt class="docutils literal"><span class="pre">--tscale</span></tt>).</dd>
+adding some blur. This can also be used for frame mixing, where it
+is commonly known as &quot;smoothmotion&quot; (see <tt class="docutils literal"><span class="pre">--tscale</span></tt>).</dd>
 <dt><tt class="docutils literal">linear</tt></dt>
 <dd>A <tt class="docutils literal"><span class="pre">--tscale</span></tt> filter.</dd>
 </dl>
@@ -6978,7 +6979,7 @@ step falls off very quickly, so high numbers (&gt;4) are practically useless.
 <dt><tt class="docutils literal"><span class="pre">--deband-threshold=&lt;0..4096&gt;</span></tt></dt>
 <dd>The debanding filter's cut-off threshold. Higher numbers increase the
 debanding strength dramatically but progressively diminish image details.
-(Default 32)</dd>
+(Default 48)</dd>
 <dt><tt class="docutils literal"><span class="pre">--deband-range=&lt;1..64&gt;</span></tt></dt>
 <dd><p class="first">The debanding filter's initial radius. The radius increases linearly for
 each iteration. A higher radius will find more gradients, but a lower
@@ -6989,7 +6990,7 @@ this to compensate.</p>
 <dt><tt class="docutils literal"><span class="pre">--deband-grain=&lt;0..4096&gt;</span></tt></dt>
 <dd>Add some extra noise to the image. This significantly helps cover up
 remaining quantization artifacts. Higher numbers add more noise. (Default
-48)</dd>
+32)</dd>
 <dt><tt class="docutils literal"><span class="pre">--corner-rounding=&lt;0..1&gt;</span></tt></dt>
 <dd>If set to a value above 0.0, the output will be rendered with rounded
 corners, as if an alpha transparency mask had been applied. The value
@@ -7652,7 +7653,7 @@ clipping of very bright details, but can improve the dynamic brightness
 range of scenes with very bright isolated highlights. Values other than 100
 come with a small performance penalty. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--hdr-peak-decay-rate=&lt;0.0..1000.0&gt;</span></tt></dt>
-<dd>The decay rate used for the HDR peak detection algorithm (default: 100.0).
+<dd>The decay rate used for the HDR peak detection algorithm (default: 20.0).
 This is only relevant when <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> is enabled. Higher values
 make the peak decay more slowly, leading to more stable values at the cost
 of more &quot;eye adaptation&quot;-like effects (although this is mitigated somewhat
@@ -7663,7 +7664,7 @@ to excessive flicker. (In signal theory terms, this controls the time
 constant &quot;tau&quot; of an IIR low pass filter)</dd>
 <dt><tt class="docutils literal"><span class="pre">--hdr-scene-threshold-low=&lt;0.0..100.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--hdr-scene-threshold-high=&lt;0.0..100.0&gt;</span></tt></dt>
 <dd>The lower and upper thresholds (in dB) for a brightness difference
-to be considered a scene change (default: 5.5 low, 10.0 high). This is only
+to be considered a scene change (default: 1.0 low, 3.0 high). This is only
 relevant when <tt class="docutils literal"><span class="pre">--hdr-compute-peak</span></tt> is enabled. Normally, small
 fluctuations in the frame brightness are compensated for by the peak
 averaging mechanism, but for large jumps in the brightness this can result
@@ -8483,10 +8484,11 @@ listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).
 supports extended scaling methods, dithering, color management, custom
 shaders, HDR, and more.</p>
 <p>See <a class="reference internal" href="#gpu-renderer-options">GPU renderer options</a> for options specific to this VO.</p>
-<p>By default, it tries to use fast and fail-safe settings. Use the
-<tt class="docutils literal"><span class="pre">gpu-hq</span></tt> profile to use this driver with defaults set to high quality
-rendering. The profile can be applied with <tt class="docutils literal"><span class="pre">--profile=gpu-hq</span></tt> and its
-contents can be viewed with <tt class="docutils literal"><span class="pre">--show-profile=gpu-hq</span></tt>.</p>
+<p>By default, mpv utilizes settings that balance quality and performance.
+Additionally, two predefined profiles are available: <tt class="docutils literal">fast</tt> for maximum
+performance and <tt class="docutils literal"><span class="pre">high-quality</span></tt> for superior rendering quality. You can
+apply a specific profile using the <tt class="docutils literal"><span class="pre">--profile=&lt;name&gt;</span></tt> option and inspect
+its contents using <tt class="docutils literal"><span class="pre">--show-profile=&lt;name&gt;</span></tt>.</p>
 <p>This VO abstracts over several possible graphics APIs and windowing
 contexts, which can be influenced using the <tt class="docutils literal"><span class="pre">--gpu-api</span></tt> and
 <tt class="docutils literal"><span class="pre">--gpu-context</span></tt> options.</p>
