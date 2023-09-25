@@ -9249,7 +9249,7 @@ handle the conversion.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">scaletempo[=option1:option2:...]</span></tt></dt>
 <dd><p class="first">Scales audio tempo without altering pitch, optionally synced to playback
-speed (default).</p>
+speed.</p>
 <p>This works by playing 'stride' ms of audio at normal speed then consuming
 'stride*scale' ms of input audio. It pieces the strides together by
 blending 'overlap'% of stride with audio following the previous stride. It
@@ -9318,7 +9318,10 @@ Changing playback speed would change pitch, leaving audio tempo at
 <dd><p class="first">Scales audio tempo without altering pitch.
 The algorithm is ported from chromium and uses the
 Waveform Similarity Overlap-and-add (WSOLA) method.
-It seems to achieve a higher audio quality than scaletempo and rubberband.</p>
+It seems to achieves higher audio quality than scaletempo, and rubberband R2
+engine, or <tt class="docutils literal">engine=faster</tt>. This filter is inserted automatically if
+<tt class="docutils literal"><span class="pre">audio-pitch-correction</span></tt> option is used (on by default) when the playback
+speed is changed.</p>
 <p>By default, the <tt class="docutils literal"><span class="pre">search-interval</span></tt> and <tt class="docutils literal"><span class="pre">window-size</span></tt> parameters
 have the same values as in chromium.</p>
 <dl class="last docutils">
@@ -9335,12 +9338,30 @@ and <tt class="docutils literal">&lt;speed&gt; != 0</tt>. (default: 4.0)</dd>
 </dd>
 <dt><tt class="docutils literal">rubberband</tt></dt>
 <dd><p class="first">High quality pitch correction with librubberband. This can be used in place
-of <tt class="docutils literal">scaletempo</tt>, and will be used to adjust audio pitch when playing
-at speed different from normal. It can also be used to adjust audio pitch
-without changing playback speed.</p>
+of <tt class="docutils literal">scaletempo</tt> and <tt class="docutils literal">scaletempo2</tt>, and will be used to adjust audio pitch
+when playing at speed different from normal. It can also be used to adjust
+audio pitch without changing playback speed.</p>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">&lt;pitch-scale&gt;</span></tt></dt>
-<dd>Sets the pitch scaling factor. Frequencies are multiplied by this value.</dd>
+<dt><tt class="docutils literal"><span class="pre">pitch-scale=&lt;amount&gt;</span></tt></dt>
+<dd>Sets the pitch scaling factor. Frequencies are multiplied by this value.
+(default: 1.0)</dd>
+<dt><tt class="docutils literal"><span class="pre">engine=&lt;faster|finer&gt;</span></tt></dt>
+<dd><p class="first">Select the core Rubberband engine to be used. There are two available:</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Faster:</th><td class="field-body">This is the Rubberband R2 engine. It uses significantly less
+CPU than the Finer (R3) engine.</td>
+</tr>
+<tr class="field"><th class="field-name">Finer:</th><td class="field-body">This is the Rubberband R3 engine. This engine is only available
+with librubberband version 3 or newer. This produces significantly
+higher quality output, at the cost of higher CPU usage. (Default
+if available)</td>
+</tr>
+</tbody>
+</table>
+</dd>
 </dl>
 <p>This filter has a number of additional sub-options. You can list them with
 <tt class="docutils literal">mpv <span class="pre">--af=rubberband=help</span></tt>. This will also show the default values
@@ -9348,6 +9369,8 @@ for each option. The options are not documented here, because they are
 merely passed to librubberband. Look at the librubberband documentation
 to learn what each option does:
 <a class="reference external" href="https://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html">https://breakfastquay.com/rubberband/code-doc/classRubberBand_1_1RubberBandStretcher.html</a>
+Do note that certain options are only applicable to one of R2 (faster) and
+R3 (finer) engines.
 (The mapping of the mpv rubberband filter sub-option names and values to
 those of librubberband follows a simple pattern: <tt class="docutils literal">&quot;Option&quot; + Name + Value</tt>.)</p>
 <p>This filter supports the following <tt class="docutils literal"><span class="pre">af-command</span></tt> commands:</p>
