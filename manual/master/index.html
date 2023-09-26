@@ -176,9 +176,9 @@ later will resume at the old playback position if possible. See
 <dt>Shift+g and Shift+f</dt>
 <dd>Adjust subtitle font size by +/- 10%.</dd>
 <dt>u</dt>
-<dd>Switch between applying no style overrides to SSA/ASS subtitles, and
-overriding them almost completely with the normal subtitle style. See
-<tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> for more info.</dd>
+<dd>Switch between applying only <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt> overrides (default) to SSA/ASS
+subtitles, and overriding them almost completely with the normal subtitle
+style. See <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> for more info.</dd>
 <dt>V</dt>
 <dd>Toggle subtitle VSFilter aspect compatibility mode. See
 <tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-aspect-compat</span></tt> for more info.</dd>
@@ -6349,13 +6349,6 @@ excessive ringing artifacts in the temporal domain (which typically
 manifest themselves as short flashes or fringes of black, mostly around
 moving edges) in exchange for potentially adding more blur. The default for
 <tt class="docutils literal"><span class="pre">--tscale-clamp</span></tt> is 1.0, the others default to 0.0.</dd>
-<dt><tt class="docutils literal"><span class="pre">--scale-cutoff=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-cutoff=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-cutoff=&lt;value&gt;</span></tt></dt>
-<dd>Cut off the filter kernel prematurely once the value range drops below
-this threshold. Doing so allows more aggressive pruning of skippable
-coefficients by disregarding parts of the LUT which are effectively zeroed
-out by the window function. Only affects polar (EWA) filters. The default
-is 0.001 for each, which is perceptually transparent but provides a 10%-20%
-speedup, depending on the exact radius and filter kernel chosen.</dd>
 <dt><tt class="docutils literal"><span class="pre">--scale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-wtaper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-taper=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-wtaper=&lt;value&gt;</span></tt></dt>
 <dd>Kernel/window taper factor. Increasing this flattens the filter function.
 Value range is 0 to 1. A value of 0 (the default) means no flattening, a
@@ -6396,13 +6389,6 @@ parameters:</p>
 <dd>Scale parameter (t). Increasing this makes the window wider. Defaults
 to 1.</dd>
 </dl>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">--scaler-lut-size=&lt;4..10&gt;</span></tt></dt>
-<dd><p class="first">Set the size of the lookup texture for scaler kernels (default: 6). The
-actual size of the texture is <tt class="docutils literal">2^N</tt> for an option value of <tt class="docutils literal">N</tt>. So the
-lookup texture with the default setting uses 64 samples.</p>
-<p class="last">All weights are linearly interpolated from those samples, so increasing
-the size of lookup table might improve the accuracy of scaler.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--scaler-resizes-only</span></tt></dt>
 <dd>Disable the scaler if the video image is not resized. In that case,
@@ -13049,7 +13035,7 @@ which set OSD messages.</p>
 processed for C escape sequences before passing it to the OSD code. See
 <a class="reference internal" href="#flat-command-syntax">Flat command syntax</a> for details.</p>
 <p class="last">A list of tags can be found here:
-<a class="reference external" href="https://aeg-dev.github.io/AegiSite/docs/3.2/ass_tags/">https://aeg-dev.github.io/AegiSite/docs/3.2/ass_tags/</a></p>
+<a class="reference external" href="https://aegisub.org/docs/latest/ass_tags/">https://aegisub.org/docs/latest/ass_tags/</a></p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">vo-configured</span></tt></dt>
 <dd>Whether the VO is configured right now. Usually this corresponds to whether
