@@ -271,9 +271,9 @@ in the mpv git repository.</p>
 <dt>Forward/Back button</dt>
 <dd>Skip to next/previous entry in playlist.</dd>
 <dt>Wheel up/down</dt>
-<dd>Seek forward/backward 10 seconds.</dd>
-<dt>Wheel left/right</dt>
 <dd>Decrease/increase volume.</dd>
+<dt>Wheel left/right</dt>
+<dd>Seek forward/backward 10 seconds.</dd>
 </dl>
 </div>
 </div>
@@ -3085,9 +3085,22 @@ become visible before starting to render the next frame. (Default: 3)</dd>
 <h2>Audio</h2>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--audio-pitch-correction=&lt;yes|no&gt;</span></tt></dt>
-<dd>If this is enabled (default), playing with a speed different from normal
-automatically inserts the <tt class="docutils literal">scaletempo2</tt> audio filter. For details, see
-audio filter section.</dd>
+<dd><p class="first">If this is enabled (default), playing with a speed different from normal
+automatically inserts the <tt class="docutils literal">scaletempo2</tt> audio filter. You can insert
+filters besides <tt class="docutils literal">scaletempo2</tt> and modify their params using
+<cite>Conditional auto profiles</cite>:</p>
+<pre class="literal-block">
+[af_insert]
+profile-cond=speed ~= 1
+profile-restore=copy
+af-add=scaletempo2=search-interval=50 # Insert filter and params here.
+</pre>
+<p class="last">Filters set this way replace the <tt class="docutils literal">scaletempo2</tt> default, instead of
+overlapping with it. If there are multiple audio filters inserted that can do
+pitch correction, then only the last one in the filter chain is used.
+For details on the specifics of each available filter, see the audio filter
+section.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--audio-device=&lt;name&gt;</span></tt></dt>
 <dd><p class="first">Use the given audio device. This consists of the audio output name, e.g.
 <tt class="docutils literal">alsa</tt>, followed by <tt class="docutils literal">/</tt>, followed by the audio output specific device
@@ -8022,6 +8035,26 @@ other options such as e.g. user agent are not available with all protocols,
 and printing errors for unknown options would end up being too noisy.)</p>
 <p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--backdrop-type=&lt;auto|none|mica|acrylic|mica-alt&gt;</span></tt></dt>
+<dd><p class="first">(Windows only)
+Controls the backdrop/border style.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">auto:</th><td class="field-body">Default Windows behavior</td>
+</tr>
+<tr class="field"><th class="field-name">none:</th><td class="field-body">The backdrop will be black or white depending on the system's theme settings.</td>
+</tr>
+<tr class="field"><th class="field-name">mica:</th><td class="field-body">Enables the Mica style, which is the default on Windows 11.</td>
+</tr>
+<tr class="field"><th class="field-name">acrylic:</th><td class="field-body">Enables the Acrylic style (frosted glass look).</td>
+</tr>
+<tr class="field"><th class="field-name">mica-alt:</th><td class="field-body">Same as Mica, except reversed.</td>
+</tr>
+</tbody>
+</table>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--window-affinity=&lt;default|excludefromcmcapture|monitor&gt;</span></tt></dt>
 <dd><p class="first">(Windows only)
 Controls the window affinity behavior of mpv.</p>
@@ -8191,11 +8224,11 @@ will fail (you can add <tt class="docutils literal">scale</tt> filters before th
 to fix the size).
 To load a video track from another file, you can use
 <tt class="docutils literal"><span class="pre">--external-file=other.mkv</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">--lavfi-complex='[vid1]</span> [vid2] [vid3] hstack=inputs=3 [vo]'</tt>
+Use the inputs option to stack more than 2 tracks.</li>
 <li><tt class="docutils literal"><span class="pre">--lavfi-complex='[aid1]</span> asplit [t1] [ao] ; [t1] showvolume [t2] ; [vid1] [t2] overlay [vo]'</tt>
 Play audio track 1, and overlay the measured volume for each speaker
 over video track 1.</li>
-<li><tt class="docutils literal"><span class="pre">null://</span> <span class="pre">--lavfi-complex='life</span> [vo]'</tt>
-A libavfilter source-only filter (Conways' Life Game).</li>
 </ul>
 </div>
 <p class="last">See the FFmpeg libavfilter documentation for details on the available
@@ -9315,7 +9348,7 @@ have the same values as in chromium.</p>
 <dd>Mute audio if the playback speed is below <tt class="docutils literal">&lt;speed&gt;</tt>. (default: 0.25)</dd>
 <dt><tt class="docutils literal"><span class="pre">max-speed=&lt;speed&gt;</span></tt></dt>
 <dd>Mute audio if the playback speed is above <tt class="docutils literal">&lt;speed&gt;</tt>
-and <tt class="docutils literal">&lt;speed&gt; != 0</tt>. (default: 4.0)</dd>
+and <tt class="docutils literal">&lt;speed&gt; != 0</tt>. (default: 8.0)</dd>
 <dt><tt class="docutils literal"><span class="pre">search-interval=&lt;amount&gt;</span></tt></dt>
 <dd>Length in milliseconds to search for best overlap position. (default: 30)</dd>
 <dt><tt class="docutils literal"><span class="pre">window-size=&lt;amount&gt;</span></tt></dt>
