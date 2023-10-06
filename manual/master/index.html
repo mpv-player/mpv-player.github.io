@@ -11506,15 +11506,18 @@ You access a pixel with <tt class="docutils literal">byte_index = y * stride + x
 <p class="last">The <tt class="docutils literal">flags</tt> argument is like the first argument to <tt class="docutils literal">screenshot</tt> and
 supports <tt class="docutils literal">subtitles</tt>, <tt class="docutils literal">video</tt>, <tt class="docutils literal">window</tt>.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">vf-command</span> &lt;label&gt; &lt;command&gt; &lt;argument&gt;</tt></dt>
-<dd><p class="first">Send a command to the filter with the given <tt class="docutils literal">&lt;label&gt;</tt>. Use <tt class="docutils literal">all</tt> to send
-it to all filters at once. The command and argument string is filter
-specific. Currently, this only works with the <tt class="docutils literal">lavfi</tt> filter - see
-the libavfilter documentation for which commands a filter supports.</p>
-<p class="last">Note that the <tt class="docutils literal">&lt;label&gt;</tt> is a mpv filter label, not a libavfilter filter
-name.</p>
+<dt><tt class="docutils literal"><span class="pre">vf-command</span> &lt;label&gt; &lt;command&gt; &lt;argument&gt; [&lt;target&gt;]</tt></dt>
+<dd><p class="first">Send a command to the filter. Note that currently, this only works with
+the <tt class="docutils literal">lavfi</tt> filter. Refer to the libavfilter documentation for the list
+of supported commands for each filter.</p>
+<p><tt class="docutils literal">&lt;label&gt;</tt> is a mpv filter label, use <tt class="docutils literal">all</tt> to send it to all filters
+at once.</p>
+<p><tt class="docutils literal">&lt;command&gt;</tt> and <tt class="docutils literal">&lt;argument&gt;</tt> are filter-specific strings.</p>
+<p class="last"><tt class="docutils literal">&lt;target&gt;</tt> is a filter or filter instance name and defaults to <tt class="docutils literal">all</tt>.
+Note that the target is an additional specifier for filters that
+support them, such as complex <tt class="docutils literal">lavfi</tt> filter chains.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">af-command</span> &lt;label&gt; &lt;command&gt; &lt;argument&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">af-command</span> &lt;label&gt; &lt;command&gt; &lt;argument&gt; [&lt;target&gt;]</tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">vf-command</span></tt>, but for audio filters.</dd>
 <dt><tt class="docutils literal"><span class="pre">apply-profile</span> &lt;name&gt; [&lt;mode&gt;]</tt></dt>
 <dd><p class="first">Apply the contents of a named profile. This is like using <tt class="docutils literal">profile=name</tt>
