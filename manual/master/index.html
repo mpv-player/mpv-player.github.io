@@ -673,29 +673,33 @@ configuration directory (e.g. <tt class="docutils literal">/etc/mpv</tt> or <tt 
 user-specific one is <tt class="docutils literal"><span class="pre">~/.config/mpv/mpv.conf</span></tt>. For details and platform
 specifics (in particular Windows paths) see the <a class="reference internal" href="#files">FILES</a> section.</p>
 <p>User-specific options override system-wide options and options given on the
-command line override either. The syntax of the configuration files is
-<tt class="docutils literal">option=value</tt>. Everything after a <em>#</em> is considered a comment. Options
-that work without values can be enabled by setting them to <em>yes</em> and disabled by
-setting them to <em>no</em>. Even suboptions can be specified in this way.</p>
+command line override both. The syntax of the configuration files is
+<tt class="docutils literal">option=value</tt>. Everything after a <em>#</em> is considered a comment. Options that
+work without values can be enabled by setting them to <em>yes</em> and disabled by
+setting them to <em>no</em>, and if the value is omitted, <em>yes</em> is implied. Even
+suboptions can be specified in this way.</p>
 <div class="admonition admonition-example-configuration-file">
 <p class="first admonition-title">Example configuration file</p>
 <pre class="last literal-block">
-# Use GPU-accelerated video output by default.
-vo=gpu
-# Use quotes for text that can contain spaces:
-term-status-msg=&quot;Time: ${time-pos}&quot;
+# Don't allow new windows to be larger than the screen.
+autofit-larger=100%x100%
+# Enable hardware decoding if available, =yes is implied.
+hwdec
+# Spaces don't have to be escaped.
+osd-playing-msg=File: ${filename}
 </pre>
 </div>
 </div>
-<div class="section" id="escaping-spaces-and-special-characters">
-<h2>Escaping spaces and special characters</h2>
-<p>This is done like with command line options. The shell is not involved here,
-but option values still need to be quoted as a whole if it contains certain
-characters like spaces. A config entry can be quoted with <tt class="docutils literal">&quot;</tt>,
-as well as with the fixed-length syntax (<tt class="docutils literal">%n%</tt>) mentioned before. This is like
-passing the exact contents of the quoted string as command line option. C-style
-escapes are currently _not_ interpreted on this level, although some options do
-this manually. (This is a mess and should probably be changed at some point.)</p>
+<div class="section" id="escaping-special-characters">
+<h2>Escaping special characters</h2>
+<p>This is done like with command line options. A config entry can be quoted with
+<tt class="docutils literal">&quot;</tt>, <tt class="docutils literal">'</tt>, as well as with the fixed-length syntax (<tt class="docutils literal">%n%</tt>) mentioned
+before. This is like passing the exact contents of the quoted string as a
+command line option. C-style escapes are currently _not_ interpreted on this
+level, although some options do this manually (this is a mess and should
+probably be changed at some point). The shell is not involved here, so option
+values only need to be quoted to escape <tt class="docutils literal">#</tt> and <tt class="docutils literal">\</tt>, <tt class="docutils literal">&quot;</tt>, <tt class="docutils literal">'</tt> or <tt class="docutils literal">%</tt>
+at the beginning of the value, and leading and trailing whitespace.</p>
 </div>
 <div class="section" id="putting-command-line-options-into-the-configuration-file">
 <h2>Putting Command Line Options into the Configuration File</h2>
@@ -722,7 +726,7 @@ is a small guide:</p>
 <td><tt class="docutils literal">opt=val</tt></td>
 </tr>
 <tr><td><tt class="docutils literal"><span class="pre">-opt</span> &quot;has spaces&quot;</tt></td>
-<td><tt class="docutils literal"><span class="pre">opt=&quot;has</span> spaces&quot;</tt></td>
+<td><tt class="docutils literal">opt=has spaces</tt></td>
 </tr>
 </tbody>
 </table>
@@ -3875,8 +3879,6 @@ used to guess the charset. (If mpv was not compiled with uchardet, then
 <p>The pseudo codepage <tt class="docutils literal"><span class="pre">UTF-8-BROKEN</span></tt> is used internally. If it's set,
 subtitles are interpreted as UTF-8 with &quot;Latin 1&quot; as fallback for bytes
 which are not valid UTF-8 sequences. iconv is never involved in this mode.</p>
-<p>This option changed in mpv 0.23.0. Support for the old syntax was fully
-removed in mpv 0.24.0.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">This works for text subtitle files only. Other types of subtitles (in
@@ -4945,8 +4947,6 @@ mpv sample-720x576.yuv --demuxer=rawvideo \
 <tt class="docutils literal"><span class="pre">--vd</span></tt> (but it does not accept decoder names).</dd>
 <dt><tt class="docutils literal"><span class="pre">--demuxer-rawvideo-size=&lt;value&gt;</span></tt></dt>
 <dd>Frame size in bytes when using <tt class="docutils literal"><span class="pre">--demuxer=rawvideo</span></tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">--demuxer-cue-codepage=&lt;codepage&gt;</span></tt></dt>
-<dd>Specify the CUE sheet codepage. (See <tt class="docutils literal"><span class="pre">--sub-codepage</span></tt> for details.)</dd>
 <dt><tt class="docutils literal"><span class="pre">--demuxer-max-bytes=&lt;bytesize&gt;</span></tt></dt>
 <dd><p class="first">This controls how much the demuxer is allowed to buffer ahead. The demuxer
 will normally try to read ahead as much as necessary, or as much is
@@ -8238,10 +8238,9 @@ over video track 1.</li>
 filters.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--metadata-codepage=&lt;codepage&gt;</span></tt></dt>
-<dd><p class="first">Codepage for various input metadata (default: <tt class="docutils literal"><span class="pre">utf-8</span></tt>). This affects how
-file tags, chapter titles, etc. are interpreted. You can for example set
-this to <tt class="docutils literal">auto</tt> to enable autodetection of the codepage. (This is not the
-default because non-UTF-8 codepages are an obscure fringe use-case.)</p>
+<dd><p class="first">Codepage for various input metadata (default: <tt class="docutils literal">auto</tt>). This affects how
+file tags, chapter titles, etc. are interpreted. In most cases, this merely
+evaluates to UTF-8 as non-UTF-8 codepages are obscure.</p>
 <p>See <tt class="docutils literal"><span class="pre">--sub-codepage</span></tt> option on how codepages are specified and further
 details regarding autodetection and codepage conversion. (The underlying
 code is the same.)</p>
@@ -9286,8 +9285,8 @@ speed. (default: 1.0)</dd>
 cause noticeable skips at high scale amounts and an echo at low scale
 amounts. Very low values will alter pitch. Increasing improves
 performance. (default: 60)</dd>
-<dt><tt class="docutils literal"><span class="pre">overlap=&lt;percent&gt;</span></tt></dt>
-<dd>Percentage of stride to overlap. Decreasing improves performance.
+<dt><tt class="docutils literal"><span class="pre">overlap=&lt;factor&gt;</span></tt></dt>
+<dd>Factor of stride to overlap. Decreasing improves performance.
 (default: .20)</dd>
 <dt><tt class="docutils literal"><span class="pre">search=&lt;amount&gt;</span></tt></dt>
 <dd>Length in milliseconds to search for best overlap position. Decreasing
