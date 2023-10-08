@@ -12066,8 +12066,13 @@ of the most recent packet passed to a decoder.</dd>
 <dd><p class="first">Duration of the current file in seconds. If the duration is unknown, the
 property is unavailable. Note that the file duration is not always exactly
 known, so this is an estimate.</p>
-<p class="last">This replaces the <tt class="docutils literal">length</tt> property, which was deprecated after the
+<p>This replaces the <tt class="docutils literal">length</tt> property, which was deprecated after the
 mpv 0.9 release. (The semantics are the same.)</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">duration/full</tt></dt>
+<dd><tt class="docutils literal">duration</tt> with milliseconds.</dd>
+</dl>
 </dd>
 <dt><tt class="docutils literal">avsync</tt></dt>
 <dd>Last A/V synchronization difference. Unavailable if audio or video is
@@ -12105,26 +12110,56 @@ calculating it out of other properties is that it properly falls back to
 estimating the playback position from the byte position, if the file
 duration is not known.</dd>
 <dt><tt class="docutils literal"><span class="pre">time-pos</span></tt> (RW)</dt>
-<dd>Position in current file in seconds.</dd>
+<dd><p class="first">Position in current file in seconds.</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">time-pos/full</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">time-pos</span></tt> with milliseconds.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">time-start</span></tt></dt>
 <dd>Deprecated. Always returns 0. Before mpv 0.14, this used to return the start
 time of the file (could affect e.g. transport streams). See
 <tt class="docutils literal"><span class="pre">--rebase-start-time</span></tt> option.</dd>
 <dt><tt class="docutils literal"><span class="pre">time-remaining</span></tt></dt>
-<dd>Remaining length of the file in seconds. Note that the file duration is not
-always exactly known, so this is an estimate.</dd>
+<dd><p class="first">Remaining length of the file in seconds. Note that the file duration is not
+always exactly known, so this is an estimate.</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">time-remaining/full</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">time-remaining</span></tt> with milliseconds.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">audio-pts</span></tt></dt>
-<dd>Current audio playback position in current file in seconds. Unlike time-pos,
+<dd><p class="first">Current audio playback position in current file in seconds. Unlike time-pos,
 this updates more often than once per frame. For audio-only files, it is
 mostly equivalent to time-pos, while for video-only files this property is
-not available.</dd>
+not available.</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">audio-pts/full</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">audio-pts</span></tt> with milliseconds.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">playtime-remaining</span></tt></dt>
-<dd><tt class="docutils literal"><span class="pre">time-remaining</span></tt> scaled by the current <tt class="docutils literal">speed</tt>.</dd>
+<dd><p class="first"><tt class="docutils literal"><span class="pre">time-remaining</span></tt> scaled by the current <tt class="docutils literal">speed</tt>.</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">playtime-remaining/full</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">playtime-remaining</span></tt> with milliseconds.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">playback-time</span></tt> (RW)</dt>
-<dd>Position in current file in seconds. Unlike <tt class="docutils literal"><span class="pre">time-pos</span></tt>, the time is
+<dd><p class="first">Position in current file in seconds. Unlike <tt class="docutils literal"><span class="pre">time-pos</span></tt>, the time is
 clamped to the range of the file. (Inaccurate file durations etc. could
 make it go out of range. Useful on attempts to seek outside of the file,
-as the seek target time is considered the current position during seeking.)</dd>
+as the seek target time is considered the current position during seeking.)</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">playback-time/full</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">playback-time</span></tt> with milliseconds.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal">chapter</tt> (RW)</dt>
 <dd>Current chapter number. The number of the first chapter is 0.</dd>
 <dt><tt class="docutils literal">edition</tt> (RW)</dt>
@@ -14411,8 +14446,9 @@ value is scaled with the reported HiDPI scale.</p>
 </dd>
 <dt><tt class="docutils literal">font</tt></dt>
 <dd><p class="first">Default: unset (picks a hardcoded font depending on detected platform)</p>
-<p class="last">Set the font used for the REPL and the console. This probably doesn't
-have to be a monospaced font.</p>
+<p class="last">Set the font used for the REPL and the console.
+This has to be a monospaced font for the completion suggestions to be
+aligned correctly.</p>
 </dd>
 <dt><tt class="docutils literal">font_size</tt></dt>
 <dd><p class="first">Default: 16</p>
@@ -14425,7 +14461,13 @@ multiplied by &quot;scale&quot;.</p>
 </dd>
 <dt><tt class="docutils literal">history_dedup</tt></dt>
 <dd><p class="first">Default: true</p>
-<p class="last">Remove duplicate entries in history as to only keep the latest one.</p>
+<p class="last">Remove duplicate entries in history as to only keep the latest one.
+multiplied by &quot;scale.&quot;</p>
+</dd>
+<dt><tt class="docutils literal">font_hw_ratio</tt></dt>
+<dd><p class="first">Default: 2.0</p>
+<p class="last">The ratio of font height to font width.
+Adjusts table width of completion suggestions.</p>
 </dd>
 </dl>
 </div>
