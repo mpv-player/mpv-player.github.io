@@ -2553,7 +2553,8 @@ or <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> (iOS 9
 </tr>
 <tr class="field"><th class="field-name">dxva2-copy:</th><td class="field-body">copies video back to system RAM (Windows only)</td>
 </tr>
-<tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with X11, or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
+<tr class="field"><th class="field-name">vdpau:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--gpu-context=x11</span></tt>, or
+<tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt> (Linux only)</td>
 </tr>
 <tr class="field"><th class="field-name">vdpau-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
 </tr>
@@ -14353,7 +14354,7 @@ window. It also shows log messages. It can be disabled entirely using the
 <dl class="docutils">
 <dt>`</dt>
 <dd>Show the console.</dd>
-<dt>ESC</dt>
+<dt>ESC and Ctrl+[</dt>
 <dd>Hide the console.</dd>
 <dt>ENTER, Ctrl+J and Ctrl+M</dt>
 <dd>Run the typed command.</dd>
@@ -15069,13 +15070,13 @@ entries independently).</p>
 </dl>
 <p>Example implementation:</p>
 <pre class="literal-block">
-require 'mp.options'
 local options = {
     optionA = &quot;defaultvalueA&quot;,
     optionB = -0.5,
     optionC = true,
 }
-read_options(options, &quot;myscript&quot;)
+
+require &quot;mp.options&quot;.read_options(options, &quot;myscript&quot;)
 print(options.optionA)
 </pre>
 <p>The config file will be stored in <tt class="docutils literal"><span class="pre">script-opts/identifier.conf</span></tt> in mpv's user
