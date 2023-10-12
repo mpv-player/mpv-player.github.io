@@ -14853,15 +14853,18 @@ the user's state to the current value of the property.</p>
 <dd>Undo <tt class="docutils literal"><span class="pre">mp.observe_property(...,</span> fn)</tt>. This removes all property handlers
 that are equal to the <tt class="docutils literal">fn</tt> parameter. This uses normal Lua <tt class="docutils literal">==</tt>
 comparison, so be careful when dealing with closures.</dd>
-<dt><tt class="docutils literal">mp.add_timeout(seconds, fn)</tt></dt>
+<dt><tt class="docutils literal">mp.add_timeout(seconds, fn [, disabled])</tt></dt>
 <dd><p class="first">Call the given function fn when the given number of seconds has elapsed.
 Note that the number of seconds can be fractional. For now, the timer's
 resolution may be as low as 50 ms, although this will be improved in the
 future.</p>
+<p>If the <tt class="docutils literal">disabled</tt> argument is set to <tt class="docutils literal">true</tt> or a truthy value, the
+timer will wait to be manually started with a call to its <tt class="docutils literal">resume()</tt>
+method.</p>
 <p>This is a one-shot timer: it will be removed when it's fired.</p>
 <p class="last">Returns a timer object. See <tt class="docutils literal">mp.add_periodic_timer</tt> for details.</p>
 </dd>
-<dt><tt class="docutils literal">mp.add_periodic_timer(seconds, fn)</tt></dt>
+<dt><tt class="docutils literal">mp.add_periodic_timer(seconds, fn [, disabled])</tt></dt>
 <dd><p class="first">Call the given function periodically. This is like <tt class="docutils literal">mp.add_timeout</tt>, but
 the timer is re-added after the function fn is run.</p>
 <dl class="docutils">
