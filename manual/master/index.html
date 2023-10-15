@@ -7222,6 +7222,25 @@ rectangle and ignores the menu bar and Dock. Other previous restrictions
 still apply, like the window can't be placed on top of the menu bar etc.</p>
 <p class="last">macOS only.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--macos-render-timer=&lt;timer&gt;</span></tt></dt>
+<dd><p class="first">Sets the mode (default: callback) for syncing the rendering of frames to the display's
+vertical refresh rate.
+macOS and Vulkan (macvk) only.</p>
+<p><tt class="docutils literal">&lt;timer&gt;</tt> can be one of the following:</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">callback:</th><td class="field-body">Syncs to the CVDisplayLink callback</td>
+</tr>
+<tr class="field"><th class="field-name">precise:</th><td class="field-body">Syncs to the time of the next vertical display refresh reported by the
+CVDisplayLink callback provided information</td>
+</tr>
+<tr class="field"><th class="field-name">system:</th><td class="field-body">No manual syncing, depend on the layer mechanic and the next drawable</td>
+</tr>
+</tbody>
+</table>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--android-surface-size=&lt;WxH&gt;</span></tt></dt>
 <dd><p class="first">Set dimensions of the rendering surface used by the Android gpu context.
 Needs to be set by the embedding application if the dimensions change during
@@ -7271,6 +7290,8 @@ manager.</dd>
 <dd>X11/EGL</dd>
 <dt>android</dt>
 <dd>Android/EGL. Requires <tt class="docutils literal"><span class="pre">--wid</span></tt> be set to an <tt class="docutils literal">android.view.Surface</tt>.</dd>
+<dt>macvk</dt>
+<dd>Vulkan on macOS with a metal surface through a translation layer (experimental)</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-api=&lt;type&gt;</span></tt></dt>
