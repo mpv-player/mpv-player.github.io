@@ -517,9 +517,8 @@ escaping.</p>
 <div class="section" id="string-list-and-path-list-options">
 <h3>String list and path list options</h3>
 <p>String lists are separated by <tt class="docutils literal">,</tt>. The strings are not parsed or interpreted
-by the option system itself. However, most</p>
-<p>Path or file list options use <tt class="docutils literal">:</tt> (Unix) or <tt class="docutils literal">;</tt> (Windows) as separator,
-instead of <tt class="docutils literal">,</tt>.</p>
+by the option system itself. However, most path or file list options use <tt class="docutils literal">:</tt>
+(Unix) or <tt class="docutils literal">;</tt> (Windows) as separator, instead of <tt class="docutils literal">,</tt>.</p>
 <p>They support the following operations:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -595,7 +594,7 @@ normally does not matter, although in some cases the order might matter.</p>
 <p>Keys are unique within the list. If an already present key is set, the existing
 key is removed before the new value is appended.</p>
 <p>If you want to pass a value without interpreting it for escapes or <tt class="docutils literal">,</tt>, it is
-recommended to use the <tt class="docutils literal"><span class="pre">-add</span></tt> variant. When using libmpv, prefer using
+recommended to use the <tt class="docutils literal"><span class="pre">-append</span></tt> variant. When using libmpv, prefer using
 <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt>; when using a scripting backend or the JSON IPC, use an
 appropriate structured data type.</p>
 <p>Prior to mpv 0.33, <tt class="docutils literal">:</tt> was also recognized as separator by <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
@@ -2086,9 +2085,6 @@ when starting next file.)</p>
 mpv will reset the value of these options on playback start to the initial
 value. The initial value is either the default value, or as set by the
 config file or command line.</p>
-<p>In some cases, this might not work as expected. For example, <tt class="docutils literal"><span class="pre">--volume</span></tt>
-will only be reset if it is explicitly set in the config file or the
-command line.</p>
 <p>The special name <tt class="docutils literal">all</tt> resets as many options as possible.</p>
 <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition admonition-examples last">
