@@ -1106,7 +1106,8 @@ are quite obscure, and may change every mpv release).</p>
 this with <tt class="docutils literal"><span class="pre">--untimed</span></tt>, but it will likely break, unless the stream has no
 audio, and the input feeds data to the player at a constant rate.</p>
 <p>Another common problem is with MJPEG streams. These do not signal the correct
-framerate. Using <tt class="docutils literal"><span class="pre">--untimed</span></tt> or <tt class="docutils literal"><span class="pre">--no-correct-pts</span> <span class="pre">--fps=60</span></tt> might help.</p>
+framerate. Using <tt class="docutils literal"><span class="pre">--untimed</span></tt> or <tt class="docutils literal"><span class="pre">--no-correct-pts</span> <span class="pre">--container-fps-override=60</span></tt>
+might help.</p>
 <p>For livestreams, data can build up due to pausing the stream, due to slightly
 lower playback rate, or &quot;buffering&quot; pauses. If the demuxer cache is enabled,
 these can be skipped manually. The experimental <tt class="docutils literal"><span class="pre">drop-buffers</span></tt> command can
@@ -1798,7 +1799,7 @@ work with OGM or XML chapters directly.</p>
 With <tt class="docutils literal">no</tt>, playback will continue in video-only or audio-only mode if one
 of them fails. This doesn't affect playback of audio-only or video-only
 files.</dd>
-<dt><tt class="docutils literal"><span class="pre">--play-dir=&lt;forward|+|backward|-&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--play-direction=&lt;forward|+|backward|-&gt;</span></tt></dt>
 <dd><p class="first">Control the playback direction (default: forward). Setting <tt class="docutils literal">backward</tt>
 will attempt to play the file in reverse direction, with decreasing
 playback time. If this is set on playback starts, playback will start from
@@ -1981,7 +1982,7 @@ operations.</p>
 <dt><tt class="docutils literal"><span class="pre">--demuxer-backward-playback-step=&lt;seconds&gt;</span></tt></dt>
 <dd><p class="first">Number of seconds the demuxer should seek back to get new packets during
 backward playback (default: 60). This is useful for tuning backward
-playback, see <tt class="docutils literal"><span class="pre">--play-dir</span></tt> for details.</p>
+playback, see <tt class="docutils literal"><span class="pre">--play-direction</span></tt> for details.</p>
 <p>Setting this to a very low value or 0 may make the player think seeking is
 broken, or may make it perform multiple seeks.</p>
 <p class="last">Setting this to a high value may lead to quadratic runtime behavior.</p>
@@ -2276,7 +2277,7 @@ the file is played.</p>
 the player with Shift+Q.</p>
 <p class="last">See <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--watch-later-directory=&lt;path&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--watch-later-dir=&lt;path&gt;</span></tt></dt>
 <dd><p class="first">The directory in which to store the &quot;watch later&quot; temporary files.</p>
 <p class="last">If this option is unset, the files will be stored in a subdirectory
 named &quot;watch_later&quot; underneath the local state directory
@@ -2416,7 +2417,7 @@ frame, so if this is not done, there is some likeliness that the VO has
 to drop some frames if rendering the first frame takes longer than needed.</li>
 </ul>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--override-display-fps=&lt;fps&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--display-fps-override=&lt;fps&gt;</span></tt></dt>
 <dd><p class="first">Set the display FPS used with the <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> modes. By
 default, a detected value is used. Keep in mind that setting an incorrect
 value (even if slightly incorrect) can ruin video playback. On multi-monitor
@@ -2869,12 +2870,12 @@ OSC requirements better, too.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--correct-pts</span></tt>, <tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt></dt>
 <dd><tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt> switches mpv to a mode where video timing is
-determined using a fixed framerate value (either using the <tt class="docutils literal"><span class="pre">--fps</span></tt>
-option, or using file information). Sometimes, files with very broken
-timestamps can be played somewhat well in this mode. Note that video
-filters, subtitle rendering, seeking (including hr-seeks and backstepping),
-and audio synchronization can be completely broken in this mode.</dd>
-<dt><tt class="docutils literal"><span class="pre">--fps=&lt;float&gt;</span></tt></dt>
+determined using a fixed framerate value (either using the
+<tt class="docutils literal"><span class="pre">--container-fps-override</span></tt> option, or using file information). Sometimes,
+files with very broken timestamps can be played somewhat well in this mode.
+Note that video filters, subtitle rendering, seeking (including hr-seeks and
+backstepping), and audio synchronization can be completely broken in this mode.</dd>
+<dt><tt class="docutils literal"><span class="pre">--container-fps-override=&lt;float&gt;</span></tt></dt>
 <dd><p class="first">Override video framerate. Useful if the original value is wrong or missing.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
@@ -3621,14 +3622,14 @@ subtitles only.</p>
 loaded assuming a framerate of 23.976 at 25 FPS.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass-force-style=&lt;[Style.]Param=Value[,...]&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-ass-style-overrides=&lt;[Style.]Param=Value[,...]&gt;</span></tt></dt>
 <dd><p class="first">Override some style or script info parameters.</p>
 <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition admonition-examples">
 <p class="first admonition-title">Examples</p>
 <ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">--sub-ass-force-style=FontName=Arial,Default.Bold=1</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">--sub-ass-force-style=PlayResY=768</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">--sub-ass-style-overrides=FontName=Arial,Default.Bold=1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">--sub-ass-style-overrides=PlayResY=768</span></tt></li>
 </ul>
 </div>
 <div class="admonition note last">
@@ -5546,7 +5547,7 @@ an error text is inserted, unless a fallback is specified.</dd>
 <dd>Replaced with the <tt class="docutils literal">%</tt> character itself.</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--screenshot-directory=&lt;path&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--screenshot-dir=&lt;path&gt;</span></tt></dt>
 <dd><p class="first">Store screenshots in this directory. This path is joined with the filename
 generated by <tt class="docutils literal"><span class="pre">--screenshot-template</span></tt>. If the template filename is already
 absolute, the directory is ignored.</p>
@@ -6556,7 +6557,7 @@ and drivers, this only works reliably when in fullscreen mode. It may also
 require driver-specific hacks if using multiple monitors, to ensure mpv
 syncs to the right one. Compositing window managers can also lead to bad
 results, as can missing or incorrect display FPS information (see
-<tt class="docutils literal"><span class="pre">--override-display-fps</span></tt>).</p>
+<tt class="docutils literal"><span class="pre">--display-fps-override</span></tt>).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--vulkan-device=&lt;device</span> name|UUID&gt;</tt></dt>
 <dd>The name or UUID of the Vulkan device to use for rendering and presentation. Use
@@ -7648,7 +7649,7 @@ automatically if compute shaders and SSBOs are supported.</dd>
 frame when beneficial for performance. In particular, this is required to
 avoid an unnecessary FBO indirection when no advanced rendering is required
 otherwise. Has no effect if there already is an indirect pass, such as when
-advanced scaling is enabled. Defaults to on. (Only affects
+advanced scaling is enabled. Defaults to no. (Only affects
 <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, note that <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> always delays the peak.)</dd>
 <dt><tt class="docutils literal"><span class="pre">--hdr-peak-percentile=&lt;0.0..100.0&gt;</span></tt></dt>
 <dd>Which percentile of the input image brightness histogram to consider as the
@@ -10041,7 +10042,7 @@ video does not use square pixels (e.g. DVD).</dd>
 completely broken (e.g. 0 or NaN). Even if the value is correct,
 if another filter changes the real FPS (by dropping or inserting
 frames), the value of this variable will not be useful. Note that
-the <tt class="docutils literal"><span class="pre">--fps</span></tt> command line option overrides this value.</p>
+the <tt class="docutils literal"><span class="pre">--container-fps-override</span></tt> command line option overrides this value.</p>
 <p class="last">Useful for some filters which insist on having a FPS.</p>
 </dd>
 <dt><tt class="docutils literal">display_fps</tt></dt>
