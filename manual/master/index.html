@@ -2244,6 +2244,11 @@ https URLs also bypass the proxy. This is a limitation in FFmpeg.</p>
 </ul>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--js-memory-report=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable memory reporting for javascript scripts in the stats overlay.
+This is disabled by default because it has an overhead and increases
+memory usage. This option will only work if it is enabled before mpv is
+started.</dd>
 <dt><tt class="docutils literal"><span class="pre">--load-stats-overlay=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable the builtin script that shows useful playback information on a key
 binding (default: yes). By default, the <tt class="docutils literal">i</tt> key is used (<tt class="docutils literal">I</tt> to make
@@ -14350,8 +14355,8 @@ entries for scripts that have been inactive since the start of data collection
 are missing.</p>
 <p>Memory usage is approximate and does not reflect internal fragmentation.</p>
 <p>JS scripts memory reporting is disabled by default because collecting the data
-at the JS side has an overhead. It can be enabled by exporting the env var
-<tt class="docutils literal">MPV_LEAK_REPORT=1</tt> before starting mpv, and will increase JS memory usage.</p>
+at the JS side has an overhead and will increase memory usage. It can be
+enabled by setting the <tt class="docutils literal"><span class="pre">--js-memory-report</span></tt> option before starting mpv.</p>
 <p>If entries have <tt class="docutils literal">/time</tt> and <tt class="docutils literal">/cpu</tt> variants, the former gives the real time
 (monotonic clock), while the latter the thread CPU time (only if the
 corresponding pthread API works and is supported).</p>
