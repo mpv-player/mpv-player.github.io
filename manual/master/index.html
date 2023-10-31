@@ -549,9 +549,6 @@ by the option system itself. However, most path or file list options use <tt cla
 <tr><td>-remove</td>
 <td>Delete item if present (does not interpret escapes)</td>
 </tr>
-<tr><td>-del</td>
-<td>Delete 1 or more items by integer index (deprecated)</td>
-</tr>
 <tr><td>-toggle</td>
 <td>Append an item, or remove if if it already exists (no escapes)</td>
 </tr>
@@ -606,8 +603,8 @@ They often require complicated escaping. See <a class="reference internal" href=
 support the following operations:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="16%" />
-<col width="84%" />
+<col width="19%" />
+<col width="81%" />
 </colgroup>
 <thead valign="bottom">
 <tr><th class="head">Suffix</th>
@@ -632,9 +629,6 @@ support the following operations:</p>
 </tr>
 <tr><td>-remove</td>
 <td>Delete filter if present</td>
-</tr>
-<tr><td>-del</td>
-<td>Delete 1 or more filters by integer index or filter label (deprecated)</td>
 </tr>
 <tr><td>-toggle</td>
 <td>Append a filter, or remove if if it already exists</td>
@@ -2196,6 +2190,12 @@ master HLS playlist.</p>
 <tt class="docutils literal">all_formats</tt> is set to 'no', and the stream selection as done by
 youtube-dl (via <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt>) is used.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">thumbnails=&lt;all|best|none&gt;</span></tt></dt>
+<dd><p class="first">Add thumbnails as video tracks (default: none).</p>
+<p class="last">Thumbnails get downloaded when they are added as tracks, so 'all' can
+have a noticable impact on how long it takes to open the video when
+there are a lot of thumbnails.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">use_manifests=&lt;yes|no&gt;</span></tt></dt>
 <dd>Make mpv use the master manifest URL for formats like HLS and DASH,
 if available, allowing for video/audio selection in runtime (default:
@@ -2285,6 +2285,7 @@ the player with Shift+Q.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--watch-later-dir=&lt;path&gt;</span></tt></dt>
 <dd><p class="first">The directory in which to store the &quot;watch later&quot; temporary files.</p>
+<p><tt class="docutils literal"><span class="pre">--watch-later-directory</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--watch-later-dir</span></tt>.</p>
 <p class="last">If this option is unset, the files will be stored in a subdirectory
 named &quot;watch_later&quot; underneath the local state directory
 (usually <tt class="docutils literal"><span class="pre">~/.local/state/mpv/</span></tt>).</p>
@@ -2353,9 +2354,9 @@ operate on different codec lists.</p>
 <dt><tt class="docutils literal"><span class="pre">--vf=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
 <dd>Specify a list of video filters to apply to the video stream. See
 <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for details and descriptions of the available filters.
-The option variants <tt class="docutils literal"><span class="pre">--vf-add</span></tt>, <tt class="docutils literal"><span class="pre">--vf-pre</span></tt>, <tt class="docutils literal"><span class="pre">--vf-del</span></tt> and
-<tt class="docutils literal"><span class="pre">--vf-clr</span></tt> exist to modify a previously specified list, but you
-should not need these for typical use.</dd>
+The option variants <tt class="docutils literal"><span class="pre">--vf-add</span></tt>, <tt class="docutils literal"><span class="pre">--vf-pre</span></tt>, and <tt class="docutils literal"><span class="pre">--vf-clr</span></tt> exist
+to modify a previously specified list, but you should not need these for
+typical use.</dd>
 <dt><tt class="docutils literal"><span class="pre">--untimed</span></tt></dt>
 <dd>Do not sleep when outputting video frames. Useful for benchmarks when used
 with <tt class="docutils literal"><span class="pre">--no-audio.</span></tt></dd>
@@ -3159,9 +3160,9 @@ details and descriptions of available drivers.</dd>
 <dt><tt class="docutils literal"><span class="pre">--af=&lt;filter1[=parameter1:parameter2:...],filter2,...&gt;</span></tt></dt>
 <dd>Specify a list of audio filters to apply to the audio stream. See
 <a class="reference internal" href="#audio-filters">AUDIO FILTERS</a> for details and descriptions of the available filters.
-The option variants <tt class="docutils literal"><span class="pre">--af-add</span></tt>, <tt class="docutils literal"><span class="pre">--af-pre</span></tt>, <tt class="docutils literal"><span class="pre">--af-del</span></tt> and
-<tt class="docutils literal"><span class="pre">--af-clr</span></tt> exist to modify a previously specified list, but you
-should not need these for typical use.</dd>
+The option variants <tt class="docutils literal"><span class="pre">--af-add</span></tt>, <tt class="docutils literal"><span class="pre">--af-pre</span></tt>, and <tt class="docutils literal"><span class="pre">--af-clr</span></tt> exist
+to modify a previously specified list, but you should not need these for
+typical use.</dd>
 <dt><tt class="docutils literal"><span class="pre">--audio-spdif=&lt;codecs&gt;</span></tt></dt>
 <dd><p class="first">List of codecs for which compressed audio passthrough should be used. This
 works for both classic S/PDIF and HDMI.</p>
@@ -5041,17 +5042,15 @@ since a large readahead value is not overly useful in this case.</p>
 timestamps.)</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--demuxer-hysteresis-secs=&lt;seconds&gt;</span></tt></dt>
-<dd><p class="first">Once the <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> limit is reached, this value can be used
+<dd><p class="first">Once the demuxer limit is reached (<tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt>,
+<tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> or <tt class="docutils literal"><span class="pre">--cache-secs</span></tt>), this value can be used
 to specify a hysteresis before the demuxer will buffer ahead again. This
 specifies the maximum number of seconds from the current playback position
 that needs to be remaining in the cache before the demuxer will continue
 buffering ahead.</p>
 <p>For example, with a value of 10 seconds specified, the demuxer will buffer
-ahead up to <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> and won't start buffering ahead again
-until there is only 10 seconds of content left in the cache. When the
-demuxer starts buffering ahead again, it will buffer ahead up to
-<tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> and stop until there's only 10 seconds of content
-remaining in the cache, and so on.</p>
+ahead up to the demuxer limit and won't start buffering ahead again until
+there is only 10 seconds of content left in the cache.</p>
 <p>This can provide significant power savings and reduce load by making the
 demuxer only buffer ahead in chunks at a time rather than buffering ahead
 nonstop to keep the cache filled.</p>
@@ -5557,6 +5556,7 @@ an error text is inserted, unless a fallback is specified.</dd>
 <dd><p class="first">Store screenshots in this directory. This path is joined with the filename
 generated by <tt class="docutils literal"><span class="pre">--screenshot-template</span></tt>. If the template filename is already
 absolute, the directory is ignored.</p>
+<p><tt class="docutils literal"><span class="pre">--screenshot-directory</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--screenshot-dir</span></tt>.</p>
 <p>If the directory does not exist, it is created on the first screenshot. If
 it is not a directory, an error is generated when trying to write a
 screenshot.</p>
@@ -9210,7 +9210,7 @@ includes all filters that have been ported from MPlayer to libavfilter.</p>
 workaround deprecated mpv filters.</p>
 </div>
 <p>See <tt class="docutils literal"><span class="pre">--vf</span></tt> group of options for info on how <tt class="docutils literal"><span class="pre">--af-add</span></tt>, <tt class="docutils literal"><span class="pre">--af-pre</span></tt>,
-<tt class="docutils literal"><span class="pre">--af-del</span></tt>, <tt class="docutils literal"><span class="pre">--af-clr</span></tt>, and possibly others work.</p>
+<tt class="docutils literal"><span class="pre">--af-clr</span></tt>, and possibly others work.</p>
 <p>Available filters are:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">lavcac3enc[=options]</span></tt></dt>
@@ -9555,10 +9555,6 @@ deprecated.)</dd>
 <dd>Add the given filter to the list if it was not present yet, or remove it
 from the list if it was present. Matching of filters works as described in
 <tt class="docutils literal"><span class="pre">--vf-remove</span></tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">--vf-del=filter</span></tt></dt>
-<dd>Sort of like <tt class="docutils literal"><span class="pre">--vf-remove</span></tt>, but also accepts an index number. Index
-numbers start at 0, negative numbers address the end of the list (-1 is the
-last). Deprecated.</dd>
 <dt><tt class="docutils literal"><span class="pre">--vf-clr</span></tt></dt>
 <dd>Completely empties the filter list.</dd>
 </dl>
