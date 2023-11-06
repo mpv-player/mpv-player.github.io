@@ -12535,7 +12535,7 @@ picture film format that introduced given aspect ratio in film.</dd>
 <dd>The primaries in use as string. (Exact values subject to change.)</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/gamma</span></tt></dt>
 <dd>The gamma function in use as string. (Exact values subject to change.)</dd>
-<dt><tt class="docutils literal"><span class="pre">video-params/sig-peak</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">video-params/sig-peak</span></tt> (deprecated)</dt>
 <dd>The video file's tagged signal peak as float.</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/light</span></tt></dt>
 <dd>The light type in use as a string. (Exact values subject to change.)</dd>
@@ -12550,6 +12550,24 @@ picture film format that introduced given aspect ratio in film.</dd>
 <dd>Alpha type. If the format has no alpha channel, this will be unavailable
 (but in future releases, it could change to <tt class="docutils literal">no</tt>). If alpha is
 present, this is set to <tt class="docutils literal">straight</tt> or <tt class="docutils literal">premul</tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/min-luma</span></tt></dt>
+<dd>Minimum luminance, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/max-luma</span></tt></dt>
+<dd>Maximum luminance, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/max-cll</span></tt></dt>
+<dd>Maximum content light level, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/max-fall</span></tt></dt>
+<dd>Maximum frame average light level, as reported by HDR10 metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/scene-max-r</span></tt></dt>
+<dd>MaxRGB of a scene for R component, as reported by HDR10+ metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/scene-max-g</span></tt></dt>
+<dd>MaxRGB of a scene for G component, as reported by HDR10+ metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/scene-max-b</span></tt></dt>
+<dd>MaxRGB of a scene for B component, as reported by HDR10+ metadata (in cd/m²)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/max-pq-y</span></tt></dt>
+<dd>Maximum PQ luminance of a frame, as reported by peak detection (in PQ, 0-1)</dd>
+<dt><tt class="docutils literal"><span class="pre">video-params/avg-pq-y</span></tt></dt>
+<dd>Average PQ luminance of a frame, as reported by peak detection (in PQ, 0-1)</dd>
 </dl>
 <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
 or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -12575,45 +12593,15 @@ MPV_FORMAT_NODE_MAP
     &quot;stereo-in&quot;         MPV_FORMAT_STRING
     &quot;average-bpp&quot;       MPV_FORMAT_INT64
     &quot;alpha&quot;             MPV_FORMAT_STRING
-</pre>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata</span></tt></dt>
-<dd><p class="first">Video HDR metadata per frame, including peak detection result.
-This has a number of sub-properties:</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/min-luma</span></tt></dt>
-<dd>Minimum luminance, as reported by HDR10 metadata (in cd/m²)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-luma</span></tt></dt>
-<dd>Maximum luminance, as reported by HDR10 metadata (in cd/m²)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-cll</span></tt></dt>
-<dd>Maximum content light level, as reported by HDR10 metadata (in cd/m²)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-fall</span></tt></dt>
-<dd>Maximum frame average light level, as reported by HDR10 metadata (in cd/m²)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/scene-max-r</span></tt></dt>
-<dd>MaxRGB of a scene for R component, as reported by HDR10+ metadata (in cd/m²)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/scene-max-g</span></tt></dt>
-<dd>MaxRGB of a scene for G component, as reported by HDR10+ metadata (in cd/m²)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/scene-max-b</span></tt></dt>
-<dd>MaxRGB of a scene for B component, as reported by HDR10+ metadata (in cd/m²)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/max-pq-y</span></tt></dt>
-<dd>Maximum PQ luminance of a frame, as reported by peak detection (in PQ, 0-1)</dd>
-<dt><tt class="docutils literal"><span class="pre">hdr-metadata/avg-pq-y</span></tt></dt>
-<dd>Average PQ luminance of a frame, as reported by peak detection (in PQ, 0-1)</dd>
-</dl>
-<p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
-or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
-the following contents:</p>
-<pre class="last literal-block">
-MPV_FORMAT_NODE_MAP
-    &quot;min-luma&quot;     MPV_FORMAT_DOUBLE
-    &quot;max-luma&quot;     MPV_FORMAT_DOUBLE
-    &quot;max-cll&quot;      MPV_FORMAT_DOUBLE
-    &quot;max-fall&quot;     MPV_FORMAT_DOUBLE
-    &quot;scene-max-r&quot;  MPV_FORMAT_DOUBLE
-    &quot;scene-max-g&quot;  MPV_FORMAT_DOUBLE
-    &quot;scene-max-b&quot;  MPV_FORMAT_DOUBLE
-    &quot;max-pq-y&quot;     MPV_FORMAT_DOUBLE
-    &quot;avg-pq-y&quot;     MPV_FORMAT_DOUBLE
+    &quot;min-luma&quot;          MPV_FORMAT_DOUBLE
+    &quot;max-luma&quot;          MPV_FORMAT_DOUBLE
+    &quot;max-cll&quot;           MPV_FORMAT_DOUBLE
+    &quot;max-fall&quot;          MPV_FORMAT_DOUBLE
+    &quot;scene-max-r&quot;       MPV_FORMAT_DOUBLE
+    &quot;scene-max-g&quot;       MPV_FORMAT_DOUBLE
+    &quot;scene-max-b&quot;       MPV_FORMAT_DOUBLE
+    &quot;max-pq-y&quot;          MPV_FORMAT_DOUBLE
+    &quot;avg-pq-y&quot;          MPV_FORMAT_DOUBLE
 </pre>
 </dd>
 <dt><tt class="docutils literal">dwidth</tt>, <tt class="docutils literal">dheight</tt></dt>
