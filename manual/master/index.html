@@ -97,7 +97,7 @@ configuring keybindings.</p>
 <dt>Ctrl+LEFT and Ctrl+RIGHT</dt>
 <dd>Seek to the previous/next subtitle. Subject to some restrictions and
 might not always work; see <tt class="docutils literal"><span class="pre">sub-seek</span></tt> command.</dd>
-<dt>Ctrl+Shift+Left and Ctrl+Shift+Right</dt>
+<dt>Ctrl+Shift+LEFT and Ctrl+Shift+RIGHT</dt>
 <dd>Adjust subtitle delay so that the next or previous subtitle is displayed
 now. This is especially useful to sync subtitles to audio.</dd>
 <dt>[ and ]</dt>
@@ -119,7 +119,7 @@ where you left off.</dd>
 <dd>Go backward/forward in the playlist.</dd>
 <dt>ENTER</dt>
 <dd>Go forward in the playlist.</dd>
-<dt>p / SPACE</dt>
+<dt>p and SPACE</dt>
 <dd>Pause (pressing again unpauses).</dd>
 <dt>.</dt>
 <dd>Step forward. Pressing once will pause, every consecutive press will
@@ -156,7 +156,7 @@ later will resume at the old playback position if possible. See
 <dt>w and W</dt>
 <dd>Decrease/increase pan-and-scan range. The <tt class="docutils literal">e</tt> key does the same as
 <tt class="docutils literal">W</tt> currently, but use is discouraged.</dd>
-<dt>o (also P)</dt>
+<dt>o and P</dt>
 <dd>Show progression bar, elapsed time and total duration on the OSD.</dd>
 <dt>O</dt>
 <dd>Toggle OSD states between normal and playback time/duration.</dd>
@@ -171,7 +171,7 @@ later will resume at the old playback position if possible. See
 <dd>Set/clear A-B loop points. See <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command for details.</dd>
 <dt>L</dt>
 <dd>Toggle infinite looping.</dd>
-<dt>Ctrl + and Ctrl -</dt>
+<dt>Ctrl++ and Ctrl+-</dt>
 <dd>Adjust audio delay (A/V sync) by +/- 0.1 seconds.</dd>
 <dt>Shift+g and Shift+f</dt>
 <dd>Adjust subtitle font size by +/- 10%.</dd>
@@ -190,7 +190,7 @@ use is discouraged.</dd>
 <dt>S</dt>
 <dd>Take a screenshot, without subtitles. (Whether this works depends on VO
 driver support.)</dd>
-<dt>Ctrl s</dt>
+<dt>Ctrl+s</dt>
 <dd>Take a screenshot, as the window shows it (with subtitles, OSD, and scaled
 video).</dd>
 <dt>PGUP and PGDWN</dt>
@@ -204,11 +204,11 @@ PGUP/PGDWN without Shift.)</dd>
 <dd>Activate/deactivate deinterlacer.</dd>
 <dt>A</dt>
 <dd>Cycle aspect ratio override.</dd>
-<dt>Ctrl h</dt>
+<dt>Ctrl+h</dt>
 <dd>Toggle hardware video decoding on/off.</dd>
 <dt>Alt+LEFT, Alt+RIGHT, Alt+UP, Alt+DOWN</dt>
 <dd>Move the video rectangle (panning).</dd>
-<dt>Alt + and Alt -</dt>
+<dt>Alt++ and Alt+-</dt>
 <dd>Combining <tt class="docutils literal">Alt</tt> with the <tt class="docutils literal">+</tt> or <tt class="docutils literal">-</tt> keys changes video zoom.</dd>
 <dt>Alt+BACKSPACE</dt>
 <dd>Reset the pan/zoom settings.</dd>
@@ -222,7 +222,7 @@ used, broken on the terminal).</dd>
 <dd>Show/toggle an overlay displaying statistics about the currently playing
 file such as codec, framerate, number of dropped frames and so on. See
 <a class="reference internal" href="#stats">STATS</a> for more information.</dd>
-<dt>del</dt>
+<dt>DEL</dt>
 <dd>Cycle OSC visibility between never / auto (mouse-move) / always</dd>
 <dt>`</dt>
 <dd>Show the console. (ESC closes it again. See <a class="reference internal" href="#console">CONSOLE</a>.)</dd>
@@ -238,13 +238,13 @@ corresponding adjustment.)</p>
 <dd>Adjust gamma.</dd>
 <dt>7 and 8</dt>
 <dd>Adjust saturation.</dd>
-<dt>Alt+0 (and command+0 on macOS)</dt>
+<dt>Alt+0 (and Command+0 on macOS)</dt>
 <dd>Resize video window to half its original size.</dd>
-<dt>Alt+1 (and command+1 on macOS)</dt>
+<dt>Alt+1 (and Command+1 on macOS)</dt>
 <dd>Resize video window to its original size.</dd>
-<dt>Alt+2 (and command+2 on macOS)</dt>
+<dt>Alt+2 (and Command+2 on macOS)</dt>
 <dd>Resize video window to double its original size.</dd>
-<dt>command + f (macOS only)</dt>
+<dt>Command + f (macOS only)</dt>
 <dd>Toggle fullscreen (see also <tt class="docutils literal"><span class="pre">--fs</span></tt>).</dd>
 </dl>
 <p>(The following keys are valid if you have a keyboard with multimedia keys.)</p>
@@ -4212,6 +4212,13 @@ video on.</p>
 cases, you can try to use <tt class="docutils literal"><span class="pre">--geometry</span></tt> to position the window
 explicitly. It's also possible that the window manager provides native
 features to control which screens application windows should use.</p>
+</div>
+<div class="admonition admonition-note-wayland">
+<p class="first admonition-title">Note (Wayland)</p>
+<p class="last">This option does not actually work on wayland since window placement is
+not allowed. However setting this option does influence mpv's initial
+guess at finding an output which may be useful for options like
+<tt class="docutils literal"><span class="pre">--geometry</span></tt> or <tt class="docutils literal"><span class="pre">--autofit</span></tt> which depend on the monitor resolution.</p>
 </div>
 <p class="last">See also <tt class="docutils literal"><span class="pre">--fs-screen</span></tt>.</p>
 </dd>
@@ -11189,12 +11196,6 @@ enable/disable flag.</p>
 </dd>
 <dt>&lt;remove&gt;</dt>
 <dd>Like <tt class="docutils literal">toggle</tt>, but always remove the given filter from the chain.</dd>
-<dt>&lt;del&gt;</dt>
-<dd>Remove the given filters from the video chain. Unlike in the other
-cases, the second parameter is a comma separated list of filter names
-or integer indexes. <tt class="docutils literal">0</tt> would denote the first filter. Negative
-indexes start from the last filter, and <tt class="docutils literal"><span class="pre">-1</span></tt> denotes the last
-filter. Deprecated, use <tt class="docutils literal">remove</tt>.</dd>
 <dt>&lt;clr&gt;</dt>
 <dd>Remove all filters. Note that like the other sub-commands, this does
 not control automatically inserted filters.</dd>
@@ -14360,44 +14361,44 @@ window. It also shows log messages. It can be disabled entirely using the
 <dd>Show the console.</dd>
 <dt>ESC and Ctrl+[</dt>
 <dd>Hide the console.</dd>
-<dt>ENTER, Ctrl+J and Ctrl+M</dt>
+<dt>ENTER, Ctrl+j and Ctrl+m</dt>
 <dd>Run the typed command.</dd>
 <dt>Shift+ENTER</dt>
 <dd>Type a literal newline character.</dd>
-<dt>LEFT and Ctrl+B</dt>
+<dt>LEFT and Ctrl+b</dt>
 <dd>Move the cursor to the previous character.</dd>
-<dt>RIGHT and Ctrl+F</dt>
+<dt>RIGHT and Ctrl+f</dt>
 <dd>Move the cursor to the next character.</dd>
-<dt>Ctrl+LEFT and Alt+B</dt>
+<dt>Ctrl+LEFT and Alt+b</dt>
 <dd>Move the cursor to the beginning of the current word, or if between words,
 to the beginning of the previous word.</dd>
-<dt>Ctrl+RIGHT and Alt+F</dt>
+<dt>Ctrl+RIGHT and Alt+f</dt>
 <dd>Move the cursor to the end of the current word, or if between words, to the
 end of the next word.</dd>
-<dt>HOME and Ctrl+A</dt>
+<dt>HOME and Ctrl+a</dt>
 <dd>Move the cursor to the start of the current line.</dd>
-<dt>END and Ctrl+E</dt>
+<dt>END and Ctrl+e</dt>
 <dd>Move the cursor to the end of the current line.</dd>
-<dt>BACKSPACE and Ctrl+H</dt>
+<dt>BACKSPACE and Ctrl+h</dt>
 <dd>Delete the previous character.</dd>
-<dt>Ctrl+D</dt>
+<dt>Ctrl+d</dt>
 <dd>Hide the console if the current line is empty, otherwise delete the next
 character.</dd>
-<dt>Ctrl+BACKSPACE and Ctrl+W</dt>
+<dt>Ctrl+BACKSPACE and Ctrl+w</dt>
 <dd>Delete text from the cursor to the beginning of the current word, or if
 between words, to the beginning of the previous word.</dd>
-<dt>Ctrl+DEL and Alt+D</dt>
+<dt>Ctrl+DEL and Alt+d</dt>
 <dd>Delete text from the cursor to the end of the current word, or if between
 words, to the end of the next word.</dd>
-<dt>Ctrl+U</dt>
+<dt>Ctrl+u</dt>
 <dd>Delete text from the cursor to the beginning of the current line.</dd>
-<dt>Ctrl+K</dt>
+<dt>Ctrl+k</dt>
 <dd>Delete text from the cursor to the end of the current line.</dd>
-<dt>Ctrl+C</dt>
+<dt>Ctrl+c</dt>
 <dd>Clear the current line.</dd>
-<dt>UP and Ctrl+P</dt>
+<dt>UP and Ctrl+p</dt>
 <dd>Move back in the command history.</dd>
-<dt>DOWN and Ctrl+N</dt>
+<dt>DOWN and Ctrl+n</dt>
 <dd>Move forward in the command history.</dd>
 <dt>PGUP</dt>
 <dd>Go to the first command in the history.</dd>
@@ -14405,13 +14406,13 @@ words, to the end of the next word.</dd>
 <dd>Stop navigating the command history.</dd>
 <dt>INSERT</dt>
 <dd>Toggle insert mode.</dd>
-<dt>Ctrl+V</dt>
+<dt>Ctrl+v</dt>
 <dd>Paste text (uses the clipboard on X11 and Wayland).</dd>
 <dt>Shift+INSERT</dt>
 <dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
-<dt>TAB and Ctrl+I</dt>
+<dt>TAB and Ctrl+i</dt>
 <dd>Complete the command or property name at the cursor.</dd>
-<dt>Ctrl+L</dt>
+<dt>Ctrl+l</dt>
 <dd>Clear all log messages from the console.</dd>
 </dl>
 </div>
