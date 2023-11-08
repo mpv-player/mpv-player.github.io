@@ -2409,7 +2409,8 @@ differences to other VOs are possible.</p>
 <dd><p class="first">Enable some things which tend to reduce video latency by 1 or 2 frames
 (default: no). Note that this option might be removed without notice once
 the player's timing code does not inherently need to do these things
-anymore.</p>
+anymore. Using this option is known to break other options such as
+interpolation, so it is not recommended to enable this.</p>
 <p>This does:</p>
 <ul class="last simple">
 <li>Use the demuxer reported FPS for frame dropping. This avoids the
@@ -3888,6 +3889,14 @@ which are not valid UTF-8 sequences. iconv is never involved in this mode.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">This works for text subtitle files only. Other types of subtitles (in
 particular subtitles in mkv files) are always assumed to be UTF-8.</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-stretch-durations=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Stretch a subtitle duration so it ends when the next one starts.
+Should help with subtitles which erroneously have zero durations.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">Only applies to text subtitles.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-fix-timing=&lt;yes|no&gt;</span></tt></dt>
@@ -7496,6 +7505,12 @@ black point. Used in black point compensation during HDR tone-mapping.
 would have or an infinite contrast when HDR <tt class="docutils literal"><span class="pre">--target-trc</span></tt> is used.
 <tt class="docutils literal">inf</tt> contrast specifies display with perfect black level, in practice OLED.
 (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">--target-gamut=&lt;value&gt;</span></tt></dt>
+<dd>Constrains the gamut of the display. You can use this option to output e.g.
+DCIP3-in-BT.2020. Set <tt class="docutils literal"><span class="pre">--target-prim</span></tt> to the primaries of the containing
+colorspace (into which values will be encoded), and <tt class="docutils literal"><span class="pre">--target-gamut</span></tt> to
+the gamut you want to limit colors to. Takes the same values as
+<tt class="docutils literal"><span class="pre">--target-prim</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-lut=&lt;file&gt;</span></tt></dt>
 <dd>Specifies a custom LUT file (in Adobe .cube format) to apply to the colors
 before display on-screen. This LUT is fed values in normalized RGB, after
