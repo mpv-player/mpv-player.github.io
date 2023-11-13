@@ -1130,7 +1130,7 @@ example if you shutdown your system without closing mpv beforehand, unless of
 course mpv is terminated abruptly and doesn't have the time to save (e.g. with
 the KILL Unix signal).</p>
 <p>mpv also stores options other than the playback position when they have been
-modified after playback began, for example the volume and the fullscreen state,
+modified after playback began, for example the volume and selected audio/subtitles,
 and restores their values the next time the file is played. Which options are
 saved can be configured with the <tt class="docutils literal"><span class="pre">--watch-later-options</span></tt> option.</p>
 <p>When playing multiple playlist entries, mpv checks if one them has a resume
@@ -2307,17 +2307,20 @@ option.</p>
 <p>When removing options, existing watch later data won't be modified and will
 still be applied fully, but new watch later data won't contain these
 options.</p>
+<p>See <tt class="docutils literal"><span class="pre">--help=watch-later-options</span></tt> for the list of the properties that are
+restored by default.</p>
 <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition admonition-examples last">
 <p class="first admonition-title">Examples</p>
 <ul class="last simple">
-<li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=fullscreen</span></tt>
-The fullscreen state won't be saved to watch later files.</li>
+<li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=sid</span></tt>
+The subtitle track selection will not be restored.</li>
 <li><tt class="docutils literal"><span class="pre">--watch-later-options-remove=volume</span></tt>
 <tt class="docutils literal"><span class="pre">--watch-later-options-remove=mute</span></tt>
 The volume and mute state won't be saved to watch later files.</li>
-<li><tt class="docutils literal"><span class="pre">--watch-later-options-clr</span></tt>
-No option will be saved to watch later files.</li>
+<li><tt class="docutils literal"><span class="pre">--watch-later-options=start</span></tt>
+No option will be saved to watch later files, except the playback
+position.</li>
 </ul>
 </div>
 </dd>
@@ -5351,14 +5354,7 @@ A value of 50 means the bar is half the screen wide.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-italic=&lt;yes|no&gt;</span></tt></dt>
 <dd>Format text on italic.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-border-color=&lt;color&gt;</span></tt></dt>
-<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the OSD font border.</p>
-<div class="admonition note last">
-<p class="first admonition-title">Note</p>
-<p class="last">ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt> is
-specified (or more exactly: when that option is not set to completely
-transparent).</p>
-</div>
-</dd>
+<dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the OSD font border.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-border-size=&lt;size&gt;</span></tt></dt>
 <dd><p class="first">Size of the OSD font border in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
 for details). A value of 0 disables borders.</p>
@@ -5414,7 +5410,13 @@ disabled, <tt class="docutils literal"><span class="pre">--osd-font-size</span><
 are always in actual pixels. The effect is that changing the window size
 won't change the OSD font size.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-shadow-color=&lt;color&gt;</span></tt></dt>
-<dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD shadow.</dd>
+<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD shadow.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt> is specified (or more exactly: when
+that option is not set to completely transparent).</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-shadow-offset=&lt;size&gt;</span></tt></dt>
 <dd><p class="first">Displacement of the OSD shadow in scaled pixels (see
 <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details). A value of 0 disables shadows.</p>
