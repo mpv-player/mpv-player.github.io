@@ -7740,13 +7740,13 @@ are not supported.</p>
 profile via <tt class="docutils literal">MPV_RENDER_PARAM_ICC_PROFILE</tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--icc-cache</span></tt></dt>
-<dd><p class="first">Store and load 3D LUTs created from the ICC profile on disk in the
+<dd><p class="first">Store and load 3DLUTs created from the ICC profile on disk in the
 cache directory (Default: <tt class="docutils literal">yes</tt>). This can be used to speed up loading,
 since LittleCMS 2 can take a while to create a 3D LUT. Note that these
 files contain uncompressed LUTs. Their size depends on the
 <tt class="docutils literal"><span class="pre">--icc-3dlut-size</span></tt>, and can be very big.</p>
-<p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
-stick around indefinitely.</p>
+<p class="last">NOTE: On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, this is not cleaned automatically, so old, unused
+cache files may stick around indefinitely.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--icc-cache-dir</span></tt></dt>
 <dd>The directory where icc cache is stored. Cache is stored in the system's
@@ -7766,9 +7766,12 @@ cache directory (usually <tt class="docutils literal"><span class="pre">~/.cache
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--icc-3dlut-size=&lt;auto|RxGxB&gt;</span></tt></dt>
-<dd>Size of the 3D LUT generated from the ICC profile in each dimension. The
-default of <tt class="docutils literal">auto</tt> means to pick the size automatically based on internal
-heuristics. Sizes may range from 2 to 512.</dd>
+<dd><p class="first">Size of the 3D LUT generated from the ICC profile in each dimension. The
+default of <tt class="docutils literal">auto</tt> means to pick the size automatically based on the
+profile characteristics. Sizes may range from 2 to 512.</p>
+<p class="last">NOTE: Setting this option to anything other than <tt class="docutils literal">auto</tt> is <strong>strongly</strong>
+discouraged, except for testing.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--icc-force-contrast=&lt;no|0-1000000|inf&gt;</span></tt></dt>
 <dd>Override the target device's detected contrast ratio by a specific value.
 This is detected automatically from the profile if possible, but for some
@@ -7880,13 +7883,13 @@ if nothing uses features which require FBOs.</p>
 <p class="last">This option might be silently removed in the future.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache</span></tt></dt>
-<dd><p class="first">Store and load compiled GLSL shaders in the cache directory (Default: <tt class="docutils literal">yes</tt>).
-Normally, shader compilation is very fast, so this is not usually needed.
-It mostly matters for GPU APIs that require internally recompiling shaders to
-other languages, for example anything based on ANGLE or Vulkan. Enabling this
-can improve startup performance on these platforms.</p>
-<p class="last">NOTE: This is not cleaned automatically, so old, unused cache files may
-stick around indefinitely.</p>
+<dd><p class="first">Store and load compiled GLSL shaders in the cache directory (Default:
+<tt class="docutils literal">yes</tt>). Normally, shader compilation is very fast, so this is not usually
+needed. It mostly matters for anything based on D3D11 (including ANGLE), as
+well as on some other proprietary drivers. Enabling this can improve startup
+performance on these platforms.</p>
+<p class="last">NOTE: On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, is not cleaned automatically, so old, unused cache
+files may stick around indefinitely.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache-dir</span></tt></dt>
 <dd>The directory where gpu shader cache is stored. Cache is stored in the system's
