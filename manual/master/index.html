@@ -2534,7 +2534,7 @@ or <tt class="docutils literal"><span class="pre">--vo=libmpv</span></tt> (iOS 9
 </tr>
 <tr class="field"><th class="field-name">vaapi:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, <tt class="docutils literal"><span class="pre">--vo=vaapi</span></tt> or <tt class="docutils literal"><span class="pre">--vo=dmabuf-wayland</span></tt> (Linux only)</td>
 </tr>
-<tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs only)</td>
+<tr class="field"><th class="field-name">vaapi-copy:</th><td class="field-body">copies video back into system RAM (Linux with some GPUs or Windows)</td>
 </tr>
 <tr class="field"><th class="field-name">nvdec:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
 </tr>
@@ -2736,9 +2736,12 @@ enumerated by the CUDA libraries - however that is done.</p>
 <p class="last">For the Vulkan GPU backend, decoding must always happen on the display
 device, and this option has no effect.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--vaapi-device=&lt;device</span> file&gt;</tt></dt>
-<dd>Choose the DRM device for <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>. This should be the path to a
-DRM device file. (Default: <tt class="docutils literal">/dev/dri/renderD128</tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">--vaapi-device=&lt;device</span> file|adapter name&gt;</tt></dt>
+<dd><p class="first">Choose the DRM device for <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt>. This should be the path to a
+DRM device file. (Default: <tt class="docutils literal">/dev/dri/renderD128</tt>)</p>
+<p class="last">On Windows this takes adapter name as an input. Will pick the default adapter
+if unset. Alternatives are listed when the name &quot;help&quot; is given.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--panscan=&lt;0.0-1.0&gt;</span></tt></dt>
 <dd><p class="first">Enables pan-and-scan functionality (cropping the sides of e.g. a 16:9
 video to make it fit a 4:3 display without black bands). The range
@@ -13270,30 +13273,11 @@ reinitialization failure after a previous write access to <tt class="docutils li
 <dd>Current video output driver (name as used with <tt class="docutils literal"><span class="pre">--vo</span></tt>).</dd>
 <dt><tt class="docutils literal"><span class="pre">current-ao</span></tt></dt>
 <dd>Current audio output driver (name as used with <tt class="docutils literal"><span class="pre">--ao</span></tt>).</dd>
-<dt><tt class="docutils literal"><span class="pre">shared-script-properties</span></tt> (RW)</dt>
-<dd><p class="first">This is a key/value map of arbitrary strings shared between scripts for
-general use. The player itself does not use any data in it (although some
-builtin scripts may). The property is not preserved across player restarts.</p>
-<p>This is very primitive, inefficient, and annoying to use. It's a makeshift
-solution which could go away any time (for example, when a better solution
-becomes available). This is also why this property has an annoying name. You
-should avoid using it, unless you absolutely have to.</p>
-<p>Lua scripting has helpers starting with <tt class="docutils literal">utils.shared_script_property_</tt>.
-They are undocumented because you should not use this property. If you still
-think you must, you should use the helpers instead of the property directly.</p>
-<p>You are supposed to use the <tt class="docutils literal"><span class="pre">change-list</span></tt> command to modify the contents.
-Reading, modifying, and writing the property manually could data loss if two
-scripts update different keys at the same time due to lack of
-synchronization. The Lua helpers take care of this.</p>
-<p class="last">(There is no way to ensure synchronization if two scripts try to update the
-same key at the same time.)</p>
-</dd>
 <dt><tt class="docutils literal"><span class="pre">user-data</span></tt> (RW)</dt>
 <dd><p class="first">This is a recursive key/value map of arbitrary nodes shared between clients for
 general use (i.e. scripts, IPC clients, host applications, etc).
 The player itself does not use any data in it (although some builtin scripts may).
 The property is not preserved across player restarts.</p>
-<p>This is a more powerful replacement for <tt class="docutils literal"><span class="pre">shared-script-properties</span></tt>.</p>
 <p>Sub-paths can be accessed directly; e.g. <tt class="docutils literal"><span class="pre">user-data/my-script/state/a</span></tt> can be
 read, written, or observed.</p>
 <p>The top-level object itself cannot be written directly; write to sub-paths instead.</p>
