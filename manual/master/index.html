@@ -5244,7 +5244,7 @@ implemented. Whether media keys work when the mpv window is focused is
 implementation-defined.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--input-right-alt-gr</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-right-alt-gr</span></tt></dt>
-<dd>(Cocoa and Windows only)
+<dd>(macOS and Windows only)
 Use the right Alt key as Alt Gr to produce special characters. If disabled,
 count the right Alt as an Alt modifier key. Enabled by default.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-vo-keyboard=&lt;yes|no&gt;</span></tt></dt>
@@ -7098,20 +7098,20 @@ to <tt class="docutils literal">no</tt> the software renderer is never used and 
 usual pixel format could not be created, <tt class="docutils literal">yes</tt> will always only use the
 software renderer, and <tt class="docutils literal">auto</tt> only falls back to the software renderer
 when the usual pixel format couldn't be created.</p>
-<p class="last">macOS only.</p>
+<p class="last">macOS and cocoa-cb only.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--cocoa-cb-10bit-context=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Creates a 10bit capable pixel format for the context creation (default: yes).
 Instead of 8bit integer framebuffer a 16bit half-float framebuffer is
 requested.</p>
-<p class="last">macOS only.</p>
+<p class="last">macOS and cocoa-cb only.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--macos-title-bar-appearance=&lt;appearance&gt;</span></tt></dt>
 <dd><p class="first">Sets the appearance of the title bar (default: auto). Not all combinations
 of appearances and <tt class="docutils literal"><span class="pre">--macos-title-bar-material</span></tt> materials make sense or
 are unique. Appearances that are not supported by you current macOS version
 fall back to the default value.
-macOS and cocoa-cb only</p>
+macOS only</p>
 <p><tt class="docutils literal">&lt;appearance&gt;</tt> can be one of the following:</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -7153,7 +7153,7 @@ is not guaranteed. Not all combinations of materials and
 <tt class="docutils literal"><span class="pre">--macos-title-bar-appearance</span></tt> appearances make sense or are unique.
 Materials that are not supported by you current macOS version fall back to
 the default value.
-macOS and cocoa-cb only</p>
+macOS only</p>
 <p><tt class="docutils literal">&lt;material&gt;</tt> can be one of the following:</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -7227,7 +7227,7 @@ after the system wide animation ended. The upper limit is still set at
 1000ms since it's possible that Apple or the user changes the system
 defaults. Anything higher than 1000ms though seems too long and shouldn't be
 set anyway.
-(macOS and cocoa-cb only)</dd>
+(macOS)</dd>
 <dt><tt class="docutils literal"><span class="pre">--macos-app-activation-policy=&lt;regular|accessory|prohibited&gt;</span></tt></dt>
 <dd><p class="first">Changes the App activation policy. With accessory the mpv icon in the Dock
 can be hidden. (default: regular)</p>
@@ -7276,8 +7276,6 @@ autoprobe order).</p>
 <dl class="last docutils">
 <dt>auto</dt>
 <dd>auto-select (default)</dd>
-<dt>cocoa</dt>
-<dd>Cocoa/macOS (deprecated, use --vo=libmpv instead)</dd>
 <dt>win</dt>
 <dd>Win32/WGL</dd>
 <dt>winvk</dt>
