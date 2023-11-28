@@ -691,8 +691,9 @@ before. This is like passing the exact contents of the quoted string as a
 command line option. C-style escapes are currently _not_ interpreted on this
 level, although some options do this manually (this is a mess and should
 probably be changed at some point). The shell is not involved here, so option
-values only need to be quoted to escape <tt class="docutils literal">#</tt> and <tt class="docutils literal">\</tt>, <tt class="docutils literal">&quot;</tt>, <tt class="docutils literal">'</tt> or <tt class="docutils literal">%</tt>
-at the beginning of the value, and leading and trailing whitespace.</p>
+values only need to be quoted to escape <tt class="docutils literal">#</tt> anywhere in the value, <tt class="docutils literal">&quot;</tt>,
+<tt class="docutils literal">'</tt> or <tt class="docutils literal">%</tt> at the beginning of the value, and leading and trailing
+whitespace.</p>
 </div>
 <div class="section" id="putting-command-line-options-into-the-configuration-file">
 <h2>Putting Command Line Options into the Configuration File</h2>
@@ -5350,6 +5351,11 @@ Fractional values (like 0.5) are allowed.</dd>
 A value of 50 means the bar is half the screen wide.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-bar-h=&lt;0.1-50&gt;</span></tt></dt>
 <dd>Height of the OSD bar, in percentage of the screen height (default: 3.125).</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-bar-border-size=&lt;size&gt;</span></tt></dt>
+<dd><p class="first">Size of the border of the OSD bar in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
+for details).</p>
+<p class="last">Default: 1.2.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-back-color=&lt;color&gt;</span></tt></dt>
 <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD text background.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt></dt>
@@ -6743,8 +6749,8 @@ there are no server side decorations from the compositor.</dd>
 resizes events in the wayland contexts with touch events.</dd>
 <dt><tt class="docutils literal"><span class="pre">--spirv-compiler=&lt;compiler&gt;</span></tt></dt>
 <dd><p class="first">Controls which compiler is used to translate GLSL to SPIR-V. This is
-(currently) only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=vulkan</span></tt> and <cite>--gpu-api=d3d11</cite>.
-The possible choices are currently only:</p>
+only relevant for <tt class="docutils literal"><span class="pre">--gpu-api=d3d11</span></tt> with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>.
+The possible choices are currently:</p>
 <dl class="docutils">
 <dt>auto</dt>
 <dd>Use the first available compiler. (Default)</dd>
@@ -6754,7 +6760,7 @@ generally the most preferred, if available.</dd>
 </dl>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
-<p class="last">This option is deprecated, since there is only one reasonable value.
+<p class="last">This option is deprecated, since there is only one usable value.
 It may be removed in the future.</p>
 </div>
 </dd>
