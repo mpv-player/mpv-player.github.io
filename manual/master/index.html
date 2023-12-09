@@ -4115,9 +4115,12 @@ values are allowed.</p>
 <dd><p class="first">Applies filter removing subtitle additions for the deaf or hard-of-hearing (SDH).
 This is intended for English, but may in part work for other languages too.
 The intention is that it can be always enabled so may not remove
-all parts added.
-It removes speaker labels (like MAN:), upper case text in parentheses and
-any text in brackets.</p>
+all parts added.</p>
+<p>It removes speaker labels (like MAN:) and any text enclosed within symbols like
+parentheses or brackets as specified by the <tt class="docutils literal"><span class="pre">--sub-filter-sdh-enclosures</span></tt> option.
+Note that parenthesis (full width parenthesis and the normal variant) are a special
+case and only upper case text is removed. For more filtering, you can use the
+<tt class="docutils literal"><span class="pre">--sub-filter-sdh-harder</span></tt> option.</p>
 <p class="last">Default: <tt class="docutils literal">no</tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-filter-sdh-harder=&lt;yes|no&gt;</span></tt></dt>
@@ -4125,6 +4128,14 @@ any text in brackets.</p>
 Will also remove speaker labels and text within parentheses using both
 lower and upper case letters.</p>
 <p class="last">Default: <tt class="docutils literal">no</tt>.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-filter-sdh-enclosures=&lt;string&gt;</span></tt></dt>
+<dd><p class="first">Specify a string of characters that <tt class="docutils literal"><span class="pre">--sub-filter-sdh</span></tt> will use to potentially
+remove text. Text that is enclosed within characters specified by this string will
+be removed. Note that bracket characters with known pairs (such as <tt class="docutils literal">(</tt> or <tt class="docutils literal">[</tt>)
+will be mapped internally to their matching right hand character, so you only need
+to specify left hand characters.</p>
+<p class="last">Default: <tt class="docutils literal">([（</tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-filter-regex-...=...</span></tt></dt>
 <dd><p class="first">Set a list of regular expressions to match on text subtitles, and remove any
@@ -11327,7 +11338,7 @@ also possible to get separate events on key up/down, and relatively detailed
 information about the key state. The special key name <tt class="docutils literal">unmapped</tt> can be
 used to match any unmapped key.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">overlay-add</span> &lt;id&gt; &lt;x&gt; &lt;y&gt; &lt;file&gt; &lt;offset&gt; &lt;fmt&gt; &lt;w&gt; &lt;h&gt; &lt;stride&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">overlay-add</span> &lt;id&gt; &lt;x&gt; &lt;y&gt; &lt;file&gt; &lt;offset&gt; &lt;fmt&gt; &lt;w&gt; &lt;h&gt; &lt;stride&gt; &lt;dw&gt; &lt;dh&gt;</tt></dt>
 <dd><p class="first">Add an OSD overlay sourced from raw data. This might be useful for scripts
 and applications controlling mpv, and which want to display things on top
 of the video window.</p>
@@ -11375,6 +11386,10 @@ memory. In the simple case, and with the <tt class="docutils literal">bgra</tt> 
 In general, the total amount of memory accessed is <tt class="docutils literal">stride * h</tt>.
 (Technically, the minimum size would be <tt class="docutils literal">stride * (h - 1) + w * 4</tt>, but
 for simplicity, the player will access all <tt class="docutils literal">stride * h</tt> bytes.)</p>
+<p><tt class="docutils literal">dw</tt> and <tt class="docutils literal">dh</tt> specify the (optional) display size of the overlay.
+The overlay visible portion of the overlay (<tt class="docutils literal">w</tt> and <tt class="docutils literal">h</tt>) is scaled to
+in display to <tt class="docutils literal">dw</tt> and <tt class="docutils literal">dh</tt>.  If parameters are not present, the
+values for <tt class="docutils literal">w</tt> and <tt class="docutils literal">h</tt> are used.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">Before mpv 0.18.1, you had to do manual &quot;double buffering&quot; when updating
