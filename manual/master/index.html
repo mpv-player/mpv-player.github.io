@@ -11158,11 +11158,13 @@ If <tt class="docutils literal">&lt;button&gt;</tt> is omitted, only the positio
 <dd>The mouse event represents double-click.</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal">keypress &lt;name&gt;</tt></dt>
+<dt><tt class="docutils literal">keypress &lt;name&gt; [&lt;scale&gt;]</tt></dt>
 <dd>Send a key event through mpv's input handler, triggering whatever
 behavior is configured to that key. <tt class="docutils literal">name</tt> uses the <tt class="docutils literal">input.conf</tt>
-naming scheme for keys and modifiers. Useful for the client API: key events
-can be sent to libmpv to handle internally.</dd>
+naming scheme for keys and modifiers. <tt class="docutils literal">scale</tt> is used to scale numerical
+change effected by the bound command (same mechanism as precise scrolling).
+Useful for the client API: key events can be sent to libmpv to handle
+internally.</dd>
 <dt><tt class="docutils literal">keydown &lt;name&gt;</tt></dt>
 <dd>Similar to <tt class="docutils literal">keypress</tt>, but sets the <tt class="docutils literal">KEYDOWN</tt> flag so that if the key is
 bound to a repeatable command, it will be run repeatedly with mpv's key
