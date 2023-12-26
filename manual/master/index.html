@@ -4343,12 +4343,12 @@ example if <tt class="docutils literal"><span class="pre">--length</span></tt> i
 you seek to the last frame.</p>
 <p>This option does not affect the framerate used for <tt class="docutils literal"><span class="pre">mf://</span></tt> or
 <tt class="docutils literal"><span class="pre">--merge-files</span></tt>. For that, use <tt class="docutils literal"><span class="pre">--mf-fps</span></tt> instead.</p>
-<p class="last">Setting <tt class="docutils literal"><span class="pre">--image-display-duration</span></tt> hides the OSC and does not track
-playback time on the command-line output, and also does not duplicate
-the image frame when encoding. To force the player into &quot;dumb mode&quot;
-and actually count out seconds, or to duplicate the image when
-encoding, you need to use <tt class="docutils literal"><span class="pre">--demuxer=lavf</span> <span class="pre">--demuxer-lavf-o=loop=1</span></tt>,
-and use <tt class="docutils literal"><span class="pre">--length</span></tt> or <tt class="docutils literal"><span class="pre">--frames</span></tt> to stop after a particular time.</p>
+<p class="last">When viewing images, the playback time is not tracked on the command line
+output, and the image frame is not duplicated when encoding. To force the
+player into &quot;dumb mode&quot; and actually count out seconds, or to duplicate the
+image when encoding, you need to use <tt class="docutils literal"><span class="pre">--demuxer=lavf</span>
+<span class="pre">--demuxer-lavf-o=loop=1</span></tt>, and use <tt class="docutils literal"><span class="pre">--length</span></tt> or <tt class="docutils literal"><span class="pre">--frames</span></tt> to stop
+after a particular time.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--force-window=&lt;yes|no|immediate&gt;</span></tt></dt>
 <dd><p class="first">Create a video output window even if there is no video. This can be useful
@@ -5249,7 +5249,7 @@ whitespace). This is not a bug.</p>
 driver. Necessary to use the OSC, or to select the buttons in DVD menus.
 Support depends on the VO in use.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-cursor-passthrough</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-cursor-passthrough</span></tt></dt>
-<dd>(X11 and Wayland only)
+<dd>(X11, Wayland and macOS only)
 Tell the backend windowing system to allow pointer events to passthrough
 the mpv window. This allows windows under mpv to instead receive pointer
 events as if the mpv window was never there.</dd>
