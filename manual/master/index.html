@@ -3181,7 +3181,7 @@ and OS support varies). If both <tt class="docutils literal">dts</tt> and <tt cl
 behaves equivalent to specifying <tt class="docutils literal"><span class="pre">dts-hd</span></tt> only.</p>
 <p>In earlier mpv versions you could use <tt class="docutils literal"><span class="pre">--ad</span></tt> to force the spdif wrapper.
 This does not work anymore.</p>
-<div class="admonition admonition-warning last">
+<div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p class="last">There is not much reason to use this. HDMI supports uncompressed
 multichannel PCM, and mpv supports lossless DTS-HD decoding via
@@ -3208,7 +3208,7 @@ decoders.</dd>
 <dd>List all available decoders.</dd>
 </dl>
 </div>
-<div class="admonition admonition-warning last">
+<div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p class="last">Enabling compressed audio passthrough (AC3 and DTS via SPDIF/HDMI) with
 this option is not possible. Use <tt class="docutils literal"><span class="pre">--audio-spdif</span></tt> instead.</p>
@@ -3285,7 +3285,7 @@ welcome. A full list of AVOptions can be found in the FFmpeg manual.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--ad-spdif-dtshd=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dtshd</span></tt>, <tt class="docutils literal"><span class="pre">--no-dtshd</span></tt></dt>
 <dd><p class="first">If DTS is passed through, use DTS-HD.</p>
-<div class="admonition admonition-warning last">
+<div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p class="last">This and enabling passthrough via <tt class="docutils literal"><span class="pre">--ad</span></tt> are deprecated in favor of
 using <tt class="docutils literal"><span class="pre">--audio-spdif=dts-hd</span></tt>.</p>
@@ -3354,7 +3354,7 @@ You may need to change the channel layout of the system mixer to achieve
 your desired output as mpv does not have control over it. Another
 work-around for this on some AOs is to use <tt class="docutils literal"><span class="pre">--audio-exclusive=yes</span></tt> to
 circumvent the system mixer entirely.</p>
-<div class="admonition admonition-warning last">
+<div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p>Using <tt class="docutils literal">auto</tt> can cause issues when using audio over HDMI. The OS will
 typically report all channel layouts that _can_ go over HDMI, even if
@@ -3510,7 +3510,7 @@ with silence. Likewise, when pausing playback, audio is not stopped, and
 silence is played while paused. Note that if no audio track is selected,
 the audio device will still be closed immediately.</p>
 <p>Not all AOs support this.</p>
-<div class="admonition admonition-warning last">
+<div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p class="last">This modifies certain subtle player behavior, like A/V-sync and underrun
 handling. Enabling this option is strongly discouraged.</p>
@@ -3620,7 +3620,7 @@ position of the subtitle in % of the screen height. 100 is the original
 position, which is often not the absolute bottom of the screen, but with
 some margin between the bottom and the subtitle. Values above 100 move the
 subtitle further down.</p>
-<div class="admonition admonition-warning last">
+<div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p>Text subtitles (as opposed to image subtitles) may be cut off if the
 value of the option is above 100. This is a libass restriction.</p>
@@ -3673,7 +3673,7 @@ loaded assuming a framerate of 23.976 at 25 FPS.</p>
 </tr>
 </tbody>
 </table>
-<div class="admonition admonition-warning last">
+<div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p class="last">Enabling hinting can lead to mispositioned text (in situations it's
 supposed to match up video background), or reduce the smoothness
@@ -4353,7 +4353,7 @@ after a particular time.</p>
 <dt><tt class="docutils literal"><span class="pre">--force-window=&lt;yes|no|immediate&gt;</span></tt></dt>
 <dd><p class="first">Create a video output window even if there is no video. This can be useful
 when pretending that mpv is a GUI application. Currently, the window
-always has the size 640x480, and is subject to <tt class="docutils literal"><span class="pre">--geometry</span></tt>,
+always has the size 960x540, and is subject to <tt class="docutils literal"><span class="pre">--geometry</span></tt>,
 <tt class="docutils literal"><span class="pre">--autofit</span></tt>, and similar options.</p>
 <div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
@@ -5249,8 +5249,7 @@ whitespace). This is not a bug.</p>
 driver. Necessary to use the OSC, or to select the buttons in DVD menus.
 Support depends on the VO in use.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-cursor-passthrough</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-cursor-passthrough</span></tt></dt>
-<dd>(X11, Wayland and macOS only)
-Tell the backend windowing system to allow pointer events to passthrough
+<dd>Tell the backend windowing system to allow pointer events to passthrough
 the mpv window. This allows windows under mpv to instead receive pointer
 events as if the mpv window was never there.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-media-keys=&lt;yes|no&gt;</span></tt></dt>
@@ -6788,7 +6787,7 @@ and access all previous intermediate textures.</p>
 internal list of shaders, while <tt class="docutils literal"><span class="pre">--glsl-shaders</span></tt> takes a list of files,
 and overwrites the internal list with it. The latter is a path list option
 (see <a class="reference internal" href="#list-options">List Options</a> for details).</p>
-<div class="admonition admonition-warning">
+<div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">The syntax is not stable yet and may change any time.</p>
 </div>
@@ -11009,7 +11008,7 @@ detached way.</p>
 wasn't started in detached mode, even if <tt class="docutils literal">playback_only</tt> is
 false.</p>
 </div>
-<div class="admonition admonition-warning">
+<div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">Don't forget to set the <tt class="docutils literal">playback_only</tt> field to false if you want
 the command to run while the player is in idle mode, or if you don't
