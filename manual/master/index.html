@@ -1328,23 +1328,6 @@ change, and not apply your additional settings, and/or use a different
 profile name.</p>
 </div>
 </div>
-<div class="section" id="linux-desktop-issues">
-<h1>Linux desktop issues</h1>
-<p>This subsection describes common problems on the Linux desktop. None of these
-problems exist on systems like Windows or macOS.</p>
-<div class="section" id="disabling-screensaver">
-<h2>Disabling Screensaver</h2>
-<p>By default, mpv tries to disable the OS screensaver during playback (only if
-a VO using the OS GUI API is active). <tt class="docutils literal"><span class="pre">--stop-screensaver=no</span></tt> disables this.</p>
-<p>A common problem is that Linux desktop environments ignore the standard
-screensaver APIs on which mpv relies. In particular, mpv uses the Screen Saver
-extension (XSS) on X11, and the idle-inhibit protocol on Wayland.</p>
-<p>Before mpv 0.33.0, the X11 backend ran <tt class="docutils literal"><span class="pre">xdg-screensaver</span> reset</tt> in 10 second
-intervals when not paused in order to support screensaver inhibition in these
-environments. This functionality was removed in 0.33.0, but it is possible to
-call the <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> command line program from a user script instead.</p>
-</div>
-</div>
 <div class="section" id="options">
 <h1>OPTIONS</h1>
 <div class="section" id="track-selection">
@@ -4644,10 +4627,12 @@ also <tt class="docutils literal"><span class="pre">--monitoraspect</span></tt> 
 startup and turns it on again on exit (default: yes). When using <tt class="docutils literal">yes</tt>,
 the screensaver will re-enable when playback is not active. <tt class="docutils literal">always</tt> will
 always disable the screensaver. Note that stopping the screensaver is only
-possible if a video output is available (i.e. there is an open mpv window).</p>
-<p class="last">This is not supported on all video outputs or platforms. Sometimes it is
-implemented, but does not work (especially with Linux &quot;desktops&quot;). Read the
-<a class="reference internal" href="#disabling-screensaver">Disabling Screensaver</a> section very carefully.</p>
+possible if a video output is available (i.e. there is an open mpv window).
+This is not supported on all video outputs, platforms, or desktop environments.</p>
+<p class="last">Before mpv 0.33.0, the X11 backend ran <tt class="docutils literal"><span class="pre">xdg-screensaver</span> reset</tt> in 10 second
+intervals when not paused in order to support screensaver inhibition in some
+environments. This functionality was removed in 0.33.0, but it is possible to
+call the <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> command line program from a user script instead.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--wid=&lt;ID&gt;</span></tt></dt>
 <dd><p class="first">This tells mpv to attach to an existing window. If a VO is selected that
