@@ -1449,11 +1449,13 @@ mode, and then set select tracks at runtime by setting the filter graph.
 Note that if <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> is set before playback is started, the
 referenced tracks are always selected.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--subs-with-matching-audio=&lt;yes|no&gt;</span></tt></dt>
-<dd>When autoselecting a subtitle track, select a full/non-forced one even if the selected
-audio stream matches your preferred subtitle language (default: yes). If this option is
-set to <tt class="docutils literal">no</tt>, a non-forced subtitle track that matches the audio language will never be
-autoselected by mpv regardless of the value of <tt class="docutils literal"><span class="pre">--slang</span></tt> or <tt class="docutils literal"><span class="pre">--subs-fallback</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--subs-with-matching-audio=&lt;yes|forced|no&gt;</span></tt></dt>
+<dd>When autoselecting a subtitle track, select it even if the selected audio
+stream matches you preferred subtitle language (default: yes). If this
+option is set to <tt class="docutils literal">no</tt>, then no subtitle track that matches the audio
+language will ever be autoselected by mpv regardless of <tt class="docutils literal"><span class="pre">--slang</span></tt> or
+<tt class="docutils literal"><span class="pre">subs-fallback</span></tt>. If set to <tt class="docutils literal">forced</tt>, then only forced subtitles
+will be selected.</dd>
 <dt><tt class="docutils literal"><span class="pre">--subs-match-os-language=&lt;yes|no&gt;</span></tt></dt>
 <dd>When autoselecting a subtitle track, select the track that matches the language of your OS
 if the audio stream is in a different language if suitable (default track or a forced track
@@ -15289,6 +15291,75 @@ to distinguish empty objects and arrays.</p>
 doesn't do anything special; it is only needed because Lua is terrible.</dd>
 </dl>
 </div>
+<div class="section" id="mp-input-functions">
+<h2>mp.input functions</h2>
+<p>This module lets scripts get textual input from the user using the console
+REPL.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">input.get(table)</tt></dt>
+<dd><p class="first">Show the console to let the user enter text.</p>
+<p>The following entries of <tt class="docutils literal">table</tt> are read:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">prompt</tt></dt>
+<dd>The string to be displayed before the input field.</dd>
+<dt><tt class="docutils literal">submit</tt></dt>
+<dd>A callback invoked when the user presses Enter. The first argument is
+the text in the console. You can close the console from within the
+callback by calling <tt class="docutils literal">input.terminate()</tt>. If you don't, the console
+stays open and the user can input more text.</dd>
+<dt><tt class="docutils literal">opened</tt></dt>
+<dd>A callback invoked when the console is shown. This can be used to
+present a list of options with <tt class="docutils literal">input.set_log()</tt>.</dd>
+<dt><tt class="docutils literal">edited</tt></dt>
+<dd>A callback invoked when the text changes. This can be used to filter a
+list of options based on what the user typed with <tt class="docutils literal">input.set_log()</tt>,
+like dmenu does. The first argument is the text in the console.</dd>
+<dt><tt class="docutils literal">complete</tt></dt>
+<dd>A callback invoked when the user presses TAB. The first argument is the
+text before the cursor. The callback should return a table of the string
+candidate completion values and the 1-based cursor position from which
+the completion starts. console.lua will filter the suggestions beginning
+with the the text between this position and the cursor, sort them
+alphabetically, insert their longest common prefix, and show them when
+there are multiple ones.</dd>
+<dt><tt class="docutils literal">closed</tt></dt>
+<dd>A callback invoked when the console is hidden, either because
+<tt class="docutils literal">input.terminate()</tt> was invoked from the other callbacks, or because
+the user closed it with a key binding. The first argument is the text in
+the console, and the second argument is the cursor position.</dd>
+<dt><tt class="docutils literal">default_text</tt></dt>
+<dd>A string to pre-fill the input field with.</dd>
+<dt><tt class="docutils literal">cursor_position</tt></dt>
+<dd>The initial cursor position, starting from 1.</dd>
+<dt><tt class="docutils literal">id</tt></dt>
+<dd>An identifier that determines which input history and log buffer to use
+among the ones stored for <tt class="docutils literal">input.get()</tt> calls. The input histories
+and logs are stored in memory and do not persist across different mpv
+invocations. Defaults to the calling script name with <tt class="docutils literal">prompt</tt>
+appended.</dd>
+</dl>
+</dd>
+<dt><tt class="docutils literal">input.terminate()</tt></dt>
+<dd>Close the console.</dd>
+<dt><tt class="docutils literal">input.log(message, style)</tt></dt>
+<dd>Add a line to the log buffer. <tt class="docutils literal">style</tt> can contain additional ASS tags to
+apply to <tt class="docutils literal">message</tt>.</dd>
+<dt><tt class="docutils literal">input.log_error(message)</tt></dt>
+<dd>Helper to add a line to the log buffer with the same color as the one the
+console uses for errors. Useful when the user submits invalid input.</dd>
+<dt><tt class="docutils literal">input.set_log(log)</tt></dt>
+<dd><p class="first">Replace the entire log buffer.</p>
+<p><tt class="docutils literal">log</tt> is a table of strings, or tables with <tt class="docutils literal">text</tt> and <tt class="docutils literal">style</tt> keys.</p>
+<p>Example:</p>
+<pre class="last literal-block">
+input.set_log({
+    &quot;regular text&quot;,
+    { style = &quot;{\\c&amp;H7a77f2&amp;}&quot;, text = &quot;error text&quot; }
+})
+</pre>
+</dd>
+</dl>
+</div>
 <div class="section" id="events">
 <h2>Events</h2>
 <p>Events are notifications from player core to scripts. You can register an
@@ -15362,15 +15433,16 @@ mp.observe_property(&quot;pause&quot;, &quot;bool&quot;, on_pause_change);
 otherwise, the documented Lua options, script directories, loading, etc apply to
 JavaScript files too.</p>
 <p>Script initialization and lifecycle is the same as with Lua, and most of the Lua
-functions at the modules <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt>, <tt class="docutils literal">mp.msg</tt> and <tt class="docutils literal">mp.options</tt> are
-available to JavaScript with identical APIs - including running commands,
-getting/setting properties, registering events/key-bindings/hooks, etc.</p>
+functions in the modules <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt>, <tt class="docutils literal">mp.msg</tt>, <tt class="docutils literal">mp.options</tt> and
+<tt class="docutils literal">mp.input</tt> are available to JavaScript with identical APIs - including running
+commands, getting/setting properties, registering events/key-bindings/hooks,
+etc.</p>
 </div>
 <div class="section" id="differences-from-lua">
 <h2>Differences from Lua</h2>
-<p>No need to load modules. <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt>,  <tt class="docutils literal">mp.msg</tt> and <tt class="docutils literal">mp.options</tt>
-are preloaded, and you can use e.g. <tt class="docutils literal">var cwd = <span class="pre">mp.utils.getcwd();</span></tt> without
-prior setup.</p>
+<p>No need to load modules. <tt class="docutils literal">mp</tt>, <tt class="docutils literal">mp.utils</tt>,  <tt class="docutils literal">mp.msg</tt>, <tt class="docutils literal">mp.options</tt> and
+<tt class="docutils literal">mp.input</tt> are preloaded, and you can use e.g. <tt class="docutils literal">var cwd =
+<span class="pre">mp.utils.getcwd();</span></tt> without prior setup.</p>
 <p>Errors are slightly different. Where the Lua APIs return <tt class="docutils literal">nil</tt> for error,
 the JavaScript ones return <tt class="docutils literal">undefined</tt>. Where Lua returns <tt class="docutils literal">something, error</tt>
 JavaScript returns only <tt class="docutils literal">something</tt> - and makes <tt class="docutils literal">error</tt> available via
@@ -15462,6 +15534,11 @@ meta-paths like <tt class="docutils literal"><span class="pre">~~/foo</span></tt
 <p><tt class="docutils literal">mp.add_hook(type, priority, fn(hook))</tt></p>
 <p><tt class="docutils literal">mp.options.read_options(obj [, identifier [, <span class="pre">on_update]])</span></tt> (types:
 string/boolean/number)</p>
+<p><tt class="docutils literal">mp.input.get(obj)</tt> (LE)</p>
+<p><tt class="docutils literal">mp.input.terminate()</tt></p>
+<p><tt class="docutils literal">mp.input.log(message, style)</tt></p>
+<p><tt class="docutils literal">mp.input.log_error(message)</tt></p>
+<p><tt class="docutils literal">mp.input.set_log(log)</tt></p>
 </div>
 <div class="section" id="additional-utilities">
 <h2>Additional utilities</h2>
