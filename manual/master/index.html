@@ -15341,20 +15341,26 @@ appended.</dd>
 </dd>
 <dt><tt class="docutils literal">input.terminate()</tt></dt>
 <dd>Close the console.</dd>
-<dt><tt class="docutils literal">input.log(message, style)</tt></dt>
+<dt><tt class="docutils literal">input.log(message, style, terminal_style)</tt></dt>
 <dd>Add a line to the log buffer. <tt class="docutils literal">style</tt> can contain additional ASS tags to
-apply to <tt class="docutils literal">message</tt>.</dd>
+apply to <tt class="docutils literal">message</tt>, and <tt class="docutils literal">terminal_style</tt> can contain escape sequences
+that are used when the console is displayed in the terminal.</dd>
 <dt><tt class="docutils literal">input.log_error(message)</tt></dt>
 <dd>Helper to add a line to the log buffer with the same color as the one the
 console uses for errors. Useful when the user submits invalid input.</dd>
 <dt><tt class="docutils literal">input.set_log(log)</tt></dt>
 <dd><p class="first">Replace the entire log buffer.</p>
-<p><tt class="docutils literal">log</tt> is a table of strings, or tables with <tt class="docutils literal">text</tt> and <tt class="docutils literal">style</tt> keys.</p>
+<p><tt class="docutils literal">log</tt> is a table of strings, or tables with <tt class="docutils literal">text</tt>, <tt class="docutils literal">style</tt> and
+<tt class="docutils literal">terminal_style</tt> keys.</p>
 <p>Example:</p>
 <pre class="last literal-block">
 input.set_log({
     &quot;regular text&quot;,
-    { style = &quot;{\\c&amp;H7a77f2&amp;}&quot;, text = &quot;error text&quot; }
+    {
+        text = &quot;error text&quot;,
+        style = &quot;{\\c&amp;H7a77f2&amp;}&quot;,
+        terminal_style = &quot;\027[31m&quot;,
+    }
 })
 </pre>
 </dd>
