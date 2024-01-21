@@ -1151,8 +1151,8 @@ actually a network address. A protocol prefix is always required.</p>
 <p>Note that not all prefixes are documented here. Undocumented prefixes are
 either aliases to documented protocols, or are just redirections to
 protocols implemented and documented in FFmpeg.</p>
-<p><tt class="docutils literal">data:</tt> is supported in FFmpeg (not in Libav), but needs to be in the
-format <tt class="docutils literal"><span class="pre">data://</span></tt>. This is done to avoid ambiguity with filenames. You
+<p><tt class="docutils literal">data:</tt> is supported, but needs to be in the format <tt class="docutils literal"><span class="pre">data://</span></tt>.
+This is done to avoid ambiguity with filenames. You
 can also prefix it with <tt class="docutils literal"><span class="pre">lavf://</span></tt> or <tt class="docutils literal"><span class="pre">ffmpeg://</span></tt>.</p>
 </blockquote>
 <p><tt class="docutils literal"><span class="pre">ytdl://...</span></tt></p>
@@ -1199,7 +1199,7 @@ Play a series of images as video.</blockquote>
 Play CD.</blockquote>
 <p><tt class="docutils literal"><span class="pre">lavf://...</span></tt></p>
 <blockquote>
-Access any FFmpeg/Libav libavformat protocol. Basically, this passed the
+Access any FFmpeg libavformat protocol. Basically, this passed the
 string after the <tt class="docutils literal">//</tt> directly to libavformat.</blockquote>
 <p><tt class="docutils literal"><span class="pre">av://type:options</span></tt></p>
 <blockquote>
@@ -2938,7 +2938,7 @@ instead, if available.</p>
 prefix, e.g. instead of <tt class="docutils literal">lavc:h264</tt> use <tt class="docutils literal">h264</tt>.</p>
 <p>By default, this is set to <tt class="docutils literal">h264,vc1,hevc,vp8,vp9,av1</tt>. Note that
 the hardware acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not
-relevant anymore, and in fact have been removed from Libav in this form.</p>
+relevant anymore, and in fact have been removed from FFmpeg in this form.</p>
 <p>This is usually only needed with broken GPUs, where a codec is reported
 as supported, but decoding causes more problems than it solves.</p>
 <div class="admonition admonition-example last">
@@ -3187,7 +3187,7 @@ normal decoder auto-selection! Both of these methods are deprecated.</p>
 <p class="first admonition-title">Examples</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">--ad=mp3float</span></tt></dt>
-<dd>Prefer the FFmpeg/Libav <tt class="docutils literal">mp3float</tt> decoder over all other MP3
+<dd>Prefer the FFmpeg <tt class="docutils literal">mp3float</tt> decoder over all other MP3
 decoders.</dd>
 <dt><tt class="docutils literal"><span class="pre">--ad=help</span></tt></dt>
 <dd>List all available decoders.</dd>
@@ -3205,6 +3205,14 @@ amplification. Negative values can be passed for compatibility, but are
 treated as 0.</p>
 <p class="last">Since mpv 0.18.1, this always controls the internal mixer (aka &quot;softvol&quot;).</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--volume-max=&lt;100.0-1000.0&gt;</span></tt></dt>
+<dd>Set the maximum amplification level in percent (default: 130). A value of
+130 will allow you to adjust the volume up to about double the normal level.</dd>
+<dt><tt class="docutils literal"><span class="pre">--volume-gain=&lt;db&gt;</span></tt></dt>
+<dd>Set the volume gain in dB. This is applied on top of other volume and gain
+settings.</dd>
+<dt><tt class="docutils literal"><span class="pre">--volume-gain-max=&lt;0.0-150.0&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--volume-gain-min=&lt;-150.0-0.0&gt;</span></tt></dt>
+<dd>Set the volume gain range in dB (default: -96 dB min, 12 dB max).</dd>
 <dt><tt class="docutils literal"><span class="pre">--replaygain=&lt;no|track|album&gt;</span></tt></dt>
 <dd>Adjust volume gain according to replaygain values stored in the file
 metadata. With <tt class="docutils literal"><span class="pre">--replaygain=no</span></tt> (the default), perform no adjustment.
@@ -3440,9 +3448,6 @@ first samples. Disabling this option makes the player behave like older
 mpv versions did: video and audio are both started immediately even if
 their start timestamps differ, and then video timing is gradually adjusted
 if necessary to reach correct synchronization later.</dd>
-<dt><tt class="docutils literal"><span class="pre">--volume-max=&lt;100.0-1000.0&gt;</span></tt></dt>
-<dd>Set the maximum amplification level in percent (default: 130). A value of
-130 will allow you to adjust the volume up to about double the normal level.</dd>
 <dt><tt class="docutils literal"><span class="pre">--audio-file-auto=&lt;no|exact|fuzzy|all&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--no-audio-file-auto</span></tt></dt>
 <dd><p class="first">Load additional audio files matching the video filename. The parameter
 specifies how external audio files are matched.</p>
@@ -5798,7 +5803,7 @@ This option does not affect the resampling algorithm in any way.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--audio-swresample-o=&lt;string&gt;</span></tt></dt>
 <dd><p class="first">Set AVOptions on the SwrContext or AVAudioResampleContext. These should
-be documented by FFmpeg or Libav.</p>
+be documented by FFmpeg.</p>
 <p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 </dl>
@@ -5913,9 +5918,6 @@ properties, e.g. <tt class="docutils literal"><span class="pre">--term-playing-m
 <tt class="docutils literal">file:</tt> followed by a space and the currently played filename.</p>
 <p class="last">See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--term-remaining-playtime</span></tt>, <tt class="docutils literal"><span class="pre">--no-term-remaining-playtime</span></tt></dt>
-<dd>When printing out the time on the terminal, show the remaining time adjusted by
-playback speed. Default: <tt class="docutils literal">yes</tt></dd>
 <dt><tt class="docutils literal"><span class="pre">--term-status-msg=&lt;string&gt;</span></tt></dt>
 <dd>Print out a custom string during playback instead of the standard status
 line. Expands properties. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</dd>
@@ -6134,10 +6136,10 @@ are not used for https URLs. Setting this option does not try to make the
 ytdl script use the proxy.</dd>
 <dt><tt class="docutils literal"><span class="pre">--tls-ca-file=&lt;filename&gt;</span></tt></dt>
 <dd>Certificate authority database file for use with TLS. (Silently fails with
-older FFmpeg or Libav versions.)</dd>
+older FFmpeg versions.)</dd>
 <dt><tt class="docutils literal"><span class="pre">--tls-verify</span></tt></dt>
 <dd>Verify peer certificates when using TLS (e.g. with <tt class="docutils literal"><span class="pre">https://...</span></tt>).
-(Silently fails with older FFmpeg or Libav versions.)</dd>
+(Silently fails with older FFmpeg versions.)</dd>
 <dt><tt class="docutils literal"><span class="pre">--tls-cert-file</span></tt></dt>
 <dd>A file containing a certificate to use in the handshake with the
 peer.</dd>
@@ -6147,7 +6149,7 @@ peer.</dd>
 <dd>Specify a referrer path or URL for HTTP requests.</dd>
 <dt><tt class="docutils literal"><span class="pre">--network-timeout=&lt;seconds&gt;</span></tt></dt>
 <dd><p class="first">Specify the network timeout in seconds (default: 60 seconds). This affects
-at least HTTP. The special value 0 uses the FFmpeg/Libav defaults. If a
+at least HTTP. The special value 0 uses the FFmpeg defaults. If a
 protocol is used which does not support timeouts, this option is silently
 ignored.</p>
 <div class="admonition warning last">
@@ -13294,6 +13296,9 @@ reinitialization failure after a previous write access to <tt class="docutils li
 </dd>
 <dt><tt class="docutils literal"><span class="pre">current-vo</span></tt></dt>
 <dd>Current video output driver (name as used with <tt class="docutils literal"><span class="pre">--vo</span></tt>).</dd>
+<dt><tt class="docutils literal"><span class="pre">current-gpu-context</span></tt></dt>
+<dd>Current GPU context of video output driver (name as used with <tt class="docutils literal"><span class="pre">--gpu-context</span></tt>).
+Valid for <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> and <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">current-ao</span></tt></dt>
 <dd>Current audio output driver (name as used with <tt class="docutils literal"><span class="pre">--ao</span></tt>).</dd>
 <dt><tt class="docutils literal"><span class="pre">user-data</span></tt> (RW)</dt>
@@ -13361,9 +13366,8 @@ string of a few, arbitrary options is displayed instead.</dd>
 <dt><tt class="docutils literal"><span class="pre">ffmpeg-version</span></tt></dt>
 <dd>The contents of the <tt class="docutils literal">av_version_info()</tt> API call. This is a string which
 identifies the build in some way, either through a release version number,
-or a git hash. This applies to Libav as well (the property is still named
-the same.) This property is unavailable if mpv is linked against older
-FFmpeg and Libav versions.</dd>
+or a git hash. This property is unavailable if mpv is linked against older
+FFmpeg versions.</dd>
 <dt><tt class="docutils literal"><span class="pre">libass-version</span></tt></dt>
 <dd>The value of <tt class="docutils literal">ass_library_version()</tt>. This is an integer, encoded in a
 somewhat weird form (apparently &quot;hex BCD&quot;), indicating the release version
@@ -14898,9 +14902,9 @@ property does not exist.)</p>
 <p>In some cases the function is not called even if the property changes.
 This depends on the property, and it's a valid feature request to ask for
 better update handling of a specific property.</p>
-<p>If the <tt class="docutils literal">type</tt> is <tt class="docutils literal">none</tt> or <tt class="docutils literal">nil</tt>, sporadic property change events are
-possible. This means the change function <tt class="docutils literal">fn</tt> can be called even if the
-property doesn't actually change.</p>
+<p>If the <tt class="docutils literal">type</tt> is <tt class="docutils literal">none</tt> or <tt class="docutils literal">nil</tt>, the change function <tt class="docutils literal">fn</tt> will be
+called sporadically even if the property doesn't actually change. You should
+therefore avoid using these types.</p>
 <p class="last">You always get an initial change notification. This is meant to initialize
 the user's state to the current value of the property.</p>
 </dd>
@@ -16137,7 +16141,7 @@ custom <tt class="docutils literal">CFLAGS</tt>), this environment variable is i
 qualified path names must be used.</dd>
 <dt><tt class="docutils literal">DISPLAY</tt></dt>
 <dd>Standard X11 display name to use.</dd>
-<dt>FFmpeg/Libav:</dt>
+<dt>FFmpeg:</dt>
 <dd><p class="first">This library accesses various environment variables. However, they are not
 centrally documented, and documenting them is not our job. Therefore, this
 list is incomplete.</p>
