@@ -2885,7 +2885,7 @@ backstepping), and audio synchronization can be completely broken in this mode.<
 <dt><tt class="docutils literal"><span class="pre">--deinterlace=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Enable or disable interlacing (default: no).
 Interlaced video shows ugly comb-like artifacts, which are visible on
-fast movement. Enabling this typically inserts the yadif video filter in
+fast movement. Enabling this typically inserts the bwdif video filter in
 order to deinterlace the video, or lets the video output apply deinterlacing
 if supported.</p>
 <p>This behaves exactly like the <tt class="docutils literal">deinterlace</tt> input property (usually
@@ -3528,6 +3528,12 @@ overriding them can be controlled with <tt class="docutils literal"><span class=
 <dt><tt class="docutils literal"><span class="pre">--sub-demuxer=&lt;[+]name&gt;</span></tt></dt>
 <dd>Force subtitle demuxer type for <tt class="docutils literal"><span class="pre">--sub-file</span></tt>. Give the demuxer name as
 printed by <tt class="docutils literal"><span class="pre">--sub-demuxer=help</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-lavc-o=&lt;key&gt;=&lt;value&gt;[,&lt;key&gt;=&lt;value&gt;[,...]]</span></tt></dt>
+<dd><p class="first">Pass AVOptions to libavcodec decoder. Note, a patch to make the o=
+unneeded and pass all unknown options through the AVOption system is
+welcome. A full list of AVOptions can be found in the FFmpeg manual.</p>
+<p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-delay=&lt;sec&gt;</span></tt></dt>
 <dd>Delays primary subtitles by <tt class="docutils literal">&lt;sec&gt;</tt> seconds. Can be negative.</dd>
 <dt><tt class="docutils literal"><span class="pre">--secondary-sub-delay=&lt;sec&gt;</span></tt></dt>
