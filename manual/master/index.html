@@ -7774,8 +7774,10 @@ cache directory (Default: <tt class="docutils literal">yes</tt>). This can be us
 since LittleCMS 2 can take a while to create a 3D LUT. Note that these
 files contain uncompressed LUTs. Their size depends on the
 <tt class="docutils literal"><span class="pre">--icc-3dlut-size</span></tt>, and can be very big.</p>
-<p class="last">NOTE: On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, this is not cleaned automatically, so old, unused
-cache files may stick around indefinitely.</p>
+<p>On <cite>--vo=gpu-next</cite>, files that have not been accessed in the last 24 hours
+may be cleared if the cache limit (1.5 GiB) is exceeded.</p>
+<p class="last">On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, this is not cleaned automatically, so old, unused cache
+files may stick around indefinitely.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--icc-cache-dir</span></tt></dt>
 <dd>The directory where icc cache is stored. Cache is stored in the system's
@@ -7914,10 +7916,12 @@ if nothing uses features which require FBOs.</p>
 <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache</span></tt></dt>
 <dd><p class="first">Store and load compiled GLSL shaders in the cache directory (Default:
 <tt class="docutils literal">yes</tt>). Normally, shader compilation is very fast, so this is not usually
-needed. It mostly matters for anything based on D3D11 (including ANGLE), as
-well as on some other proprietary drivers. Enabling this can improve startup
-performance on these platforms.</p>
-<p class="last">NOTE: On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, is not cleaned automatically, so old, unused cache
+needed. It mostly matters for anything involving GLSL to SPIR-V conversion,
+that is: D3D11, ANGLE or Vulkan, as well as on some other proprietary
+drivers. Enabling this can improve startup performance on these platforms.</p>
+<p>On <cite>--vo=gpu-next</cite>, files that have not been accessed in the last 24 hours
+may be cleared if the cache limit (128 MiB) is exceeded.</p>
+<p class="last">On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, this is not cleaned automatically, so old, unused cache
 files may stick around indefinitely.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-shader-cache-dir</span></tt></dt>
