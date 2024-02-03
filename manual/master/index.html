@@ -1191,9 +1191,20 @@ thing.</p>
 <p><tt class="docutils literal"><span class="pre">dvb://[cardnumber&#64;]channel</span></tt> <tt class="docutils literal"><span class="pre">--dvbin-...</span></tt></p>
 <blockquote>
 Digital TV via DVB. (Linux only.)</blockquote>
-<p><tt class="docutils literal"><span class="pre">mf://[filemask|&#64;listfile]</span></tt> <tt class="docutils literal"><span class="pre">--mf-...</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">mf://[&#64;listfile|filemask|glob|printf-format]</span></tt> <tt class="docutils literal"><span class="pre">--mf-...</span></tt></p>
 <blockquote>
-Play a series of images as video.</blockquote>
+<p>Play a series of images as video.</p>
+<p>If the URL path begins with <tt class="docutils literal">&#64;</tt>, it is interpreted as the path to a file
+containing a list of image paths separated by newlines. If the URL path
+contains <tt class="docutils literal">,</tt>, it is interpreted as a list of image paths separated by
+<tt class="docutils literal">,</tt>. If the URL path does not contain <tt class="docutils literal">%</tt> and if on POSIX platforms, is
+interpreted as a glob, and <tt class="docutils literal">*</tt> is automatically appended if it was not
+specified. Otherwise, the printf sequences <tt class="docutils literal"><span class="pre">%[.][NUM]d</span></tt>, where <tt class="docutils literal">NUM</tt> is
+one, two, or three decimal digits, and <tt class="docutils literal">%%</tt> and are interpreted. For
+example, <tt class="docutils literal"><span class="pre">mf://image-%d.jpg</span></tt> plays files like <tt class="docutils literal"><span class="pre">image-1.jpg</span></tt>,
+<tt class="docutils literal"><span class="pre">image-2.jpg</span></tt> and <tt class="docutils literal"><span class="pre">image-10.jpg</span></tt>, provided that there are no big gaps
+between the files.</p>
+</blockquote>
 <p><tt class="docutils literal"><span class="pre">cdda://[device]</span></tt> <tt class="docutils literal"><span class="pre">--cdrom-device=PATH</span></tt> <tt class="docutils literal"><span class="pre">--cdda-...</span></tt></p>
 <blockquote>
 Play CD.</blockquote>
@@ -4426,7 +4437,7 @@ Set the preference for window corner rounding.</p>
 <dd>Play video with window border and decorations. Since this is on by
 default, use <tt class="docutils literal"><span class="pre">--no-border</span></tt> to disable the standard window decorations.</dd>
 <dt><tt class="docutils literal"><span class="pre">--title-bar</span></tt>, <tt class="docutils literal"><span class="pre">--no-title-bar</span></tt></dt>
-<dd>(Windows only)
+<dd>(Windows and X11 only)
 Play video with the window title bar. Since this is on by default,
 use --no-title-bar to hide the title bar. The --no-border option takes
 precedence.</dd>
