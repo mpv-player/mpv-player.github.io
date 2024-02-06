@@ -2569,10 +2569,6 @@ or <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></
 <tr class="field"><th class="field-name" colspan="2">mediacodec-copy:</th></tr>
 <tr class="field"><td>&nbsp;</td><td class="field-body">copies video back to system RAM (Android only)</td>
 </tr>
-<tr class="field"><th class="field-name">mmal:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Raspberry Pi only - default if available)</td>
-</tr>
-<tr class="field"><th class="field-name">mmal-copy:</th><td class="field-body">copies video back to system RAM (Raspberry Pi only)</td>
-</tr>
 <tr class="field"><th class="field-name">cuda:</th><td class="field-body">requires <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> (Any platform CUDA is available)</td>
 </tr>
 <tr class="field"><th class="field-name">cuda-copy:</th><td class="field-body">copies video back to system RAM (Any platform CUDA is available)</td>
@@ -2660,8 +2656,6 @@ appear to convert to limited range RGB, which gives a faded appearance.
 In addition to driver-specific behavior, global system settings might
 affect this additionally. This can give incorrect results even with
 completely ordinary video sources.</p>
-<p><tt class="docutils literal">rpi</tt> always uses the hardware overlay renderer, even with
-<tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>.</p>
 <p><tt class="docutils literal">mediacodec</tt> is not safe. It forces RGB conversion (not with <tt class="docutils literal"><span class="pre">-copy</span></tt>)
 and how well it handles non-standard colorspaces is not known.
 In the rare cases where 10-bit is supported the bit depth of the output
@@ -9111,27 +9105,6 @@ other contexts.
 (See <tt class="docutils literal">&lt;mpv/render.h&gt;</tt>.)</p>
 <p class="last">This also supports many of the options the <tt class="docutils literal">gpu</tt> VO has, depending on the
 backend.</p>
-</dd>
-<dt><tt class="docutils literal">rpi</tt> (Raspberry Pi)</dt>
-<dd><p class="first">Native video output on the Raspberry Pi using the MMAL API.</p>
-<p>The following global options are supported by this video output:</p>
-<dl class="last docutils">
-<dt><tt class="docutils literal"><span class="pre">--rpi-display=&lt;number&gt;</span></tt></dt>
-<dd>Select the display number on which the video overlay should be shown
-(default: 0).</dd>
-<dt><tt class="docutils literal"><span class="pre">--rpi-layer=&lt;number&gt;</span></tt></dt>
-<dd>Select the dispmanx layer on which the video overlay should be shown
-(default: -10). Note that mpv will also use the 2 layers above the
-selected layer, to handle the window background and OSD. Actual video
-rendering will happen on the layer above the selected layer.</dd>
-<dt><tt class="docutils literal"><span class="pre">--rpi-background=&lt;yes|no&gt;</span></tt></dt>
-<dd>Whether to render a black background behind the video (default: no).
-Normally it's better to kill the console framebuffer instead, which
-gives better performance.</dd>
-<dt><tt class="docutils literal"><span class="pre">--rpi-osd=&lt;yes|no&gt;</span></tt></dt>
-<dd>Enabled by default. If disabled with <tt class="docutils literal">no</tt>, no OSD layer is created.
-This also means there will be no subtitles rendered.</dd>
-</dl>
 </dd>
 <dt><tt class="docutils literal">drm</tt> (Direct Rendering Manager)</dt>
 <dd><p class="first">Video output driver using Kernel Mode Setting / Direct Rendering Manager.
