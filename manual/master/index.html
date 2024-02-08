@@ -201,7 +201,7 @@ video).</dd>
 <dd>Seek backward or forward by 10 minutes. (This used to be mapped to
 PGUP/PGDWN without Shift.)</dd>
 <dt>d</dt>
-<dd>Activate/deactivate deinterlacer.</dd>
+<dd>Cycle the deinterlacing filter.</dd>
 <dt>A</dt>
 <dd>Cycle aspect ratio override.</dd>
 <dt>Ctrl+h</dt>
@@ -2887,20 +2887,20 @@ backstepping), and audio synchronization can be completely broken in this mode.<
 <p class="last">Works in <tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt> mode only.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--deinterlace=&lt;yes|no&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--deinterlace=&lt;yes|no|auto&gt;</span></tt></dt>
 <dd><p class="first">Enable or disable interlacing (default: no).
 Interlaced video shows ugly comb-like artifacts, which are visible on
 fast movement. Enabling this typically inserts the bwdif video filter in
 order to deinterlace the video, or lets the video output apply deinterlacing
 if supported.</p>
-<p>This behaves exactly like the <tt class="docutils literal">deinterlace</tt> input property (usually
-mapped to <tt class="docutils literal">d</tt>).</p>
-<p>Keep in mind that this <strong>will</strong> conflict with manually inserted
-deinterlacing filters, unless you take care. (Since mpv 0.27.0, even the
-hardware deinterlace filters will conflict. Also since that version,
-<tt class="docutils literal"><span class="pre">--deinterlace=auto</span></tt> was removed, which used to mean that the default
-interlacing option of possibly inserted video filters was used.)</p>
-<p class="last">Note that this will make video look worse if it's not actually interlaced.</p>
+<p>When using <tt class="docutils literal">auto</tt>, mpv will insert a deinterlacing filter if ffmpeg
+detects that the video frame is interlaced. Be aware that there can be false
+positives in certain cases, such as when files are encoded as interlaced
+despite the video not actually being so. This is why <tt class="docutils literal">auto</tt> is not the
+default value.</p>
+<p class="last">Keep in mind that using this filter <strong>will</strong> conflict with any manually
+inserted deinterlacing filters, and that this will make video look worse if
+it's not actually interlaced.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--frames=&lt;number&gt;</span></tt></dt>
 <dd><p class="first">Play/convert only first <tt class="docutils literal">&lt;number&gt;</tt> video frames, then quit.</p>
@@ -12335,6 +12335,10 @@ added by <tt class="docutils literal"><span class="pre">--vf=lavfi=cropdetect</s
 </dd>
 <dt><tt class="docutils literal"><span class="pre">af-metadata/&lt;filter-label&gt;</span></tt></dt>
 <dd>Equivalent to <tt class="docutils literal"><span class="pre">vf-metadata/&lt;filter-label&gt;</span></tt>, but for audio filters.</dd>
+<dt><tt class="docutils literal"><span class="pre">deinterlace-active</span></tt></dt>
+<dd>Returns <tt class="docutils literal">yes</tt>/true if mpv's deinterlacing filter is active. Note that it
+will not detect any manually inserted deinterlacing filters done via
+<tt class="docutils literal"><span class="pre">--vf</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">idle-active</span></tt></dt>
 <dd><p class="first">Returns <tt class="docutils literal">yes</tt>/true if no file is loaded, but the player is staying around
 because of the <tt class="docutils literal"><span class="pre">--idle</span></tt> option.</p>
