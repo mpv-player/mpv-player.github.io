@@ -3987,9 +3987,17 @@ Matroska-style ASS subtitle packets. It should be unique, and libass
 uses it for fast elimination of duplicates. This option disables caching
 of subtitles across seeks, so after a seek libass can't eliminate subtitle
 packets with the same ReadOrder as earlier packets.</dd>
-<dt><tt class="docutils literal"><span class="pre">--teletext-page=&lt;1-999&gt;</span></tt></dt>
-<dd>This works for <tt class="docutils literal">dvb_teletext</tt> subtitle streams, and if FFmpeg has been
-compiled with support for it.</dd>
+<dt><tt class="docutils literal"><span class="pre">--teletext-page=&lt;-1-999&gt;</span></tt></dt>
+<dd><p class="first">Select a teletext page number to decode.</p>
+<p>This works for <tt class="docutils literal">dvb_teletext</tt> subtitle streams, and if FFmpeg has been
+compiled with support for it.</p>
+<p>Values <tt class="docutils literal"><span class="pre">1-999</span></tt> are for individual pages. Special value <tt class="docutils literal">0</tt> (default)
+matches all subtitle pages. Special value <tt class="docutils literal"><span class="pre">-1</span></tt> matches all pages.</p>
+<p>Note that page <tt class="docutils literal">100</tt> is the default start page of actual teletext. It is
+also the former default value of this option.</p>
+<p>See the <tt class="docutils literal"><span class="pre">libzvbi-teletext</span></tt> section in FFmpeg documentation for details.</p>
+<p class="last">Default: 0</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-past-video-end</span></tt></dt>
 <dd><p class="first">After the last frame of video, if this option is enabled, subtitles will
 continue to update based on audio timestamps. Otherwise, the subtitles
