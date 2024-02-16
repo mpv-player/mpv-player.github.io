@@ -3986,7 +3986,9 @@ duplicate ReadOrder fields. ReadOrder is the first field in a
 Matroska-style ASS subtitle packets. It should be unique, and libass
 uses it for fast elimination of duplicates. This option disables caching
 of subtitles across seeks, so after a seek libass can't eliminate subtitle
-packets with the same ReadOrder as earlier packets.</dd>
+packets with the same ReadOrder as earlier packets. Note that enabling this
+option can result in broken subtitle behavior if you are not actually
+playing one of the aforementioned broken mkv files.</dd>
 <dt><tt class="docutils literal"><span class="pre">--teletext-page=&lt;-1-999&gt;</span></tt></dt>
 <dd><p class="first">Select a teletext page number to decode.</p>
 <p>This works for <tt class="docutils literal">dvb_teletext</tt> subtitle streams, and if FFmpeg has been
@@ -5277,6 +5279,18 @@ mpv doesn't have a choice - the system decides whether to send media keys
 to mpv. For instance, on X11 or Wayland, system-wide media keys are not
 implemented. Whether media keys work when the mpv window is focused is
 implementation-defined.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--input-preprocess-wheel=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Preprocess <tt class="docutils literal">WHEEL_*</tt> events so that while scrolling on the horizontal
+or vertical direction, the events aren't generated for another direction
+even when the two directions are scrolled together (default: yes).</p>
+<p>This preprocessing can be beneficial for preventing accidentally seeking
+while changing the volume by scrolling on a touchpad with the default
+keybind. Due to the deadzone mechanism used, disabling the preprocessing
+allows for diagonal scrolling (such as panning) and potentially reduces
+input latency.</p>
+<p class="last">Note that disabling the preprocessing does not affect any filtering done
+by the OS/driver before these events are delivered to mpv, if any.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--input-right-alt-gr</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-right-alt-gr</span></tt></dt>
 <dd>(macOS and Windows only)
@@ -14823,17 +14837,18 @@ have the following entries:</p>
 <blockquote>
 <dl class="docutils">
 <dt><tt class="docutils literal">repeatable</tt></dt>
-<dd>If set to <tt class="docutils literal">true</tt>, enables key repeat for this specific binding.</dd>
+<dd>If set to <tt class="docutils literal">true</tt>, enables key repeat for this specific binding.
+This option only makes sense when <tt class="docutils literal">complex</tt> is not set to <tt class="docutils literal">true</tt>.</dd>
 <dt><tt class="docutils literal">complex</tt></dt>
-<dd><p class="first">If set to <tt class="docutils literal">true</tt>, then <tt class="docutils literal">fn</tt> is called on both key up and down
-events (as well as key repeat, if enabled), with the first
-argument being a table. This table has the following entries (and
-may contain undocumented ones):</p>
+<dd><p class="first">If set to <tt class="docutils literal">true</tt>, then <tt class="docutils literal">fn</tt> is called on key down, repeat and up
+events, with the first argument being a table. This table has the
+following entries (and may contain undocumented ones):</p>
 <blockquote class="last">
 <dl class="docutils">
 <dt><tt class="docutils literal">event</tt></dt>
 <dd>Set to one of the strings <tt class="docutils literal">down</tt>, <tt class="docutils literal">repeat</tt>, <tt class="docutils literal">up</tt> or
-<tt class="docutils literal">press</tt> (the latter if key up/down can't be tracked).</dd>
+<tt class="docutils literal">press</tt> (the latter if key up/down/repeat can't be
+tracked).</dd>
 <dt><tt class="docutils literal">is_mouse</tt></dt>
 <dd>Boolean Whether the event was caused by a mouse button.</dd>
 <dt><tt class="docutils literal">key_name</tt></dt>
