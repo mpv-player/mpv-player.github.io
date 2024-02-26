@@ -3212,8 +3212,15 @@ this option is not possible. Use <tt class="docutils literal"><span class="pre">
 <dd><p class="first">Set the startup volume. 0 means silence, 100 means no volume reduction or
 amplification. Negative values can be passed for compatibility, but are
 treated as 0.</p>
-<p class="last">Since mpv 0.18.1, this always controls the internal mixer (aka &quot;softvol&quot;).</p>
+<p class="last">Since mpv 0.18.1, this always controls the internal mixer (aka software
+volume).</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--ao-volume=&lt;value&gt;</span></tt></dt>
+<dd>Set the startup system volume. This option works only if mpv audio
+output is currently active, and the underlying implementation supports
+volume control. What this option does depends on the API. For example, on
+ALSA this usually changes system-wide audio, while with PulseAudio this
+controls per-application volume. Negative values will be ignored.</dd>
 <dt><tt class="docutils literal"><span class="pre">--volume-max=&lt;100.0-1000.0&gt;</span></tt></dt>
 <dd>Set the maximum amplification level in percent (default: 130). A value of
 130 will allow you to adjust the volume up to about double the normal level.</dd>
@@ -3244,16 +3251,6 @@ delay the audio, and negative values delay the video.</dd>
 <dd><p class="first">Set startup audio mute status (default: no).</p>
 <p><tt class="docutils literal">auto</tt> is a deprecated possible value that is equivalent to <tt class="docutils literal">no</tt>.</p>
 <p class="last">See also: <tt class="docutils literal"><span class="pre">--volume</span></tt>.</p>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">--softvol=&lt;no|yes|auto&gt;</span></tt></dt>
-<dd><p class="first">Deprecated/unfunctional. Before mpv 0.18.1, this used to control whether
-to use the volume controls of the audio output driver or the internal mpv
-volume filter.</p>
-<p>The current behavior is that softvol is always enabled, i.e. as if this
-option is set to <tt class="docutils literal">yes</tt>. The other behaviors are not available anymore,
-although <tt class="docutils literal">auto</tt> almost matches current behavior in most cases.</p>
-<p class="last">The <tt class="docutils literal">no</tt> behavior is still partially available through the <tt class="docutils literal"><span class="pre">ao-volume</span></tt>
-and <tt class="docutils literal"><span class="pre">ao-mute</span></tt> properties. But there are no options to reset these.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--audio-demuxer=&lt;[+]name&gt;</span></tt></dt>
 <dd>Use this audio demuxer type when using <tt class="docutils literal"><span class="pre">--audio-file</span></tt>. Use a '+' before
@@ -4388,13 +4385,14 @@ Enable/disable playback progress rendering in taskbar (Windows 7 and above).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--snap-window</span></tt></dt>
 <dd>(Windows only) Snap the player window to screen edges.</dd>
-<dt><tt class="docutils literal"><span class="pre">--drag-and-drop=&lt;no|auto|replace|append&gt;</span></tt></dt>
-<dd>Controls the default behavior of drag and drop on platforms that support this.
-<tt class="docutils literal">auto</tt> will obey what the underlying os/platform gives mpv. Typically, holding
-shift during the drag and drop will append the item to the playlist. Otherwise,
-it will completely replace it. <tt class="docutils literal">replace</tt> and <tt class="docutils literal">append</tt> always force replacing
-and appending to the playlist respectively. <tt class="docutils literal">no</tt> disables all drag and drop
-behavior.</dd>
+<dt><tt class="docutils literal"><span class="pre">--drag-and-drop=&lt;no|auto|replace|append|insert-next&gt;</span></tt></dt>
+<dd>Controls the default behavior of drag and drop on platforms that support
+this. <tt class="docutils literal">auto</tt> will obey what the underlying os/platform gives mpv.
+Typically, holding shift during the drag and drop will append the item to
+the playlist. Otherwise, it will completely replace it. <tt class="docutils literal">replace</tt>,
+<tt class="docutils literal">append</tt>, and <tt class="docutils literal"><span class="pre">insert-next</span></tt> always force replacing, appending to, and
+inserting next into the playlist respectively. <tt class="docutils literal">no</tt> disables all drag and
+drop behavior.</dd>
 <dt><tt class="docutils literal"><span class="pre">--ontop</span></tt></dt>
 <dd><p class="first">Makes the player window stay on top of other windows.</p>
 <p class="last">On Windows, if combined with fullscreen mode, this causes mpv to be
@@ -10846,9 +10844,9 @@ this command. However, it's more explicit, and guarantees that playback is
 restarted if for example the new playlist entry is the same as the previous
 one.</p>
 </dd>
-<dt><tt class="docutils literal">loadfile &lt;url&gt; [&lt;flags&gt; <span class="pre">[&lt;options&gt;]]</span></tt></dt>
+<dt><tt class="docutils literal">loadfile &lt;url&gt; [&lt;flags&gt; [&lt;index&gt; <span class="pre">[&lt;options&gt;]]]</span></tt></dt>
 <dd><p class="first">Load the given file or URL and play it. Technically, this is just a playlist
-manipulation command (which either replaces the playlist or appends an entry
+manipulation command (which either replaces the playlist or adds an entry
 to it). Actual file loading happens independently. For example, a
 <tt class="docutils literal">loadfile</tt> command that replaces the current file with a new one returns
 before the current file is stopped, and the new file even begins loading.</p>
@@ -10862,18 +10860,36 @@ before the current file is stopped, and the new file even begins loading.</p>
 <dd>Append the file, and if nothing is currently playing, start playback.
 (Always starts with the added file, even if the playlist was not empty
 before running this command.)</dd>
+<dt>&lt;insert-next&gt;</dt>
+<dd>Insert the file into the playlist, directly after the current entry.</dd>
+<dt>&lt;insert-next-play&gt;</dt>
+<dd>Insert the file next, and if nothing is currently playing, start playback.
+(Always starts with the added file, even if the playlist was not empty
+before running this command.)</dd>
+<dt>&lt;insert-at&gt;</dt>
+<dd>Insert the file into the playlist, at the index given in the third
+argument.</dd>
+<dt>&lt;insert-at-play&gt;</dt>
+<dd>Insert the file at the index given in the third argument, and if nothing
+is currently playing, start playback. (Always starts with the added
+file, even if the playlist was not empty before running this command.)</dd>
 </dl>
-<p class="last">The third argument is a list of options and values which should be set
+<p>The third argument is an insertion index, used only by the <cite>insert-at</cite> and
+<cite>insert-at-play</cite> actions. When used with those actions, the new item will be
+insert at the &lt;index&gt; position in the playlist, or appended to the end if
+&lt;index&gt; is less than 0 or greater than the size of the playlist. This
+argument will be ignored for all other actions.</p>
+<p class="last">The fourth argument is a list of options and values which should be set
 while the file is playing. It is of the form <tt class="docutils literal"><span class="pre">opt1=value1,opt2=value2,..</span></tt>.
 When using the client API, this can be a <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt> (or a Lua
 table), however the values themselves must be strings currently. These
 options are set during playback, and restored to the previous value at end
 of playback (see <a class="reference internal" href="#per-file-options">Per-File Options</a>).</p>
 </dd>
-<dt><tt class="docutils literal">loadlist &lt;url&gt; [&lt;flags&gt;]</tt></dt>
+<dt><tt class="docutils literal">loadlist &lt;url&gt; [&lt;flags&gt; <span class="pre">[&lt;index&gt;]]</span></tt></dt>
 <dd><p class="first">Load the given playlist file or URL (like <tt class="docutils literal"><span class="pre">--playlist</span></tt>).</p>
 <p>Second argument:</p>
-<dl class="last docutils">
+<dl class="docutils">
 <dt>&lt;replace&gt; (default)</dt>
 <dd>Stop playback and replace the internal playlist with the new one.</dd>
 <dt>&lt;append&gt;</dt>
@@ -10882,7 +10898,26 @@ of playback (see <a class="reference internal" href="#per-file-options">Per-File
 <dd>Append the new playlist, and if nothing is currently playing, start
 playback. (Always starts with the new playlist, even if the internal
 playlist was not empty before running this command.)</dd>
+<dt>&lt;insert-next&gt;</dt>
+<dd>Insert the new playlist into the current internal playlist, directly
+after the current entry.</dd>
+<dt>&lt;insert-next-play&gt;</dt>
+<dd>Insert the new playlist, and if nothing is currently playing, start
+playback. (Always starts with the new playlist, even if the internal
+playlist was not empty before running this command.)</dd>
+<dt>&lt;insert-at&gt;</dt>
+<dd>Insert the new playlist at the index given in the third argument.</dd>
+<dt>&lt;insert-at-play&gt;</dt>
+<dd>Insert the new playlist at the index given in the third argument, and if
+nothing is currently playing, start playback. (Always starts with the
+new playlist, even if the internal playlist was not empty before running
+this command.)</dd>
 </dl>
+<p class="last">The third argument is an insertion index, used only by the <cite>insert-at</cite> and
+<cite>insert-at-play</cite> actions. When used with those actions, the new playlist
+will be insert at the &lt;index&gt; position in the internal playlist, or appended
+to the end if &lt;index&gt; is less than 0 or greater than the size of the
+internal playlist. This argument will be ignored for all other actions.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">playlist-clear</span></tt></dt>
 <dd>Clear the playlist, except the currently played file.</dd>
@@ -12488,15 +12523,14 @@ resyncing.)</dd>
 <p class="last">This option is relatively useless. Before mpv 0.18.1, it could be used to
 infer behavior of the <tt class="docutils literal">volume</tt> property.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">ao-volume</span></tt> (RW)</dt>
+<dt><tt class="docutils literal"><span class="pre">current-ao-volume</span></tt></dt>
 <dd>System volume. This property is available only if mpv audio output is
 currently active, and only if the underlying implementation supports volume
-control. What this option does depends on the API. For example, on ALSA
-this usually changes system-wide audio, while with PulseAudio this controls
-per-application volume.</dd>
+control. What this option shows depends on the API. For example, on ALSA
+this usually shows system-wide audio, while on PulseAudio per-application volume.</dd>
 <dt><tt class="docutils literal"><span class="pre">ao-mute</span></tt> (RW)</dt>
-<dd>Similar to <tt class="docutils literal"><span class="pre">ao-volume</span></tt>, but controls the mute state. May be unimplemented
-even if <tt class="docutils literal"><span class="pre">ao-volume</span></tt> works.</dd>
+<dd>Similar to <tt class="docutils literal"><span class="pre">current-ao-volume</span></tt>, but controls the mute state. May be unimplemented
+even if <tt class="docutils literal"><span class="pre">current-ao-volume</span></tt> works.</dd>
 <dt><tt class="docutils literal"><span class="pre">audio-codec</span></tt></dt>
 <dd>Audio codec selected for decoding.</dd>
 <dt><tt class="docutils literal"><span class="pre">audio-codec-name</span></tt></dt>
