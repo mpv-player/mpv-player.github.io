@@ -3401,8 +3401,8 @@ the description of the <tt class="docutils literal">format</tt> audio filter.</d
 <dt><tt class="docutils literal"><span class="pre">--audio-samplerate=&lt;Hz&gt;</span></tt></dt>
 <dd>Select the output sample rate to be used (of course sound cards have
 limits on this). If the sample frequency selected is different from that
-of the current media, the lavrresample audio filter will be inserted into
-the audio filter layer to compensate for the difference.</dd>
+of the current media, the internal swresample audio filter will be inserted
+into the audio filter layer to compensate for the difference.</dd>
 <dt><tt class="docutils literal"><span class="pre">--gapless-audio=&lt;no|yes|weak&gt;</span></tt></dt>
 <dd><p class="first">Try to play consecutive audio files with no silence or disruption at the
 point of file change. Default: <tt class="docutils literal">weak</tt>.</p>
@@ -3489,7 +3489,7 @@ or to set your own application name when using libmpv.</dd>
 <dd><p class="first">Set the audio output minimum buffer. The audio device might actually create
 a larger buffer if it pleases. If the device creates a smaller buffer,
 additional audio is buffered in an additional software buffer.</p>
-<p>Making this larger will make soft-volume and other filters react slower,
+<p>Making this larger may make soft-volume and other filters react slower,
 introduce additional issues on playback speed change, and block the
 player on audio format changes. A smaller buffer might lead to audio
 dropouts.</p>
@@ -4037,7 +4037,8 @@ of the text increases or decreases as well.</p>
 <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text background. You can use
 <tt class="docutils literal"><span class="pre">--sub-shadow-offset</span></tt> to change its size relative to the text.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-blur=&lt;0..20.0&gt;</span></tt></dt>
-<dd>Gaussian blur factor. 0 means no blur applied (default).</dd>
+<dd>Gaussian blur factor applied to the sub font border.
+0 means no blur applied (default).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-bold=&lt;yes|no&gt;</span></tt></dt>
 <dd>Format text on bold.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-italic=&lt;yes|no&gt;</span></tt></dt>
@@ -5401,12 +5402,13 @@ A value of 50 means the bar is half the screen wide.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-bar-border-size=&lt;size&gt;</span></tt></dt>
 <dd><p class="first">Size of the border of the OSD bar in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
 for details).</p>
-<p class="last">Default: 1.2.</p>
+<p class="last">Default: 0.5.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-back-color=&lt;color&gt;</span></tt></dt>
 <dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD text background.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt></dt>
-<dd>Gaussian blur factor. 0 means no blur applied (default).</dd>
+<dd>Gaussian blur factor applied to the OSD font border.
+0 means no blur applied (default).</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-bold=&lt;yes|no&gt;</span></tt></dt>
 <dd>Format text on bold.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-italic=&lt;yes|no&gt;</span></tt></dt>
@@ -5804,7 +5806,6 @@ yes). Currently, this may simplify gamma conversion operations.</dd>
 <h2>Audio Resampler</h2>
 <p>This controls the default options of any resampling done by mpv (but not within
 libavfilter, within the system audio API resampler, or any other places).</p>
-<p>It also sets the defaults for the <tt class="docutils literal">lavrresample</tt> audio filter.</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--audio-resample-filter-size=&lt;length&gt;</span></tt></dt>
 <dd>Length of the filter with respect to the lower sampling rate. (default:
@@ -5821,8 +5822,6 @@ entries. (default: no)</dd>
 <dd><p class="first">Enable/disable normalization if surround audio is downmixed to stereo
 (default: no). If this is disabled, downmix can cause clipping. If it's
 enabled, the output might be too quiet. It depends on the source audio.</p>
-<p>Technically, this changes the <tt class="docutils literal">normalize</tt> suboption of the
-<tt class="docutils literal">lavrresample</tt> audio filter, which performs the downmixing.</p>
 <p class="last">If downmix happens outside of mpv for some reason, or in the decoder
 (decoder downmixing), or in the audio output (system mixer), this has no
 effect.</p>
@@ -6280,49 +6279,6 @@ to the initially tuned to channel in the channel list.</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="alsa-audio-output-options">
-<h2>ALSA audio output options</h2>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">--alsa-device=&lt;device&gt;</span></tt></dt>
-<dd>Deprecated, use <tt class="docutils literal"><span class="pre">--audio-device</span></tt> (requires <tt class="docutils literal">alsa/</tt> prefix).</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-resample=yes</span></tt></dt>
-<dd>Enable ALSA resampling plugin. (This is disabled by default, because
-some drivers report incorrect audio delay in some cases.)</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-mixer-device=&lt;device&gt;</span></tt></dt>
-<dd>Set the mixer device used with <tt class="docutils literal"><span class="pre">ao-volume</span></tt> (default: <tt class="docutils literal">default</tt>).</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-mixer-name=&lt;name&gt;</span></tt></dt>
-<dd>Set the name of the mixer element (default: <tt class="docutils literal">Master</tt>). This is for
-example <tt class="docutils literal">PCM</tt> or <tt class="docutils literal">Master</tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-mixer-index=&lt;number&gt;</span></tt></dt>
-<dd>Set the index of the mixer channel (default: 0). Consider the output of
-&quot;<tt class="docutils literal">amixer scontrols</tt>&quot;, then the index is the number that follows the
-name of the element.</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-non-interleaved</span></tt></dt>
-<dd>Allow output of non-interleaved formats (if the audio decoder uses
-this format). Currently disabled by default, because some popular
-ALSA plugins are utterly broken with non-interleaved formats.</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-ignore-chmap</span></tt></dt>
-<dd>Don't read or set the channel map of the ALSA device - only request the
-required number of channels, and then pass the audio as-is to it. This
-option most likely should not be used. It can be useful for debugging,
-or for static setups with a specially engineered ALSA configuration (in
-this case you should always force the same layout with <tt class="docutils literal"><span class="pre">--audio-channels</span></tt>,
-or it will work only for files which use the layout implicit to your
-ALSA device).</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-buffer-time=&lt;microseconds&gt;</span></tt></dt>
-<dd><p class="first">Set the requested buffer time in microseconds. A value of 0 skips requesting
-anything from the ALSA API. This and the <tt class="docutils literal"><span class="pre">--alsa-periods</span></tt> option uses the
-ALSA <tt class="docutils literal">near</tt> functions to set the requested parameters. If doing so results
-in an empty configuration set, setting these parameters is skipped.</p>
-<p class="last">Both options control the buffer size. A low buffer size can lead to higher
-CPU usage and audio dropouts, while a high buffer size can lead to higher
-latency in volume changes and other filtering.</p>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">--alsa-periods=&lt;number&gt;</span></tt></dt>
-<dd>Number of periods requested from the ALSA API. See <tt class="docutils literal"><span class="pre">--alsa-buffer-time</span></tt>
-for further remarks.</dd>
-</dl>
-</div>
 <div class="section" id="gpu-renderer-options">
 <h2>GPU renderer options</h2>
 <p>The following video options are currently all specific to <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>,
@@ -6349,26 +6305,27 @@ but adds more ringing.</p>
 <p class="last">(This filter is an alias for <tt class="docutils literal">jinc</tt>-windowed <tt class="docutils literal">jinc</tt>)</p>
 </dd>
 <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
-<dd>A slightly sharpened version of ewa_lanczos. This is the default when
-using the <tt class="docutils literal"><span class="pre">high-quality</span></tt> profile.</dd>
+<dd>A slightly sharpened version of <tt class="docutils literal">ewa_lanczos</tt>. This is the default
+when using the <tt class="docutils literal"><span class="pre">high-quality</span></tt> profile.</dd>
 <dt><tt class="docutils literal">ewa_lanczos4sharpest</tt></dt>
 <dd>Very sharp scaler, but also slightly slower than <tt class="docutils literal">ewa_lanczossharp</tt>.
 Prone to ringing, so it's recommended to combine this with an
 anti-ringing shader. On <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, setting this filter enables
 built-in anti-ringing, so no extra action needs to be taken.</dd>
 <dt><tt class="docutils literal">mitchell</tt></dt>
-<dd>Mitchell-Netravali. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can be set with
-<tt class="docutils literal"><span class="pre">--scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">--scale-param2</span></tt>.</dd>
+<dd>Mitchell-Netravali. Piecewise cubic filter with a support of radius 2.0.
+Provides a balanced compromise of all scaling artifacts. This filter has
+both <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> set to <tt class="docutils literal">1/3</tt>. The <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters can
+be controlled with <tt class="docutils literal"><span class="pre">--scale-param1</span></tt> and <tt class="docutils literal"><span class="pre">--scale-param2</span></tt>.</dd>
 <dt><tt class="docutils literal">hermite</tt></dt>
 <dd>Hermite spline. Similar to <tt class="docutils literal">bicubic</tt> but with <tt class="docutils literal">B</tt> set to <tt class="docutils literal">0.0</tt>.
 This filter has the special property of having a support of radius 1.0,
 making it very fast in comparison, but prone to blocking. This is the
 default for <tt class="docutils literal"><span class="pre">--dscale</span></tt>.</dd>
 <dt><tt class="docutils literal">catmull_rom</tt></dt>
-<dd>Catmull-Rom. A Cubic filter in the same vein as <tt class="docutils literal">mitchell</tt>, where
-the <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt> parameters are <tt class="docutils literal">0.0</tt> and <tt class="docutils literal">0.5</tt> respectively.
-This filter is sharper than <tt class="docutils literal">mitchell</tt>, but it results in more
-ringing.</dd>
+<dd>Catmull-Rom spline. Similar to <tt class="docutils literal">mitchell</tt>, but with <tt class="docutils literal">B</tt> and <tt class="docutils literal">C</tt>
+set to <tt class="docutils literal">0.0</tt> and <tt class="docutils literal">0.5</tt> respectively. This filter is sharper than
+<tt class="docutils literal">mitchell</tt>, but prone to ringing.</dd>
 <dt><tt class="docutils literal">oversample</tt></dt>
 <dd>A version of nearest neighbour that (naively) oversamples pixels, so
 that pixels overlapping edges get linearly interpolated instead of
@@ -7887,34 +7844,32 @@ softsubbed ASS signs to match the video colors, but may cause
 SRT subtitles or similar to look slightly off.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--alpha=&lt;blend-tiles|blend|yes|no&gt;</span></tt></dt>
-<dd><p class="first">Decides what to do if the input has an alpha component.</p>
-<dl class="last docutils">
-<dt>blend-tiles</dt>
+<dt><tt class="docutils literal"><span class="pre">--background=&lt;none|color|tiles&gt;</span></tt></dt>
+<dd><p class="first">If the frame has an alpha component, decide what kind of background, if any,
+to blend it with. This does nothing if there is no alpha component.</p>
+<dl class="docutils">
+<dt>color</dt>
+<dd>Blend the frame against the background color (<tt class="docutils literal"><span class="pre">--background-color</span></tt>,
+normally black).</dd>
+<dt>tiles</dt>
 <dd>Blend the frame against a 16x16 gray/white tiles background (default).</dd>
-<dt>blend</dt>
-<dd>Blend the frame against the background color (<tt class="docutils literal"><span class="pre">--background</span></tt>, normally
-black).</dd>
-<dt>yes</dt>
-<dd>Try to create a framebuffer with alpha component. This only makes sense
-if the video contains alpha information (which is extremely rare) or if
-you make the background color transparent. May not be supported on all
-platforms. If alpha framebuffers are unavailable, it silently falls
-back on a normal framebuffer. Note that if you set the <tt class="docutils literal"><span class="pre">--fbo-format</span></tt>
-option to a non-default value, a format with alpha must be specified,
-or this won't work. Whether this really works depends on the windowing
-system and desktop environment.</dd>
-<dt>no</dt>
-<dd>Ignore alpha component.</dd>
+<dt>none</dt>
+<dd>Do not blend the frame and leave the alpha as is.</dd>
 </dl>
+<p class="last">Before mpv 0.38.0, this option used to accept a color value specifying the
+background color. This is now done by the <tt class="docutils literal"><span class="pre">--background-color</span></tt> option.
+Use that instead.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--background-color=&lt;color&gt;</span></tt></dt>
+<dd>Color used to draw parts of the mpv window not covered by video. See the
+<tt class="docutils literal"><span class="pre">--sub-color</span></tt> option for how colors are defined.</dd>
+<dt><tt class="docutils literal"><span class="pre">--border-background=&lt;none|color|tiles&gt;</span></tt></dt>
+<dd>Same as <tt class="docutils literal"><span class="pre">--background</span></tt> but only applies to the black bar/border area of
+the window. <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt> only. Defaults to <tt class="docutils literal">color</tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--opengl-rectangle-textures</span></tt></dt>
 <dd>Force use of rectangle textures (default: no). Normally this shouldn't have
 any advantages over normal textures. Note that hardware decoding overrides
 this flag. Could be removed any time.</dd>
-<dt><tt class="docutils literal"><span class="pre">--background=&lt;color&gt;</span></tt></dt>
-<dd>Color used to draw parts of the mpv window not covered by video. See the
-<tt class="docutils literal"><span class="pre">--sub-color</span></tt> option for how colors are defined.</dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-tex-pad-x</span></tt>, <tt class="docutils literal"><span class="pre">--gpu-tex-pad-y</span></tt></dt>
 <dd>Enlarge the video source textures by this many pixels. For debugging only
 (normally textures are sized exactly, but due to hardware decoding interop
@@ -8375,9 +8330,47 @@ autoprobe order.</p>
 </div>
 <p>Available audio output drivers are:</p>
 <dl class="docutils">
-<dt><tt class="docutils literal">alsa</tt> (Linux only)</dt>
-<dd><p class="first">ALSA audio output driver</p>
-<p>See <a class="reference internal" href="#alsa-audio-output-options">ALSA audio output options</a> for options specific to this AO.</p>
+<dt><tt class="docutils literal">alsa</tt></dt>
+<dd><p class="first">ALSA audio output driver.</p>
+<p>The following global options are supported by this audio output:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">--alsa-resample=yes</span></tt></dt>
+<dd>Enable ALSA resampling plugin. (This is disabled by default, because
+some drivers report incorrect audio delay in some cases.)</dd>
+<dt><tt class="docutils literal"><span class="pre">--alsa-mixer-device=&lt;device&gt;</span></tt></dt>
+<dd>Set the mixer device used with <tt class="docutils literal"><span class="pre">ao-volume</span></tt> (default: <tt class="docutils literal">default</tt>).</dd>
+<dt><tt class="docutils literal"><span class="pre">--alsa-mixer-name=&lt;name&gt;</span></tt></dt>
+<dd>Set the name of the mixer element (default: <tt class="docutils literal">Master</tt>). This is for
+example <tt class="docutils literal">PCM</tt> or <tt class="docutils literal">Master</tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--alsa-mixer-index=&lt;number&gt;</span></tt></dt>
+<dd>Set the index of the mixer channel (default: 0). Consider the output of
+&quot;<tt class="docutils literal">amixer scontrols</tt>&quot;, then the index is the number that follows the
+name of the element.</dd>
+<dt><tt class="docutils literal"><span class="pre">--alsa-non-interleaved</span></tt></dt>
+<dd>Allow output of non-interleaved formats (if the audio decoder uses
+this format). Currently disabled by default, because some popular
+ALSA plugins are utterly broken with non-interleaved formats.</dd>
+<dt><tt class="docutils literal"><span class="pre">--alsa-ignore-chmap</span></tt></dt>
+<dd>Don't read or set the channel map of the ALSA device - only request the
+required number of channels, and then pass the audio as-is to it. This
+option most likely should not be used. It can be useful for debugging,
+or for static setups with a specially engineered ALSA configuration (in
+this case you should always force the same layout with <tt class="docutils literal"><span class="pre">--audio-channels</span></tt>,
+or it will work only for files which use the layout implicit to your
+ALSA device).</dd>
+<dt><tt class="docutils literal"><span class="pre">--alsa-buffer-time=&lt;microseconds&gt;</span></tt></dt>
+<dd><p class="first">Set the requested buffer time in microseconds. A value of 0 skips requesting
+anything from the ALSA API. This and the <tt class="docutils literal"><span class="pre">--alsa-periods</span></tt> option uses the
+ALSA <tt class="docutils literal">near</tt> functions to set the requested parameters. If doing so results
+in an empty configuration set, setting these parameters is skipped.</p>
+<p class="last">Both options control the buffer size. A low buffer size can lead to higher
+CPU usage and audio dropouts, while a high buffer size can lead to higher
+latency in volume changes and other filtering.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--alsa-periods=&lt;number&gt;</span></tt></dt>
+<dd>Number of periods requested from the ALSA API. See <tt class="docutils literal"><span class="pre">--alsa-buffer-time</span></tt>
+for further remarks.</dd>
+</dl>
 <div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p>To get multichannel/surround audio, use <tt class="docutils literal"><span class="pre">--audio-channels=auto</span></tt>. The
@@ -8510,8 +8503,8 @@ By default the channel volumes are used.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">sdl</tt></dt>
-<dd><p class="first">SDL 1.2+ audio output driver. Should work on any platform supported by SDL
-1.2, but may require the <tt class="docutils literal">SDL_AUDIODRIVER</tt> environment variable to be set
+<dd><p class="first">SDL 2.0+ audio output driver. Should work on any platform supported by SDL
+2.0, but may require the <tt class="docutils literal">SDL_AUDIODRIVER</tt> environment variable to be set
 appropriately for your system.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
