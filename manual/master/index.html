@@ -2906,6 +2906,16 @@ default value.</p>
 inserted deinterlacing filters, and that this will make video look worse if
 it's not actually interlaced.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--deinterlace-field-parity=&lt;tff|bff|auto&gt;</span></tt></dt>
+<dd><p class="first">Specify the field parity/order when deinterlacing(default: auto)
+Each frame of an interlaced video is divided into two fields, which are
+then separately transmitted. Top field represents even lines while bottom
+field represents odd lines. When deinterlacing the deinterlacer needs to
+know the correct temporal order of the fields else the video will appear
+jittery.</p>
+<p class="last"><tt class="docutils literal">auto</tt> will automatically try to detect the field order of the video,
+<tt class="docutils literal">tff</tt> forces top field first while <tt class="docutils literal">bff</tt> forces bottom field first.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--frames=&lt;number&gt;</span></tt></dt>
 <dd><p class="first">Play/convert only first <tt class="docutils literal">&lt;number&gt;</tt> video frames, then quit.</p>
 <p><tt class="docutils literal"><span class="pre">--frames=0</span></tt> loads the file, but immediately quits before initializing
