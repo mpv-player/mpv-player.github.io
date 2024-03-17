@@ -9200,16 +9200,18 @@ and setting <tt class="docutils literal"><span class="pre">--drm-draw-surface-si
 lower resolution (the video when handled by the hwdec will be on the
 drmprime-video plane and at full 4K resolution)</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--drm-format=&lt;xrgb8888|xrgb2101010&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--drm-format=&lt;xrgb8888|xbgr8888|xrgb2101010|xbgr2101010|yuyv&gt;</span></tt></dt>
 <dd><p class="first">Select the DRM format to use (default: xrgb8888). This allows you to
-choose the bit depth of the DRM mode. xrgb8888 is your usual 24 bit per
-pixel/8 bits per channel packed RGB format with 8 bits of padding.
-xrgb2101010 is a packed 30 bits per pixel/10 bits per channel packed RGB
-format with 2 bits of padding.</p>
+choose the bit depth and color type of the DRM mode.</p>
+<p>xrgb8888 is your usual 24bpp packed RGB format with 8 bits of padding.
+xrgb2101010 is a 30bpp packed RGB format with 2 bits of padding.
+yuyv is a 32bpp packed YUV 4:2:2 format. No planar formats are currently
+supported.</p>
 <p class="last">There are cases when xrgb2101010 will work with the <tt class="docutils literal">drm</tt> VO, but not
 with the <tt class="docutils literal">drm</tt> backend for the <tt class="docutils literal">gpu</tt> VO. This is because with the
 <tt class="docutils literal">gpu</tt> VO, in addition to requiring support in your DRM driver,
-requires support for xrgb2101010 in your EGL driver</p>
+requires support for xrgb2101010 in your EGL driver.
+yuyv only ever works with the <tt class="docutils literal">drm</tt> VO.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--drm-draw-surface-size=&lt;[WxH]&gt;</span></tt></dt>
 <dd><p class="first">Sets the size of the surface used on the draw plane. The surface will
