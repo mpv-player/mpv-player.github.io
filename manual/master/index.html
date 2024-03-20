@@ -200,6 +200,8 @@ video).</dd>
 <dt>Shift+PGUP and Shift+PGDWN</dt>
 <dd>Seek backward or forward by 10 minutes. (This used to be mapped to
 PGUP/PGDWN without Shift.)</dd>
+<dt>b</dt>
+<dd>Activate/deactivate debanding.</dd>
 <dt>d</dt>
 <dd>Cycle the deinterlacing filter.</dd>
 <dt>A</dt>
@@ -6542,15 +6544,15 @@ might be slower or cause latency issues.</dd>
 <dd>Disable any dithering done by mpv.</dd>
 <dt>auto</dt>
 <dd>Automatic selection.
-On <tt class="docutils literal">vo=gpu</tt>: if output bit depth cannot be detected, 8 bpc is assumed.
-On <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt>: with <tt class="docutils literal"><span class="pre">gpu-api=d3d11</span></tt>, real on-the-wire bpc is used.
-For other <tt class="docutils literal"><span class="pre">gpu-api</span></tt>, 8 bpc is used for SDR content.</dd>
+On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>: detected depth or 8 bpc otherwise
+On <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>: detected depth or 8 bpc (for SDR target)</dd>
 <dt>8</dt>
 <dd>Dither to 8 bit output.</dd>
 </dl>
-<p class="last">Note that the depth of the connected video display device cannot be
-detected. Often, LCD panels will do dithering on their own, which conflicts
-with this option and leads to ugly output.</p>
+<p class="last">Note that the on-the-wire bit depth cannot be detected except when using
+<tt class="docutils literal"><span class="pre">gpu-api=d3d11</span></tt>. Explicitly setting the value to your display's bit depth
+is recommended, as dithering performed by some LCD panels can be of low
+quality.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--dither-size-fruit=&lt;2-8&gt;</span></tt></dt>
 <dd><p class="first">Set the size of the dither matrix (default: 6). The actual size of the
