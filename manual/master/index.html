@@ -11581,6 +11581,17 @@ use the <tt class="docutils literal">mp.create_osd_overlay()</tt> helper instead
 command directly.</p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">escape-ass</span> &lt;text&gt;</tt></dt>
+<dd><p class="first">Modify <tt class="docutils literal">text</tt> so that commands and functions that interpret ASS tags,
+such as <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> and <tt class="docutils literal">mp.create_osd_overlay</tt>, will display it
+verbatim, and return it. This can only be used through the client API or
+from a script using <tt class="docutils literal">mp.command_native</tt>.</p>
+<div class="admonition admonition-example last">
+<p class="first admonition-title">Example</p>
+<p><tt class="docutils literal"><span class="pre">mp.osd_message(mp.command_native({&quot;escape-ass&quot;,</span> &quot;foo <span class="pre">{bar}&quot;}))</span></tt></p>
+<p class="last">This line of Lua prints &quot;foo \{bar}&quot; on the OSD.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">script-message</span> [&lt;arg1&gt; [&lt;arg2&gt; <span class="pre">[...]]]</span></tt></dt>
 <dd><p class="first">Send a message to all clients, and pass it the following list of arguments.
 What this message means, how many arguments it takes, and what the arguments
@@ -12903,6 +12914,18 @@ area into which the video is rendered.</dd>
 <p class="last">Any of these properties may be unavailable or set to dummy values if the
 VO window is not created or visible.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">term-size</span></tt></dt>
+<dd><p class="first">The current terminal size.</p>
+<p>This has two sub-properties.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">term-size/w</span></tt></dt>
+<dd>width of the terminal in cells</dd>
+<dt><tt class="docutils literal"><span class="pre">term-size/h</span></tt></dt>
+<dd>height of the terminal in cells</dd>
+</dl>
+<p class="last">This property is not observable. Reacting to size changes requires
+polling.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">window-id</span></tt></dt>
 <dd>Read-only - mpv's window id. May not always be available, i.e due to window
 not being opened yet or not being supported by the VO.</dd>
@@ -13702,7 +13725,9 @@ accepted as well. Example:</p>
 displayed on OSD or on the terminal. It is possible to retrieve an unformatted
 (raw) value from a property by prefixing its name with <tt class="docutils literal">=</tt>. These raw values
 can be parsed by other programs and follow the same conventions as the options
-associated with the properties.</p>
+associated with the properties. Additionally, there is a <tt class="docutils literal">&gt;</tt> prefix to format
+human-readable text, with fixed precision for floating-point values. This is
+useful for printing values where a constant width is important.</p>
 <div class="admonition admonition-examples">
 <p class="first admonition-title">Examples</p>
 <ul class="last simple">
@@ -13710,6 +13735,9 @@ associated with the properties.</p>
 minutes 23 seconds)</li>
 <li><tt class="docutils literal"><span class="pre">${=time-pos}</span></tt> expands to <tt class="docutils literal">863.4</tt> (same time, plus 400 milliseconds -
 milliseconds are normally not shown in the formatted case)</li>
+<li><tt class="docutils literal">${avsync}</tt> expands to <tt class="docutils literal">+0.003</tt></li>
+<li><tt class="docutils literal"><span class="pre">${&gt;avsync}</span></tt> expands to <tt class="docutils literal">+0.0030</tt></li>
+<li><tt class="docutils literal"><span class="pre">${=avsync}</span></tt> expands to <tt class="docutils literal">0.003028</tt></li>
 </ul>
 </div>
 <p>Sometimes, the difference in amount of information carried by raw and formatted
@@ -14132,7 +14160,7 @@ negative</p>
 <dd><p class="first">Default: ${media-title}</p>
 <p class="last">String that supports property expansion that will be displayed as
 OSC title.
-ASS tags are escaped, and newlines and trailing slashes are stripped.</p>
+ASS tags are escaped and newlines are converted to spaces.</p>
 </dd>
 <dt><tt class="docutils literal">tooltipborder</tt></dt>
 <dd><p class="first">Default: 1</p>
@@ -14379,6 +14407,16 @@ option. The configuration syntax is described in <a class="reference internal" h
 displayed stats. When <cite>yes</cite>, displayed stats are persistently shown for the
 respective duration. This can result in overlapping text when multiple
 scripts decide to print text at the same time.</p>
+</dd>
+<dt><tt class="docutils literal">term_width_limit</tt></dt>
+<dd><p class="first">Default: -1</p>
+<p class="last">Sets the terminal width.
+A value of 0 means the width is infinite, -1 means it's automatic.</p>
+</dd>
+<dt><tt class="docutils literal">term_height_limit</tt></dt>
+<dd><p class="first">Default: -1</p>
+<p class="last">Sets the terminal height.
+A value of 0 means the height is infinite, -1 means it's automatic.</p>
 </dd>
 <dt><tt class="docutils literal">plot_perfdata</tt></dt>
 <dd><p class="first">Default: yes</p>
@@ -16145,8 +16183,7 @@ including new features and bug fixes:</p>
 </li>
 <li><p class="first">The file <a class="reference external" href="https://github.com/mpv-player/mpv/blob/master/DOCS/interface-changes.rst">https://github.com/mpv-player/mpv/blob/master/DOCS/interface-changes.rst</a>
 documents changes to the command and user interface, such as options and
-properties. (It usually documents breaking changes only, additions and
-enhancements are often not listed.)</p>
+properties.</p>
 </li>
 <li><p class="first">C API changes are listed in
 <a class="reference external" href="https://github.com/mpv-player/mpv/blob/master/DOCS/client-api-changes.rst">https://github.com/mpv-player/mpv/blob/master/DOCS/client-api-changes.rst</a></p>
