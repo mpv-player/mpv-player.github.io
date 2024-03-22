@@ -5215,6 +5215,22 @@ applied only during (lib)mpv initialization, and if used then it will not
 be not possible to enable them later. May be useful to libmpv clients.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt></dt>
 <dd>Prints all commands that can be bound to keys.</dd>
+<dt><tt class="docutils literal"><span class="pre">--input-commands=&lt;cmd1,cmd2,...&gt;</span></tt></dt>
+<dd><p class="first">Define a list of commands for mpv to run. The syntax is the same as format
+as <tt class="docutils literal">input.conf</tt> but without the key binding argument at the beginning.
+When this option is set at startup, the commands will run after audio and
+video playback are about to begin if applicable (in idle mode with no file,
+it will run immediately). When changing values at runtime, the commands will
+also run as soon as possible.</p>
+<p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+<div class="admonition admonition-example last">
+<p class="first admonition-title">Example</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">--input-commands=&quot;playlist-play-index</span> 1,set <span class="pre">ao-volume</span> 40&quot;</tt></dt>
+<dd>sets the playlist index to 1 and the ao-volume to 40</dd>
+</dl>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-doubleclick-time=&lt;milliseconds&gt;</span></tt></dt>
 <dd>Time in milliseconds to recognize two consecutive button presses as a
 double-click (default: 300).</dd>
