@@ -5192,15 +5192,16 @@ all. The default is <tt class="docutils literal">auto</tt>, which behaves like <
 <div class="section" id="input">
 <h2>Input</h2>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">--native-keyrepeat</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--native-keyrepeat=&lt;yes|no&gt;</span></tt></dt>
 <dd>Use system settings for keyrepeat delay and rate, instead of
-<tt class="docutils literal"><span class="pre">--input-ar-delay</span></tt> and <tt class="docutils literal"><span class="pre">--input-ar-rate</span></tt>. (Whether this applies
-depends on the VO backend and how it handles keyboard input. Does not
-apply to terminal input.)</dd>
+<tt class="docutils literal"><span class="pre">--input-ar-delay</span></tt> and <tt class="docutils literal"><span class="pre">--input-ar-rate</span></tt> (default: no).
+Whether this applies depends on the VO backend and how it handles
+keyboard input. Does not apply to terminal input.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-ar-delay</span></tt></dt>
-<dd>Delay in milliseconds before we start to autorepeat a key (0 to disable).</dd>
+<dd>Delay in milliseconds before we start to autorepeat a key (default: 200).
+Set it to 0 to disable.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-ar-rate</span></tt></dt>
-<dd>Number of key presses to generate per second on autorepeat.</dd>
+<dd>Number of key presses to generate per second on autorepeat (default: 40).</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-conf=&lt;filename&gt;</span></tt></dt>
 <dd>Specify input configuration file other than the default location in the mpv
 configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/input.conf</span></tt>).</dd>
@@ -8478,6 +8479,16 @@ extreme care.</dd>
 <dt><tt class="docutils literal">coreaudio_exclusive</tt> (macOS only)</dt>
 <dd>Native macOS audio output driver using direct device access and
 exclusive mode (bypasses the sound server).</dd>
+<dt><tt class="docutils literal">avfoundation</tt> (macOS only)</dt>
+<dd><p class="first">Native macOS audio output driver using <tt class="docutils literal">AVSampleBufferAudioRenderer</tt>
+in AVFoundation, which supports <a class="reference external" href="https://support.apple.com/en-us/HT211775">spatial audio</a>.</p>
+<div class="admonition warning last">
+<p class="first admonition-title">Warning</p>
+<p class="last">Turning on spatial audio may hang the playback
+if mpv is not started out of the bundle,
+though playback with spatial audio off always works.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal">openal</tt></dt>
 <dd><p class="first">OpenAL audio output driver.</p>
 <dl class="last docutils">
