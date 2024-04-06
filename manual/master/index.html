@@ -280,6 +280,19 @@ in the mpv git repository.</p>
 <dd>Change video zoom.</dd>
 </dl>
 </div>
+<div class="section" id="context-menu">
+<h2>Context Menu</h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This feature is experimental. It may not work with all VOs. A libass based
+fallback may be implemented in the future.</p>
+</div>
+<p>Context Menu is a menu that pops up on the video window on user interaction
+(mouse right click, etc.).</p>
+<p>To use this feature, you need to fill the <tt class="docutils literal"><span class="pre">menu-data</span></tt> property with menu
+definition data, and add a keybinding to run the <tt class="docutils literal"><span class="pre">context-menu</span></tt> command,
+which can be done with a user script.</p>
+</div>
 </div>
 <div class="section" id="usage">
 <h1>USAGE</h1>
@@ -11313,6 +11326,8 @@ perfect, and could be improved on request.)</dd>
 <dd>Do not change current track selections.</dd>
 </dl>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">context-menu</span></tt></dt>
+<dd>Show context menu on the video window. See <a class="reference internal" href="#context-menu">Context Menu</a> section for details.</dd>
 </dl>
 </div>
 <div class="section" id="input-commands-that-are-possibly-subject-to-change">
@@ -13467,6 +13482,41 @@ read, written, or observed.</p>
 representation. If converting a leaf-level object (i.e. not a map or array)
 and not using raw mode, the underlying content will be given (e.g. strings will be
 printed directly, rather than quoted and JSON-escaped).</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">menu-data</span></tt> (RW)</dt>
+<dd><p class="first">This property stores the raw menu definition. See <a class="reference internal" href="#context-menu">Context Menu</a> section for details.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">type</tt></dt>
+<dd>Menu item type. Can be: <tt class="docutils literal">separator</tt>, <tt class="docutils literal">submenu</tt>, or empty.</dd>
+<dt><tt class="docutils literal">title</tt></dt>
+<dd>Menu item title. Required if type is not <tt class="docutils literal">separator</tt>.</dd>
+<dt><tt class="docutils literal">cmd</tt></dt>
+<dd>Command to execute when the menu item is clicked.</dd>
+<dt><tt class="docutils literal">shortcut</tt></dt>
+<dd>Menu item shortcut key which appears to the right of the menu item.
+A shortcut key does not have to be functional; it's just a visual hint.</dd>
+<dt><tt class="docutils literal">state</tt></dt>
+<dd>Menu item state. Can be: <tt class="docutils literal">checked</tt>, <tt class="docutils literal">disabled</tt>, <tt class="docutils literal">hidden</tt>, or empty.</dd>
+<dt><tt class="docutils literal">submenu</tt></dt>
+<dd>Submenu items, which is required if type is <tt class="docutils literal">submenu</tt>.</dd>
+</dl>
+<p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>, or with
+Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with the following
+contents:</p>
+<pre class="literal-block">
+MPV_FORMAT_NODE_ARRAY
+    MPV_FORMAT_NODE_MAP (menu item)
+        &quot;type&quot;           MPV_FORMAT_STRING
+        &quot;title&quot;          MPV_FORMAT_STRING
+        &quot;cmd&quot;            MPV_FORMAT_STRING
+        &quot;shortcut&quot;       MPV_FORMAT_STRING
+        &quot;state&quot;          MPV_FORMAT_NODE_ARRAY[MPV_FORMAT_STRING]
+        &quot;submenu&quot;        MPV_FORMAT_NODE_ARRAY[menu item]
+</pre>
+<p class="last">Writing to this property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt> or with
+Lua <tt class="docutils literal">mp.set_property_native</tt> will trigger an immediate update of the menu if
+mpv video output is currently active. You may observe the <tt class="docutils literal"><span class="pre">current-vo</span></tt>
+property to check if this is the case.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
 <dd>The working directory of the mpv process. Can be useful for JSON IPC users,
