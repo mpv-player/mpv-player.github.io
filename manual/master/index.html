@@ -1010,7 +1010,7 @@ auto profiles.</p>
 The terminal output is intended for humans, and may change any time. In
 addition, terminal behavior itself may change any time. Compatibility
 cannot be guaranteed.</p>
-<p>Your code should work even if you pass <tt class="docutils literal"><span class="pre">--no-terminal</span></tt>. Do not attempt
+<p>Your code should work even if you pass <tt class="docutils literal"><span class="pre">--terminal=no</span></tt>. Do not attempt
 to simulate user input by sending terminal control codes to mpv's stdin.
 If you need interactive control, using <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> is
 recommended. This gives you access to the <a class="reference internal" href="#json-ipc">JSON IPC</a>  over unix domain
@@ -1120,7 +1120,7 @@ are quite obscure, and may change every mpv release).</p>
 this with <tt class="docutils literal"><span class="pre">--untimed</span></tt>, but it will likely break, unless the stream has no
 audio, and the input feeds data to the player at a constant rate.</p>
 <p>Another common problem is with MJPEG streams. These do not signal the correct
-framerate. Using <tt class="docutils literal"><span class="pre">--untimed</span></tt> or <tt class="docutils literal"><span class="pre">--no-correct-pts</span> <span class="pre">--container-fps-override=60</span></tt>
+framerate. Using <tt class="docutils literal"><span class="pre">--untimed</span></tt> or <tt class="docutils literal"><span class="pre">--correct-pts=no</span> <span class="pre">--container-fps-override=60</span></tt>
 might help.</p>
 <p>For livestreams, data can build up due to pausing the stream, due to slightly
 lower playback rate, or &quot;buffering&quot; pauses. If the demuxer cache is enabled,
@@ -1404,7 +1404,7 @@ Portuguese subtitles if available, and otherwise any Portuguese subtitles.</li>
 See also <tt class="docutils literal"><span class="pre">--alang</span></tt>. mpv normally prints available audio tracks on the
 terminal when starting playback of a file.</p>
 <p><tt class="docutils literal"><span class="pre">--audio</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
-<p><tt class="docutils literal"><span class="pre">--aid=no</span></tt> or <tt class="docutils literal"><span class="pre">--audio=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-audio</span></tt> disables audio playback.
+<p><tt class="docutils literal"><span class="pre">--aid=no</span></tt> or <tt class="docutils literal"><span class="pre">--audio=no</span></tt> disables audio playback.
 (The latter variant does not work with the client API.)</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
@@ -1451,13 +1451,13 @@ This is because runtime selection enables the fingerprint heuristic.</p>
 <dd><p class="first">Display the subtitle stream specified by <tt class="docutils literal">&lt;ID&gt;</tt>. <tt class="docutils literal">auto</tt> selects
 the default, <tt class="docutils literal">no</tt> disables subtitles.</p>
 <p><tt class="docutils literal"><span class="pre">--sub</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sid</span></tt>.</p>
-<p class="last"><tt class="docutils literal"><span class="pre">--sid=no</span></tt> or <tt class="docutils literal"><span class="pre">--sub=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-sub</span></tt> disables subtitle decoding.
+<p class="last"><tt class="docutils literal"><span class="pre">--sid=no</span></tt> or <tt class="docutils literal"><span class="pre">--sub=no</span></tt> disables subtitle decoding.
 (The latter variant does not work with the client API.)</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--vid=&lt;ID|auto|no&gt;</span></tt></dt>
 <dd><p class="first">Select video channel. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables video.</p>
 <p><tt class="docutils literal"><span class="pre">--video</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--vid</span></tt>.</p>
-<p><tt class="docutils literal"><span class="pre">--vid=no</span></tt> or <tt class="docutils literal"><span class="pre">--video=no</span></tt> or <tt class="docutils literal"><span class="pre">--no-video</span></tt> disables video playback.
+<p><tt class="docutils literal"><span class="pre">--vid=no</span></tt> or <tt class="docutils literal"><span class="pre">--video=no</span></tt> disables video playback.
 (The latter variant does not work with the client API.)</p>
 <p class="last">If video is disabled, mpv will try to download the audio only if media is
 streamed with youtube-dl, because it saves bandwidth. This is done by
@@ -1775,11 +1775,10 @@ set to <tt class="docutils literal">inf</tt> or 0). <tt class="docutils literal"
 option is set to 0, A-B looping is ignored, and even the <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command
 will not enable looping again (the command will show <tt class="docutils literal">(disabled)</tt> on the
 OSD message if both loop points are set, but <tt class="docutils literal"><span class="pre">ab-loop-count</span></tt> is 0).</dd>
-<dt><tt class="docutils literal"><span class="pre">--ordered-chapters</span></tt>, <tt class="docutils literal"><span class="pre">--no-ordered-chapters</span></tt></dt>
-<dd>Enabled by default.
-Disable support for Matroska ordered chapters. mpv will not load or
-search for video segments from other files, and will also ignore any
-chapter order specified for the main file.</dd>
+<dt><tt class="docutils literal"><span class="pre">--ordered-chapters=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable support for Matroska ordered chapters. mpv will load and
+search for video segments from other files, and will also respect any
+chapter order specified for the main file (default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--ordered-chapters-files=&lt;playlist-file&gt;</span></tt></dt>
 <dd><p class="first">Loads the given file as playlist, and tries to use the files contained in
 it as reference files when opening a Matroska file that uses ordered
@@ -2123,11 +2122,11 @@ file that is being played. See <a class="reference internal" href="#file-specifi
 <p class="last">May be dangerous if playing from untrusted media.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--ytdl</span></tt>, <tt class="docutils literal"><span class="pre">--no-ytdl</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--ytdl=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Enable the youtube-dl hook-script. It will look at the input URL, and will
 play the video located on the website. This works with many streaming sites,
 not just the one that the script is named after. This requires a recent
-version of youtube-dl to be installed on the system. (Enabled by default.)</p>
+version of youtube-dl to be installed on the system (default: yes).</p>
 <p>If the script can't do anything with an URL, it will do nothing.</p>
 <p>This accepts a set of options, which can be passed to it with the
 <tt class="docutils literal"><span class="pre">--script-opts</span></tt> option (using <tt class="docutils literal">ytdl_hook-</tt> as prefix):</p>
@@ -2306,10 +2305,10 @@ the player with Shift+Q.</p>
 named &quot;watch_later&quot; underneath the local state directory
 (usually <tt class="docutils literal"><span class="pre">~/.local/state/mpv/</span></tt>).</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--no-resume-playback</span></tt></dt>
-<dd>Do not restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
-subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>).</dd>
-<dt><tt class="docutils literal"><span class="pre">--resume-playback-check-mtime</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--resume-playback=&lt;yes|no&gt;</span></tt></dt>
+<dd>Restore playback position from the <tt class="docutils literal">watch_later</tt> configuration
+subdirectory, usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt> (default: yes).</dd>
+<dt><tt class="docutils literal"><span class="pre">--resume-playback-check-mtime=&lt;yes|no&gt;</span></tt></dt>
 <dd>Only restore the playback position from the <tt class="docutils literal">watch_later</tt> configuration
 subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/watch_later/</span></tt>) if the file's
 modification time is the same as at the time of saving. This may prevent
@@ -2378,7 +2377,7 @@ to modify a previously specified list, but you should not need these for
 typical use.</dd>
 <dt><tt class="docutils literal"><span class="pre">--untimed</span></tt></dt>
 <dd>Do not sleep when outputting video frames. Useful for benchmarks when used
-with <tt class="docutils literal"><span class="pre">--no-audio.</span></tt></dd>
+with <tt class="docutils literal"><span class="pre">--audio=no</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--framedrop=&lt;mode&gt;</span></tt></dt>
 <dd><p class="first">Skip displaying some frames to maintain A/V sync on slow systems, or
 playing high framerate video on video outputs that have an upper framerate
@@ -2818,7 +2817,7 @@ option disables the effect of <tt class="docutils literal"><span class="pre">--p
 scaled. For example, this can influence chroma conversion. The video will
 also still be scaled in one dimension if the source uses non-square pixels
 (e.g. anamorphic widescreen DVDs).</p>
-<p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+<p class="last">This option is disabled if <tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-pan-x=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-pan-y=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Moves the displayed video rectangle by the given value in the X or Y
@@ -2828,7 +2827,7 @@ other options).</p>
 <p>For example, displaying a video fullscreen on a 1920x1080 screen with
 <tt class="docutils literal"><span class="pre">--video-pan-x=-0.1</span></tt> would move the video 192 pixels to the left and
 <tt class="docutils literal"><span class="pre">--video-pan-y=-0.1</span></tt> would move the video 108 pixels up.</p>
-<p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+<p class="last">This option is disabled if <tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-rotate=&lt;0-359|no&gt;</span></tt></dt>
 <dd><p class="first">Rotate the video clockwise, in degrees. If <tt class="docutils literal">no</tt> is given, the video is
@@ -2853,15 +2852,15 @@ the container crop if it's specified.</dd>
 given log 2. For example, <tt class="docutils literal"><span class="pre">--video-zoom=0</span></tt> is unscaled,
 <tt class="docutils literal"><span class="pre">--video-zoom=1</span></tt> is twice the size, <tt class="docutils literal"><span class="pre">--video-zoom=-2</span></tt> is one fourth of
 the size, and so on.</p>
-<p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+<p class="last">This option is disabled if <tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-scale-x=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-scale-y=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Multiply the video display size with the given value (default: 1.0). If a
 non-default value is used, this will be different from the window size, so
 video will be either cut off, or black bars are added.</p>
 <p class="last">This value is multiplied with the value derived from <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> and
-the normal video aspect ratio. This option is disabled if the
-<tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+the normal video aspect ratio. This option is disabled if
+<tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-align-x=&lt;-1-1&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-align-y=&lt;-1-1&gt;</span></tt></dt>
 <dd><p class="first">Moves the video rectangle within the black borders, which are usually added
@@ -2871,7 +2870,7 @@ to pad the video to screen if video and screen aspect ratios are different.
 (default), and a value of <tt class="docutils literal">1</tt> would put the video at the bottom of the
 screen.</p>
 <p>If video and screen aspect match perfectly, these options do nothing.</p>
-<p class="last">This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+<p class="last">This option is disabled if <tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-margin-ratio-left=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-right=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-top=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-bottom=&lt;val&gt;</span></tt></dt>
 <dd><p class="first">Set extra video margins on each border (default: 0). Each value is a ratio
@@ -2883,7 +2882,7 @@ particular it does not enlarge the window, and the margins will cause the
 video to be downscaled by default. This may or may not change in the future.</p>
 <p>The margins are applied after 90° video rotation, but before any other video
 transformations.</p>
-<p>This option is disabled if the <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> option is used.</p>
+<p>This option is disabled if <tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
 <p>Subtitles still may use the margins, depending on <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt> and
 similar options.</p>
 <p class="last">These options were created for the OSC. Some odd decisions, such as making
@@ -2892,8 +2891,8 @@ the OSC. It's possible that these options may be replaced by ones that are
 more generally useful. The behavior of these options may change to fit
 OSC requirements better, too.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--correct-pts</span></tt>, <tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt></dt>
-<dd><tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt> switches mpv to a mode where video timing is
+<dt><tt class="docutils literal"><span class="pre">--correct-pts=&lt;yes|no&gt;</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">--correct-pts=no</span></tt> switches mpv to a mode where video timing is
 determined using a fixed framerate value (either using the
 <tt class="docutils literal"><span class="pre">--container-fps-override</span></tt> option, or using file information). Sometimes,
 files with very broken timestamps can be played somewhat well in this mode.
@@ -2903,7 +2902,7 @@ backstepping), and audio synchronization can be completely broken in this mode.<
 <dd><p class="first">Override video framerate. Useful if the original value is wrong or missing.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
-<p class="last">Works in <tt class="docutils literal"><span class="pre">--no-correct-pts</span></tt> mode only.</p>
+<p class="last">Works in <tt class="docutils literal"><span class="pre">--correct-pts=no</span></tt> mode only.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--deinterlace=&lt;yes|no|auto&gt;</span></tt></dt>
@@ -2975,10 +2974,17 @@ the hardware acceleration special codecs like <tt class="docutils literal">h264_
 relevant anymore, and in fact have been removed from FFmpeg in this form.</p>
 <p>This is usually only needed with broken GPUs, where a codec is reported
 as supported, but decoding causes more problems than it solves.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">On some broken drivers (e.g. NVIDIA on Linux), probing for codecs which
+the GPU does not support can unnecessarily slow down video playback
+initialization. To alleviate this, explicitly specify a list which
+only includes the codecs supported on the setup.</p>
+</div>
 <div class="admonition admonition-example last">
 <p class="first admonition-title">Example</p>
 <dl class="last docutils">
-<dt><tt class="docutils literal">mpv <span class="pre">--hwdec=vdpau</span> <span class="pre">--vo=vdpau</span> <span class="pre">--hwdec-codecs=h264,mpeg2video</span></tt></dt>
+<dt><tt class="docutils literal">mpv <span class="pre">--hwdec=vdpau</span> <span class="pre">--hwdec-codecs=h264,mpeg2video</span></tt></dt>
 <dd>Enable vdpau decoding for h264 and mpeg2 only.</dd>
 </dl>
 </div>
@@ -3301,7 +3307,7 @@ unneeded and pass all unknown options through the AVOption system is
 welcome. A full list of AVOptions can be found in the FFmpeg manual.</p>
 <p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--ad-spdif-dtshd=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dtshd</span></tt>, <tt class="docutils literal"><span class="pre">--no-dtshd</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--ad-spdif-dtshd=&lt;yes|no&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dtshd=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">If DTS is passed through, use DTS-HD.</p>
 <div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
@@ -3465,7 +3471,7 @@ then the buffered audio may run out before playback of the new file
 can start.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--initial-audio-sync</span></tt>, <tt class="docutils literal"><span class="pre">--no-initial-audio-sync</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--initial-audio-sync=&lt;yes|no&gt;</span></tt></dt>
 <dd>When starting a video file or after events such as seeking, mpv will by
 default modify the audio stream to make it start from the same timestamp
 as video, by either inserting silence at the start or cutting away the
@@ -3473,7 +3479,7 @@ first samples. Disabling this option makes the player behave like older
 mpv versions did: video and audio are both started immediately even if
 their start timestamps differ, and then video timing is gradually adjusted
 if necessary to reach correct synchronization later.</dd>
-<dt><tt class="docutils literal"><span class="pre">--audio-file-auto=&lt;no|exact|fuzzy|all&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--no-audio-file-auto</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--audio-file-auto=&lt;no|exact|fuzzy|all&gt;</span></tt></dt>
 <dd><p class="first">Load additional audio files matching the video filename. The parameter
 specifies how external audio files are matched.</p>
 <table class="last docutils field-list" frame="void" rules="none">
@@ -3590,14 +3596,14 @@ Secondary subtitles are never shown on the terminal if video is disabled.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Styling and interpretation of any formatting tags is disabled for the
-secondary subtitle. Internally, the same mechanism as <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt>
+secondary subtitle. Internally, the same mechanism as <tt class="docutils literal"><span class="pre">--sub-ass=no</span></tt>
 is used to strip the styling.</p>
 </div>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">If the main subtitle stream contains formatting tags which display the
 subtitle at the top of the screen, it will overlap with the secondary
-subtitle. To prevent this, you could use <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> to disable
+subtitle. To prevent this, you could use <tt class="docutils literal"><span class="pre">--sub-ass=no</span></tt> to disable
 styling in the main subtitle stream.</p>
 </div>
 </dd>
@@ -3855,8 +3861,8 @@ the player won't know where exactly the text parts are located.)</p>
 (e.g. letterboxed). Setting this option uses the video size as subtitle
 canvas size. Can be useful to test broken subtitles, which often happen
 when the video was trancoded, while attempting to keep the old subtitles.</dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt></dt>
-<dd><p class="first">Render ASS subtitles natively (enabled by default).</p>
+<dt><tt class="docutils literal"><span class="pre">--sub-ass=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Render ASS subtitles natively (default: yes).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This has been deprecated by <tt class="docutils literal"><span class="pre">--sub-ass-override=strip</span></tt>. You also
@@ -3864,17 +3870,17 @@ may need <tt class="docutils literal"><span class="pre">--embeddedfonts=no</span
 using <tt class="docutils literal"><span class="pre">--sub-ass-override=style</span></tt> should give better results
 without breaking subtitles too much.</p>
 </div>
-<p>If <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> is specified, all tags and style declarations are
+<p>If <tt class="docutils literal"><span class="pre">--sub-ass=no</span></tt> is specified, all tags and style declarations are
 stripped and ignored on display. The subtitle renderer uses the font style
 as specified by the <tt class="docutils literal"><span class="pre">--sub-</span></tt> options instead.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
-<p class="last">Using <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> may lead to incorrect or completely broken
+<p class="last">Using <tt class="docutils literal"><span class="pre">--sub-ass=no</span></tt> may lead to incorrect or completely broken
 rendering of ASS/SSA subtitles. It can sometimes be useful to forcibly
 override the styling of ASS subtitles, but should be avoided in general.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-auto=&lt;no|exact|fuzzy|all&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-auto</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-auto=&lt;no|exact|fuzzy|all&gt;</span></tt></dt>
 <dd><p class="first">Load additional subtitle files matching the video filename. The parameter
 specifies how external subtitle files are matched. <tt class="docutils literal">exact</tt> is enabled by
 default.</p>
@@ -3994,10 +4000,10 @@ searches for subtitle files in these directories:</p>
 </div>
 <p class="last">This is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-visibility</span></tt>, <tt class="docutils literal"><span class="pre">--no-sub-visibility</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-visibility=&lt;yes|no&gt;</span></tt></dt>
 <dd>Can be used to disable display of subtitles, but still select and decode
 them.</dd>
-<dt><tt class="docutils literal"><span class="pre">--secondary-sub-visibility</span></tt>, <tt class="docutils literal"><span class="pre">--no-secondary-sub-visibility</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--secondary-sub-visibility=&lt;yes|no&gt;</span></tt></dt>
 <dd>Can be used to disable display of secondary subtitles, but still select and
 decode them.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-clear-on-seek</span></tt></dt>
@@ -4039,8 +4045,8 @@ specify a particular font. The default is <tt class="docutils literal"><span cla
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p>The <tt class="docutils literal"><span class="pre">--sub-font</span></tt> option (and many other style related <tt class="docutils literal"><span class="pre">--sub-</span></tt>
-options) are ignored when ASS-subtitles are rendered, unless the
-<tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> option is specified.</p>
+options) are ignored when ASS-subtitles are rendered, unless
+<tt class="docutils literal"><span class="pre">--sub-ass=no</span></tt> is specified.</p>
 <p class="last">This used to support fontconfig patterns. Starting with libass 0.13.0,
 this stopped working.</p>
 </div>
@@ -4115,7 +4121,7 @@ If you just want to raise the vertical subtitle position, use <tt class="docutil
 <dt><tt class="docutils literal"><span class="pre">--sub-align-x=&lt;left|center|right&gt;</span></tt></dt>
 <dd><p class="first">Control to which corner of the screen text subtitles should be
 aligned to (default: <tt class="docutils literal">center</tt>).</p>
-<p class="last">Never applied to ASS subtitles, except in <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> mode. Likewise,
+<p class="last">Never applied to ASS subtitles, except in <tt class="docutils literal"><span class="pre">--sub-ass=no</span></tt> mode. Likewise,
 this does not apply to image subtitles.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-align-y=&lt;top|center|bottom&gt;</span></tt></dt>
@@ -4398,7 +4404,7 @@ mode can be used to create the window always on program start, but this
 may cause other issues.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--taskbar-progress</span></tt>, <tt class="docutils literal"><span class="pre">--no-taskbar-progress</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--taskbar-progress=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">(Windows only)
 Enable/disable playback progress rendering in taskbar (Windows 7 and above).</p>
 <p class="last">Enabled by default.</p>
@@ -4471,13 +4477,13 @@ Set the preference for window corner rounding.</p>
 </tbody>
 </table>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--border</span></tt>, <tt class="docutils literal"><span class="pre">--no-border</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--border=&lt;yes|no&gt;</span></tt></dt>
 <dd>Play video with window border and decorations. Since this is on by
 default, use <tt class="docutils literal"><span class="pre">--no-border</span></tt> to disable the standard window decorations.</dd>
-<dt><tt class="docutils literal"><span class="pre">--title-bar</span></tt>, <tt class="docutils literal"><span class="pre">--no-title-bar</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--title-bar=&lt;yes|no&gt;</span></tt></dt>
 <dd>(Windows and X11 only)
 Play video with the window title bar. Since this is on by default,
-use --no-title-bar to hide the title bar. The --no-border option takes
+use <tt class="docutils literal"><span class="pre">--title-bar=no</span></tt> to hide the title bar. The <tt class="docutils literal"><span class="pre">--border</span></tt> option takes
 precedence.</dd>
 <dt><tt class="docutils literal"><span class="pre">--on-all-workspaces</span></tt></dt>
 <dd>(X11 and macOS only)
@@ -4532,7 +4538,7 @@ so that the window has the video aspect ratio.</dd>
 <dt><tt class="docutils literal">50%x50%</tt></dt>
 <dd>Forces the window width and height to half the screen width and
 height. Will show black borders to compensate for the video aspect
-ratio (with most VOs and without <tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>).</dd>
+ratio (with most VOs and with <tt class="docutils literal"><span class="pre">--keepaspect=yes</span></tt>).</dd>
 <dt><tt class="docutils literal"><span class="pre">50%+10+10/2</span></tt></dt>
 <dd>Sets the window to half the screen widths, and positions it 10
 pixels below/left of the top left corner of the screen, on the
@@ -4654,13 +4660,13 @@ be the default behavior. Currently only affects X11 and SDL VOs.</dd>
 (i.e. advancing forward in a playlist). Setting this to <tt class="docutils literal">no</tt> disables this
 behavior so the window size never changes automatically. This option does
 not have any impact on the <tt class="docutils literal"><span class="pre">--autofit</span></tt> or <tt class="docutils literal"><span class="pre">--geometry</span></tt> options.</dd>
-<dt><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt>, <tt class="docutils literal"><span class="pre">--keepaspect</span></tt></dt>
-<dd><tt class="docutils literal"><span class="pre">--no-keepaspect</span></tt> will always stretch the video to window size, and will
+<dt><tt class="docutils literal"><span class="pre">--keepaspect=&lt;yes|no&gt;</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> will always stretch the video to window size, and will
 disable the window manager hints that force the window aspect ratio.
 (Ignored in fullscreen mode.)</dd>
-<dt><tt class="docutils literal"><span class="pre">--no-keepaspect-window</span></tt>, <tt class="docutils literal"><span class="pre">--keepaspect-window</span></tt></dt>
-<dd><tt class="docutils literal"><span class="pre">--keepaspect-window</span></tt> (the default) will lock the window size to the
-video aspect. <tt class="docutils literal"><span class="pre">--no-keepaspect-window</span></tt> disables this behavior, and will
+<dt><tt class="docutils literal"><span class="pre">--keepaspect-window=&lt;yes|no&gt;</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">--keepaspect-window=yes</span></tt> (the default) will lock the window size to the
+video aspect. <tt class="docutils literal"><span class="pre">--keepaspect-window=no</span></tt> disables this behavior, and will
 instead add black bars if window aspect and video aspect mismatch. Whether
 this actually works depends on the VO backend.
 (Ignored in fullscreen mode.)</dd>
@@ -4677,11 +4683,11 @@ previous setting (e.g. in the config file). Overrides the
 </ul>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--hidpi-window-scale</span></tt>, <tt class="docutils literal"><span class="pre">--no-hidpi-window-scale</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--hidpi-window-scale=&lt;yes|no&gt;</span></tt></dt>
 <dd>Scale the window size according to the backing DPI scale factor from the OS
 (default: no). For example, if the OS DPI scaling is set to 200%, mpv's window
 size will be multiplied by 2.</dd>
-<dt><tt class="docutils literal"><span class="pre">--native-fs</span></tt>, <tt class="docutils literal"><span class="pre">--no-native-fs</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--native-fs=&lt;yes|no&gt;</span></tt></dt>
 <dd>(macOS only)
 Uses the native fullscreen mechanism of the OS (default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--monitorpixelaspect=&lt;ratio&gt;</span></tt></dt>
@@ -4723,8 +4729,8 @@ value cast to <tt class="docutils literal">intptr_t</tt>. Use with <tt class="do
 <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for direct rendering using MediaCodec, or with
 <tt class="docutils literal"><span class="pre">--vo=gpu</span> <span class="pre">--gpu-context=android</span></tt> (with or without <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt>).</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--no-window-dragging</span></tt></dt>
-<dd>Don't move the window when clicking on it and moving the mouse pointer.</dd>
+<dt><tt class="docutils literal"><span class="pre">--window-dragging=&lt;yes|no&gt;</span></tt></dt>
+<dd>Move the window when clicking on it and moving the mouse pointer (default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--x11-name=&lt;string&gt;</span></tt></dt>
 <dd>Set the window instance name for X11-based video output methods.</dd>
 <dt><tt class="docutils literal"><span class="pre">--x11-netwm=&lt;yes|no|auto&gt;</span></tt></dt>
@@ -4767,7 +4773,7 @@ work, so they are not enabled automatically.</p>
 mechanism in case there is good/bad behavior with whatever your combination
 of hardware/drivers/etc. happens to be.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--x11-wid-title</span></tt> <tt class="docutils literal"><span class="pre">--no-x11-wid-title</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--x11-wid-title=&lt;yes|no&gt;</span></tt></dt>
 <dd>Whether or not to set the window title when mpv is embedded on X11 (default:
 <tt class="docutils literal">no</tt>).</dd>
 </dl>
@@ -5218,15 +5224,15 @@ Set it to 0 to disable.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-conf=&lt;filename&gt;</span></tt></dt>
 <dd>Specify input configuration file other than the default location in the mpv
 configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/input.conf</span></tt>).</dd>
-<dt><tt class="docutils literal"><span class="pre">--no-input-default-bindings</span></tt></dt>
-<dd>Disable default-level (&quot;weak&quot;) key bindings. These are bindings which config
-files like <tt class="docutils literal">input.conf</tt> can override. It currently affects the builtin key
-bindings, and keys which scripts bind using <tt class="docutils literal">mp.add_key_binding</tt> (but not
-<tt class="docutils literal">mp.add_forced_key_binding</tt> because this overrides <tt class="docutils literal">input.conf</tt>).</dd>
-<dt><tt class="docutils literal"><span class="pre">--no-input-builtin-bindings</span></tt></dt>
-<dd>Disable loading of built-in key bindings during start-up. This option is
-applied only during (lib)mpv initialization, and if used then it will not
-be not possible to enable them later. May be useful to libmpv clients.</dd>
+<dt><tt class="docutils literal"><span class="pre">--input-default-bindings=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable default-level (&quot;weak&quot;) key bindings (default: yes). These are bindings
+which config files like <tt class="docutils literal">input.conf</tt> can override. It currently affects the
+builtin key bindings, and keys which scripts bind using <tt class="docutils literal">mp.add_key_binding</tt>
+(but not <tt class="docutils literal">mp.add_forced_key_binding</tt> because this overrides <tt class="docutils literal">input.conf</tt>).</dd>
+<dt><tt class="docutils literal"><span class="pre">--input-builtin-bindings=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable loading of built-in key bindings during start-up (default: yes). This
+option is applied only during (lib)mpv initialization, and if disabled then it
+will not be not possible to enable them later. May be useful to libmpv clients.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt></dt>
 <dd>Prints all commands that can be bound to keys.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-commands=&lt;cmd1,cmd2,...&gt;</span></tt></dt>
@@ -5262,8 +5268,8 @@ will show the keys and the bound commands on the OSD. Has to be used
 with a dummy video, and the normal ways to quit the player will not
 work (key bindings that normally quit will be shown on OSD only, just
 like any other binding). See <a class="reference internal" href="#input-conf">INPUT.CONF</a>.</dd>
-<dt><tt class="docutils literal"><span class="pre">--input-terminal</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-terminal</span></tt></dt>
-<dd><tt class="docutils literal"><span class="pre">--no-input-terminal</span></tt> prevents the player from reading key events from
+<dt><tt class="docutils literal"><span class="pre">--input-terminal=&lt;yes|no&gt;</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">--input-terminal=no</span></tt> prevents the player from reading key events from
 standard input. Useful when reading data from standard input. This is
 automatically enabled when <tt class="docutils literal">-</tt> is found on the command line. There are
 situations where you have to set it manually, e.g. if you open
@@ -5312,11 +5318,11 @@ whitespace). This is not a bug.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--input-gamepad=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable/disable SDL2 Gamepad support. Disabled by default.</dd>
-<dt><tt class="docutils literal"><span class="pre">--input-cursor</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-cursor</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--input-cursor=&lt;yes|no&gt;</span></tt></dt>
 <dd>Permit mpv to receive pointer events reported by the video output
 driver. Necessary to use the OSC, or to select the buttons in DVD menus.
 Support depends on the VO in use.</dd>
-<dt><tt class="docutils literal"><span class="pre">--input-cursor-passthrough</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-cursor-passthrough</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--input-cursor-passthrough=&lt;yes|no&gt;</span></tt></dt>
 <dd>Tell the backend windowing system to allow pointer events to passthrough
 the mpv window. This allows windows under mpv to instead receive pointer
 events as if the mpv window was never there.</dd>
@@ -5342,7 +5348,7 @@ input latency.</p>
 <p class="last">Note that disabling the preprocessing does not affect any filtering done
 by the OS/driver before these events are delivered to mpv, if any.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--input-right-alt-gr</span></tt>, <tt class="docutils literal"><span class="pre">--no-input-right-alt-gr</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--input-right-alt-gr=&lt;yes|no&gt;</span></tt></dt>
 <dd>(macOS and Windows only)
 Use the right Alt key as Alt Gr to produce special characters. If disabled,
 count the right Alt as an Alt modifier key. Enabled by default.</dd>
@@ -5371,10 +5377,10 @@ the mpv default key bindings.</p>
 <div class="section" id="osd">
 <h2>OSD</h2>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">--osc</span></tt>, <tt class="docutils literal"><span class="pre">--no-osc</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--osc=&lt;yes|no&gt;</span></tt></dt>
 <dd>Whether to load the on-screen-controller (default: yes).</dd>
-<dt><tt class="docutils literal"><span class="pre">--no-osd-bar</span></tt>, <tt class="docutils literal"><span class="pre">--osd-bar</span></tt></dt>
-<dd><p class="first">Disable display of the OSD bar.</p>
+<dt><tt class="docutils literal"><span class="pre">--osd-bar=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Enable display of the OSD bar (default: yes).</p>
 <p class="last">You can configure this on a per-command basis in input.conf using <tt class="docutils literal">osd-</tt>
 prefixes, see <tt class="docutils literal">Input Command Prefixes</tt>. If you want to disable the OSD
 completely, use <tt class="docutils literal"><span class="pre">--osd-level=0</span></tt>.</p>
@@ -5541,7 +5547,7 @@ values are allowed.</p>
 in situations where terminal OSD is preferred. If you just want to disable
 all OSD rendering, use <tt class="docutils literal"><span class="pre">--osd-level=0</span></tt>.</p>
 <p>It does not affect subtitles or overlays created by scripts (in particular,
-the OSC needs to be disabled with <tt class="docutils literal"><span class="pre">--no-osc</span></tt>).</p>
+the OSC needs to be disabled with <tt class="docutils literal"><span class="pre">--osc=no</span></tt>).</p>
 <p class="last">This option is somewhat experimental and could be replaced by another
 mechanism in the future.</p>
 </dd>
@@ -5901,14 +5907,14 @@ handle carriage return (i.e. <tt class="docutils literal">\r</tt>).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--really-quiet</span></tt></dt>
 <dd>Display even less output and status messages than with <tt class="docutils literal"><span class="pre">--quiet</span></tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">--no-terminal</span></tt>, <tt class="docutils literal"><span class="pre">--terminal</span></tt></dt>
-<dd><p class="first">Disable any use of the terminal and stdin/stdout/stderr. This completely
-silences any message output.</p>
+<dt><tt class="docutils literal"><span class="pre">--terminal=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first"><tt class="docutils literal"><span class="pre">--terminal=no</span></tt> disables any use of the terminal and stdin/stdout/stderr.
+This completely silences any message output.</p>
 <p class="last">Unlike <tt class="docutils literal"><span class="pre">--really-quiet</span></tt>, this disables input and terminal initialization
 as well.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--no-msg-color</span></tt></dt>
-<dd>Disable colorful console output on terminals.</dd>
+<dt><tt class="docutils literal"><span class="pre">--msg-color=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable colorful console output on terminals (default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--msg-level=&lt;module1=level1,module2=level2,...&gt;</span></tt></dt>
 <dd><p class="first">Control verbosity directly for each module. The <tt class="docutils literal">all</tt> module changes the
 verbosity of all the modules. The verbosity changes from this option are
@@ -5983,7 +5989,7 @@ is available (default: auto).</p>
 </table>
 <p class="last">The <tt class="docutils literal">auto</tt> mode also enables terminal OSD if <tt class="docutils literal"><span class="pre">--video-osd=no</span></tt> was set.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--term-osd-bar</span></tt>, <tt class="docutils literal"><span class="pre">--no-term-osd-bar</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--term-osd-bar=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable printing a progress bar under the status line on the terminal.
 (Disabled by default.)</dd>
 <dt><tt class="docutils literal"><span class="pre">--term-osd-bar-chars=&lt;string&gt;</span></tt></dt>
@@ -6034,8 +6040,6 @@ heuristic).</p>
 of the cache in kilobytes. Use e.g. <tt class="docutils literal"><span class="pre">--cache</span> <span class="pre">--demuxer-max-bytes=123k</span></tt>
 instead.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--no-cache</span></tt></dt>
-<dd>Turn off input stream caching. See <tt class="docutils literal"><span class="pre">--cache</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--cache-secs=&lt;seconds&gt;</span></tt></dt>
 <dd>How many seconds of audio/video to prefetch if the cache is active. This
 overrides the <tt class="docutils literal"><span class="pre">--demuxer-readahead-secs</span></tt> option if and only if the cache
@@ -6183,7 +6187,7 @@ resets may lead to random queue size usage.</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--user-agent=&lt;string&gt;</span></tt></dt>
 <dd>Use <tt class="docutils literal">&lt;string&gt;</tt> as user agent for HTTP streaming.</dd>
-<dt><tt class="docutils literal"><span class="pre">--cookies</span></tt>, <tt class="docutils literal"><span class="pre">--no-cookies</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--cookies=&lt;yes|no&gt;</span></tt></dt>
 <dd>Support cookies when making HTTP requests. Disabled by default.</dd>
 <dt><tt class="docutils literal"><span class="pre">--cookies-file=&lt;filename&gt;</span></tt></dt>
 <dd>Read HTTP cookies from &lt;filename&gt;. The file is assumed to be in Netscape
@@ -6794,7 +6798,7 @@ is a photo, video or possibly none depending on internal heuristics.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-disable-vsync=&lt;yes|no&gt;</span></tt></dt>
 <dd>Disable mpv's internal vsync for Wayland-based video output (default: no).
 This is mainly useful for benchmarking wayland VOs when combined with
-<tt class="docutils literal"><span class="pre">video-sync=display-desync</span></tt>, <tt class="docutils literal"><span class="pre">--no-audio</span></tt>, and <tt class="docutils literal"><span class="pre">--untimed=yes</span></tt>.</dd>
+<tt class="docutils literal"><span class="pre">video-sync=display-desync</span></tt>, <tt class="docutils literal"><span class="pre">--audio=no</span></tt>, and <tt class="docutils literal"><span class="pre">--untimed=yes</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-edge-pixels-pointer=&lt;value&gt;</span></tt></dt>
 <dd>Defines the size of an edge border (default: 16) to initiate client side
 resize events in the wayland contexts with the mouse. This is only active if
@@ -7988,9 +7992,9 @@ to see it.</p>
 Specifying <tt class="docutils literal"><span class="pre">--autosync=0</span></tt>, the default, will cause frame timing to be
 based entirely on audio delay measurements. Specifying <tt class="docutils literal"><span class="pre">--autosync=1</span></tt>
 will do the same, but will subtly change the A/V correction algorithm. An
-uneven video framerate in a video which plays fine with <tt class="docutils literal"><span class="pre">--no-audio</span></tt> can
+uneven video framerate in a video which plays fine with <tt class="docutils literal"><span class="pre">--audio=no</span></tt> can
 often be helped by setting this to an integer value greater than 1. The
-higher the value, the closer the timing will be to <tt class="docutils literal"><span class="pre">--no-audio</span></tt>. Try
+higher the value, the closer the timing will be to <tt class="docutils literal"><span class="pre">--audio=no</span></tt>. Try
 <tt class="docutils literal"><span class="pre">--autosync=30</span></tt> to smooth out problems with sound drivers which do not
 implement a perfect audio delay measurement. With this value, if large A/V
 sync offsets occur, they will only take about 1 or 2 seconds to settle
@@ -8953,7 +8957,7 @@ rendered at display resolution if the driver supports it.</dd>
 </dd>
 <dt><tt class="docutils literal">null</tt></dt>
 <dd><p class="first">Produces no video output. Useful for benchmarking.</p>
-<p>Usually, it's better to disable video with <tt class="docutils literal"><span class="pre">--no-video</span></tt> instead.</p>
+<p>Usually, it's better to disable video with <tt class="docutils literal"><span class="pre">--video=no</span></tt> instead.</p>
 <p>The following global options are supported by this video output:</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">--vo-null-fps=&lt;value&gt;</span></tt></dt>
@@ -8963,6 +8967,18 @@ VO accepts per second.</dd>
 </dd>
 <dt><tt class="docutils literal">caca</tt></dt>
 <dd><p class="first">Color ASCII art video output driver that works on a text console.</p>
+<p>This driver reserves some keys for runtime configuration. These keys are
+hardcoded and cannot be bound:</p>
+<dl class="docutils">
+<dt>d and D</dt>
+<dd>Toggle dithering algorithm.</dd>
+<dt>a and A</dt>
+<dd>Toggle antialiasing method.</dd>
+<dt>h and H</dt>
+<dd>Toggle charset method.</dd>
+<dt>c and C</dt>
+<dd>Toggle color method.</dd>
+</dl>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">This driver is a joke.</p>
@@ -8976,7 +8992,7 @@ below). On Windows it requires an ansi terminal such as mintty.</p>
 <p>Since mpv 0.30.0, you may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent
 performance.</p>
 <p>Note: the TCT image output is not synchronized with other terminal output
-from mpv, which can lead to broken images. The options <tt class="docutils literal"><span class="pre">--no-terminal</span></tt> or
+from mpv, which can lead to broken images. The options <tt class="docutils literal"><span class="pre">--terminal=no</span></tt> or
 <tt class="docutils literal"><span class="pre">--really-quiet</span></tt> can help with that.</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">--vo-tct-algo=&lt;algo&gt;</span></tt></dt>
@@ -10492,9 +10508,8 @@ multiple options is currently still possible, but deprecated.)</dd>
 container formats, e.g. AVI). In this mode, discontinuities are not fixed
 and all pts are passed through as-is. Never seek backwards or use multiple
 input files in this mode!</dd>
-<dt><tt class="docutils literal"><span class="pre">--no-ocopy-metadata</span></tt></dt>
-<dd>Turns off copying of metadata from input files to output files when
-encoding (which is enabled by default).</dd>
+<dt><tt class="docutils literal"><span class="pre">--ocopy-metadata=&lt;yes|no&gt;</span></tt></dt>
+<dd>Copy metadata from input files to output files when encoding (default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--oset-metadata=&lt;metadata-tag[,metadata-tag,...]&gt;</span></tt></dt>
 <dd><p class="first">Specifies metadata to include in the output file.
 Supported keys vary between output formats. For example, Matroska (MKV) and
@@ -10567,8 +10582,8 @@ merely display the binding, even if mapped to quit.)</p>
 <h2>input.conf syntax</h2>
 <p><tt class="docutils literal"><span class="pre">[Shift+][Ctrl+][Alt+][Meta+]&lt;key&gt;</span> <span class="pre">[{&lt;section&gt;}]</span> &lt;command&gt; ( ; &lt;command&gt; )*</tt></p>
 <p>Note that by default, the right Alt key can be used to create special
-characters, and thus does not register as a modifier. The option
-<tt class="docutils literal"><span class="pre">--no-input-right-alt-gr</span></tt> changes this behavior.</p>
+characters, and thus does not register as a modifier. This can be changed
+with <tt class="docutils literal"><span class="pre">--input-right-alt-gr</span></tt> option.</p>
 <p>Newlines always start a new binding. <tt class="docutils literal">#</tt> starts a comment (outside of quoted
 string arguments). To bind commands to the <tt class="docutils literal">#</tt> key, <tt class="docutils literal">SHARP</tt> can be used.</p>
 <p><tt class="docutils literal">&lt;key&gt;</tt> is either the literal character the key produces (ASCII or Unicode
@@ -10739,7 +10754,7 @@ Don't add those to the actual command. Optional arguments are enclosed in
 <dt><tt class="docutils literal">ignore</tt></dt>
 <dd>Use this to &quot;block&quot; keys that should be unbound, and do nothing. Useful for
 disabling default bindings, without disabling all bindings with
-<tt class="docutils literal"><span class="pre">--no-input-default-bindings</span></tt>.</dd>
+<tt class="docutils literal"><span class="pre">--input-default-bindings=no</span></tt>.</dd>
 <dt><tt class="docutils literal">seek &lt;target&gt; [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Change the playback position. By default, seeks by a relative amount of
 seconds.</p>
