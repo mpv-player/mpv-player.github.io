@@ -9006,6 +9006,25 @@ resolution. (Default.)</dd>
 theory works in more places.</dd>
 </dl>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--vo-tct-buffering=&lt;pixel|line|frame&gt;</span></tt></dt>
+<dd><p class="first">Specifies the size of data batches buffered before being sent to the
+terminal.</p>
+<p>TCT image output is not synchronized with other terminal output from mpv,
+which can lead to broken images. Sending data to the terminal in small
+batches may improve parallelism between terminal processing and mpv
+processing but incurs a static overhead of generating tens of thousands
+of small writes. Also, depending on the terminal used, sending frames in
+one chunk might help with tearing of the output, especially if not used
+with <tt class="docutils literal"><span class="pre">--really-quiet</span></tt> and other logs interrupt the data stream.</p>
+<dl class="last docutils">
+<dt>pixel</dt>
+<dd>Send data to terminal for each pixel.</dd>
+<dt>line</dt>
+<dd>Send data to terminal for each line. (Default)</dd>
+<dt>frame</dt>
+<dd>Send data to terminal for each frame.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--vo-tct-width=&lt;width&gt;</span></tt>  <tt class="docutils literal"><span class="pre">--vo-tct-height=&lt;height&gt;</span></tt></dt>
 <dd>Assume the terminal has the specified character width and/or height.
 These default to 80x25 if the terminal size cannot be determined.</dd>
