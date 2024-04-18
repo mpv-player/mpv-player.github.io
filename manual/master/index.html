@@ -3799,6 +3799,14 @@ can't be fixed anymore in the name of compatibility.</p>
 offset scale factor, not what the video filter chain or the video output
 use.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-vsfilter-bidi-compat=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Set implicit bidi detection to <tt class="docutils literal">ltr</tt> instead of <tt class="docutils literal">auto</tt> to match ASS'
+default. This also disables libass' incompatible extensions. This currently
+includes bracket pair matching according to the revised Unicode
+Bidirectional Algorithm introduced in Unicode 6.3, and also affects how BiDi
+runs are split and processed, as well as soft linewrapping of unicode text.</p>
+<p class="last">This affects plaintext (non-ASS) subtitles only. Default: no.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-color-compat=&lt;basic|full|force-601|no&gt;</span></tt></dt>
 <dd><p class="first">Mangle colors like (xy-)vsfilter do (default: basic). Historically, VSFilter
 was not color space aware. This was no problem as long as the color space
@@ -4688,6 +4696,11 @@ size will be multiplied by 2.</dd>
 <dt><tt class="docutils literal"><span class="pre">--native-fs=&lt;yes|no&gt;</span></tt></dt>
 <dd>(macOS only)
 Uses the native fullscreen mechanism of the OS (default: yes).</dd>
+<dt><tt class="docutils literal"><span class="pre">--show-in-taskbar=&lt;yes|no&gt;</span></tt></dt>
+<dd>(Windows and X11 only)
+Show mpv in the taskbar (default: yes). If set to no, mpv will no longer
+appear in taskbars and tasklists in supported window managers, and may be
+excluded from Alt+Tab window switching.</dd>
 <dt><tt class="docutils literal"><span class="pre">--monitorpixelaspect=&lt;ratio&gt;</span></tt></dt>
 <dd>Set the aspect of a single pixel of your monitor or TV screen (default:
 1). A value of 1 means square pixels (correct for (almost?) all LCDs). See
@@ -13112,7 +13125,7 @@ entry, <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
 <dd>Name of the Nth entry. Available if the playlist file contains
 such fields and mpv's parser supports it for the given
 playlist format, or if the playlist entry has been opened before and a
-media-title other then then filename has been acquired.</dd>
+media-title other than filename has been acquired.</dd>
 <dt><tt class="docutils literal">playlist/N/id</tt></dt>
 <dd>Unique ID for this entry. This is an automatically assigned integer ID
 that is unique for the entire life time of the current mpv core
@@ -13201,6 +13214,8 @@ this can be potentially wrong if a demuxer other than libavformat
 (<tt class="docutils literal"><span class="pre">--demuxer=lavf</span></tt>) is used. For mkv files, the index will usually
 match even if the default (builtin) demuxer is used, but there is
 no hard guarantee.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/decoder</span></tt></dt>
+<dd>If this track is being decoded, the short decoder name,</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/decoder-desc</span></tt></dt>
 <dd>If this track is being decoded, the human-readable decoder name,</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-w</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/demux-h</span></tt></dt>
@@ -14364,6 +14379,12 @@ The updates are unoptimized - consider disabling it on very low-end systems.</p>
 <p class="last">Whether to display the chapters/playlist at the OSD when left-clicking the
 next/previous OSC buttons, respectively.</p>
 </dd>
+<dt><tt class="docutils literal">playlist_media_title</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Whether to display playlist entries in media titles. If set to <tt class="docutils literal">no</tt>, file
+names are used instead. Note that media title of a file is only available
+once it has been loaded.</p>
+</dd>
 <dt><tt class="docutils literal">chapter_fmt</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">Chapter: %s</tt></p>
 <p class="last">Template for the chapter-name display when hovering the seekbar.
@@ -14471,6 +14492,8 @@ stats:</p>
 </tr>
 </tbody>
 </table>
+<p>Page 4 also binds <tt class="docutils literal">/</tt> to search for input bindings by typing part of a binding
+or command.</p>
 </div>
 <div class="section" id="id2">
 <h2>Configuration</h2>
@@ -14496,6 +14519,8 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dd>Default: UP</dd>
 <dt><tt class="docutils literal">key_scroll_down</tt></dt>
 <dd>Default: DOWN</dd>
+<dt><tt class="docutils literal">key_scroll_search</tt></dt>
+<dd>Default: /</dd>
 <dt><tt class="docutils literal">scroll_lines</tt></dt>
 <dd><p class="first">Default: 1</p>
 <p class="last">Scroll key bindings and number of lines to scroll on pages which support it.</p>
@@ -14544,7 +14569,7 @@ A value of 0 means the height is infinite, -1 means it's automatic.</p>
 <p class="last">Clear data buffers used for drawing graphs when toggling.</p>
 </dd>
 <dt><tt class="docutils literal">font</tt></dt>
-<dd><p class="first">Default: sans-serif</p>
+<dd><p class="first">Default: same as <tt class="docutils literal"><span class="pre">osd-font</span></tt></p>
 <p class="last">Font name. Should support as many font weights as possible for optimal
 visual experience.</p>
 </dd>
@@ -14558,20 +14583,34 @@ text. Currently, monospaced digits are sufficient.</p>
 <p class="last">Font size used to render text.</p>
 </dd>
 <dt><tt class="docutils literal">font_color</tt></dt>
-<dd><p class="first">Default: FFFFFF</p>
-<p class="last">Font color.</p>
+<dd><p class="first">Default: same as <tt class="docutils literal"><span class="pre">osd-color</span></tt></p>
+<p class="last">Color of the text.</p>
 </dd>
 <dt><tt class="docutils literal">border_size</tt></dt>
 <dd><p class="first">Default: 0.8</p>
 <p class="last">Size of border drawn around the font.</p>
 </dd>
 <dt><tt class="docutils literal">border_color</tt></dt>
-<dd><p class="first">Default: 262626</p>
-<p class="last">Color of drawn border.</p>
+<dd><p class="first">Default: same as <tt class="docutils literal"><span class="pre">osd-border-color</span></tt></p>
+<p class="last">Color of the text border.</p>
+</dd>
+<dt><tt class="docutils literal">shadow_x_offset</tt></dt>
+<dd><p class="first">Default: 0</p>
+<p class="last">The horizontal distance from the text to position the shadow at.</p>
+</dd>
+<dt><tt class="docutils literal">shadow_y_offset</tt></dt>
+<dd><p class="first">Default: 0</p>
+<p class="last">The vertical distance from the text to position the shadow at.</p>
+</dd>
+<dt><tt class="docutils literal">shadow_color</tt></dt>
+<dd><p class="first">Default: same as <tt class="docutils literal"><span class="pre">osd-shadow-color</span></tt></p>
+<p class="last">Color of the text shadow.</p>
 </dd>
 <dt><tt class="docutils literal">alpha</tt></dt>
 <dd><p class="first">Default: 11</p>
-<p class="last">Transparency for drawn text.</p>
+<p class="last">Transparency of text when <tt class="docutils literal">font_color</tt> is specified, of text borders when
+<tt class="docutils literal">border_color</tt> is specified, and of text shadows when <tt class="docutils literal">shadow_color</tt> is
+specified.</p>
 </dd>
 <dt><tt class="docutils literal">plot_bg_border_color</tt></dt>
 <dd><p class="first">Default: 0000FF</p>
