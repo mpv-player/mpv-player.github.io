@@ -565,7 +565,7 @@ by the option system itself. However, most path or file list options use <tt cla
 <td>Delete item if present (does not interpret escapes)</td>
 </tr>
 <tr><td>-toggle</td>
-<td>Append an item, or remove if if it already exists (no escapes)</td>
+<td>Append an item, or remove it if it already exists (no escapes)</td>
 </tr>
 </tbody>
 </table>
@@ -611,11 +611,11 @@ recommended to use the <tt class="docutils literal"><span class="pre">-append</s
 appropriate structured data type.</p>
 <p>Prior to mpv 0.33, <tt class="docutils literal">:</tt> was also recognized as separator by <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
 </div>
-<div class="section" id="filter-options">
-<h3>Filter options</h3>
-<p>This is a very complex option type for the <tt class="docutils literal"><span class="pre">--af</span></tt> and <tt class="docutils literal"><span class="pre">--vf</span></tt> options only.
-They often require complicated escaping. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for details. They
-support the following operations:</p>
+<div class="section" id="object-settings-list-options">
+<h3>Object settings list options</h3>
+<p>This is a very complex option type for some options, such as <tt class="docutils literal"><span class="pre">--af</span></tt> and <tt class="docutils literal"><span class="pre">--vf</span></tt>.
+They often require complicated escaping. See <a class="reference internal" href="#video-filters">VIDEO FILTERS</a> for details.</p>
+<p>They support the following operations:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -628,25 +628,25 @@ support the following operations:</p>
 </thead>
 <tbody valign="top">
 <tr><td>-set</td>
-<td>Set a list of filters (using <tt class="docutils literal">,</tt> as separator)</td>
+<td>Set a list of items (using <tt class="docutils literal">,</tt> as separator)</td>
 </tr>
 <tr><td>-append</td>
-<td>Append single filter</td>
+<td>Append single item</td>
 </tr>
 <tr><td>-add</td>
-<td>Append 1 or more filters (same syntax as -set)</td>
+<td>Append 1 or more items (same syntax as -set)</td>
 </tr>
 <tr><td>-pre</td>
-<td>Prepend 1 or more filters (same syntax as -set)</td>
+<td>Prepend 1 or more items (same syntax as -set)</td>
 </tr>
 <tr><td>-clr</td>
-<td>Clear the option (remove all filters)</td>
+<td>Clear the option (remove all items)</td>
 </tr>
 <tr><td>-remove</td>
-<td>Delete filter if present</td>
+<td>Delete item if present</td>
 </tr>
 <tr><td>-toggle</td>
-<td>Append a filter, or remove if if it already exists</td>
+<td>Append an item, or remove it if it already exists</td>
 </tr>
 <tr><td>-help</td>
 <td>Pseudo operation that prints a help text to the terminal</td>
@@ -4618,7 +4618,10 @@ larger than 500 in order to keep the aspect ratio the same).</dd>
 <dt><tt class="docutils literal"><span class="pre">--window-scale=&lt;factor&gt;</span></tt></dt>
 <dd><p class="first">Resize the video window to a multiple (or fraction) of the video size. This
 option is applied before <tt class="docutils literal"><span class="pre">--autofit</span></tt> and other options are applied (so
-they override this option).</p>
+they override this option). Changing this option while the window is
+maximized can unmaximize the window depending on the OS and window manager.
+If the window does not unmaximize, the multiplier will be applied if the user
+unmaximizes the window later.</p>
 <p class="last">For example, <tt class="docutils literal"><span class="pre">--window-scale=0.5</span></tt> would show the window at half the
 video size.</p>
 </dd>
@@ -7349,13 +7352,15 @@ runtime (i.e. if the device is rotated), via the surfaceChanged callback.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-sw</span></tt></dt>
 <dd>Continue even if a software renderer is detected.</dd>
-<dt><tt class="docutils literal"><span class="pre">--gpu-context=&lt;sys&gt;</span></tt></dt>
-<dd><p class="first">The value <tt class="docutils literal">auto</tt> (the default) selects the GPU context. You can also pass
-<tt class="docutils literal">help</tt> to get a complete list of compiled in backends (sorted by
-autoprobe order).</p>
+<dt><tt class="docutils literal"><span class="pre">--gpu-context=&lt;context1,context2,...[,]&gt;</span></tt></dt>
+<dd><p class="first">Specify a priority list of the GPU contexts to be used.
+The value <tt class="docutils literal">auto</tt> (the default) selects the GPU context with the default autoprobe
+order. You can also pass <tt class="docutils literal">help</tt> to get a complete list of compiled in backends
+(sorted by the default autoprobe order).</p>
 <dl class="last docutils">
 <dt>auto</dt>
-<dd>auto-select (default)</dd>
+<dd>auto-select (default). Note that this context must be used alone and
+does not participate in the priority list.</dd>
 <dt>win</dt>
 <dd>Win32/WGL</dd>
 <dt>winvk</dt>
@@ -8649,7 +8654,23 @@ it will write a WAVE header every time the file is opened.</dd>
 layouts.)</p>
 </dd>
 <dt><tt class="docutils literal">wasapi</tt></dt>
-<dd>Audio output to the Windows Audio Session API.</dd>
+<dd><p class="first">Audio output to the Windows Audio Session API.</p>
+<p>The following global options are supported by this audio output:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">--wasapi-exclusive-buffer=&lt;default|min|1-2000000&gt;</span></tt></dt>
+<dd><p class="first">Set buffer duration in exclusive mode (i.e., with
+<tt class="docutils literal"><span class="pre">--audio-exclusive=yes</span></tt>). <tt class="docutils literal">default</tt> and <tt class="docutils literal">min</tt> use the default and
+minimum device period reported by WASAPI, respectively. You can also
+directly specify the buffer duration in microseconds, in which case a
+duration shorter than the minimum device period will be rounded up to
+the minimum period.</p>
+<p class="last">The default buffer duration should provide robust playback in most
+cases, but reportedly on some devices there are glitches following
+stream resets under the default setting. In such cases, specifying a
+shorter duration might help.</p>
+</dd>
+</dl>
+</dd>
 </dl>
 </div>
 <div class="section" id="video-output-drivers">
@@ -12893,27 +12914,6 @@ the 10 past frame durations to calculate the FPS. It will be inaccurate
 if frame-dropping is involved (such as when framedrop is explicitly
 enabled, or after precise seeking). Files with imprecise timestamps (such
 as Matroska) might lead to unstable results.</dd>
-<dt><tt class="docutils literal"><span class="pre">window-scale</span></tt> (RW)</dt>
-<dd><p class="first">Window size multiplier. Setting this will resize the video window to the
-values contained in <tt class="docutils literal">dwidth</tt> and <tt class="docutils literal">dheight</tt> multiplied with the value
-set with this property. Setting <tt class="docutils literal">1</tt> will resize to original video size
-(or to be exact, the size the video filters output). <tt class="docutils literal">2</tt> will set the
-double size, <tt class="docutils literal">0.5</tt> halves the size.</p>
-<p>Note that setting a value identical to its previous value will not resize
-the window. That's because this property mirrors the <tt class="docutils literal"><span class="pre">window-scale</span></tt>
-option, and setting an option to its previous value is ignored. If this
-value is set while the window is in a fullscreen, the multiplier is not
-applied until the window is taken out of that state. Writing this property
-to a maximized window can unmaximize the window depending on the OS and
-window manager. If the window does not unmaximize, the multiplier will be
-applied if the user unmaximizes the window later.</p>
-<p>See <tt class="docutils literal"><span class="pre">current-window-scale</span></tt> for the value derived from the actual window
-size.</p>
-<p class="last">Since mpv 0.31.0, this always returns the previously set value (or the
-default value), instead of the value implied by the actual window size.
-Before mpv 0.31.0, this returned what <tt class="docutils literal"><span class="pre">current-window-scale</span></tt> returns now,
-after the window was created.</p>
-</dd>
 <dt><tt class="docutils literal"><span class="pre">current-window-scale</span></tt> (RW)</dt>
 <dd><p class="first">The <tt class="docutils literal"><span class="pre">window-scale</span></tt> value calculated from the current window size. This
 has the same value as <tt class="docutils literal"><span class="pre">window-scale</span></tt> if the window size was not changed
@@ -12921,10 +12921,9 @@ since setting the option, and the window size was not restricted in other
 ways. If the window is fullscreened, this will return the scale value
 calculated from the last non-fullscreen size of the window. The property
 is unavailable if no video is active.</p>
-<p class="last">When setting this property in the fullscreen or maximized state, the behavior
-is the same as window-scale. In all other cases, setting the value of this
-property will always resize the window. This does not affect the value of
-<tt class="docutils literal"><span class="pre">window-scale</span></tt>.</p>
+<p class="last">It is also possible to write to this property. This has the same behavior as
+writing <tt class="docutils literal"><span class="pre">window-scale</span></tt>. Note that writing to <tt class="docutils literal"><span class="pre">current-window-scale</span></tt> will
+not affect the value of <tt class="docutils literal"><span class="pre">window-scale</span></tt>.</p>
 </dd>
 <dt><tt class="docutils literal">focused</tt></dt>
 <dd>Whether the window has focus. Might not be supported by all VOs.</dd>
@@ -13041,16 +13040,28 @@ further filtering on the returned string to make it useful.</p>
 <dt><tt class="docutils literal"><span class="pre">secondary-sub-text</span></tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">sub-text</span></tt>, but for the secondary subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">sub-start</span></tt></dt>
-<dd>The current subtitle start time (in seconds). If there's multiple current
+<dd><p class="first">The current subtitle start time (in seconds). If there's multiple current
 subtitles, returns the first start time. If no current subtitle is present
-null is returned instead.</dd>
+null is returned instead.</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">sub-start/full</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">sub-start</span></tt> with milliseconds.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">secondary-sub-start</span></tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">sub-start</span></tt>, but for the secondary subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">sub-end</span></tt></dt>
-<dd>The current subtitle end time (in seconds). If there's multiple current
+<dd><p class="first">The current subtitle end time (in seconds). If there's multiple current
 subtitles, return the last end time. If no current subtitle is present, or
 if it's present but has unknown or incorrect duration, null is returned
-instead.</dd>
+instead.</p>
+<p>This has a sub-property:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">sub-end/full</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">sub-end</span></tt> with milliseconds.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">secondary-sub-end</span></tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">sub-end</span></tt>, but for the secondary subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
@@ -14616,6 +14627,10 @@ specified.</p>
 <dd><p class="first">Default: 0000FF</p>
 <p class="last">Border color used for drawing graphs.</p>
 </dd>
+<dt><tt class="docutils literal">plot_bg_border_width</tt></dt>
+<dd><p class="first">Default: 0.5</p>
+<p class="last">Border width used for drawing graphs.</p>
+</dd>
 <dt><tt class="docutils literal">plot_bg_color</tt></dt>
 <dd><p class="first">Default: 262626</p>
 <p class="last">Background color used for drawing graphs.</p>
@@ -14623,6 +14638,11 @@ specified.</p>
 <dt><tt class="docutils literal">plot_color</tt></dt>
 <dd><p class="first">Default: FFFFFF</p>
 <p class="last">Color used for drawing graphs.</p>
+</dd>
+<dt><tt class="docutils literal">vidscale</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Scale the text and graphs with the video.
+<tt class="docutils literal">no</tt> tries to keep the sizes constant.</p>
 </dd>
 </dl>
 <p>Note: colors are given as hexadecimal values and use ASS tag order: BBGGRR
