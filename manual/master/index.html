@@ -10452,11 +10452,22 @@ read information from this filter instead.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">gpu=...</span></tt></dt>
-<dd><p class="first">Convert video to RGB using the OpenGL renderer normally used with
-<tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. This requires that the EGL implementation supports off-screen
-rendering on the default display. (This is the case with Mesa.)</p>
+<dd><p class="first">Convert video to RGB using the Vulkan or OpenGL renderer normally used with
+<tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. In case of OpenGL, this requires that the EGL implementation
+supports off-screen rendering on the default display. (This is the case with
+Mesa.)</p>
 <p>Sub-options:</p>
 <dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">api=&lt;type&gt;</span></tt></dt>
+<dd><p class="first">The value <tt class="docutils literal">type</tt> selects the rendering API. You can also pass
+<tt class="docutils literal">help</tt> to get a complete list of compiled in backends.</p>
+<dl class="last docutils">
+<dt>egl</dt>
+<dd>EGL (default if available)</dd>
+<dt>vulkan</dt>
+<dd>Vulkan</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">w=&lt;pixels&gt;</span></tt>, <tt class="docutils literal"><span class="pre">h=&lt;pixels&gt;</span></tt></dt>
 <dd>Size of the output in pixels (default: 0). If not positive, this will
 use the size of the first filtered input frame.</dd>
@@ -13024,21 +13035,29 @@ video backends update them only when the pointer hovers the window.</dd>
 The extradata is returned as a string as-is. This property is not
 available for non-ASS subtitle tracks.</dd>
 <dt><tt class="docutils literal"><span class="pre">sub-text</span></tt></dt>
-<dd>The current subtitle text regardless of sub visibility. Formatting is
+<dd><p class="first">The current subtitle text regardless of sub visibility. Formatting is
 stripped. If the subtitle is not text-based (i.e. DVD/BD subtitles), an
-empty string is returned.</dd>
-<dt><tt class="docutils literal"><span class="pre">sub-text-ass</span></tt></dt>
+empty string is returned.</p>
+<p>This has sub-properties for different formats:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">sub-text/ass</span></tt></dt>
 <dd><p class="first">Like <tt class="docutils literal"><span class="pre">sub-text</span></tt>, but return the text in ASS format. Text subtitles in
 other formats are converted. For native ASS subtitles, events that do
 not contain any text (but vector drawings etc.) are not filtered out. If
 multiple events match with the current playback time, they are concatenated
 with line breaks. Contains only the &quot;Text&quot; part of the events.</p>
 <p class="last">This property is not enough to render ASS subtitles correctly, because ASS
-header and per-event metadata are not returned. You likely need to do
-further filtering on the returned string to make it useful.</p>
+header and per-event metadata are not returned. Use <tt class="docutils literal"><span class="pre">/ass-full</span></tt> for that.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">sub-text/ass-full</span></tt></dt>
+<dd>Like <tt class="docutils literal"><span class="pre">sub-text-ass</span></tt>, but return the full event with all fields, formatted as
+lines in a .ass text file. Use with <tt class="docutils literal"><span class="pre">sub-ass-extradata</span></tt> for style information.</dd>
+</dl>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">sub-text-ass</span></tt> (deprecated)</dt>
+<dd>Deprecated alias for <tt class="docutils literal"><span class="pre">sub-text/ass</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">secondary-sub-text</span></tt></dt>
-<dd>Same as <tt class="docutils literal"><span class="pre">sub-text</span></tt>, but for the secondary subtitles.</dd>
+<dd>Same as <tt class="docutils literal"><span class="pre">sub-text</span></tt> (with the same sub-properties), but for the secondary subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">sub-start</span></tt></dt>
 <dd><p class="first">The current subtitle start time (in seconds). If there's multiple current
 subtitles, returns the first start time. If no current subtitle is present
