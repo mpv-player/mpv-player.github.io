@@ -5230,6 +5230,16 @@ all. The default is <tt class="docutils literal">auto</tt>, which behaves like <
 <tt class="docutils literal"><span class="pre">--input-ar-delay</span></tt> and <tt class="docutils literal"><span class="pre">--input-ar-rate</span></tt> (default: no).
 Whether this applies depends on the VO backend and how it handles
 keyboard input. Does not apply to terminal input.</dd>
+<dt><tt class="docutils literal"><span class="pre">--native-touch=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">(Windows only)
+For platforms which send emulated mouse inputs for touch-unaware clients,
+such as Windows, use system native touch events, instead of receiving them
+as emulated mouse events (default: no). This is required for multi-touch
+support for these platforms.</p>
+<p class="last">Note that this option has no effect on other platforms: either native touch
+is not supported by mpv, or the platform does not give an option to receive
+emulated mouse inputs (so native touch is always enabled, e.g. Wayland).</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-ar-delay</span></tt></dt>
 <dd>Delay in milliseconds before we start to autorepeat a key (default: 200).
 Set it to 0 to disable.</dd>
@@ -5386,6 +5396,12 @@ and with this option disabled. Note that <tt class="docutils literal"><span clas
 disabled by default in libmpv as well - it should be enabled if you want
 the mpv default key bindings.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--input-touch-emulate-mouse=&lt;yes|no&gt;</span></tt></dt>
+<dd>When multi-touch support is enabled (either required by the platform,
+or enabled by <tt class="docutils literal"><span class="pre">--native-touch</span></tt>), emulate mouse move and button presses
+for the touch events (default: yes). This is useful for compatibility
+for mouse key bindings and scripts which read mouse positions for platforms
+which do not support <tt class="docutils literal"><span class="pre">--native-touch=no</span></tt> (e.g. Wayland).</dd>
 </dl>
 </div>
 <div class="section" id="osd">
@@ -13018,7 +13034,7 @@ polling.</p>
 <dd>Read-only - mpv's window id. May not always be available, i.e due to window
 not being opened yet or not being supported by the VO.</dd>
 <dt><tt class="docutils literal"><span class="pre">mouse-pos</span></tt></dt>
-<dd><p class="first">Read-only - last known mouse position, normalizd to OSD dimensions.</p>
+<dd><p class="first">Read-only - last known mouse position, normalized to OSD dimensions.</p>
 <p>Has the following sub-properties (which can be read as <tt class="docutils literal">MPV_FORMAT_NODE</tt>
 or Lua table with <tt class="docutils literal">mp.get_property_native</tt>):</p>
 <dl class="last docutils">
@@ -13029,6 +13045,31 @@ or Lua table with <tt class="docutils literal">mp.get_property_native</tt>):</p>
 coordinates should be ignored when this value is false, because the
 video backends update them only when the pointer hovers the window.</dd>
 </dl>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">touch-pos</span></tt></dt>
+<dd><p class="first">Read-only - last known touch point positions, normalized to OSD dimensions.</p>
+<p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based touch
+point index. Whenever a new finger touches the screen, a new touch point is
+added to the list of touch points with the smallest unused <tt class="docutils literal">N</tt> available.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">touch-pos/count</span></tt></dt>
+<dd>Number of active touch points.</dd>
+<dt><tt class="docutils literal"><span class="pre">touch-pos/N/x</span></tt>, <tt class="docutils literal"><span class="pre">touch-pos/N/y</span></tt></dt>
+<dd>Position of the Nth touch point.</dd>
+<dt><tt class="docutils literal"><span class="pre">touch-pos/N/id</span></tt></dt>
+<dd>Unique identifier of the touch point. This can be used to identify
+individual touch points when their indexes change.</dd>
+</dl>
+<p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+the following contents:</p>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_ARRAY
+    MPV_FORMAT_NODE_MAP (for each touch point)
+        &quot;x&quot;        MPV_FORMAT_INT64
+        &quot;y&quot;        MPV_FORMAT_INT64
+        &quot;id&quot;       MPV_FORMAT_INT64
+</pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">sub-ass-extradata</span></tt></dt>
 <dd>The current ASS subtitle track's extradata. There is no formatting done.
@@ -14413,6 +14454,47 @@ Use <tt class="docutils literal">no</tt> to disable chapter display on hover. Ot
 <dd><p class="first">Default: no</p>
 <p class="last">Use a Unicode minus sign instead of an ASCII hyphen when displaying
 the remaining playback time.</p>
+</dd>
+<dt><tt class="docutils literal">background_color</tt></dt>
+<dd><p class="first">Default: #000000</p>
+<p class="last">Sets the background color of the OSC.</p>
+</dd>
+<dt><tt class="docutils literal">timecode_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the color of the timecode and seekbar, of the OSC.</p>
+</dd>
+<dt><tt class="docutils literal">title_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the color of the video title. Formatted as #RRGGBB.</p>
+</dd>
+<dt><tt class="docutils literal">time_pos_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the color of the timecode at hover position in the seekbar.</p>
+</dd>
+<dt><tt class="docutils literal">time_pos_outline_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the color of the timecode's outline at hover position in the seekbar.
+Also affects the timecode in the slimbox layout.</p>
+</dd>
+<dt><tt class="docutils literal">buttons_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the colors of the big buttons.</p>
+</dd>
+<dt><tt class="docutils literal">top_buttons_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the colors of the top buttons.</p>
+</dd>
+<dt><tt class="docutils literal">small_buttonsL_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the colors of the small buttons on the left in the box layout.</p>
+</dd>
+<dt><tt class="docutils literal">small_buttonsR_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">Sets the colors of the small buttons on the right in the box layout.</p>
+</dd>
+<dt><tt class="docutils literal">held_element_color</tt></dt>
+<dd><p class="first">Default: #999999</p>
+<p class="last">Sets the colors of the elements that are being pressed or held down.</p>
 </dd>
 </dl>
 </div>
