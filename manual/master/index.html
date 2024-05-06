@@ -7203,6 +7203,56 @@ Instead of 8bit integer framebuffer a 16bit half-float framebuffer is
 requested.</p>
 <p class="last">macOS and cocoa-cb only.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--cocoa-cb-output-csp=&lt;csp&gt;</span></tt></dt>
+<dd><p class="first">This sets the color space of the layer to activate the macOS color
+transformation. Depending on the color space used the system's EDR (HDR)
+support will be activated. To get correct results, this needs to be set to
+the color primaries/transfer characteristics of the VO target. It is recommended
+to use this switch together with <tt class="docutils literal"><span class="pre">--target-trc</span></tt> and <tt class="docutils literal"><span class="pre">--target-prim</span></tt>.</p>
+<p><tt class="docutils literal">&lt;csp&gt;</tt> can be one of the following:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">auto:</th><td class="field-body">Sets the color space to the icc profile of the
+screen (default).</td>
+</tr>
+<tr class="field"><th class="field-name">display-p3:</th><td class="field-body">DCI P3 primaries, a D65 white point and the sRGB
+transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">display-p3-hlg:</th><td class="field-body">DCI P3 primaries, a D65 white point and the Hybrid
+Log-Gamma (HLG) transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">display-p3-pq:</th><td class="field-body">DCI P3 primaries, a D65 white point and the Perceptual
+Quantizer (PQ) transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name" colspan="2">display-p3-linear:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body">DCI P3 primaries, a D65 white point and linear transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">dci-p3:</th><td class="field-body">DCI P3 color space.</td>
+</tr>
+<tr class="field"><th class="field-name">bt.2020:</th><td class="field-body">ITU BT.2020 color space.</td>
+</tr>
+<tr class="field"><th class="field-name">bt.2020-linear:</th><td class="field-body">ITU BT.2020 color space and linear transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">bt.2100-hlg:</th><td class="field-body">ITU BT.2100 and the Hybrid Log-Gamma (HLG) transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">bt.2100-pq:</th><td class="field-body">ITU BT.2100 and the Perceptual Quantizer (PQ) transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">bt.709:</th><td class="field-body">ITU BT.709 color space.</td>
+</tr>
+<tr class="field"><th class="field-name">srgb:</th><td class="field-body">sRGB colorimetry and non-linear transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">srgb-linear:</th><td class="field-body">Same as sRGB but linear transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">rgb-linear:</th><td class="field-body">RGB and linear transfer function.</td>
+</tr>
+<tr class="field"><th class="field-name">adobe:</th><td class="field-body">Adobe RGB (1998) color space.</td>
+</tr>
+</tbody>
+</table>
+<p class="last">macOS and cocoa-cb only.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--macos-title-bar-appearance=&lt;appearance&gt;</span></tt></dt>
 <dd><p class="first">Sets the appearance of the title bar (default: auto). Not all combinations
 of appearances and <tt class="docutils literal"><span class="pre">--macos-title-bar-material</span></tt> materials make sense or
@@ -11287,8 +11337,11 @@ backwards.</p>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">sub-seek</span> &lt;skip&gt; &lt;flags&gt;</tt></dt>
-<dd><p class="first">Seek to the next (skip set to 1) or the previous (skip set to -1) subtitle.
-This is similar to <tt class="docutils literal"><span class="pre">sub-step</span></tt>, except that it seeks video and audio
+<dd><p class="first">Change video and audio position such that the subtitle event after
+<tt class="docutils literal">&lt;skip&gt;</tt> subtitle events is displayed. For example, <tt class="docutils literal"><span class="pre">sub-seek</span> 1</tt> skips
+to the next subtitle, <tt class="docutils literal"><span class="pre">sub-seek</span> <span class="pre">-1</span></tt> skips to the previous subtitles, and
+<tt class="docutils literal"><span class="pre">sub-seek</span> 0</tt> seeks to the beginning of the current subtitle.</p>
+<p>This is similar to <tt class="docutils literal"><span class="pre">sub-step</span></tt>, except that it seeks video and audio
 instead of adjusting the subtitle delay.</p>
 <p>Secondary argument:</p>
 <dl class="docutils">
@@ -11299,7 +11352,7 @@ instead of adjusting the subtitle delay.</p>
 </dl>
 <p class="last">For embedded subtitles (like with Matroska), this works only with subtitle
 events that have already been displayed, or are within a short prefetch
-range.</p>
+range. See <a class="reference internal" href="#cache">Cache</a> for details on how to control the available prefetch range.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">print-text</span> &lt;text&gt;</tt></dt>
 <dd>Print text to stdout. The string can contain properties (see
@@ -11316,11 +11369,11 @@ value as <tt class="docutils literal"><span class="pre">--osd-duration</span></t
 <dd>The minimum OSD level to show the text at (see <tt class="docutils literal"><span class="pre">--osd-level</span></tt>).</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">expand-text</span> &lt;string&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">expand-text</span> &lt;text&gt;</tt></dt>
 <dd>Property-expand the argument and return the expanded string. This can be
 used only through the client API or from a script using
 <tt class="docutils literal">mp.command_native</tt>. (see <a class="reference internal" href="#property-expansion">Property Expansion</a>).</dd>
-<dt><tt class="docutils literal"><span class="pre">expand-path</span> &quot;&lt;string&gt;&quot;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">expand-path</span> &quot;&lt;text&gt;&quot;</tt></dt>
 <dd><p class="first">Expand a path's double-tilde placeholders into a platform-specific path.
 As <tt class="docutils literal"><span class="pre">expand-text</span></tt>, this can only be used through the client API or from
 a script using <tt class="docutils literal">mp.command_native</tt>.</p>
@@ -11329,6 +11382,31 @@ a script using <tt class="docutils literal">mp.command_native</tt>.</p>
 <p><tt class="docutils literal"><span class="pre">mp.osd_message(mp.command_native({&quot;expand-path&quot;,</span> <span class="pre">&quot;~~home/&quot;}))</span></tt></p>
 <p class="last">This line of Lua would show the location of the user's mpv
 configuration directory on the OSD.</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">normalize-path</span> &lt;filename&gt;</tt></dt>
+<dd><p class="first">Return a canonical representation of the path <tt class="docutils literal">filename</tt> by converting it
+to an absolute path, removing consecutive slashes, removing <tt class="docutils literal">.</tt>
+components, resolving <tt class="docutils literal">..</tt> components, and converting slashes to
+backslashes on Windows. Symlinks are not resolved unless the platform is
+Unix-like and one of the path components is <tt class="docutils literal">..</tt>. If <tt class="docutils literal">filename</tt> is a
+URL, it is returned unchanged. This can only be used through the client API
+or from a script using <tt class="docutils literal">mp.command_native</tt>.</p>
+<div class="admonition admonition-example last">
+<p class="first admonition-title">Example</p>
+<p><tt class="docutils literal"><span class="pre">mp.osd_message(mp.command_native({&quot;normalize-path&quot;,</span> <span class="pre">&quot;/foo//./bar&quot;}))</span></tt></p>
+<p class="last">This line of Lua prints &quot;/foo/bar&quot; on the OSD.</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">escape-ass</span> &lt;text&gt;</tt></dt>
+<dd><p class="first">Modify <tt class="docutils literal">text</tt> so that commands and functions that interpret ASS tags,
+such as <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> and <tt class="docutils literal">mp.create_osd_overlay</tt>, will display it
+verbatim, and return it. This can only be used through the client API or
+from a script using <tt class="docutils literal">mp.command_native</tt>.</p>
+<div class="admonition admonition-example last">
+<p class="first admonition-title">Example</p>
+<p><tt class="docutils literal"><span class="pre">mp.osd_message(mp.command_native({&quot;escape-ass&quot;,</span> &quot;foo <span class="pre">{bar}&quot;}))</span></tt></p>
+<p class="last">This line of Lua prints &quot;foo \{bar}&quot; on the OSD.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">show-progress</span></tt></dt>
@@ -11713,17 +11791,6 @@ Its results also depend on the used libass version.</p>
 <p class="last">Always use named arguments (<tt class="docutils literal">mpv_command_node()</tt>). Lua scripts should
 use the <tt class="docutils literal">mp.create_osd_overlay()</tt> helper instead of invoking this
 command directly.</p>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">escape-ass</span> &lt;text&gt;</tt></dt>
-<dd><p class="first">Modify <tt class="docutils literal">text</tt> so that commands and functions that interpret ASS tags,
-such as <tt class="docutils literal"><span class="pre">osd-overlay</span></tt> and <tt class="docutils literal">mp.create_osd_overlay</tt>, will display it
-verbatim, and return it. This can only be used through the client API or
-from a script using <tt class="docutils literal">mp.command_native</tt>.</p>
-<div class="admonition admonition-example last">
-<p class="first admonition-title">Example</p>
-<p><tt class="docutils literal"><span class="pre">mp.osd_message(mp.command_native({&quot;escape-ass&quot;,</span> &quot;foo <span class="pre">{bar}&quot;}))</span></tt></p>
-<p class="last">This line of Lua prints &quot;foo \{bar}&quot; on the OSD.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">script-message</span> [&lt;arg1&gt; [&lt;arg2&gt; <span class="pre">[...]]]</span></tt></dt>
@@ -12637,6 +12704,10 @@ range. Missing if unavailable.</p>
 <p><tt class="docutils literal"><span class="pre">raw-input-rate</span></tt> is the estimated input rate of the network layer (or any
 other byte-oriented input layer) in bytes per second. May be inaccurate or
 missing.</p>
+<p><tt class="docutils literal"><span class="pre">ts-per-stream</span></tt> is an array containing an entry for each stream type: video,
+audio, and subtitle. For each stream type, the details for the demuxer cache
+for that stream type are available as <tt class="docutils literal"><span class="pre">cache-duration</span></tt>, <tt class="docutils literal"><span class="pre">reader-pts</span></tt> and
+<tt class="docutils literal"><span class="pre">cache-end</span></tt>.</p>
 <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
 or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
 the following contents:</p>
@@ -12654,6 +12725,12 @@ MPV_FORMAT_NODE_MAP
     &quot;reader-pts&quot;        MPV_FORMAT_DOUBLE
     &quot;cache-duration&quot;    MPV_FORMAT_DOUBLE
     &quot;raw-input-rate&quot;    MPV_FORMAT_INT64
+    &quot;ts-per-stream&quot;     MPV_FORMAT_NODE_ARRAY
+        MPV_FORMAT_NODE_MAP
+              &quot;type&quot;            MPV_FORMAT_STRING
+              &quot;cache-duration&quot;  MPV_FORMAT_DOUBLE
+              &quot;reader-pts&quot;      MPV_FORMAT_DOUBLE
+              &quot;cache-end&quot;       MPV_FORMAT_DOUBLE
 </pre>
 <p>Other fields (might be changed or removed in the future):</p>
 <dl class="last docutils">
