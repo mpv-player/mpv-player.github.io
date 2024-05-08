@@ -15799,9 +15799,8 @@ stays open and the user can input more text.</dd>
 <dd>A callback invoked when the console is shown. This can be used to
 present a list of options with <tt class="docutils literal">input.set_log()</tt>.</dd>
 <dt><tt class="docutils literal">edited</tt></dt>
-<dd>A callback invoked when the text changes. This can be used to filter a
-list of options based on what the user typed with <tt class="docutils literal">input.set_log()</tt>,
-like dmenu does. The first argument is the text in the console.</dd>
+<dd>A callback invoked when the text changes. The first argument is the text
+in the console.</dd>
 <dt><tt class="docutils literal">complete</tt></dt>
 <dd>A callback invoked when the user presses TAB. The first argument is the
 text before the cursor. The callback should return a table of the string
@@ -15851,6 +15850,41 @@ input.set_log({
     }
 })
 </pre>
+</dd>
+<dt><tt class="docutils literal">input.select(table)</tt></dt>
+<dd><p class="first">Specify a list of items that are presented to the user for selection. The
+user can type part of the desired item and/or navigate them with
+keybindings: <tt class="docutils literal">Down</tt> and <tt class="docutils literal">Ctrl+n</tt> go down, <tt class="docutils literal">Up</tt> and <tt class="docutils literal">Ctrl+p</tt> go up,
+<tt class="docutils literal">Page down</tt> and <tt class="docutils literal">Ctrl+f</tt> scroll down one page, and <tt class="docutils literal">Page up</tt> and
+<tt class="docutils literal">Ctrl+b</tt> scroll up one page.</p>
+<p>The following entries of <tt class="docutils literal">table</tt> are read:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">prompt</tt></dt>
+<dd>The string to be displayed before the input field.</dd>
+<dt><tt class="docutils literal">items</tt></dt>
+<dd>The table of the entries to choose from.</dd>
+<dt><tt class="docutils literal">default_item</tt></dt>
+<dd>The 1-based integer index of the preselected item.</dd>
+<dt><tt class="docutils literal">submit</tt></dt>
+<dd>The callback invoked when the user presses Enter. The first argument is
+the 1-based index of the selected item. You can close the console from
+within the callback by calling <tt class="docutils literal">input.terminate()</tt>.</dd>
+</dl>
+<p>Example:</p>
+<blockquote class="last">
+<pre class="literal-block">
+input.select({
+    items = {
+        &quot;First playlist entry&quot;,
+        &quot;Second playlist entry&quot;,
+    },
+    submit = function (id)
+        mp.commandv(&quot;playlist-play-index&quot;, id - 1)
+        input.terminate()
+    end,
+})
+</pre>
+</blockquote>
 </dd>
 </dl>
 </div>
@@ -16028,7 +16062,8 @@ meta-paths like <tt class="docutils literal"><span class="pre">~~/foo</span></tt
 <p><tt class="docutils literal">mp.add_hook(type, priority, fn(hook))</tt></p>
 <p><tt class="docutils literal">mp.options.read_options(obj [, identifier [, <span class="pre">on_update]])</span></tt> (types:
 string/boolean/number)</p>
-<p><tt class="docutils literal">mp.input.get(obj)</tt> (LE)</p>
+<p><tt class="docutils literal">mp.input.get(obj)</tt></p>
+<p><tt class="docutils literal">mp.input.select(obj)</tt></p>
 <p><tt class="docutils literal">mp.input.terminate()</tt></p>
 <p><tt class="docutils literal">mp.input.log(message, style)</tt></p>
 <p><tt class="docutils literal">mp.input.log_error(message)</tt></p>
