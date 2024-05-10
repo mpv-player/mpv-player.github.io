@@ -1362,11 +1362,11 @@ profile name.</p>
 <h2>Track Selection</h2>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--alang=&lt;languagecode[,languagecode,...]&gt;</span></tt></dt>
-<dd><p class="first">Specify a priority list of audio languages to use, as IETF language tags.
-Equivalent ISO 639-1 two-letter and ISO 639-2 three-letter codes are treated the same.
-The first tag in the list whose language matches a track in the file will be used.
-A track that matches more subtags will be preferred over one that matches fewer,
-with preference given to earlier subtags over later ones. See also <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
+<dd><p class="first">Specify a prioritized list of audio languages to use, as IETF language tags.
+Equivalent ISO 639-1 two-letter and ISO 639-2 three-letter codes are treated
+the same. The first tag in the list that matches track's language in the file
+will be used. A track that matches more subtags will be preferred over one
+that matches fewer. See also <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
 <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition admonition-examples last">
 <p class="first admonition-title">Examples</p>
@@ -13402,6 +13402,9 @@ corresponding information stored in the source file.</dd>
 information, the per-album values will be copied from the per-track
 values currently. It's possible that future mpv versions will make
 these properties unavailable instead in this case.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/dolby-vision-profile</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/dolby-vision-level</span></tt></dt>
+<dd>Dolby Vision profile and level. May not be available if the container
+does not provide this information.</dd>
 </dl>
 <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
 or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -13445,6 +13448,8 @@ MPV_FORMAT_NODE_ARRAY
         &quot;replaygain-track-gain&quot; MPV_FORMAT_DOUBLE
         &quot;replaygain-album-peak&quot; MPV_FORMAT_DOUBLE
         &quot;replaygain-album-gain&quot; MPV_FORMAT_DOUBLE
+        &quot;dolby-vision-profile&quot; MPV_FORMAT_INT64
+        &quot;dolby-vision-level&quot; MPV_FORMAT_INT64
 </pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">current-tracks/...</span></tt></dt>
