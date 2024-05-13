@@ -247,6 +247,36 @@ corresponding adjustment.)</p>
 <dt>Command + f (macOS only)</dt>
 <dd>Toggle fullscreen (see also <tt class="docutils literal"><span class="pre">--fs</span></tt>).</dd>
 </dl>
+<p>(The following keybindings open a selector in the console that lets you choose
+from a list of items by typing part of the desired item and/or by navigating
+them with keybindings: <tt class="docutils literal">Down</tt> and <tt class="docutils literal">Ctrl+n</tt> go down, <tt class="docutils literal">Up</tt> and <tt class="docutils literal">Ctrl+p</tt> go
+up, <tt class="docutils literal">Page down</tt> and <tt class="docutils literal">Ctrl+f</tt> scroll down one page, and <tt class="docutils literal">Page up</tt> and
+<tt class="docutils literal">Ctrl+b</tt> scroll up one page.)</p>
+<dl class="docutils">
+<dt>g-p</dt>
+<dd>Select a playlist entry.</dd>
+<dt>g-s</dt>
+<dd>Select a subtitle track.</dd>
+<dt>g-S</dt>
+<dd>Select a secondary subtitle track.</dd>
+<dt>g-a</dt>
+<dd>Select an audio track.</dd>
+<dt>g-v</dt>
+<dd>Select a video track.</dd>
+<dt>g-t</dt>
+<dd>Select a track of any type.</dd>
+<dt>g-c</dt>
+<dd>Select a chapter.</dd>
+<dt>g-l</dt>
+<dd>Select a subtitle line to seek to. This currently requires <tt class="docutils literal">ffmpeg</tt> in
+<tt class="docutils literal">PATH</tt>, or in the same folder as mpv on Windows.</dd>
+<dt>g-d</dt>
+<dd>Select an audio device.</dd>
+<dt>g-b</dt>
+<dd>Select a defined input binding.</dd>
+<dt>g-r</dt>
+<dd>Show the values of all properties.</dd>
+</dl>
 <p>(The following keys are valid if you have a keyboard with multimedia keys.)</p>
 <dl class="docutils">
 <dt>PAUSE</dt>
@@ -2275,6 +2305,9 @@ console by default, and <tt class="docutils literal">ESC</tt> to hide it again.<
 <dd>Enable the builtin script that does auto profiles (default: auto). See
 <a class="reference internal" href="#conditional-auto-profiles">Conditional auto profiles</a> for details. <tt class="docutils literal">auto</tt> will load the script,
 but immediately unload it if there are no conditional profiles.</dd>
+<dt><tt class="docutils literal"><span class="pre">--load-select=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable the builtin script that lets you select from lists of items (default:
+yes). By default, its keybindings start with the <tt class="docutils literal">g</tt> key.</dd>
 <dt><tt class="docutils literal"><span class="pre">--player-operation-mode=&lt;cplayer|pseudo-gui&gt;</span></tt></dt>
 <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
 options are changed. This option should not normally be used directly, but
@@ -13820,6 +13853,8 @@ it could change in the future).</dd>
 automatically loaded profiles, file-dir configs, and other cases. It
 means the option value will be restored to the value before playback
 start when playback ends.</dd>
+<dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/expects-file</span></tt></dt>
+<dd>Whether the option takes file paths as arguments.</dd>
 <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/default-value</span></tt></dt>
 <dd>The default value of the option. May not always be available.</dd>
 <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/min</span></tt>, <tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/max</span></tt></dt>
@@ -14384,10 +14419,6 @@ the OSC show up. Default pre-0.21.0 was 3.</p>
 <dt><tt class="docutils literal">scalefullscreen</tt></dt>
 <dd><p class="first">Default: 1.0</p>
 <p class="last">Scale factor of the OSC when fullscreen</p>
-</dd>
-<dt><tt class="docutils literal">scaleforcedwindow</tt></dt>
-<dd><p class="first">Default: 2.0</p>
-<p class="last">Scale factor of the OSC when rendered on a forced (dummy) window</p>
 </dd>
 <dt><tt class="docutils literal">vidscale</tt></dt>
 <dd><p class="first">Default: yes</p>
@@ -15872,8 +15903,9 @@ keybindings: <tt class="docutils literal">Down</tt> and <tt class="docutils lite
 <dd>The 1-based integer index of the preselected item.</dd>
 <dt><tt class="docutils literal">submit</tt></dt>
 <dd>The callback invoked when the user presses Enter. The first argument is
-the 1-based index of the selected item. You can close the console from
-within the callback by calling <tt class="docutils literal">input.terminate()</tt>.</dd>
+the 1-based index of the selected item. Unlike with <tt class="docutils literal">input.get()</tt>, the
+console is automatically closed on submit without having to call
+<tt class="docutils literal">input.terminate()</tt>.</dd>
 </dl>
 <p>Example:</p>
 <blockquote class="last">
@@ -15885,7 +15917,6 @@ input.select({
     },
     submit = function (id)
         mp.commandv(&quot;playlist-play-index&quot;, id - 1)
-        input.terminate()
     end,
 })
 </pre>
