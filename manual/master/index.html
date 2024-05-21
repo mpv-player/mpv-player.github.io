@@ -3649,7 +3649,8 @@ rendering. Use with care, or use <tt class="docutils literal"><span class="pre">
 <dt><tt class="docutils literal"><span class="pre">--sub-scale-by-window=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Whether to scale subtitles with the window size (default: yes). If this is
 disabled, changing the window size won't change the subtitle font size.</p>
-<p class="last">Like <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>, this can break ASS subtitles.</p>
+<p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is set
+high enough).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Make the subtitle font size relative to the window, instead of the video.
@@ -5582,15 +5583,22 @@ Details see <tt class="docutils literal"><span class="pre">--osd-align-x</span><
 <dt><tt class="docutils literal"><span class="pre">--osd-scale=&lt;factor&gt;</span></tt></dt>
 <dd>OSD font size multiplier, multiplied with <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> value.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-scale-by-window=&lt;yes|no&gt;</span></tt></dt>
-<dd>Whether to scale the OSD with the window size (default: yes). If this is
+<dd><p class="first">Whether to scale the OSD with the window size (default: yes). If this is
 disabled, <tt class="docutils literal"><span class="pre">--osd-font-size</span></tt> and other OSD options that use scaled pixels
 are always in actual pixels. The effect is that changing the window size
-won't change the OSD font size.</dd>
+won't change the OSD font size.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">For scripts which draw user interface elements, it is recommended to
+respect the value of this option when deciding whether the elements
+are scaled with window size or not.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-shadow-color=&lt;color&gt;</span></tt></dt>
 <dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD shadow.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
-<p class="last">ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt> is specified (or more exactly: when
+<p class="last">Ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt> is specified (or more exactly: when
 that option is not set to completely transparent).</p>
 </div>
 </dd>
@@ -7456,6 +7464,8 @@ runtime (i.e. if the device is rotated), via the surfaceChanged callback.</p>
 The value <tt class="docutils literal">auto</tt> (the default) selects the GPU context with the default autoprobe
 order. You can also pass <tt class="docutils literal">help</tt> to get a complete list of compiled in backends
 (sorted by the default autoprobe order).</p>
+<p>Note that the default GPU context is subject to change, and must not be relied upon.
+If a certain GPU context needs to be used, it must be explicitly specified.</p>
 <dl class="last docutils">
 <dt>auto</dt>
 <dd>auto-select (default). Note that this context must be used alone and
@@ -7500,7 +7510,9 @@ manager.</dd>
 <dd><p class="first">Controls which type of graphics APIs will be accepted:</p>
 <dl class="last docutils">
 <dt>auto</dt>
-<dd>Use any available API (default)</dd>
+<dd>Use any available API (default). Note that the default GPU API used for this
+value is subject to change, and must not be relied upon. If a certain GPU API
+needs to be used, it must be explicitly specified.</dd>
 <dt>opengl</dt>
 <dd>Allow only OpenGL (requires OpenGL 2.1+ or GLES 2.0+)</dd>
 <dt>vulkan</dt>
@@ -8496,8 +8508,11 @@ syntax is:</p>
 in the list.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See <tt class="docutils literal"><span class="pre">--ao=help</span></tt> for a list of compiled-in audio output drivers sorted by
+<p>See <tt class="docutils literal"><span class="pre">--ao=help</span></tt> for a list of compiled-in audio output drivers sorted by
 autoprobe order.</p>
+<p class="last">Note that the default audio output driver is subject to change, and must
+not be relied upon. If a certain AO needs to be used, it must be
+explicitly specified.</p>
 </div>
 <p>Available audio output drivers are:</p>
 <dl class="docutils">
@@ -8785,10 +8800,13 @@ in the list.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
-<p class="last">The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, which is the default. All
+<p>The recommended output driver is <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, which is the default. All
 other drivers are for compatibility or special purposes. If the default
 does not work, it will fallback to other drivers (in the same order as
 listed by <tt class="docutils literal"><span class="pre">--vo=help</span></tt>).</p>
+<p class="last">Note that the default video output driver is subject to change, and must
+not be relied upon. If a certain VO needs to be used (e.g. for <tt class="docutils literal">libmpv</tt>
+rendering API), it must be explicitly specified.</p>
 </div>
 <p>Available video output drivers are:</p>
 <dl class="docutils">
@@ -11117,13 +11135,21 @@ file, even if the playlist was not empty before running this command.)</dd>
 <tt class="docutils literal"><span class="pre">insert-at-play</span></tt> actions. When used with those actions, the new item will
 be inserted at the index position in the playlist, or appended to the end if
 index is less than 0 or greater than the size of the playlist. This argument
-will be ignored for all other actions.</p>
-<p class="last">The fourth argument is a list of options and values which should be set
+will be ignored for all other actions. This argument is added in mpv 0.38.0.</p>
+<p>The fourth argument is a list of options and values which should be set
 while the file is playing. It is of the form <tt class="docutils literal"><span class="pre">opt1=value1,opt2=value2,..</span></tt>.
 When using the client API, this can be a <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt> (or a Lua
 table), however the values themselves must be strings currently. These
 options are set during playback, and restored to the previous value at end
 of playback (see <a class="reference internal" href="#per-file-options">Per-File Options</a>).</p>
+<div class="admonition warning last">
+<p class="first admonition-title">Warning</p>
+<p class="last">Since mpv 0.38.0, an insertion index argument is added as the third argument.
+This breaks all existing uses of this command which make use of the argument
+to include the list of options to be set while the file is playing. To address
+this problem, the third argument now needs to be set to -1 if the fourth
+argument needs to be used.</p>
+</div>
 </dd>
 <dt><tt class="docutils literal">loadlist &lt;url&gt; [&lt;flags&gt; <span class="pre">[&lt;index&gt;]]</span></tt></dt>
 <dd><p class="first">Load the given playlist file or URL (like <tt class="docutils literal"><span class="pre">--playlist</span></tt>).</p>
@@ -12288,6 +12314,9 @@ This is the default for <tt class="docutils literal">input.conf</tt> commands.</
 This prefix forces enabling key repeat in any case. For a list of commands:
 the first command determines the repeatability of the whole list (up to and
 including version 0.33 - a list was always repeatable).</dd>
+<dt><tt class="docutils literal">nonrepeatable</tt></dt>
+<dd>For some commands, keeping a key pressed runs the command repeatedly.
+This prefix forces disabling key repeat in any case.</dd>
 <dt><tt class="docutils literal">async</tt></dt>
 <dd>Allow asynchronous execution (if possible). Note that only a few commands
 will support this (usually this is explicitly documented). Some commands
@@ -14421,9 +14450,11 @@ the OSC show up. Default pre-0.21.0 was 3.</p>
 <p class="last">Scale factor of the OSC when fullscreen</p>
 </dd>
 <dt><tt class="docutils literal">vidscale</tt></dt>
-<dd><p class="first">Default: yes</p>
-<p class="last">Scale the OSC with the video
-<tt class="docutils literal">no</tt> tries to keep the OSC size constant as much as the window size allows</p>
+<dd><p class="first">Default: auto</p>
+<p class="last">Scale the OSC with the video.
+<tt class="docutils literal">no</tt> tries to keep the OSC size constant as much as the window size allows.
+<tt class="docutils literal">auto</tt> scales the OSC with the OSD, which is scaled with the window or kept at a
+constant size, depending on the <tt class="docutils literal"><span class="pre">--osd-scale-by-window</span></tt> option.</p>
 </dd>
 <dt><tt class="docutils literal">valign</tt></dt>
 <dd><p class="first">Default: 0.8</p>
@@ -14842,9 +14873,11 @@ specified.</p>
 <p class="last">Color used for drawing graphs.</p>
 </dd>
 <dt><tt class="docutils literal">vidscale</tt></dt>
-<dd><p class="first">Default: yes</p>
+<dd><p class="first">Default: auto</p>
 <p class="last">Scale the text and graphs with the video.
-<tt class="docutils literal">no</tt> tries to keep the sizes constant.</p>
+<tt class="docutils literal">no</tt> tries to keep the sizes constant.
+<tt class="docutils literal">auto</tt> scales the text and graphs with the OSD, which is scaled with the
+window or kept at a constant size, depending on the <tt class="docutils literal"><span class="pre">--osd-scale-by-window</span></tt> option.</p>
 </dd>
 </dl>
 <p>Note: colors are given as hexadecimal values and use ASS tag order: BBGGRR
