@@ -3766,7 +3766,7 @@ Styles]</tt> / <tt class="docutils literal">[V4+ Styles]</tt> section of SSA/ASS
 <p class="last">Using this option may lead to incorrect subtitle rendering.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass-override=&lt;yes|no|force|scale|strip&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-ass-override=&lt;no|yes|scale|force|strip&gt;</span></tt></dt>
 <dd><p class="first">Control whether user style overrides should be applied. Note that all of
 these overrides try to be somewhat smart about figuring out whether or not
 a subtitle is considered a &quot;sign&quot;.</p>
@@ -3779,12 +3779,12 @@ overrides.</td>
 </tr>
 <tr class="field"><th class="field-name">yes:</th><td class="field-body">Apply all the <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt> style override options. Changing the
 default for any of these options can lead to incorrect subtitle
-rendering (default).</td>
+rendering.</td>
+</tr>
+<tr class="field"><th class="field-name">scale:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also apply <tt class="docutils literal"><span class="pre">--sub-scale</span></tt> (default).</td>
 </tr>
 <tr class="field"><th class="field-name">force:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also force all <tt class="docutils literal"><span class="pre">--sub-*</span></tt> options. Can break
 rendering easily.</td>
-</tr>
-<tr class="field"><th class="field-name">scale:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also apply <tt class="docutils literal"><span class="pre">--sub-scale</span></tt>.</td>
 </tr>
 <tr class="field"><th class="field-name">strip:</th><td class="field-body">Radically strip all ASS tags and styles from the subtitle. This
 is equivalent to the old <tt class="docutils literal"><span class="pre">--no-ass</span></tt> / <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> options.</td>
@@ -3794,7 +3794,7 @@ is equivalent to the old <tt class="docutils literal"><span class="pre">--no-ass
 <p class="last">This also controls some bitmap subtitle overrides, as well as HTML tags in
 formats like SRT, despite the name of the option.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--secondary-sub-ass-override=&lt;yes|no|force|scale|strip&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--secondary-sub-ass-override=&lt;no|yes|scale|force|strip&gt;</span></tt></dt>
 <dd><p class="first">Control whether user secondary substyle overrides should be applied. This
 works exactly like <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt>.</p>
 <p class="last">Default: strip.</p>
@@ -12569,9 +12569,10 @@ always exactly known, so this is an estimate.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">audio-pts</span></tt></dt>
 <dd><p class="first">Current audio playback position in current file in seconds. Unlike time-pos,
-this updates more often than once per frame. For audio-only files, it is
-mostly equivalent to time-pos, while for video-only files this property is
-not available.</p>
+this updates more often than once per frame. This is mostly equivalent to
+time-pos for audio-only files however it also takes into account the audio
+driver delay. This can lead to negative values in certain cases, so in
+general you probably want to simply use time-pos.</p>
 <p>This has a sub-property:</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">audio-pts/full</span></tt></dt>
