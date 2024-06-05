@@ -5291,6 +5291,11 @@ builtin key bindings, and keys which scripts bind using <tt class="docutils lite
 <dd>Enable loading of built-in key bindings during start-up (default: yes). This
 option is applied only during (lib)mpv initialization, and if disabled then it
 will not be not possible to enable them later. May be useful to libmpv clients.</dd>
+<dt><tt class="docutils literal"><span class="pre">--input-builtin-dragging=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable the built-in window-dragging behavior (default: yes). Setting it to no
+disables the built-in dragging behavior. Note that unlike the <tt class="docutils literal"><span class="pre">window-dragging</span></tt>
+option, this option only affects VOs which support the <tt class="docutils literal"><span class="pre">begin-vo-dragging</span></tt>
+command, and does not disable window dragging initialized with the command.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt></dt>
 <dd>Prints all commands that can be bound to keys.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-commands=&lt;cmd1,cmd2,...&gt;</span></tt></dt>
@@ -5378,8 +5383,7 @@ whitespace). This is not a bug.</p>
 <dd>Enable/disable SDL2 Gamepad support. Disabled by default.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-cursor=&lt;yes|no&gt;</span></tt></dt>
 <dd>Permit mpv to receive pointer events reported by the video output
-driver. Necessary to use the OSC, or to select the buttons in DVD menus.
-Support depends on the VO in use.</dd>
+driver. Necessary to use the OSC. Support depends on the VO in use.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-cursor-passthrough=&lt;yes|no&gt;</span></tt></dt>
 <dd>Tell the backend windowing system to allow pointer events to passthrough
 the mpv window. This allows windows under mpv to instead receive pointer
@@ -5436,6 +5440,10 @@ or enabled by <tt class="docutils literal"><span class="pre">--native-touch</spa
 for the touch events (default: yes). This is useful for compatibility
 for mouse key bindings and scripts which read mouse positions for platforms
 which do not support <tt class="docutils literal"><span class="pre">--native-touch=no</span></tt> (e.g. Wayland).</dd>
+<dt><tt class="docutils literal"><span class="pre">--input-dragging-deadzone=&lt;N&gt;</span></tt></dt>
+<dd>Begin the built-in window dragging when the mouse moves outside a deadzone of
+<tt class="docutils literal">N</tt> pixels while the mouse button is being held down (default: 3). This only
+affects VOs which support the <tt class="docutils literal"><span class="pre">begin-vo-dragging</span></tt> command.</dd>
 </dl>
 </div>
 <div class="section" id="osd">
