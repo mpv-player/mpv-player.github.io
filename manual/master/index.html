@@ -11897,13 +11897,16 @@ included), with the following arguments:</p>
 <p>The 5th argument is only set if no modifiers are present (using the shift
 key with a letter is normally not emitted as having a modifier, and results
 in upper case text instead, but some backends may mess up).</p>
-<p>The key state consists of 2 characters:</p>
+<p>The key state consists of 3 characters:</p>
 <ol class="arabic simple">
 <li>One of <tt class="docutils literal">d</tt> (key was pressed down), <tt class="docutils literal">u</tt> (was released), <tt class="docutils literal">r</tt> (key
 is still down, and was repeated; only if key repeat is enabled for this
 binding), <tt class="docutils literal">p</tt> (key was pressed; happens if up/down can't be tracked).</li>
 <li>Whether the event originates from the mouse, either <tt class="docutils literal">m</tt> (mouse button)
 or <tt class="docutils literal">-</tt> (something else).</li>
+<li>Whether the event results from a cancellation (e.g. the key is logically
+released but not physically released), either <tt class="docutils literal">c</tt> (canceled) or <tt class="docutils literal">-</tt>
+(something else). Not all types of cancellations set this flag.</li>
 </ol>
 <p class="last">Future versions can add more arguments and more key state characters to
 support more input peculiarities.</p>
@@ -15348,7 +15351,19 @@ the same key names as in input.conf, and also allows combinations
 (e.g. <tt class="docutils literal">ctrl+a</tt>). If the key is empty or <tt class="docutils literal">nil</tt>, no physical key is
 registered, but the user still can create own bindings (see below).</p>
 <p>After calling this function, key presses will cause the function <tt class="docutils literal">fn</tt> to
-be called (unless the user remapped the key with another binding).</p>
+be called (unless the user remapped the key with another binding).
+However, if the key binding is canceled , the function will not be called,
+unless <tt class="docutils literal">complex</tt> flag is set to <tt class="docutils literal">true</tt>, where the function will be
+called with the <tt class="docutils literal">canceled</tt> entry set to <tt class="docutils literal">true</tt>.</p>
+<p>For example, a canceled key binding can happen in the following situations:</p>
+<ul class="simple">
+<li>If key A is pressed while key B is being held down, key B is logically
+released (&quot;canceled&quot; by key A), which stops the current autorepeat
+action key B has.</li>
+<li>If key A is pressed while a mouse button is being held down, the mouse
+button is logically released, but the mouse button's action will not be
+called, unless <tt class="docutils literal">complex</tt> flag is set to <tt class="docutils literal">true</tt>.</li>
+</ul>
 <p>The <tt class="docutils literal">name</tt> argument should be a short symbolic string. It allows the user
 to remap the key binding via input.conf using the <tt class="docutils literal"><span class="pre">script-message</span></tt>
 command, and the name of the key binding (see below for
@@ -15374,9 +15389,12 @@ following entries (and may contain undocumented ones):</p>
 <dt><tt class="docutils literal">event</tt></dt>
 <dd>Set to one of the strings <tt class="docutils literal">down</tt>, <tt class="docutils literal">repeat</tt>, <tt class="docutils literal">up</tt> or
 <tt class="docutils literal">press</tt> (the latter if key up/down/repeat can't be
-tracked).</dd>
+tracked), which indicates the key's logical state.</dd>
 <dt><tt class="docutils literal">is_mouse</tt></dt>
-<dd>Boolean Whether the event was caused by a mouse button.</dd>
+<dd>Boolean: Whether the event was caused by a mouse button.</dd>
+<dt><tt class="docutils literal">canceled</tt></dt>
+<dd>Boolean: Whether the event was canceled.
+Not all types of cancellations set this flag.</dd>
 <dt><tt class="docutils literal">key_name</tt></dt>
 <dd>The name of they key that triggered this, or <tt class="docutils literal">nil</tt> if
 invoked artificially. If the key name is unknown, it's an
