@@ -5514,6 +5514,11 @@ message <tt class="docutils literal">file:</tt> followed by a space and the curr
 <dt><tt class="docutils literal"><span class="pre">--osd-playing-msg-duration=&lt;time&gt;</span></tt></dt>
 <dd>Set the duration of <tt class="docutils literal"><span class="pre">osd-playing-msg</span></tt> in ms. If this is unset,
 <tt class="docutils literal"><span class="pre">osd-playing-msg</span></tt> stays on screen for the duration of <tt class="docutils literal"><span class="pre">osd-duration</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-playlist-entry=&lt;title|filename|both&gt;</span></tt></dt>
+<dd><p class="first">Whether to display the media title, filename, or both. If the
+<tt class="docutils literal"><span class="pre">media-title</span></tt> is not available, it will display only the <tt class="docutils literal">filename</tt>.</p>
+<p class="last">Default: <tt class="docutils literal">title</tt>.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-bar-align-x=&lt;-1-1&gt;</span></tt></dt>
 <dd>Position of the OSD bar. -1 is far left, 0 is centered, 1 is far right.
 Fractional values (like 0.5) are allowed.</dd>
@@ -10241,7 +10246,7 @@ settings.</dd>
 </dl>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">vapoursynth=file:buffered-frames:concurrent-frames</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">vapoursynth=file:buffered-frames:concurrent-frames:user-data</span></tt></dt>
 <dd><p class="first">Loads a VapourSynth filter script. This is intended for streamed
 processing: mpv actually provides a source filter, instead of using a
 native VapourSynth video source. The mpv source will answer frame
@@ -10349,6 +10354,9 @@ soon, because the filtered frames are waiting in a queue.)</p>
 <p class="last">By default, this uses the special value <tt class="docutils literal">auto</tt>, which sets the option
 to the number of detected logical CPU cores.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">user-data</span></tt></dt>
+<dd>Optional arbitrary string that is passed to the script. Default to empty
+string if not set.</dd>
 </dl>
 <p>The following <tt class="docutils literal">.vpy</tt> script variables are defined by mpv:</p>
 <dl class="last docutils">
@@ -10375,6 +10383,9 @@ the <tt class="docutils literal"><span class="pre">--container-fps-override</spa
 first entry corresponding to the width and the second entry corresponding
 to the height. These values can be 0. Note that this will not respond to
 monitor changes and may not work on all platforms.</dd>
+<dt><tt class="docutils literal">user_data</tt></dt>
+<dd>User data passed from the filter. This variable always exists, and defaults
+to empty string.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">vavpp</tt></dt>
@@ -14593,12 +14604,6 @@ The updates are unoptimized - consider disabling it on very low-end systems.</p>
 <dd><p class="first">Default: yes</p>
 <p class="last">Whether to display the chapters/playlist at the OSD when left-clicking the
 next/previous OSC buttons, respectively.</p>
-</dd>
-<dt><tt class="docutils literal">playlist_media_title</tt></dt>
-<dd><p class="first">Default: yes</p>
-<p class="last">Whether to display playlist entries in media titles. If set to <tt class="docutils literal">no</tt>, file
-names are used instead. Note that media title of a file is only available
-once it has been loaded.</p>
 </dd>
 <dt><tt class="docutils literal">chapter_fmt</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">Chapter: %s</tt></p>
