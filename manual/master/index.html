@@ -6732,6 +6732,31 @@ syncs to the right one. Compositing window managers can also lead to bad
 results, as can missing or incorrect display FPS information (see
 <tt class="docutils literal"><span class="pre">--display-fps-override</span></tt>).</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--egl-config-id=&lt;ID&gt;</span></tt></dt>
+<dd>(EGL only)
+Select EGLConfig with specific EGL_CONFIG_ID.
+Rendering surfaces and contexts will be created using this EGLConfig.
+You can use <tt class="docutils literal"><span class="pre">--msg-level=vo=trace</span></tt> to obtain a list of available configs.</dd>
+<dt><tt class="docutils literal"><span class="pre">--egl-output-format=&lt;auto|rgb8|rgba8|rgb10|rgb10_a2|rgb16|rgba16|rgb16f|rgba16f|rgb32f|rgba32f&gt;</span></tt></dt>
+<dd><p class="first">(EGL only)
+Select a specific EGL output format to utilize for OpenGL rendering.
+This option is mutually exclusive with <tt class="docutils literal"><span class="pre">--egl-config-id</span></tt>.
+&quot;auto&quot; is the default, which will pick the first usable config
+based on the order given by the driver.</p>
+<p>All formats are not available.
+A fatal error is caused if an unavailable format is selected.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There is no reliable API to query desktop bit depth in EGL.
+You can manually set this option
+according to the bit depth of your display.
+This option also affects the auto-detection of <tt class="docutils literal"><span class="pre">--dither-depth</span></tt>.</p>
+</div>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">Unlike  <tt class="docutils literal"><span class="pre">--d3d11-output-format</span></tt>, this option also takes effect with <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--vulkan-device=&lt;device</span> name|UUID&gt;</tt></dt>
 <dd>The name or UUID of the Vulkan device to use for rendering and presentation. Use
 <tt class="docutils literal"><span class="pre">--vulkan-device=help</span></tt> to see the list of available devices and their
@@ -8119,10 +8144,10 @@ for debugging purposes only. For more information, see:</p>
 <h2>Miscellaneous</h2>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--display-tags=tag1,tags2,...</span></tt></dt>
-<dd><p class="first">Set the list of tags that should be displayed on the terminal. Tags that
-are in the list, but are not present in the played file, will not be shown.
-If a value ends with <tt class="docutils literal">*</tt>, all tags are matched by prefix (though there
-is no general globbing). Just passing <tt class="docutils literal">*</tt> essentially filtering.</p>
+<dd><p class="first">Set the list of tags that should be displayed on the terminal and stats.
+Tags that are in the list, but are not present in the played file, will not
+be shown. If a value ends with <tt class="docutils literal">*</tt>, all tags are matched by prefix (though
+there is no general globbing). Just passing <tt class="docutils literal">*</tt> essentially filtering.</p>
 <p>The default includes a common list of tags, call mpv with <tt class="docutils literal"><span class="pre">--list-options</span></tt>
 to see it.</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
@@ -14657,6 +14682,17 @@ Also affects the timecode in the slimbox layout.</p>
 <dd><p class="first">Default: #999999</p>
 <p class="last">Sets the colors of the elements that are being pressed or held down.</p>
 </dd>
+<dt><tt class="docutils literal">tick_delay</tt></dt>
+<dd><p class="first">Default: 1/60</p>
+<p>Sets the minimum interval between OSC redraws in seconds. This can be
+decreased on fast systems to make OSC rendering smoother.</p>
+<p class="last">Ignored if <tt class="docutils literal">tick_delay_follow_display_fps</tt> is set to yes and the VO
+supports the <tt class="docutils literal"><span class="pre">display-fps</span></tt> property.</p>
+</dd>
+<dt><tt class="docutils literal">tick_delay_follow_display_fps</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Use display fps to calculate the interval between OSC redraws.</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="script-commands">
@@ -14717,7 +14753,7 @@ regardless of existing bindings. They allow you to switch between <em>pages</em>
 stats:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="13%" />
+<col width="12%" />
 <col width="88%" />
 </colgroup>
 <tbody valign="top">
@@ -14732,6 +14768,9 @@ stats:</p>
 </tr>
 <tr><td>4</td>
 <td>Active key bindings (scroll)</td>
+</tr>
+<tr><td>5</td>
+<td>Selected Tracks Info (scroll)</td>
 </tr>
 <tr><td>0</td>
 <td>Internal stuff (scroll)</td>
@@ -14772,6 +14811,8 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dd>Default: 3</dd>
 <dt><tt class="docutils literal">key_page_4</tt></dt>
 <dd>Default: 4</dd>
+<dt><tt class="docutils literal">key_page_5</tt></dt>
+<dd>Default: 5</dd>
 <dt><tt class="docutils literal">key_page_0</tt></dt>
 <dd><p class="first">Default: 0</p>
 <p class="last">Key bindings for page switching while stats are displayed.</p>
@@ -14800,6 +14841,14 @@ option. The configuration syntax is described in <a class="reference internal" h
 displayed stats. When <cite>yes</cite>, displayed stats are persistently shown for the
 respective duration. This can result in overlapping text when multiple
 scripts decide to print text at the same time.</p>
+</dd>
+<dt><tt class="docutils literal">file_tag_max_length</tt></dt>
+<dd><p class="first">Default: 128</p>
+<p class="last">Only show file tags shorter than this length, in bytes.</p>
+</dd>
+<dt><tt class="docutils literal">file_tag_max_count</tt></dt>
+<dd><p class="first">Default: 16</p>
+<p class="last">Only show the first specified amount of file tags.</p>
 </dd>
 <dt><tt class="docutils literal">term_width_limit</tt></dt>
 <dd><p class="first">Default: -1</p>
