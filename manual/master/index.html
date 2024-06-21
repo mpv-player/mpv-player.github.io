@@ -12616,11 +12616,11 @@ always exactly known, so this is an estimate.</p>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">audio-pts</span></tt></dt>
-<dd><p class="first">Current audio playback position in current file in seconds. Unlike time-pos,
+<dd><p class="first">Current audio playback position in current file in seconds. Unlike <tt class="docutils literal"><span class="pre">time-pos</span></tt>,
 this updates more often than once per frame. This is mostly equivalent to
-time-pos for audio-only files however it also takes into account the audio
+<tt class="docutils literal"><span class="pre">time-pos</span></tt> for audio-only files however it also takes into account the audio
 driver delay. This can lead to negative values in certain cases, so in
-general you probably want to simply use time-pos.</p>
+general you probably want to simply use <tt class="docutils literal"><span class="pre">time-pos</span></tt>.</p>
 <p>This has a sub-property:</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">audio-pts/full</span></tt></dt>
@@ -12636,10 +12636,9 @@ general you probably want to simply use time-pos.</p>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">playback-time</span></tt> (RW)</dt>
-<dd><p class="first">Position in current file in seconds. Unlike <tt class="docutils literal"><span class="pre">time-pos</span></tt>, the time is
-clamped to the range of the file. (Inaccurate file durations etc. could
-make it go out of range. Useful on attempts to seek outside of the file,
-as the seek target time is considered the current position during seeking.)</p>
+<dd><p class="first">Alias for <tt class="docutils literal"><span class="pre">time-pos</span></tt>.</p>
+<p>Prior to mpv 0.39.0, <tt class="docutils literal"><span class="pre">time-pos</span></tt> and <tt class="docutils literal"><span class="pre">playback-time</span></tt> could report
+different values in certain edge cases.</p>
 <p>This has a sub-property:</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">playback-time/full</span></tt></dt>
