@@ -13443,6 +13443,19 @@ cover art, <tt class="docutils literal">no</tt>/false or unavailable otherwise.<
 <dt><tt class="docutils literal"><span class="pre">track-list/N/forced</span></tt></dt>
 <dd><tt class="docutils literal">yes</tt>/true if the track has the forced flag set in the file,
 <tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/dependent</span></tt></dt>
+<dd><tt class="docutils literal">yes</tt>/true if the track has the dependent flag set in the file,
+<tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/visual-impaired</span></tt></dt>
+<dd><tt class="docutils literal">yes</tt>/true if the track has the visual impaired flag set in the file,
+<tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/hearing-impaired</span></tt></dt>
+<dd><tt class="docutils literal">yes</tt>/true if the track has the hearing impaired flag set in the file,
+<tt class="docutils literal">no</tt>/false or unavailable otherwise.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/hls-bitrate</span></tt></dt>
+<dd>The bitrate of the HLS stream, if available.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/program-id</span></tt></dt>
+<dd>The program ID of the HLS stream, if available.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/codec</span></tt></dt>
 <dd>The codec name used by this track, for example <tt class="docutils literal">h264</tt>. Unavailable
 in some rare cases.</dd>
@@ -13530,6 +13543,11 @@ MPV_FORMAT_NODE_ARRAY
         &quot;albumart&quot;          MPV_FORMAT_FLAG
         &quot;default&quot;           MPV_FORMAT_FLAG
         &quot;forced&quot;            MPV_FORMAT_FLAG
+        &quot;dependent&quot;         MPV_FORMAT_FLAG
+        &quot;visual-impaired&quot;   MPV_FORMAT_FLAG
+        &quot;hearing-impaired&quot;  MPV_FORMAT_FLAG
+        &quot;hls-bitrate&quot;       MPV_FORMAT_INT64
+        &quot;program-id&quot;        MPV_FORMAT_INT64
         &quot;selected&quot;          MPV_FORMAT_FLAG
         &quot;main-selection&quot;    MPV_FORMAT_INT64
         &quot;external&quot;          MPV_FORMAT_FLAG
@@ -13538,6 +13556,7 @@ MPV_FORMAT_NODE_ARRAY
         &quot;codec-desc&quot;        MPV_FORMAT_STRING
         &quot;codec-profile&quot;     MPV_FORMAT_STRING
         &quot;ff-index&quot;          MPV_FORMAT_INT64
+        &quot;decoder&quot;           MPV_FORMAT_STRING
         &quot;decoder-desc&quot;      MPV_FORMAT_STRING
         &quot;demux-w&quot;           MPV_FORMAT_INT64
         &quot;demux-h&quot;           MPV_FORMAT_INT64
@@ -13552,6 +13571,7 @@ MPV_FORMAT_NODE_ARRAY
         &quot;demux-bitrate&quot;     MPV_FORMAT_INT64
         &quot;demux-rotation&quot;    MPV_FORMAT_INT64
         &quot;demux-par&quot;         MPV_FORMAT_DOUBLE
+        &quot;format-name&quot;       MPV_FORMAT_STRING
         &quot;audio-channels&quot;    MPV_FORMAT_INT64
         &quot;replaygain-track-peak&quot; MPV_FORMAT_DOUBLE
         &quot;replaygain-track-gain&quot; MPV_FORMAT_DOUBLE
