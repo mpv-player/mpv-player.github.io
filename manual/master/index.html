@@ -4098,9 +4098,6 @@ height: if the window height is larger or smaller than 720, the actual size
 of the text increases or decreases as well.</p>
 <p class="last">Default: 55.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-back-color=&lt;color&gt;</span></tt></dt>
-<dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text background. You can use
-<tt class="docutils literal"><span class="pre">--sub-shadow-offset</span></tt> to change its size relative to the text.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-blur=&lt;0..20.0&gt;</span></tt></dt>
 <dd>Gaussian blur factor applied to the sub font border.
 0 means no blur applied (default).</dd>
@@ -4108,12 +4105,43 @@ of the text increases or decreases as well.</p>
 <dd>Format text on bold.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-italic=&lt;yes|no&gt;</span></tt></dt>
 <dd>Format text on italic.</dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-border-color=&lt;color&gt;</span></tt></dt>
-<dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the sub font border.</dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-border-size=&lt;size&gt;</span></tt></dt>
-<dd><p class="first">Size of the sub font border in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
-for details). A value of 0 disables borders.</p>
+<dt><tt class="docutils literal"><span class="pre">--sub-outline-color=&lt;color&gt;</span></tt></dt>
+<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the sub font outline.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">--sub-border-color</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sub-outline-color</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-back-color=&lt;color&gt;</span></tt></dt>
+<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text background.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">--sub-shadow-color</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-outline-size=&lt;size&gt;</span></tt></dt>
+<dd><p class="first">Size of the sub font outline in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
+for details). A value of 0 disables outlines.</p>
+<p><tt class="docutils literal"><span class="pre">--sub-border-size</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sub-outline-size</span></tt>.</p>
 <p class="last">Default: 3.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-border-style=&lt;outline-and-shadow|opaque-box|background-box&gt;</span></tt></dt>
+<dd><p class="first">The style of the border.</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">outline-and-shadow</span></tt>: draw outline and shadow.
+The size of the outline is determined by <tt class="docutils literal"><span class="pre">--sub-outline-size</span></tt>,
+and the offset of the shadow is determined by <tt class="docutils literal"><span class="pre">--sub-shadow-offset</span></tt>.
+The outline is colored by <tt class="docutils literal"><span class="pre">--sub-outline-color</span></tt>,
+and the shadow is colored by <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt>.
+This corresponds to <tt class="docutils literal">BorderStyle=1</tt> in the ASS spec.</li>
+<li><tt class="docutils literal"><span class="pre">opaque-box</span></tt>: draw outline and shadow as opaque boxes that tightly wrap each lines of text.
+The margin of the outline opaque box is determined by <tt class="docutils literal"><span class="pre">--sub-outline-size</span></tt>,
+and the offset of the shadow opaque box is determined by <tt class="docutils literal"><span class="pre">--sub-shadow-offset</span></tt>.
+The outline opaque box is colored by <tt class="docutils literal"><span class="pre">--sub-outline-color</span></tt>,
+and the shadow opaque box is colored by <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt>.
+Despite its name, the opaque box can be semi-transparent.
+This corresponds to <tt class="docutils literal">BorderStyle=3</tt> in the ASS spec.</li>
+<li><tt class="docutils literal"><span class="pre">background-box</span></tt>: draw a background box that bounds all lines of text.
+The background box is colored by <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt>,
+and the margin of the background box is determined by <tt class="docutils literal"><span class="pre">--sub-shadow-offset</span></tt>.
+The behavior of the outline is the same as the <tt class="docutils literal"><span class="pre">outline-and-shadow</span></tt> style.
+This corresponds to <tt class="docutils literal">BorderStyle=4</tt>, which is a libass-specific extension.</li>
+</ul>
+<p class="last">Default: <tt class="docutils literal"><span class="pre">outline-and-shadow</span></tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-color=&lt;color&gt;</span></tt></dt>
 <dd><p class="first">Specify the color used for unstyled text subtitles.</p>
@@ -4177,15 +4205,6 @@ as it is easier for the eyes.</dd>
 <dd>Applies justification as defined by <tt class="docutils literal"><span class="pre">--sub-justify</span></tt> on ASS subtitles
 if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is not set to <tt class="docutils literal">no</tt>.
 Default: <tt class="docutils literal">no</tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-shadow-color=&lt;color&gt;</span></tt></dt>
-<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for sub text shadow.</p>
-<div class="admonition note last">
-<p class="first admonition-title">Note</p>
-<p class="last">ignored when <tt class="docutils literal"><span class="pre">--sub-back-color</span></tt> is
-specified (or more exactly: when that option is not set to completely
-transparent).</p>
-</div>
-</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-shadow-offset=&lt;size&gt;</span></tt></dt>
 <dd><p class="first">Displacement of the sub text shadow in scaled pixels (see
 <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details). A value of 0 disables shadows.</p>
@@ -5530,13 +5549,12 @@ Fractional values (like 0.5) are allowed.</dd>
 A value of 50 means the bar is half the screen wide.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-bar-h=&lt;0.1-50&gt;</span></tt></dt>
 <dd>Height of the OSD bar, in percentage of the screen height (default: 3.125).</dd>
-<dt><tt class="docutils literal"><span class="pre">--osd-bar-border-size=&lt;size&gt;</span></tt></dt>
-<dd><p class="first">Size of the border of the OSD bar in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
+<dt><tt class="docutils literal"><span class="pre">--osd-bar-outline-size=&lt;size&gt;</span></tt></dt>
+<dd><p class="first">Size of the outline of the OSD bar in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
 for details).</p>
+<p><tt class="docutils literal"><span class="pre">--osd-bar-border-size</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--osd-bar-outline-size</span></tt>.</p>
 <p class="last">Default: 0.5.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--osd-back-color=&lt;color&gt;</span></tt></dt>
-<dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD text background.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt></dt>
 <dd>Gaussian blur factor applied to the OSD font border.
 0 means no blur applied (default).</dd>
@@ -5544,13 +5562,22 @@ for details).</p>
 <dd>Format text on bold.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-italic=&lt;yes|no&gt;</span></tt></dt>
 <dd>Format text on italic.</dd>
-<dt><tt class="docutils literal"><span class="pre">--osd-border-color=&lt;color&gt;</span></tt></dt>
-<dd>See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the OSD font border.</dd>
-<dt><tt class="docutils literal"><span class="pre">--osd-border-size=&lt;size&gt;</span></tt></dt>
-<dd><p class="first">Size of the OSD font border in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
-for details). A value of 0 disables borders.</p>
+<dt><tt class="docutils literal"><span class="pre">--osd-outline-color=&lt;color&gt;</span></tt></dt>
+<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for the OSD font outline.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">--osd-border-color</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--osd-outline-color</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-back-color=&lt;color&gt;</span></tt></dt>
+<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD text background.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">--osd-shadow-color</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-outline-size=&lt;size&gt;</span></tt></dt>
+<dd><p class="first">Size of the OSD font outline in scaled pixels (see <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt>
+for details). A value of 0 disables outlines.</p>
+<p><tt class="docutils literal"><span class="pre">--osd-border-size</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--osd-outline-size</span></tt>.</p>
 <p class="last">Default: 3.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-border-style=&lt;outline-and-shadow|opaque-box|background-box&gt;</span></tt></dt>
+<dd>See <tt class="docutils literal"><span class="pre">--sub-border-style</span></tt>. Style used for OSD text border.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-color=&lt;color&gt;</span></tt></dt>
 <dd>Specify the color used for OSD.
 See <tt class="docutils literal"><span class="pre">--sub-color</span></tt> for details.</dd>
@@ -5605,14 +5632,6 @@ won't change the OSD font size.</p>
 <p class="last">For scripts which draw user interface elements, it is recommended to
 respect the value of this option when deciding whether the elements
 are scaled with window size or not.</p>
-</div>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">--osd-shadow-color=&lt;color&gt;</span></tt></dt>
-<dd><p class="first">See <tt class="docutils literal"><span class="pre">--sub-color</span></tt>. Color used for OSD shadow.</p>
-<div class="admonition note last">
-<p class="first admonition-title">Note</p>
-<p class="last">Ignored when <tt class="docutils literal"><span class="pre">--osd-back-color</span></tt> is specified (or more exactly: when
-that option is not set to completely transparent).</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-shadow-offset=&lt;size&gt;</span></tt></dt>
