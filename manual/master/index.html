@@ -3648,22 +3648,25 @@ rendering. Use with care, or use <tt class="docutils literal"><span class="pre">
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-scale-by-window=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Whether to scale subtitles with the window size (default: yes). If this is
-disabled, changing the window size won't change the subtitle font size.</p>
+disabled while <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> is set to yes, changing the window
+size won't change the subtitle font size.</p>
 <p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is set
 high enough).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
-<dd><p class="first">Make the subtitle font size relative to the window, instead of the video.
-This is useful if you always want the same font size, even if the video
-doesn't cover the window fully, e.g. because screen aspect and window
-aspect mismatch (and the player adds black bars).</p>
-<p>Default: yes.</p>
-<p>This option is misnamed. The difference to the confusingly similar sounding
-option <tt class="docutils literal"><span class="pre">--sub-scale-by-window</span></tt> is that <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> still
-scales with the approximate window size, while the other option disables
-this scaling.</p>
-<p class="last">Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is set
+<dd><p class="first">Make the subtitle font size relative to the window (default: yes). If this is
+disabled while <tt class="docutils literal"><span class="pre">--sub-scale-by-window</span></tt> is set to yes, the subtitle font
+size is scaled relative to the video size instead.</p>
+<p>Affects plain text subtitles only (or ASS if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is set
 high enough).</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">By default, the subtitle font size is scaled with the window size.
+To make the font size constant, set only <tt class="docutils literal"><span class="pre">--sub-scale-by-window</span></tt> to no.
+To make the font size scale with video size instead, set only
+<tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> to no.
+It's not meaningful to set both options to no.</p>
+</div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-scale-with-window=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Like <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt>, but affects subtitles in ASS format only.
@@ -13778,13 +13781,6 @@ fluctuating bitrate.</p>
 <p>How exactly these values are calculated might change in the future.</p>
 <p class="last">In earlier versions of mpv, these properties returned a static (but bad)
 guess using a completely different method.</p>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">packet-video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-audio-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">packet-sub-bitrate</span></tt></dt>
-<dd><p class="first">Old and deprecated properties for <tt class="docutils literal"><span class="pre">video-bitrate</span></tt>, <tt class="docutils literal"><span class="pre">audio-bitrate</span></tt>,
-<tt class="docutils literal"><span class="pre">sub-bitrate</span></tt>. They behave exactly the same, but return a value in
-kilobits. Also, they don't have any OSD formatting, though the same can be
-achieved with e.g. <tt class="docutils literal"><span class="pre">${=video-bitrate}</span></tt>.</p>
-<p class="last">These properties shouldn't be used anymore.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">audio-device-list</span></tt></dt>
 <dd><p class="first">The list of discovered audio devices. This is mostly for use with the
