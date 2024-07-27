@@ -1799,11 +1799,10 @@ properties. See also <tt class="docutils literal"><span class="pre">ab-loop</spa
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--ab-loop-count=&lt;N|inf&gt;</span></tt></dt>
 <dd>Run A-B loops only N times, then ignore the A-B loop points (default: inf).
-Every finished loop iteration will decrement this option by 1 (unless it is
-set to <tt class="docutils literal">inf</tt> or 0). <tt class="docutils literal">inf</tt> means that looping goes on forever. If this
-option is set to 0, A-B looping is ignored, and even the <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command
-will not enable looping again (the command will show <tt class="docutils literal">(disabled)</tt> on the
-OSD message if both loop points are set, but <tt class="docutils literal"><span class="pre">ab-loop-count</span></tt> is 0).</dd>
+<tt class="docutils literal">inf</tt> means that looping goes on forever. If this option is set to 0, A-B
+looping is ignored, and even the <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command will not enable looping
+again (the command will show <tt class="docutils literal">(disabled)</tt> on the OSD message if both loop
+points are set, but <tt class="docutils literal"><span class="pre">ab-loop-count</span></tt> is 0).</dd>
 <dt><tt class="docutils literal"><span class="pre">--ordered-chapters=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable support for Matroska ordered chapters. mpv will load and
 search for video segments from other files, and will also respect any
@@ -12674,6 +12673,16 @@ different values in certain edge cases.</p>
 <dd><tt class="docutils literal"><span class="pre">playback-time</span></tt> with milliseconds.</dd>
 </dl>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">remaining-file-loops</span></tt></dt>
+<dd>How many more times the current file is going to be looped. This is
+initialized from the value of <tt class="docutils literal"><span class="pre">--loop-file</span></tt>. This counts the number of
+times it causes the player to seek to the beginning of the file, so it is 0
+the last the time is played. -1 corresponds to infinity.</dd>
+<dt><tt class="docutils literal"><span class="pre">remaining-ab-loops</span></tt></dt>
+<dd>How many more times the current A-B loop is going to be looped, if one is
+active. This is initialized from the value of <tt class="docutils literal"><span class="pre">--ab-loop-count</span></tt>. This
+counts the number of times it causes the player to seek to <tt class="docutils literal"><span class="pre">--ab-loop-a</span></tt>,
+so it is 0 the last the time the loop is played. -1 corresponds to infinity.</dd>
 <dt><tt class="docutils literal">chapter</tt> (RW)</dt>
 <dd>Current chapter number. The number of the first chapter is 0.</dd>
 <dt><tt class="docutils literal">edition</tt> (RW)</dt>
