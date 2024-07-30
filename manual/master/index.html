@@ -1041,15 +1041,15 @@ addition, terminal behavior itself may change any time. Compatibility
 cannot be guaranteed.</p>
 <p>Your code should work even if you pass <tt class="docutils literal"><span class="pre">--terminal=no</span></tt>. Do not attempt
 to simulate user input by sending terminal control codes to mpv's stdin.
-If you need interactive control, using <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> is
-recommended. This gives you access to the <a class="reference internal" href="#json-ipc">JSON IPC</a>  over unix domain
-sockets (or named pipes on Windows).</p>
+If you need interactive control, using <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> or
+<tt class="docutils literal"><span class="pre">--input-ipc-client</span></tt> is recommended. This gives you access to the
+<a class="reference internal" href="#json-ipc">JSON IPC</a>  over unix domain sockets (or named pipes on Windows).</p>
 <p>Depending on what you do, passing <tt class="docutils literal"><span class="pre">--no-config</span></tt> or <tt class="docutils literal"><span class="pre">--config-dir</span></tt> may
 be a good idea to avoid conflicts with the normal mpv user configuration
 intended for CLI playback.</p>
-<p>Using <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> is also suitable for purposes like remote
-control (however, the IPC protocol itself is not &quot;secure&quot; and not
-intended to be so).</p>
+<p>Using <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt> or <tt class="docutils literal"><span class="pre">--input-ipc-client</span></tt> is also suitable for
+purposes like remote control (however, the IPC protocol itself is not
+&quot;secure&quot; and not intended to be so).</p>
 </li>
 <li><p class="first">Using libmpv. This is generally recommended when mpv is used as playback
 backend for a completely different application. The provided C API is
@@ -5376,8 +5376,8 @@ Windows.</p>
 <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>, except no socket is created, and instead the passed
 FD is treated like a socket connection received from <tt class="docutils literal">accept()</tt>. In
 practice, you could pass either a FD created by <tt class="docutils literal">socketpair()</tt>, or a pipe.
-In both cases, you must sure the FD is actually inherited by mpv (do not
-set the POSIX <tt class="docutils literal">CLOEXEC</tt> flag).</p>
+In both cases, you must make sure that the FD is actually inherited by mpv
+(do not set the POSIX <tt class="docutils literal">CLOEXEC</tt> flag).</p>
 <p>The player quits when the connection is closed.</p>
 <p>This is somewhat similar to the removed <tt class="docutils literal"><span class="pre">--input-file</span></tt> option, except it
 supports only integer FDs, and cannot open actual paths.</p>
@@ -5387,7 +5387,11 @@ supports only integer FDs, and cannot open actual paths.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Does not and will not work on Windows.</p>
+<p class="last">To use this option on Windows, the fd must refer to a wrapped
+(created by <tt class="docutils literal">_open_osfhandle</tt>) named pipe server handle with a client
+already connected. The named pipe must be created duplex with overlapped
+IO and inheritable handles. The program communicates with mpv through
+the client handle.</p>
 </div>
 <div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
@@ -8402,6 +8406,12 @@ idle|belownormal|normal|abovenormal|high|realtime</p>
 <p class="last">Using realtime priority can cause system lockup.</p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--media-controls=&lt;yes|player|no&gt;</span></tt></dt>
+<dd>(Windows only)
+Enable integration of media control interface SystemMediaTransportControls.
+If set to <tt class="docutils literal">player</tt>, only the player will use the controls. Setting it to
+<tt class="docutils literal">yes</tt> will also enable the controls for libmpv integrations.
+(default: <tt class="docutils literal">player</tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--force-media-title=&lt;string&gt;</span></tt></dt>
 <dd>Force the contents of the <tt class="docutils literal"><span class="pre">media-title</span></tt> property to this value. Useful
 for scripts which want to set a title, without overriding the user's
@@ -16426,8 +16436,10 @@ implementation is a simple <tt class="docutils literal">mp.keep_running = false<
 <h1>JSON IPC</h1>
 <p>mpv can be controlled by external programs using the JSON-based IPC protocol.
 It can be enabled by specifying the path to a unix socket or a named pipe using
-the option <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>. Clients can connect to this socket and send
-commands to the player or receive events from it.</p>
+the option <tt class="docutils literal"><span class="pre">--input-ipc-server</span></tt>, or the file descriptor number of a unix socket
+or a named pipe using <tt class="docutils literal"><span class="pre">--input-ipc-client</span></tt>.
+Clients can connect to this socket and send commands to the player or receive
+events from it.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This is not intended to be a secure network protocol. It is explicitly
