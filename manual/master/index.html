@@ -13847,6 +13847,19 @@ Valid for <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> an
 general use (i.e. scripts, IPC clients, host applications, etc).
 The player itself does not use any data in it (although some builtin scripts may).
 The property is not preserved across player restarts.</p>
+<p>The following sub-paths are reserved for internal uses or have special semantics:
+<tt class="docutils literal"><span class="pre">user-data/osc</span></tt>, <tt class="docutils literal"><span class="pre">user-data/mpv</span></tt>. Unless noted otherwise, the semantics of
+any properties under these sub-paths can change at any time and may not be relied
+upon, and writing to these properties may prevent builtin scripts from working
+properly.</p>
+<p>Currently, the following properties have defined special semantics:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">user-data/osc/margins</span></tt></dt>
+<dd>This property is written by an OSC implementation to indicate the margins that it
+occupies. Its sub-properties <tt class="docutils literal">l</tt>, <tt class="docutils literal">r</tt>, <tt class="docutils literal">t</tt>, and <tt class="docutils literal">b</tt> should all be set to
+the left, right, top, and bottom margins respectively.
+Values are between 0.0 and 1.0, normalized to window width/height.</dd>
+</dl>
 <p>Sub-paths can be accessed directly; e.g. <tt class="docutils literal"><span class="pre">user-data/my-script/state/a</span></tt> can be
 read, written, or observed.</p>
 <p>The top-level object itself cannot be written directly; write to sub-paths instead.</p>
