@@ -1599,9 +1599,30 @@ speed higher than normal automatically inserts the <tt class="docutils literal">
 filter.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--pitch=&lt;0.01-100&gt;</span></tt></dt>
-<dd>Raise or lower the audio's pitch by the factor given as parameter. Does not
+<dd><p class="first">Raise or lower the audio's pitch by the factor given as parameter. Does not
 affect playback speed. Playing with an altered pitch automatically inserts
-the <tt class="docutils literal">scaletempo2</tt> audio filter.</dd>
+the <tt class="docutils literal">scaletempo2</tt> audio filter.</p>
+<p>In a standard 12-tone scale system, octaves are separated by a factor of 2
+whereas semitones are represented by a factor of 2^(1/12). This means
+pitches can easily be shifted up or down with a simple multiplier.</p>
+<div class="admonition admonition-examples last">
+<p class="first admonition-title">Examples</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">--pitch=2</span></tt></dt>
+<dd>Shifts the pitch up a full octave.</dd>
+<dt><tt class="docutils literal"><span class="pre">--pitch=0.5</span></tt></dt>
+<dd>Shifts the pitch down an octave.</dd>
+<dt><tt class="docutils literal"><span class="pre">--pitch=1.498307</span></tt> (2^(7/12))</dt>
+<dd>Shifts the pitch up a perfect fifth.</dd>
+<dt><tt class="docutils literal"><span class="pre">--pitch=0.667420</span></tt> (2^(-7/12))</dt>
+<dd>Shifts the pitch down a perfect fifth.</dd>
+<dt><tt class="docutils literal"><span class="pre">--pitch=1.059463</span></tt> (2^(1/12))</dt>
+<dd>Shifts the pitch up a semitone.</dd>
+<dt><tt class="docutils literal"><span class="pre">--pitch=0.943874</span></tt> (2^(-1/12))</dt>
+<dd>Shifts the pitch down a semitone.</dd>
+</dl>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--pause</span></tt></dt>
 <dd>Start the player in paused state.</dd>
 <dt><tt class="docutils literal"><span class="pre">--shuffle</span></tt></dt>
@@ -9807,10 +9828,7 @@ those of librubberband follows a simple pattern: <tt class="docutils literal">&q
 change the playback pitch at runtime. Note that speed is controlled
 using the standard <tt class="docutils literal">speed</tt> property, not <tt class="docutils literal"><span class="pre">af-command</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">multiply-pitch</span> &lt;factor&gt;</tt></dt>
-<dd>Multiply the current value of <tt class="docutils literal"><span class="pre">&lt;pitch-scale&gt;</span></tt> dynamically.  For
-example: 0.5 to go down by an octave, 1.5 to go up by a perfect fifth.
-If you want to go up or down by semi-tones, use 1.059463094352953 and
-0.9438743126816935</dd>
+<dd>Multiply the current value of <tt class="docutils literal"><span class="pre">&lt;pitch-scale&gt;</span></tt> dynamically.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">lavfi=graph</tt></dt>
