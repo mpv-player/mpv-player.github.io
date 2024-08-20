@@ -137,6 +137,8 @@ later will resume at the old playback position if possible. See
 <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>.</dd>
 <dt>/ and *</dt>
 <dd>Decrease/increase volume.</dd>
+<dt>KP_DIVIDE and KP_MULTIPLY</dt>
+<dd>Decrease/increase volume.</dd>
 <dt>9 and 0</dt>
 <dd>Decrease/increase volume.</dd>
 <dt>m</dt>
@@ -1602,6 +1604,10 @@ filter.</p>
 <dd><p class="first">Raise or lower the audio's pitch by the factor given as parameter. Does not
 affect playback speed. Playing with an altered pitch automatically inserts
 the <tt class="docutils literal">scaletempo2</tt> audio filter.</p>
+<p>Since pitch change is achieved by combining pitch-preserving speed change and
+resampling, the range of pitch change is effectively limited by the
+<tt class="docutils literal"><span class="pre">min-speed</span></tt> and <tt class="docutils literal"><span class="pre">max-speed</span></tt> parameters of <tt class="docutils literal">scaletempo2</tt>: for example,
+a <tt class="docutils literal"><span class="pre">min-speed</span></tt> of 0.25 limits the highest pitch factor to 4 (1/0.25).</p>
 <p>In a standard 12-tone scale system, octaves are separated by a factor of 2
 whereas semitones are represented by a factor of 2^(1/12). This means
 pitches can easily be shifted up or down with a simple multiplier.</p>
@@ -10630,6 +10636,22 @@ decoding for use.</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">deint=&lt;yes|no&gt;</span></tt></dt>
 <dd>Whether deinterlacing is enabled (default: no).</dd>
+<dt><tt class="docutils literal">scale</tt></dt>
+<dd>Scaling factor for the video frames (default: 1.0).</dd>
+<dt><tt class="docutils literal"><span class="pre">scaling-mode=&lt;standard,intel,nvidia&gt;</span></tt></dt>
+<dd><p class="first">Select the scaling mode to be used. Note that this only enables the
+appropriate processing extensions; whether it actually works or not
+depends on your hardware and the settings in your GPU driver's control
+panel (default: standard).</p>
+<dl class="last docutils">
+<dt>standard</dt>
+<dd>Default scaling mode as decided by d3d11vpp implementation.</dd>
+<dt>intel</dt>
+<dd>Intel Video Super Resolution.</dd>
+<dt>nvidia</dt>
+<dd>NVIDIA RTX Super Resolution.</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">interlaced-only=&lt;yes|no&gt;</span></tt></dt>
 <dd>If <tt class="docutils literal">yes</tt>, only deinterlace frames marked as interlaced (default: no).</dd>
 <dt><tt class="docutils literal"><span class="pre">mode=&lt;blend|bob|adaptive|mocomp|ivctc|none&gt;</span></tt></dt>
