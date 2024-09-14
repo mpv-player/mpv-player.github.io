@@ -182,8 +182,8 @@ later will resume at the old playback position if possible. See
 subtitles, and overriding them almost completely with the normal subtitle
 style. See <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> for more info.</dd>
 <dt>V</dt>
-<dd>Toggle subtitle VSFilter aspect compatibility mode. See
-<tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-aspect-compat</span></tt> for more info.</dd>
+<dd>Cycle through which video data gets used for ASS rendering.
+See <tt class="docutils literal"><span class="pre">--sub-ass-use-video-data</span></tt> for more info.</dd>
 <dt>r and R</dt>
 <dd>Move subtitles up/down. The <tt class="docutils literal">t</tt> key does the same as <tt class="docutils literal">R</tt> currently, but
 use is discouraged.</dd>
@@ -3845,28 +3845,24 @@ available, if the subtitles are in a plain text format  (or ASS if
 <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is set high enough).</p>
 <p class="last">Default: yes.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-aspect-compat=&lt;yes|no&gt;</span></tt></dt>
-<dd><p class="first">Stretch SSA/ASS subtitles when playing anamorphic videos for compatibility
-with traditional VSFilter behavior. This switch has no effect when the
-video is stored with square pixels.</p>
-<p>The renderer historically most commonly used for the SSA/ASS subtitle
-formats, VSFilter, had questionable behavior that resulted in subtitles
-being stretched too if the video was stored in anamorphic format that
-required scaling for display.  This behavior is usually undesirable and
-newer VSFilter versions may behave differently. However, many existing
-scripts compensate for the stretching by modifying things in the opposite
-direction.  Thus, if such scripts are displayed &quot;correctly&quot;, they will not
-appear as intended.  This switch enables emulation of the old VSFilter
-behavior (undesirable but expected by many existing scripts).</p>
-<p class="last">Enabled by default.</p>
+<dt><tt class="docutils literal"><span class="pre">--sub-ass-use-video-data=&lt;none|aspect-ratio|all&gt;</span></tt></dt>
+<dd><p class="first">Controls which information about the video stream is passed to libass.
+Any option but <tt class="docutils literal">all</tt> is incompatible with standard ASS and VSFilters.</p>
+<p>For certain kinds of broken ASS files which got repurposed across
+several video resolutions without either setting <tt class="docutils literal">LayoutRes</tt> headers
+or adjusting affected effects, it may be desirable to withhold storage resolution
+information from libass to ensure consistent rendering across resolutions.
+Among others this affects 3D rotations and blurs.
+When encountering such files, try setting <tt class="docutils literal"><span class="pre">aspect-ratio</span></tt>.</p>
+<p>Even more broken files on anamorphic video might also exhibit stretching
+unless aspect ratio information is also faked, in this case you can try
+using <tt class="docutils literal">none</tt>. This has never an effect on non-anamorphic video.</p>
+<p class="last">Default: <tt class="docutils literal">all</tt></p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-blur-compat=&lt;yes|no&gt;</span></tt></dt>
-<dd><p class="first">Scale <tt class="docutils literal">\blur</tt> tags by video resolution instead of script resolution
-(enabled by default). This is bug in VSFilter, which according to some,
-can't be fixed anymore in the name of compatibility.</p>
-<p class="last">Note that this uses the actual video resolution for calculating the
-offset scale factor, not what the video filter chain or the video output
-use.</p>
+<dt><tt class="docutils literal"><span class="pre">--sub-ass-video-aspect-override=&lt;no|ratio&gt;</span></tt></dt>
+<dd><p class="first">Allows passing any arbitrary aspect ratio to libass instead of the video’s
+actual aspect ratio. Zero or negative aspect ratios are identical to <tt class="docutils literal">no</tt>.</p>
+<p class="last">This has no effect if <tt class="docutils literal"><span class="pre">sub-ass-use-video-data</span></tt> is set to none.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-vsfilter-bidi-compat=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Set implicit bidi detection to <tt class="docutils literal">ltr</tt> instead of <tt class="docutils literal">auto</tt> to match ASS'
