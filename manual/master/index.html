@@ -2660,11 +2660,11 @@ or <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></
 </tbody>
 </table>
 <p><tt class="docutils literal">auto</tt> tries to automatically enable hardware decoding using the first
-available method. This still depends what VO you are using. For example,
-if you are not using <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> or <tt class="docutils literal"><span class="pre">--vo=vdpau</span></tt>, vdpau decoding will
-never be enabled. Also note that if the first found method doesn't actually
-work, it will always fall back to software decoding, instead of trying the
-next method (might matter on some Linux systems).</p>
+available method. This still depends what VO you are using. See the list
+above, for which <tt class="docutils literal"><span class="pre">--vo</span></tt> and <tt class="docutils literal"><span class="pre">gpu-context</span></tt> is required for a given
+hwdec. It will go down the list of available hwdecs until one is
+successfully initialised. If all of them fail, it will fallback to software
+decoding.</p>
 <p><tt class="docutils literal"><span class="pre">auto-safe</span></tt> is similar to <tt class="docutils literal">auto</tt>, but allows only whitelisted methods
 that are considered &quot;safe&quot;. This is supposed to be a reasonable way to
 enable hardware decdoding by default in a config file (even though you
