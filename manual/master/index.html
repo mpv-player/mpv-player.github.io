@@ -3847,7 +3847,25 @@ available, if the subtitles are in a plain text format  (or ASS if
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-use-video-data=&lt;none|aspect-ratio|all&gt;</span></tt></dt>
 <dd><p class="first">Controls which information about the video stream is passed to libass.
-Any option but <tt class="docutils literal">all</tt> is incompatible with standard ASS and VSFilters.</p>
+Any option but <tt class="docutils literal">all</tt> is incompatible with VSFilter, whose behavior
+most subtitle scripts and renderers target, including libass.
+Aspect ratio and storage resolution information are needed for VSFilter
+compatibility, and withholding them will likely result in broken subtitle
+rendering for most files. It's thus recommended to only use <tt class="docutils literal">none</tt> or
+<tt class="docutils literal"><span class="pre">aspect-ratio</span></tt> on a per-file basis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">none:</th><td class="field-body">Don't use aspect ratio or storage resolution.</td>
+</tr>
+<tr class="field"><th class="field-name">aspect-ratio:</th><td class="field-body">Use aspect ratio only. Resolutions specified in the script
+are used in place of storage resolution.</td>
+</tr>
+<tr class="field"><th class="field-name">all:</th><td class="field-body">Use both aspect ratio and storage resolution.</td>
+</tr>
+</tbody>
+</table>
 <p>For certain kinds of broken ASS files which got repurposed across
 several video resolutions without either setting <tt class="docutils literal">LayoutRes</tt> headers
 or adjusting affected effects, it may be desirable to withhold storage resolution
@@ -3862,7 +3880,7 @@ using <tt class="docutils literal">none</tt>. This has never an effect on non-an
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-video-aspect-override=&lt;no|ratio&gt;</span></tt></dt>
 <dd><p class="first">Allows passing any arbitrary aspect ratio to libass instead of the video’s
 actual aspect ratio. Zero or negative aspect ratios are identical to <tt class="docutils literal">no</tt>.</p>
-<p class="last">This has no effect if <tt class="docutils literal"><span class="pre">sub-ass-use-video-data</span></tt> is set to none.</p>
+<p class="last">This has no effect if <tt class="docutils literal"><span class="pre">sub-ass-use-video-data</span></tt> is set to <tt class="docutils literal">none</tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-vsfilter-bidi-compat=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Set implicit bidi detection to <tt class="docutils literal">ltr</tt> instead of <tt class="docutils literal">auto</tt> to match ASS'
