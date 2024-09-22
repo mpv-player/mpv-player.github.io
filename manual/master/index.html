@@ -13965,10 +13965,25 @@ Values are between 0.0 and 1.0, normalized to window width/height.</dd>
 <p>Sub-paths can be accessed directly; e.g. <tt class="docutils literal"><span class="pre">user-data/my-script/state/a</span></tt> can be
 read, written, or observed.</p>
 <p>The top-level object itself cannot be written directly; write to sub-paths instead.</p>
-<p class="last">Converting this property or its sub-properties to strings will give a JSON
+<p>Converting this property or its sub-properties to strings will give a JSON
 representation. If converting a leaf-level object (i.e. not a map or array)
 and not using raw mode, the underlying content will be given (e.g. strings will be
 printed directly, rather than quoted and JSON-escaped).</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">user-data/mpv/ytdl</span></tt></dt>
+<dd><p class="first">Data shared by the builtin ytdl hook script.</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">user-data/mpv/ytdl/path</span></tt></dt>
+<dd>Path to the ytdl executable, if found, or an empty string otherwise.
+The property is not set until the script attempts to find the ytdl
+executable, i.e. until an URL is being loaded by the script.</dd>
+<dt><tt class="docutils literal"><span class="pre">user-data/mpv/ytdl/json-subprocess-result</span></tt></dt>
+<dd>Result of executing ytdl to retrieve the JSON data of the URL being
+loaded. The format is the same as <tt class="docutils literal">subprocess</tt>'s result, capturing
+stdout and stderr.</dd>
+</dl>
+</dd>
+</dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">menu-data</span></tt> (RW)</dt>
 <dd><p class="first">This property stores the raw menu definition. See <a class="reference internal" href="#context-menu">Context Menu</a> section for details.</p>
