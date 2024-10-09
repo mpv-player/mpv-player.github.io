@@ -250,10 +250,10 @@ corresponding adjustment.)</p>
 <dd>Toggle fullscreen (see also <tt class="docutils literal"><span class="pre">--fs</span></tt>).</dd>
 </dl>
 <p>(The following keybindings open a selector in the console that lets you choose
-from a list of items by typing part of the desired item and/or by navigating
-them with keybindings: <tt class="docutils literal">Down</tt> and <tt class="docutils literal">Ctrl+n</tt> go down, <tt class="docutils literal">Up</tt> and <tt class="docutils literal">Ctrl+p</tt> go
-up, <tt class="docutils literal">Page down</tt> and <tt class="docutils literal">Ctrl+f</tt> scroll down one page, and <tt class="docutils literal">Page up</tt> and
-<tt class="docutils literal">Ctrl+b</tt> scroll up one page.)</p>
+from a list of items by typing part of the desired item, by clicking the desired
+item, or by navigating them with keybindings: <tt class="docutils literal">Down</tt> and <tt class="docutils literal">Ctrl+n</tt> go down,
+<tt class="docutils literal">Up</tt> and <tt class="docutils literal">Ctrl+p</tt> go up, <tt class="docutils literal">Page down</tt> and <tt class="docutils literal">Ctrl+f</tt> scroll down one page,
+and <tt class="docutils literal">Page up</tt> and <tt class="docutils literal">Ctrl+b</tt> scroll up one page.)</p>
 <dl class="docutils">
 <dt>g-p</dt>
 <dd>Select a playlist entry.</dd>
@@ -2201,6 +2201,7 @@ the URL.</p>
 <p><tt class="docutils literal">^</tt> matches the beginning of the URL, <tt class="docutils literal">$</tt> matches its end, and you
 should use <tt class="docutils literal">%</tt> before any of the characters <tt class="docutils literal"><span class="pre">^$()%|,.[]*+-?</span></tt> to
 match that character.</p>
+<p>URLs are converted to lower case before matching.</p>
 <div class="admonition admonition-examples">
 <p class="first admonition-title">Examples</p>
 <ul class="last simple">
@@ -2212,6 +2213,12 @@ will exclude any URL that ends with <tt class="docutils literal">.mkv</tt> or <t
 </ul>
 </div>
 <p class="last">See more lua patterns here: <a class="reference external" href="https://www.lua.org/manual/5.1/manual.html#5.4.1">https://www.lua.org/manual/5.1/manual.html#5.4.1</a></p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">include=&lt;URL1|URL2|...</span></tt></dt>
+<dd><p class="first">A <tt class="docutils literal">|</tt>-separated list of URL patterns which mpv should try to parse with
+youtube-dl first when <tt class="docutils literal">try_ytdl_first</tt> is <tt class="docutils literal">no</tt>. The patterns are
+matched in the same way as <tt class="docutils literal">exclude</tt>.</p>
+<p class="last">Default: <tt class="docutils literal"><span class="pre">^%w+%.youtube%.com/|^youtube%.com/|^youtu%.be/|^%w+%.twitch%.tv/|^twitch%.tv/</span></tt></p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">all_formats=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">If 'yes' will attempt to add all formats found reported by youtube-dl
