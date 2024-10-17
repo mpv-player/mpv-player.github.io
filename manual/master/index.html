@@ -6553,12 +6553,17 @@ but adds more ringing.</p>
 </dd>
 <dt><tt class="docutils literal">ewa_lanczossharp</tt></dt>
 <dd>A slightly sharpened version of <tt class="docutils literal">ewa_lanczos</tt>. This is the default
-when using the <tt class="docutils literal"><span class="pre">high-quality</span></tt> profile.</dd>
+when using the <tt class="docutils literal"><span class="pre">high-quality</span></tt> profile. Blur value determined by method
+originally developed by Nicolas Robidoux for Image Magick, see:
+<a class="reference external" href="https://www.imagemagick.org/discourse-server/viewtopic.php?p=89068#p89068">https://www.imagemagick.org/discourse-server/viewtopic.php?p=89068#p89068</a></dd>
 <dt><tt class="docutils literal">ewa_lanczos4sharpest</tt></dt>
-<dd>Very sharp scaler, but also slightly slower than <tt class="docutils literal">ewa_lanczossharp</tt>.
+<dd><p class="first">Very sharp scaler, but also slightly slower than <tt class="docutils literal">ewa_lanczossharp</tt>.
 Prone to ringing, so it's recommended to combine this with an
 anti-ringing shader. On <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, setting this filter enables
-built-in anti-ringing, so no extra action needs to be taken.</dd>
+built-in anti-ringing, so no extra action needs to be taken.</p>
+<p class="last">For more details, see:
+<a class="reference external" href="https://www.imagemagick.org/discourse-server/viewtopic.php?p=128587#p128587">https://www.imagemagick.org/discourse-server/viewtopic.php?p=128587#p128587</a></p>
+</dd>
 <dt><tt class="docutils literal">mitchell</tt></dt>
 <dd>Mitchell-Netravali. Piecewise cubic filter with a support of radius 2.0.
 Provides a balanced compromise of all scaling artifacts. This filter has
@@ -6716,10 +6721,13 @@ precisions. This is not usually recommended except for testing/specific
 purposes. Users are advised to either enable <tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt> or
 keep both options disabled (i.e. scaling in gamma light).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt></dt>
-<dd>When upscaling, use a sigmoidal color transform to avoid emphasizing
+<dd><p class="first">When upscaling, use a sigmoidal color transform to avoid emphasizing
 ringing artifacts. Enabled by default. This is incompatible with and replaces
 <tt class="docutils literal"><span class="pre">--linear-upscaling</span></tt>. (Note that sigmoidization also requires
-linearization, so the <tt class="docutils literal">LINEAR</tt> rendering step fires in both cases)</dd>
+linearization, so the <tt class="docutils literal">LINEAR</tt> rendering step fires in both cases)</p>
+<p class="last">For more information about sigmoidization, see:
+<a class="reference external" href="https://imagemagick.org/Usage/resize/#resize_sigmoidal">https://imagemagick.org/Usage/resize/#resize_sigmoidal</a></p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--sigmoid-center</span></tt></dt>
 <dd>The center of the sigmoid curve used for <tt class="docutils literal"><span class="pre">--sigmoid-upscaling</span></tt>, must be a
 float between 0.0 and 1.0. Defaults to 0.75 if not specified.</dd>
@@ -12848,8 +12856,7 @@ the property, although in practice it does not matter.)</dd>
 <dt><tt class="docutils literal">editions</tt></dt>
 <dd>Number of MKV editions.</dd>
 <dt><tt class="docutils literal"><span class="pre">edition-list</span></tt></dt>
-<dd><p class="first">List of editions, current entry marked. Currently, the raw property value
-is useless.</p>
+<dd><p class="first">List of editions, current entry marked.</p>
 <p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based edition
 index.</p>
 <dl class="docutils">
@@ -13596,13 +13603,21 @@ MPV_FORMAT_NODE_ARRAY
 </pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">track-list</span></tt></dt>
-<dd><p class="first">List of audio/video/sub tracks, current entry marked. Currently, the raw
-property value is useless.</p>
+<dd><p class="first">List of audio/video/sub tracks, current entry marked.</p>
 <p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based track
 index.</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">track-list/count</span></tt></dt>
 <dd>Total number of tracks.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/video</span></tt></dt>
+<dd>The list of video tracks. This is only usable for printing and its value
+can't be retrieved.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/audio</span></tt></dt>
+<dd>The list of audio tracks. This is only usable for printing and its value
+can't be retrieved.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/sub</span></tt></dt>
+<dd>The list of sub tracks. This is only usable for printing and its value
+can't be retrieved.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/id</span></tt></dt>
 <dd>The ID as it's used for <tt class="docutils literal"><span class="pre">--sid</span></tt>/<tt class="docutils literal"><span class="pre">--aid</span></tt>/<tt class="docutils literal"><span class="pre">--vid</span></tt>. This is unique
 within tracks of the same type (sub/audio/video), but otherwise not.</dd>
@@ -13781,8 +13796,7 @@ language field (the same value as <tt class="docutils literal"><span class="pre"
 first one is returned.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">chapter-list</span></tt> (RW)</dt>
-<dd><p class="first">List of chapters, current entry marked. Currently, the raw property value
-is useless.</p>
+<dd><p class="first">List of chapters, current entry marked.</p>
 <p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based chapter
 index.</p>
 <dl class="docutils">
@@ -14933,9 +14947,6 @@ supports the <tt class="docutils literal"><span class="pre">display-fps</span></
 <p>The OSC script listens to certain script commands. These commands can bound
 in <tt class="docutils literal">input.conf</tt>, or sent by other scripts.</p>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">osc-message</span></tt></dt>
-<dd>Show a message on screen using the OSC. First argument is the message,
-second the duration in seconds.</dd>
 <dt><tt class="docutils literal"><span class="pre">osc-visibility</span></tt></dt>
 <dd>Controls visibility mode <tt class="docutils literal">never</tt> / <tt class="docutils literal">auto</tt> (on mouse move) / <tt class="docutils literal">always</tt>
 and also <tt class="docutils literal">cycle</tt> to cycle between the modes.</dd>
@@ -14953,9 +14964,6 @@ b script-message osc-visibility auto
 <dt><tt class="docutils literal"><span class="pre">osc-idlescreen</span></tt></dt>
 <dd>Controls the visibility of the mpv logo on idle. Valid arguments are <tt class="docutils literal">yes</tt>,
 <tt class="docutils literal">no</tt>, and <tt class="docutils literal">cycle</tt> to toggle between yes and no.</dd>
-<dt><tt class="docutils literal"><span class="pre">osc-playlist</span></tt>, <tt class="docutils literal"><span class="pre">osc-chapterlist</span></tt>, <tt class="docutils literal"><span class="pre">osc-tracklist</span></tt></dt>
-<dd>Shows a limited view of the respective type of list using the OSC. First
-argument is duration in seconds.</dd>
 </dl>
 </div>
 </div>
