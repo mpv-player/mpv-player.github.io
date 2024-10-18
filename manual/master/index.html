@@ -2341,7 +2341,7 @@ started.</dd>
 <dd>Enable the builtin script that shows useful playback information on a key
 binding (default: yes). By default, the <tt class="docutils literal">i</tt> key is used (<tt class="docutils literal">I</tt> to make
 the overlay permanent).</dd>
-<dt><tt class="docutils literal"><span class="pre">--load-osd-console=&lt;yes|no&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--load-console=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable the built-in script that shows a console on a key binding and lets
 you enter commands (default: yes). The <tt class="docutils literal">`</tt> key is used to show the
 console by default, and <tt class="docutils literal">ESC</tt> to hide it again.</dd>
@@ -15023,11 +15023,23 @@ stats:</p>
 </tr>
 </tbody>
 </table>
+<p>If stats were displayed by toggling, these key bindings are also active:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>ESC</td>
+<td>Close the stats</td>
+</tr>
+</tbody>
+</table>
 <p>On pages which support scroll, these key bindings are also active:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="16%" />
-<col width="84%" />
+<col width="17%" />
+<col width="83%" />
 </colgroup>
 <tbody valign="top">
 <tr><td>UP</td>
@@ -15038,8 +15050,18 @@ stats:</p>
 </tr>
 </tbody>
 </table>
-<p>Page 4 also binds <tt class="docutils literal">/</tt> to search for input bindings by typing part of a binding
-or command.</p>
+<p>On page 4, these key bindings are also active:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>/</td>
+<td>Search key bindings</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="id2">
 <h2>Configuration</h2>
@@ -15060,7 +15082,9 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dt><tt class="docutils literal">key_page_5</tt></dt>
 <dd>Default: 5</dd>
 <dt><tt class="docutils literal">key_page_0</tt></dt>
-<dd><p class="first">Default: 0</p>
+<dd>Default: 0</dd>
+<dt><tt class="docutils literal">key_exit</tt></dt>
+<dd><p class="first">Default: ESC</p>
 <p class="last">Key bindings for page switching while stats are displayed.</p>
 </dd>
 <dt><tt class="docutils literal">key_scroll_up</tt></dt>
@@ -15258,7 +15282,7 @@ corresponding pthread API works and is supported).</p>
 <h1>CONSOLE</h1>
 <p>The console is a REPL for mpv input commands. It is displayed on the video
 window. It also shows log messages. It can be disabled entirely using the
-<tt class="docutils literal"><span class="pre">--load-osd-console=no</span></tt> option.</p>
+<tt class="docutils literal"><span class="pre">--load-console=no</span></tt> option.</p>
 <div class="section" id="keybindings">
 <h2>Keybindings</h2>
 <dl class="docutils">
@@ -15324,6 +15348,14 @@ prefix of the completions, and subsequent presses cycle through them.</dd>
 <dd>Cycle through the completions backwards.</dd>
 <dt>Ctrl+l</dt>
 <dd>Clear all log messages from the console.</dd>
+<dt>MBTN_RIGHT</dt>
+<dd>Hide the console.</dd>
+<dt>MBTN_MID</dt>
+<dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
+<dt>WHEEL_UP</dt>
+<dd>Move back in the command history.</dd>
+<dt>WHEEL_DOWN</dt>
+<dd>Move forward in the command history.</dd>
 </dl>
 </div>
 <div class="section" id="commands">
