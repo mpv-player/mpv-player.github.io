@@ -4894,9 +4894,9 @@ extension (default: <tt class="docutils literal">auto</tt>).</p>
 frame presentation. This only has an effect if <tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt>
 is being used.</p>
 <p>The auto option enumerates XRandr providers for autodetection. If amd, radeon,
-intel, or nouveau (the standard x86 Mesa drivers) is found and nvidia is NOT
-found, presentation feedback is enabled. Other drivers are not assumed to
-work, so they are not enabled automatically.</p>
+intel, or nouveau (the standard x86 Mesa drivers) is found presentation
+feedback is enabled. Other drivers are not assumed to work, so they are not
+enabled automatically.</p>
 <p class="last"><tt class="docutils literal">yes</tt> or <tt class="docutils literal">no</tt> can still be passed regardless to enable/disable this
 mechanism in case there is good/bad behavior with whatever your combination
 of hardware/drivers/etc. happens to be.</p>
@@ -14274,9 +14274,7 @@ at runtime.</dd>
 example, the input.conf entry <tt class="docutils literal">f cycle bla # toggle bla</tt> would
 result in an entry with <tt class="docutils literal">comment = &quot;toggle bla&quot;, cmd = &quot;cycle bla&quot;</tt>.)</dd>
 </dl>
-<p class="last">This property is read-only, and change notification is not supported.
-Currently, there is no mechanism to change key bindings at runtime, other
-than scripts adding or removing their own bindings.</p>
+<p class="last">This property is read-only, and change notification is not supported.</p>
 </dd>
 </dl>
 </div>
@@ -15149,15 +15147,9 @@ scripts decide to print text at the same time.</p>
 <dd><p class="first">Default: 16</p>
 <p class="last">Only show the first specified amount of file tags.</p>
 </dd>
-<dt><tt class="docutils literal">term_width_limit</tt></dt>
-<dd><p class="first">Default: -1</p>
-<p class="last">Sets the terminal width.
-A value of 0 means the width is infinite, -1 means it's automatic.</p>
-</dd>
-<dt><tt class="docutils literal">term_height_limit</tt></dt>
-<dd><p class="first">Default: -1</p>
-<p class="last">Sets the terminal height.
-A value of 0 means the height is infinite, -1 means it's automatic.</p>
+<dt><tt class="docutils literal">term_clip</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Whether to clip lines to the terminal width.</p>
 </dd>
 <dt><tt class="docutils literal">plot_perfdata</tt></dt>
 <dd><p class="first">Default: yes</p>
@@ -15269,11 +15261,11 @@ detailed view of each binding.</p>
 <p>The keys are grouped automatically using a simple analysis of the command
 string, and one should not expect documentation-level grouping accuracy,
 however, it should still be reasonably useful.</p>
-<p>Using <tt class="docutils literal"><span class="pre">--idle</span> <span class="pre">--script-opts=stats-bindlist=yes</span></tt> will print the list to the
-terminal and quit immediately. By default long lines are shortened to 79 chars,
-and terminal escape sequences are enabled. A different length limit can be
-set by changing <tt class="docutils literal">yes</tt> to a number (at least 40), and escape sequences can be
-disabled by adding <tt class="docutils literal">-</tt> before the value, e.g. <tt class="docutils literal"><span class="pre">...=-yes</span></tt> or <tt class="docutils literal"><span class="pre">...=-120</span></tt>.</p>
+<p>Using <tt class="docutils literal"><span class="pre">--idle</span> <span class="pre">--script-opts-append=stats-bindlist=yes</span></tt> will print the list to
+the terminal and quit immediately. Long lines are clipped to the terminal width
+unless this is disabled with <tt class="docutils literal"><span class="pre">--script-opts-append=stats-term_clip=no</span></tt>. Escape
+sequences can be disabled by adding <tt class="docutils literal">-</tt> before <tt class="docutils literal">yes</tt>, i.e.
+<tt class="docutils literal"><span class="pre">--script-opts-append=stats-bindlist=-yes</span></tt>.</p>
 <p>Like with <tt class="docutils literal"><span class="pre">--input-test</span></tt>, the list includes bindings from <tt class="docutils literal">input.conf</tt> and
 from user scripts. Use <tt class="docutils literal"><span class="pre">--no-config</span></tt> to list only built-in bindings.</p>
 </div>
