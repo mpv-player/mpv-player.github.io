@@ -2139,11 +2139,14 @@ configuration subdirectory (usually <tt class="docutils literal"><span class="pr
 separating them with the path separator (<tt class="docutils literal">:</tt> on Unix, <tt class="docutils literal">;</tt> on Windows).</p>
 <p class="last"><tt class="docutils literal"><span class="pre">--scripts</span></tt> is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--script-opts=key1=value1,key2=value2,...</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--script-opt=&lt;key=value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--script-opts=key1=value1,key2=value2,...</span></tt></dt>
 <dd><p class="first">Set options for scripts. A script can query an option by key. If an
 option is used and what semantics the option value has depends entirely on
 the loaded scripts. Values not claimed by any scripts are ignored.</p>
-<p class="last">This is a key/value list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+<p class="last">Each use of the <tt class="docutils literal"><span class="pre">--script-opt</span></tt> option will add another option to the
+internal list, while <tt class="docutils literal"><span class="pre">--script-opts</span></tt> takes a list of options at once,
+and overwrites the internal list with it. The latter is a key/value list
+option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--merge-files</span></tt></dt>
 <dd>Pretend that all files passed to mpv are concatenated into a single, big
@@ -14442,10 +14445,13 @@ player window and will hide if the mouse is not moved outside the OSC for
 <td>play previous file in playlist</td>
 </tr>
 <tr><td>right-click</td>
-<td>show playlist</td>
+<td>open the playlist selector</td>
 </tr>
 <tr><td>shift+L-click</td>
-<td>show playlist</td>
+<td>show the playlist</td>
+</tr>
+<tr><td>middle-click</td>
+<td>show the playlist</td>
 </tr>
 </tbody>
 </table>
@@ -14461,18 +14467,21 @@ player window and will hide if the mouse is not moved outside the OSC for
 <td>play next file in playlist</td>
 </tr>
 <tr><td>right-click</td>
-<td>show playlist</td>
+<td>open the playlist selector</td>
 </tr>
 <tr><td>shift+L-click</td>
-<td>show playlist</td>
+<td>show the playlist</td>
+</tr>
+<tr><td>middle-click</td>
+<td>show the playlist</td>
 </tr>
 </tbody>
 </table>
 </dd>
 <dt>title</dt>
 <dd><div class="first line-block">
-<div class="line">Displays current media-title, filename, custom title, or target chapter
-name while hovering the seekbar.</div>
+<div class="line">Displays the current playlist position and media-title, filename or custom
+title, or the target chapter name while hovering the seekbar.</div>
 </div>
 <table border="1" class="last docutils">
 <colgroup>
@@ -14481,10 +14490,13 @@ name while hovering the seekbar.</div>
 </colgroup>
 <tbody valign="top">
 <tr><td>left-click</td>
-<td>show playlist position and length and full title</td>
+<td>open the playlist selector</td>
+</tr>
+<tr><td>middle-click</td>
+<td>show the filename</td>
 </tr>
 <tr><td>right-click</td>
-<td>show filename</td>
+<td>show file and track info</td>
 </tr>
 </tbody>
 </table>
@@ -14503,6 +14515,9 @@ name while hovering the seekbar.</div>
 <tbody valign="top">
 <tr><td>left-click</td>
 <td>toggle play/pause</td>
+</tr>
+<tr><td>right-click</td>
+<td>toggle infinite looping</td>
 </tr>
 </tbody>
 </table>
@@ -14574,6 +14589,9 @@ name while hovering the seekbar.</div>
 <tr><td>left-click</td>
 <td>seek to position</td>
 </tr>
+<tr><td>right-click</td>
+<td>seek to the nearest chapter</td>
+</tr>
 <tr><td>mouse wheel</td>
 <td>seek forward/backward</td>
 </tr>
@@ -14607,12 +14625,15 @@ name while hovering the seekbar.</div>
 </colgroup>
 <tbody valign="top">
 <tr><td>left-click</td>
-<td>cycle audio/sub tracks forward</td>
-</tr>
-<tr><td>right-click</td>
-<td>cycle audio/sub tracks backwards</td>
+<td>open the audio/sub track selector</td>
 </tr>
 <tr><td>shift+L-click</td>
+<td>show available audio/sub tracks</td>
+</tr>
+<tr><td>middle-click</td>
+<td>show available audio/sub tracks</td>
+</tr>
+<tr><td>right-click</td>
 <td>show available audio/sub tracks</td>
 </tr>
 <tr><td>mouse wheel</td>
@@ -14631,6 +14652,9 @@ name while hovering the seekbar.</div>
 <tr><td>left-click</td>
 <td>toggle mute</td>
 </tr>
+<tr><td>right-click</td>
+<td>open the audio device selector</td>
+</tr>
 <tr><td>mouse wheel</td>
 <td>volume up/down</td>
 </tr>
@@ -14646,6 +14670,9 @@ name while hovering the seekbar.</div>
 <tbody valign="top">
 <tr><td>left-click</td>
 <td>toggle fullscreen</td>
+</tr>
+<tr><td>right-click</td>
+<td>toggle whether the window is maximized</td>
 </tr>
 </tbody>
 </table>
@@ -14804,7 +14831,7 @@ negative</p>
 <p class="last">Duration of fade out in ms, 0 = no fade</p>
 </dd>
 <dt><tt class="docutils literal">title</tt></dt>
-<dd><p class="first">Default: ${media-title}</p>
+<dd><p class="first">Default: ${!playlist-count==1:[${playlist-pos-1}/${playlist-count}] }${media-title}</p>
 <p class="last">String that supports property expansion that will be displayed as
 OSC title.
 ASS tags are escaped and newlines are converted to spaces.</p>
@@ -14968,6 +14995,44 @@ supports the <tt class="docutils literal"><span class="pre">display-fps</span></
 <p class="last">Use display fps to calculate the interval between OSC redraws.</p>
 </dd>
 </dl>
+<p>The following options configure what commands are run when the buttons are
+clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered with <tt class="docutils literal">shift+mbtn_left</tt>.</p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_left_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_mid_command=show-text</span> ${filename}</tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_right_command=script-binding</span> <span class="pre">stats/display-page-5</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_left_command=playlist-prev;</span> <span class="pre">show-text</span> ${playlist} 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_mid_command=show-text</span> ${playlist} 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_left_command=playlist-next;</span> <span class="pre">show-text</span> ${playlist} 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_mid_command=show-text</span> ${playlist} 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal">play_pause_mbtn_left_command=cycle pause</tt></p>
+<p><tt class="docutils literal">play_pause_mbtn_mid_command=</tt></p>
+<p><tt class="docutils literal"><span class="pre">play_pause_mbtn_right_command=cycle-values</span> <span class="pre">loop-file</span> inf no</tt></p>
+<p><tt class="docutils literal"><span class="pre">chapter_prev_mbtn_left_command=no-osd</span> add chapter <span class="pre">-1;</span> <span class="pre">show-text</span> <span class="pre">${chapter-list}</span> 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">chapter_prev_mbtn_mid_command=show-text</span> <span class="pre">${chapter-list}</span> 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">chapter_prev_mbtn_right_command=script-binding</span> <span class="pre">select/select-chapter;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">chapter_next_mbtn_left_command=no-osd</span> add chapter 1; <span class="pre">show-text</span> <span class="pre">${chapter-list}</span> 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">chapter_next_mbtn_mid_command=show-text</span> <span class="pre">${chapter-list}</span> 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">chapter_next_mbtn_right_command=script-binding</span> <span class="pre">select/select-chapter;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">audio_track_mbtn_left_command=script-binding</span> <span class="pre">select/select-aid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">audio_track_mbtn_mid_command=show-text</span> <span class="pre">${track-list/audio}</span> 2000</tt></p>
+<p><tt class="docutils literal"><span class="pre">audio_track_mbtn_right_command=show-text</span> <span class="pre">${track-list/audio}</span> 2000</tt></p>
+<p><tt class="docutils literal">audio_track_wheel_down_command=cycle audio</tt></p>
+<p><tt class="docutils literal">audio_track_wheel_up_command=cycle audio down</tt></p>
+<p><tt class="docutils literal"><span class="pre">sub_track_mbtn_left_command=script-binding</span> <span class="pre">select/select-sid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">sub_track_mbtn_mid_command=show-text</span> <span class="pre">${track-list/sub}</span> 2000</tt></p>
+<p><tt class="docutils literal"><span class="pre">sub_track_mbtn_right_command=show-text</span> <span class="pre">${track-list/sub}</span> 2000</tt></p>
+<p><tt class="docutils literal">sub_track_wheel_down_command=cycle sub</tt></p>
+<p><tt class="docutils literal">sub_track_wheel_up_command=cycle sub down</tt></p>
+<p><tt class="docutils literal"><span class="pre">volume_mbtn_left_command=no-osd</span> cycle mute</tt></p>
+<p><tt class="docutils literal">volume_mbtn_mid_command=</tt></p>
+<p><tt class="docutils literal"><span class="pre">volume_mbtn_right_command=script-binding</span> <span class="pre">select/select-audio-device;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal">volume_wheel_down_command=add volume <span class="pre">-5</span></tt></p>
+<p><tt class="docutils literal">volume_wheel_up_command=add volume 5</tt></p>
+<p><tt class="docutils literal"><span class="pre">fullscreen_mbtn_left_command=&quot;cycle</span> fullscreen&quot;</tt></p>
+<p><tt class="docutils literal">fullscreen_mbtn_mid_command=</tt></p>
+<p><tt class="docutils literal"><span class="pre">fullscreen_mbtn_right_command=&quot;cycle</span> <span class="pre">window-maximized&quot;</span></tt></p>
 </div>
 <div class="section" id="script-commands">
 <h3>Script Commands</h3>
@@ -14979,6 +15044,8 @@ in <tt class="docutils literal">input.conf</tt>, or sent by other scripts.</p>
 and also <tt class="docutils literal">cycle</tt> to cycle between the modes.</dd>
 <dt><tt class="docutils literal"><span class="pre">osc-show</span></tt></dt>
 <dd>Triggers the OSC to show up, just as if user moved mouse.</dd>
+<dt><tt class="docutils literal"><span class="pre">osc-hide</span></tt></dt>
+<dd>Hide the OSC when <tt class="docutils literal">visibility</tt> is <tt class="docutils literal">auto</tt>.</dd>
 </dl>
 <p>Example</p>
 <p>You could put this into <tt class="docutils literal">input.conf</tt> to hide the OSC with the <tt class="docutils literal">a</tt> key and
@@ -15261,11 +15328,11 @@ detailed view of each binding.</p>
 <p>The keys are grouped automatically using a simple analysis of the command
 string, and one should not expect documentation-level grouping accuracy,
 however, it should still be reasonably useful.</p>
-<p>Using <tt class="docutils literal"><span class="pre">--idle</span> <span class="pre">--script-opts-append=stats-bindlist=yes</span></tt> will print the list to
+<p>Using <tt class="docutils literal"><span class="pre">--idle</span> <span class="pre">--script-opt=stats-bindlist=yes</span></tt> will print the list to
 the terminal and quit immediately. Long lines are clipped to the terminal width
-unless this is disabled with <tt class="docutils literal"><span class="pre">--script-opts-append=stats-term_clip=no</span></tt>. Escape
+unless this is disabled with <tt class="docutils literal"><span class="pre">--script-opt=stats-term_clip=no</span></tt>. Escape
 sequences can be disabled by adding <tt class="docutils literal">-</tt> before <tt class="docutils literal">yes</tt>, i.e.
-<tt class="docutils literal"><span class="pre">--script-opts-append=stats-bindlist=-yes</span></tt>.</p>
+<tt class="docutils literal"><span class="pre">--script-opt=stats-bindlist=-yes</span></tt>.</p>
 <p>Like with <tt class="docutils literal"><span class="pre">--input-test</span></tt>, the list includes bindings from <tt class="docutils literal">input.conf</tt> and
 from user scripts. Use <tt class="docutils literal"><span class="pre">--no-config</span></tt> to list only built-in bindings.</p>
 </div>
