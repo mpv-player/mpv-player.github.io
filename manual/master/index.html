@@ -5650,6 +5650,29 @@ for details).</p>
 <p><tt class="docutils literal"><span class="pre">--osd-bar-border-size</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--osd-bar-outline-size</span></tt>.</p>
 <p class="last">Default: 0.5.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-bar-marker-scale=&lt;0-100&gt;</span></tt></dt>
+<dd><p class="first">Factor for the OSD bar marker size relative to the OSD bar outline size.</p>
+<p class="last">Default: 1.3.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-bar-marker-min-size=&lt;size&gt;</span></tt></dt>
+<dd><p class="first">Minimum OSD bar marker size.</p>
+<p class="last">Default: 1.6.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-bar-marker-style=&lt;none|triangle|line&gt;</span></tt></dt>
+<dd><p class="first">Set the OSD bar marker style.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">none:</th><td class="field-body">Don't draw markers.</td>
+</tr>
+<tr class="field"><th class="field-name">triangle:</th><td class="field-body">Draw markers as triangles (default).</td>
+</tr>
+<tr class="field"><th class="field-name">line:</th><td class="field-body">Draw markers as lines.</td>
+</tr>
+</tbody>
+</table>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-blur=&lt;0..20.0&gt;</span></tt></dt>
 <dd>Gaussian blur factor applied to the OSD font border.
 0 means no blur applied (default).</dd>
@@ -15017,12 +15040,12 @@ clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered 
 <p><tt class="docutils literal"><span class="pre">chapter_next_mbtn_right_command=script-binding</span> <span class="pre">select/select-chapter;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">audio_track_mbtn_left_command=script-binding</span> <span class="pre">select/select-aid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">audio_track_mbtn_mid_command=show-text</span> <span class="pre">${track-list/audio}</span> 3000</tt></p>
-<p><tt class="docutils literal"><span class="pre">audio_track_mbtn_right_command=show-text</span> <span class="pre">${track-list/audio}</span> 3000</tt></p>
+<p><tt class="docutils literal">audio_track_mbtn_right_command=cycle audio</tt></p>
 <p><tt class="docutils literal">audio_track_wheel_down_command=cycle audio</tt></p>
 <p><tt class="docutils literal">audio_track_wheel_up_command=cycle audio down</tt></p>
 <p><tt class="docutils literal"><span class="pre">sub_track_mbtn_left_command=script-binding</span> <span class="pre">select/select-sid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">sub_track_mbtn_mid_command=show-text</span> <span class="pre">${track-list/sub}</span> 3000</tt></p>
-<p><tt class="docutils literal"><span class="pre">sub_track_mbtn_right_command=show-text</span> <span class="pre">${track-list/sub}</span> 3000</tt></p>
+<p><tt class="docutils literal">sub_track_mbtn_right_command=cycle sub</tt></p>
 <p><tt class="docutils literal">sub_track_wheel_down_command=cycle sub</tt></p>
 <p><tt class="docutils literal">sub_track_wheel_up_command=cycle sub down</tt></p>
 <p><tt class="docutils literal"><span class="pre">volume_mbtn_left_command=no-osd</span> cycle mute</tt></p>
