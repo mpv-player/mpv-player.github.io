@@ -14949,11 +14949,6 @@ ASS tags are escaped, and newlines and trailing slashes are stripped.</p>
 <p class="last">Update chapter markers positions on duration changes, e.g. live streams.
 The updates are unoptimized - consider disabling it on very low-end systems.</p>
 </dd>
-<dt><tt class="docutils literal">chapters_osd</tt>, <tt class="docutils literal">playlist_osd</tt></dt>
-<dd><p class="first">Default: yes</p>
-<p class="last">Whether to display the chapters/playlist at the OSD when left-clicking the
-next/previous OSC buttons, respectively.</p>
-</dd>
 <dt><tt class="docutils literal">chapter_fmt</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">Chapter: %s</tt></p>
 <p class="last">Template for the chapter-name display when hovering the seekbar.
@@ -15507,10 +15502,13 @@ documentation.</p>
 <h3>Configurable Options</h3>
 <dl class="docutils">
 <dt><tt class="docutils literal">font</tt></dt>
-<dd><p class="first">Default: unset (picks a hardcoded font depending on detected platform)</p>
-<p class="last">Set the font used for the REPL and the console.
-This has to be a monospaced font for the completion suggestions to be
-aligned correctly.</p>
+<dd><p class="first">Default: a monospace font depending on the platform</p>
+<p class="last">Set the font used for the console.
+A monospaced font is necessary to align completion suggestions correctly in
+a grid.
+If the console was opened by calling <tt class="docutils literal">mp.input.select</tt> and no font was
+configured, <tt class="docutils literal"><span class="pre">--osd-font</span></tt> is used, as alignment is not necessary in that
+case.</p>
 </dd>
 <dt><tt class="docutils literal">font_size</tt></dt>
 <dd><p class="first">Default: 24</p>
