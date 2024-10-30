@@ -14468,7 +14468,7 @@ player window and will hide if the mouse is not moved outside the OSC for
 <td>play previous file in playlist</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the playlist selector</td>
+<td>show the playlist</td>
 </tr>
 <tr><td>shift+L-click</td>
 <td>show the playlist</td>
@@ -14490,7 +14490,7 @@ player window and will hide if the mouse is not moved outside the OSC for
 <td>play next file in playlist</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the playlist selector</td>
+<td>show the playlist</td>
 </tr>
 <tr><td>shift+L-click</td>
 <td>show the playlist</td>
@@ -14556,7 +14556,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>go to beginning of chapter / previous chapter</td>
 </tr>
 <tr><td>right-click</td>
-<td>show chapters</td>
+<td>open the chapter selector</td>
 </tr>
 <tr><td>shift+L-click</td>
 <td>show chapters</td>
@@ -14575,7 +14575,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>go to next chapter</td>
 </tr>
 <tr><td>right-click</td>
-<td>show chapters</td>
+<td>open the chapter selector</td>
 </tr>
 <tr><td>shift+L-click</td>
 <td>show chapters</td>
@@ -14701,6 +14701,10 @@ title, or the target chapter name while hovering the seekbar.</div>
 </table>
 </dd>
 </dl>
+<p>Since mpv 0.40.0, it is possible to configure the commands to run with mouse
+actions on some interface elements, and the default behaviors of several
+elements were changed. If you miss some older behaviors, look at
+<tt class="docutils literal"><span class="pre">etc/restore-osc-bindings.conf</span></tt> in the mpv git repository.</p>
 </div>
 <div class="section" id="key-bindings">
 <h3>Key Bindings</h3>
@@ -15265,7 +15269,7 @@ visual experience.</p>
 text. Currently, monospaced digits are sufficient.</p>
 </dd>
 <dt><tt class="docutils literal">font_size</tt></dt>
-<dd><p class="first">Default: 8</p>
+<dd><p class="first">Default: 20</p>
 <p class="last">Font size used to render text.</p>
 </dd>
 <dt><tt class="docutils literal">font_color</tt></dt>
@@ -15273,7 +15277,7 @@ text. Currently, monospaced digits are sufficient.</p>
 <p class="last">Color of the text.</p>
 </dd>
 <dt><tt class="docutils literal">border_size</tt></dt>
-<dd><p class="first">Default: 0.8</p>
+<dd><p class="first">Default: 2</p>
 <p class="last">Size of border drawn around the font.</p>
 </dd>
 <dt><tt class="docutils literal">border_color</tt></dt>
@@ -15303,7 +15307,7 @@ specified.</p>
 <p class="last">Border color used for drawing graphs.</p>
 </dd>
 <dt><tt class="docutils literal">plot_bg_border_width</tt></dt>
-<dd><p class="first">Default: 0.5</p>
+<dd><p class="first">Default: 1.25</p>
 <p class="last">Border width used for drawing graphs.</p>
 </dd>
 <dt><tt class="docutils literal">plot_bg_color</tt></dt>
@@ -15988,7 +15992,7 @@ of <tt class="docutils literal">.</tt> (Refer to <a class="reference external" h
 seconds = 0
 timer = mp.add_periodic_timer(1, function()
     print(&quot;called every second&quot;)
-    # stop it after 10 seconds
+    -- stop it after 10 seconds
     seconds = seconds + 1
     if seconds &gt;= 10 then
         timer:kill()
