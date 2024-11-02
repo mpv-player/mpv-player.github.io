@@ -11795,11 +11795,12 @@ repeat timing until the <tt class="docutils literal">keyup</tt> command is calle
 triggered. <tt class="docutils literal">name</tt> is optional. If <tt class="docutils literal">name</tt> is not given or is an
 empty string, <tt class="docutils literal">KEYUP</tt> will be set on all keys. Otherwise, <tt class="docutils literal">KEYUP</tt> will
 only be set on the key specified by <tt class="docutils literal">name</tt>.</dd>
-<dt><tt class="docutils literal">keybind &lt;name&gt; &lt;command&gt;</tt></dt>
-<dd>Binds a key to an input command. <tt class="docutils literal">command</tt> must be a complete command
+<dt><tt class="docutils literal">keybind &lt;name&gt; &lt;cmd&gt; [&lt;comment&gt;]</tt></dt>
+<dd>Binds a key to an input command. <tt class="docutils literal">cmd</tt> must be a complete command
 containing all the desired arguments and flags. Both <tt class="docutils literal">name</tt> and
-<tt class="docutils literal">command</tt> use the <tt class="docutils literal">input.conf</tt> naming scheme. This is primarily
-useful for the client API.</dd>
+<tt class="docutils literal">cmd</tt> use the <tt class="docutils literal">input.conf</tt> naming scheme. <tt class="docutils literal">comment</tt> is an optional
+string which can be read as the <tt class="docutils literal">comment</tt> entry of <tt class="docutils literal"><span class="pre">input-bindings</span></tt>.
+This is primarily useful for the client API.</dd>
 <dt><tt class="docutils literal"><span class="pre">audio-add</span> &lt;url&gt; [&lt;flags&gt; [&lt;title&gt; <span class="pre">[&lt;lang&gt;]]]</span></tt></dt>
 <dd>Load the given audio file. See <tt class="docutils literal"><span class="pre">sub-add</span></tt> command.</dd>
 <dt><tt class="docutils literal"><span class="pre">audio-remove</span> [&lt;id&gt;]</tt></dt>
@@ -12687,11 +12688,11 @@ that bindings in the <tt class="docutils literal">default</tt> sections are igno
 information. They can be manipulated with the <tt class="docutils literal">set</tt>/<tt class="docutils literal">add</tt>/<tt class="docutils literal">cycle</tt>
 commands, and retrieved with <tt class="docutils literal"><span class="pre">show-text</span></tt>, or anything else that uses property
 expansion. (See <a class="reference internal" href="#property-expansion">Property Expansion</a>.)</p>
-<p>The property name is annotated with RW to indicate whether the property is
-generally writable.</p>
 <p>If an option is referenced, the property will normally take/return exactly the
 same values as the option. In these cases, properties are merely a way to change
 an option at runtime.</p>
+<p>Note that many properties are unavailable at startup. See <a class="reference internal" href="#details-on-the-script-initialization-and-lifecycle">Details on the script
+initialization and lifecycle</a>.</p>
 </div>
 <div class="section" id="property-list">
 <h2>Property list</h2>
@@ -12752,8 +12753,7 @@ quantities: fps and possibly rounded timestamps.)</p>
 <dd>Full path of the currently played file. Usually this is exactly the same
 string you pass on the mpv command line or the <tt class="docutils literal">loadfile</tt> command, even
 if it's a relative path. If you expect an absolute path, you will have to
-determine it yourself, for example by using the <tt class="docutils literal"><span class="pre">working-directory</span></tt>
-property.</dd>
+determine it yourself, for example by using the <tt class="docutils literal"><span class="pre">normalize-path</span></tt> command.</dd>
 <dt><tt class="docutils literal"><span class="pre">stream-open-filename</span></tt></dt>
 <dd>The full path to the currently played media. This is different from
 <tt class="docutils literal">path</tt> only in special cases. In particular, if <tt class="docutils literal"><span class="pre">--ytdl=yes</span></tt> is used,
@@ -15618,7 +15618,8 @@ own event handlers which you have registered with <tt class="docutils literal">m
 timers added with <tt class="docutils literal">mp.add_timeout</tt> or similar. Note that since the
 script starts execution concurrently with player initialization, some properties
 may not be populated with meaningful values until the relevant subsystems have
-initialized.</p>
+initialized. Rather than retrieving these properties at the top of scripts, you
+should use <tt class="docutils literal">mp.observe_property</tt> or read them within event handlers.</p>
 <p>When the player quits, all scripts will be asked to terminate. This happens via
 a <tt class="docutils literal">shutdown</tt> event, which by default will make the event loop return. If your
 script got into an endless loop, mpv will probably behave fine during playback,
