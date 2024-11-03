@@ -3808,6 +3808,29 @@ to not use this option, unless really needed.</p>
 <p class="last"><tt class="docutils literal">complex</tt> is the default. If libass hasn't been compiled against HarfBuzz,
 libass silently reverts to <tt class="docutils literal">simple</tt>.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-ass-prune-delay=&lt;-1|seconds&gt;</span></tt></dt>
+<dd><p class="first">Set the delay for automatic pruning of events from memory in libass. When
+enabled, subtitle events are removed from memory once their end timestamp is
+older than the specified delay.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">-1:</th><td class="field-body">disables automatic pruning (default).</td>
+</tr>
+<tr class="field"><th class="field-name">seconds:</th><td class="field-body">specify how many seconds after an event is no longer displayed
+should the pruning occur. <tt class="docutils literal">0</tt> prunes events as soon as they're
+off screen.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">This breaks sub-seek and subtitle rendering when changing play-direction
+from forward to backward during runtime for events that were already
+&quot;seen&quot; and need to be rendered again, if those events got pruned.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-styles=&lt;filename&gt;</span></tt></dt>
 <dd><p class="first">Load all SSA/ASS styles found in the specified file and use them for
 rendering text subtitles. The syntax of the file is exactly like the <tt class="docutils literal">[V4
@@ -3820,7 +3843,8 @@ Styles]</tt> / <tt class="docutils literal">[V4+ Styles]</tt> section of SSA/ASS
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-override=&lt;no|yes|scale|force|strip&gt;</span></tt></dt>
 <dd><p class="first">Control whether user style overrides should be applied. Note that all of
 these overrides try to be somewhat smart about figuring out whether or not
-a subtitle is considered a &quot;sign&quot;.</p>
+a subtitle is considered a &quot;sign&quot; and try to be as non-destructive as
+possible.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3835,7 +3859,8 @@ rendering.</td>
 <tr class="field"><th class="field-name">scale:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also apply <tt class="docutils literal"><span class="pre">--sub-scale</span></tt> (default).</td>
 </tr>
 <tr class="field"><th class="field-name">force:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also force all <tt class="docutils literal"><span class="pre">--sub-*</span></tt> options. Can break
-rendering easily.</td>
+rendering easily. Certain options aren't overridden if they can
+potentially be too destructive.</td>
 </tr>
 <tr class="field"><th class="field-name">strip:</th><td class="field-body">Radically strip all ASS tags and styles from the subtitle. This
 is equivalent to the old <tt class="docutils literal"><span class="pre">--no-ass</span></tt> / <tt class="docutils literal"><span class="pre">--no-sub-ass</span></tt> options.</td>
@@ -7310,11 +7335,42 @@ OFFSET must be left at their default values.</p>
 <dt><tt class="docutils literal"><span class="pre">--glsl-shader=&lt;file&gt;</span></tt></dt>
 <dd>CLI/config file only alias for <tt class="docutils literal"><span class="pre">--glsl-shaders-append</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--glsl-shader-opts=param1=value1,param2=value2,...</span></tt></dt>
-<dd>Specifies the options to use for tunable shader parameters. You can target
+<dd><p class="first">Specifies the options to use for tunable shader parameters. You can target
 specific named shaders by prefixing the shader name with a <tt class="docutils literal">/</tt>, e.g.
 <tt class="docutils literal">shader/param=value</tt>. Without a prefix, parameters affect all shaders.
 The shader name is the base part of the shader filename, without the
-extension. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+extension. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+<p>Some parameters are filled automatically if the shader requests them.
+Currently following parameters are available:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">PTS</tt></dt>
+<dd>PTS of the current frame in seconds.</dd>
+<dt><tt class="docutils literal">chroma_offset_x</tt></dt>
+<dd>chroma offset to the reference plane in x direction.</dd>
+<dt><tt class="docutils literal">chroma_offset_y</tt></dt>
+<dd>chroma offset to the reference plane in y direction.</dd>
+<dt><tt class="docutils literal">min_luma</tt></dt>
+<dd>Minimum luminance value (in cd/m²).</dd>
+<dt><tt class="docutils literal">max_luma</tt></dt>
+<dd>Maximum luminance value (in cd/m²).</dd>
+<dt><tt class="docutils literal">max_cll</tt></dt>
+<dd>Maximum Content Light Level (in cd/m²).</dd>
+<dt><tt class="docutils literal">max_fall</tt></dt>
+<dd>Maximum Frame Average Light Level (in cd/m²).</dd>
+<dt><tt class="docutils literal">scene_max_r</tt></dt>
+<dd>Maximum scene light level of the red channel (in cd/m²).</dd>
+<dt><tt class="docutils literal">scene_max_g</tt></dt>
+<dd>Maximum scene light level of the green channel (in cd/m²).</dd>
+<dt><tt class="docutils literal">scene_max_b</tt></dt>
+<dd>Maximum scene light level of the blue channel (in cd/m²).</dd>
+<dt><tt class="docutils literal">scene_avg</tt></dt>
+<dd>Average scene light level (in cd/m²).</dd>
+<dt><tt class="docutils literal">max_pq_y</tt></dt>
+<dd>Maximum PQ luminance (in PQ, 0-1).</dd>
+<dt><tt class="docutils literal">avg_pq_y</tt></dt>
+<dd>Average PQ luminance (in PQ, 0-1).</dd>
+</dl>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--deband</span></tt></dt>
 <dd>Enable the debanding algorithm. This greatly reduces the amount of visible
 banding, blocking and other quantization artifacts, at the expense of
@@ -16106,6 +16162,18 @@ the size of the OSD in pixels (for video outputs like <tt class="docutils litera
 be &quot;scaled&quot; pixels). The third is the display pixel aspect ratio.</p>
 <p class="last">May return invalid/nonsense values if OSD is not initialized yet.</p>
 </dd>
+<dt><tt class="docutils literal">exit()</tt> (global)</dt>
+<dd><p class="first">Make the script exit at the end of the current event loop iteration. This
+does not terminate mpv itself or other scripts.</p>
+<p>This can be polyfilled to support mpv versions older than 0.40 with:</p>
+<pre class="last literal-block">
+if not _G.exit then
+    function exit()
+        mp.keep_running = false
+    end
+end
+</pre>
+</dd>
 </dl>
 </div>
 <div class="section" id="mp-msg-functions">
@@ -16610,6 +16678,7 @@ string/boolean/number)</p>
 <p><tt class="docutils literal">mp.input.log(message, style)</tt></p>
 <p><tt class="docutils literal">mp.input.log_error(message)</tt></p>
 <p><tt class="docutils literal">mp.input.set_log(log)</tt></p>
+<p><tt class="docutils literal">exit()</tt> (global)</p>
 </div>
 <div class="section" id="additional-utilities">
 <h2>Additional utilities</h2>
@@ -16649,9 +16718,6 @@ text content only.</p>
 <dd>Same as <tt class="docutils literal">mp.get_time()</tt> but in ms instead of seconds.</dd>
 <dt><tt class="docutils literal">mp.get_script_file()</tt></dt>
 <dd>Returns the file name of the current script.</dd>
-<dt><tt class="docutils literal">exit()</tt> (global)</dt>
-<dd>Make the script exit at the end of the current event loop iteration.
-Note: please remove added key bindings before calling <tt class="docutils literal">exit()</tt>.</dd>
 <dt><tt class="docutils literal">mp.utils.compile_js(fname, content_str)</tt></dt>
 <dd>Compiles the JS code <tt class="docutils literal">content_str</tt> as file name <tt class="docutils literal">fname</tt> (without loading
 anything from the filesystem), and returns it as a function. Very similar
