@@ -432,18 +432,33 @@ strange URL unescaping rules.</p>
 console controls. (Which makes it suitable for playing data piped to stdin.)</p>
 <p>The special argument <tt class="docutils literal"><span class="pre">--</span></tt> can be used to stop mpv from interpreting the
 following arguments as options.</p>
-<p>When using the client API, you should strictly avoid using <tt class="docutils literal">mpv_command_string</tt>
+<p>For paths passed to mpv suboptions (options that have multiple <cite>:</cite> and
+<cite>,</cite>-separated values), the situation is further complicated by the need to
+escape special characters. To work around this, the path can instead be wrapped
+in the &quot;fixed-length&quot; syntax, e.g. <tt class="docutils literal">%n%string_of_length_n</tt> (see above).</p>
+<p>When using the libmpv API, you should strictly avoid using <tt class="docutils literal">mpv_command_string</tt>
 for invoking the <tt class="docutils literal">loadfile</tt> command, and instead prefer e.g. <tt class="docutils literal">mpv_command</tt>
 to avoid the need for filename escaping.</p>
-<p>For paths passed to suboptions, the situation is further complicated by the
-need to escape special characters. To work this around, the path can be
-additionally wrapped in the fixed-length syntax, e.g. <tt class="docutils literal">%n%string_of_length_n</tt>
-(see above).</p>
-<p>Some mpv options interpret paths starting with <tt class="docutils literal">~</tt>.
-Currently, the prefix <tt class="docutils literal">~~home/</tt> expands to the mpv configuration directory
-(usually <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).
-<tt class="docutils literal">~/</tt> expands to the user's home directory. (The trailing <tt class="docutils literal">/</tt> is always
-required.) The following paths are currently recognized:</p>
+<p>The same applies when you're using the scripting API, where you should avoid using
+<tt class="docutils literal">mp.command</tt>, and instead prefer using &quot;separate parameter&quot; APIs, such as
+<tt class="docutils literal">mp.commandv</tt> and <tt class="docutils literal">mp.command_native</tt>.</p>
+<p>Some mpv options will interpret special meanings for paths starting with <tt class="docutils literal">~</tt>,
+making it easy to dynamically find special directories, such as referring to the
+current user's home directory or the mpv configuration directory.</p>
+<p>When using the special <tt class="docutils literal">~</tt> prefix, there must always be a trailing <tt class="docutils literal">/</tt> after
+the special path prefix. In other words, <tt class="docutils literal">~</tt> doesn't work, but <tt class="docutils literal">~/</tt> will work.</p>
+<p>The following special paths/keywords are currently recognized:</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>Beware that if <tt class="docutils literal"><span class="pre">--no-config</span></tt> is used, all of the &quot;config directory&quot;-based
+paths (<tt class="docutils literal">~~/</tt>, <tt class="docutils literal">~~home/</tt> and <tt class="docutils literal">~~global/</tt>) will be empty strings.</p>
+<p>This means that <tt class="docutils literal">~~home/</tt> would expand to an empty string, and that
+sub-paths such as <tt class="docutils literal">~~home/foo/bar&quot;</tt> would expand to a relative path
+(<tt class="docutils literal">foo/bar</tt>), which may not be what you expected.</p>
+<p>Furthermore, any commands that search in config directories will fail
+to find anything, since there won't be any directories to search in.</p>
+<p class="last">Be sure that your scripts can handle these &quot;no config&quot; scenarios.</p>
+</div>
 <table border="1" class="docutils">
 <colgroup>
 <col width="20%" />
@@ -455,42 +470,42 @@ required.) The following paths are currently recognized:</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal">~~/</tt></td>
-<td>If the subpath exists in any of the mpv's config directories
-the path of the existing file/dir is returned. Otherwise this
-is equivalent to <tt class="docutils literal">~~home/</tt>.
-Note that if --no-config is used <tt class="docutils literal"><span class="pre">~~/foobar</span></tt> will resolve to
-<tt class="docutils literal">foobar</tt> which can be unexpected.</td>
-</tr>
 <tr><td><tt class="docutils literal">~/</tt></td>
-<td>user home directory root (similar to shell, <tt class="docutils literal">$HOME</tt>)</td>
+<td>The current user's home directory (equivalent to <tt class="docutils literal">~/</tt> and
+<tt class="docutils literal">$HOME/</tt> in terminal environments).</td>
+</tr>
+<tr><td><tt class="docutils literal">~~/</tt></td>
+<td>If the sub-path exists in any of mpv's config directories, then
+the path of the existing file/dir is returned. Otherwise this
+is equivalent to <tt class="docutils literal">~~home/</tt>.</td>
 </tr>
 <tr><td><tt class="docutils literal">~~home/</tt></td>
-<td>mpv config dir (for example <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>)</td>
+<td>mpv's config dir (for example <tt class="docutils literal"><span class="pre">~/.config/mpv/</span></tt>).</td>
 </tr>
 <tr><td><tt class="docutils literal">~~global/</tt></td>
-<td>the global config path, if available (not on win32)</td>
+<td>The global config path (such as <tt class="docutils literal">/etc/mpv</tt>), if available
+(not on win32).</td>
 </tr>
 <tr><td><tt class="docutils literal">~~osxbundle/</tt></td>
-<td>the macOS bundle resource path (macOS only)</td>
+<td>The macOS bundle resource path (macOS only).</td>
 </tr>
 <tr><td><tt class="docutils literal">~~desktop/</tt></td>
-<td>the path to the desktop (win32, macOS)</td>
+<td>The path to the desktop (win32, macOS).</td>
 </tr>
 <tr><td><tt class="docutils literal">~~exe_dir/</tt></td>
-<td>win32 only: the path to the directory containing the exe (for
-config file purposes; <tt class="docutils literal">$MPV_HOME</tt> overrides it)</td>
+<td>The path to the directory containing <tt class="docutils literal">mpv.exe</tt> (for config
+file purposes, <tt class="docutils literal">$MPV_HOME</tt> will override this) (win32 only).</td>
 </tr>
 <tr><td><tt class="docutils literal">~~cache/</tt></td>
-<td>the path to application cache data (<tt class="docutils literal"><span class="pre">~/.cache/mpv/</span></tt>)
+<td>The path to application cache data (<tt class="docutils literal"><span class="pre">~/.cache/mpv/</span></tt>).
 On some platforms, this will be the same as <tt class="docutils literal">~~home/</tt>.</td>
 </tr>
 <tr><td><tt class="docutils literal">~~state/</tt></td>
-<td>the path to application state data (<tt class="docutils literal"><span class="pre">~/.local/state/mpv/</span></tt>)
+<td>The path to application state data (<tt class="docutils literal"><span class="pre">~/.local/state/mpv/</span></tt>).
 On some platforms, this will be the same as <tt class="docutils literal">~~home/</tt>.</td>
 </tr>
 <tr><td><tt class="docutils literal">~~old_home/</tt></td>
-<td>do not use</td>
+<td>Do not use.</td>
 </tr>
 </tbody>
 </table>
@@ -3767,7 +3782,7 @@ loaded assuming a framerate of 23.976 at 25 FPS.</p>
 <p class="last">Using this option may lead to incorrect subtitle rendering.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass-hinting=&lt;none|light|normal|native&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-hinting=&lt;none|light|normal|native&gt;</span></tt></dt>
 <dd><p class="first">Set font hinting type. &lt;type&gt; can be:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3791,9 +3806,9 @@ of animations with some badly authored ASS scripts. It is recommended
 to not use this option, unless really needed.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass-line-spacing=&lt;value&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-line-spacing=&lt;value&gt;</span></tt></dt>
 <dd>Set line spacing value for SSA/ASS renderer.</dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-ass-shaper=&lt;simple|complex&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-shaper=&lt;simple|complex&gt;</span></tt></dt>
 <dd><p class="first">Set the text layout engine used by libass.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -7863,11 +7878,12 @@ its native color encoding, but before linearization.</dd>
 image's native colorspace and output normalized non-linear RGB.</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--target-colorspace-hint</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--target-colorspace-hint=&lt;auto|yes|no&gt;</span></tt></dt>
 <dd>Automatically configure the output colorspace of the display to pass
 through the input values of the stream (e.g. for HDR passthrough), if
-possible. Requires a supporting driver and <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>.
-(Default: <tt class="docutils literal">yes</tt>)</dd>
+possible. In <tt class="docutils literal">auto</tt> mode (the default), the target colorspace is only set,
+if the display signals support for HDR colorspace.
+Requires a supporting driver and <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>. (Default: <tt class="docutils literal">auto</tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
 this colorspace when ICC color management is not being used. Valid values
@@ -7965,7 +7981,8 @@ above 203 essentially causes the display to be treated as if it were an HDR
 display in disguise. (See the note below)</p>
 <p>In <tt class="docutils literal">auto</tt> mode (the default), the chosen peak is an appropriate value
 based on the TRC in use. For SDR curves, it uses 203. For HDR curves, it
-uses 203 * the transfer function's nominal peak.</p>
+uses 203 * the transfer function's nominal peak. If available, it will use
+the target display's peak brightness as reported by the display.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p>When using an SDR transfer function, this is normally not needed, and
@@ -7989,6 +8006,7 @@ in conjunction with <tt class="docutils literal"><span class="pre">--target-peak
 black point. Used in black point compensation during HDR tone-mapping.
 <tt class="docutils literal">auto</tt> is the default and assumes 1000:1 contrast as a typical SDR display
 would have or an infinite contrast when HDR <tt class="docutils literal"><span class="pre">--target-trc</span></tt> is used.
+If supported by the API, display contrast will be used as reported.
 <tt class="docutils literal">inf</tt> contrast specifies display with perfect black level, in practice OLED.
 (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-gamut=&lt;value&gt;</span></tt></dt>
@@ -15521,7 +15539,8 @@ window. It also shows log messages. It can be disabled entirely using the
 <dt>ESC and Ctrl+[</dt>
 <dd>Hide the console.</dd>
 <dt>ENTER, Ctrl+j and Ctrl+m</dt>
-<dd>Run the typed command.</dd>
+<dd>Expand the first completion suggestion if present and if none was selected,
+and run the typed command.</dd>
 <dt>Shift+ENTER</dt>
 <dd>Type a literal newline character.</dd>
 <dt>LEFT and Ctrl+b</dt>
@@ -15572,8 +15591,7 @@ words, to the end of the next word.</dd>
 <dt>Shift+INSERT</dt>
 <dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
 <dt>TAB and Ctrl+i</dt>
-<dd>Complete the text at the cursor. The first press inserts the longest common
-prefix of the completions, and subsequent presses cycle through them.</dd>
+<dd>Cycle through completion suggestions.</dd>
 <dt>Shift+TAB</dt>
 <dd>Cycle through the completions backwards.</dd>
 <dt>Ctrl+l</dt>
@@ -15601,7 +15619,8 @@ specifying the initial cursor position as a positive integer starting from
 <dt><tt class="docutils literal">% <span class="pre">script-message-to</span> console type &quot;seek&nbsp; <span class="pre">absolute-percent;</span> keypress ESC&quot; 6</tt></dt>
 <dd>Enter a percent position to seek to and close the console.</dd>
 <dt><tt class="docutils literal">Ctrl+o <span class="pre">script-message-to</span> console type &quot;loadfile ''; keypress ESC&quot; 11</tt></dt>
-<dd>Enter a file or URL to play. Tab completes paths in the filesystem.</dd>
+<dd>Enter a file or URL to play, with autocompletion of paths in the
+filesystem.</dd>
 </dl>
 </div>
 </dd>
@@ -15651,7 +15670,7 @@ or <tt class="docutils literal">auto</tt>, which follows the value of <tt class=
 </dd>
 <dt><tt class="docutils literal">case_sensitive</tt></dt>
 <dd><p class="first">Default: no on Windows, yes on other platforms.</p>
-<p class="last">Whether Tab completion is case sensitive. Only works with ASCII characters.</p>
+<p class="last">Whether autocompletion is case sensitive. Only works with ASCII characters.</p>
 </dd>
 <dt><tt class="docutils literal">history_dedup</tt></dt>
 <dd><p class="first">Default: true</p>
