@@ -5750,6 +5750,12 @@ for details). A value of 0 disables outlines.</p>
 <dt><tt class="docutils literal"><span class="pre">--osd-color=&lt;color&gt;</span></tt></dt>
 <dd>Specify the color used for OSD.
 See <tt class="docutils literal"><span class="pre">--sub-color</span></tt> for details.</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-selected-color=&lt;color&gt;</span></tt></dt>
+<dd>The color of the selected item in lists.
+See <tt class="docutils literal"><span class="pre">--sub-color</span></tt> for details.</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-selected-outline-color=&lt;color&gt;</span></tt></dt>
+<dd>The outline color of the selected item in lists.
+See <tt class="docutils literal"><span class="pre">--sub-color</span></tt> for details.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-fractions</span></tt></dt>
 <dd>Show OSD times with fractions of seconds (in millisecond precision). Useful
 to see the exact timestamp of a video frame.</dd>
@@ -8828,6 +8834,19 @@ details regarding autodetection and codepage conversion. (The underlying
 code is the same.)</p>
 <p class="last">Conversion is not applied to metadata that is updated at runtime.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--clipboard-enable=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">(Windows and Wayland only)</p>
+<p class="last">Enable native clipboard support (default: yes). This allows reading and
+writing to the <tt class="docutils literal">clipboard</tt> property to get and set clipboard contents.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--clipboard-monitor=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">(Windows only)</p>
+<p class="last">Enable clipboard monitoring so that the <tt class="docutils literal">clipboard</tt> property can be
+observed for content changes (default: no). This only affects clipboard
+implementations which use polling to monitor clipboard updates.
+Other platforms currently ignore this option and always/never notify
+changes.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -11192,7 +11211,10 @@ In addition, <tt class="docutils literal">MOUSE_BTN3</tt> to <tt class="docutils
 <p class="last"><tt class="docutils literal">MBTN*</tt> are aliases for <tt class="docutils literal">MOUSE_BTN*</tt>.</p>
 </dd>
 <dt><tt class="docutils literal">WHEEL_*</tt></dt>
-<dd>Mouse wheels (typically).</dd>
+<dd><p class="first">Mouse wheels and touch pads (typically).</p>
+<p class="last">These key are scalable when used with scalable commands if the underlying
+device supports high-resolution scrolling (e.g. touch pads).</p>
+</dd>
 <dt><tt class="docutils literal">AXIS_*</tt></dt>
 <dd>Deprecated aliases for <tt class="docutils literal">WHEEL_*</tt>.</dd>
 <dt><tt class="docutils literal">*_DBL</tt></dt>
@@ -11320,9 +11342,11 @@ seconds.</p>
 <p>By default, <tt class="docutils literal">keyframes</tt> is used for <tt class="docutils literal">relative</tt>, <tt class="docutils literal"><span class="pre">relative-percent</span></tt>,
 and <tt class="docutils literal"><span class="pre">absolute-percent</span></tt> seeks, while <tt class="docutils literal">exact</tt> is used for <tt class="docutils literal">absolute</tt>
 seeks.</p>
-<p class="last">Before mpv 0.9, the <tt class="docutils literal">keyframes</tt> and <tt class="docutils literal">exact</tt> flags had to be passed as
+<p>Before mpv 0.9, the <tt class="docutils literal">keyframes</tt> and <tt class="docutils literal">exact</tt> flags had to be passed as
 3rd parameter (essentially using a space instead of <tt class="docutils literal">+</tt>). The 3rd
 parameter is still parsed, but is considered deprecated.</p>
+<p class="last">This is a scalable command. See the documentation of <tt class="docutils literal">nonscalable</tt> input
+command prefix in <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">revert-seek</span> [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Undoes the <tt class="docutils literal">seek</tt> command, and some other commands that seek (but not
@@ -11395,8 +11419,11 @@ stopped without terminating the player.</p>
 <dt><tt class="docutils literal">del &lt;name&gt;</tt></dt>
 <dd>Delete the given property. Most properties cannot be deleted.</dd>
 <dt><tt class="docutils literal">add &lt;name&gt; [&lt;value&gt;]</tt></dt>
-<dd>Add the given value to the property or option. On overflow or underflow,
-clamp the property to the maximum. If <tt class="docutils literal">&lt;value&gt;</tt> is omitted, assume <tt class="docutils literal">1</tt>.</dd>
+<dd><p class="first">Add the given value to the property or option. On overflow or underflow,
+clamp the property to the maximum. If <tt class="docutils literal">&lt;value&gt;</tt> is omitted, assume <tt class="docutils literal">1</tt>.</p>
+<p class="last">This is a scalable command. See the documentation of <tt class="docutils literal">nonscalable</tt> input
+command prefix in <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> for details.</p>
+</dd>
 <dt><tt class="docutils literal">multiply &lt;name&gt; &lt;value&gt;</tt></dt>
 <dd>Similar to <tt class="docutils literal">add</tt>, but multiplies the property or option with the numeric
 value.</dd>
@@ -11405,9 +11432,11 @@ value.</dd>
 <tt class="docutils literal">down</tt> to set the cycle direction. On overflow, set the property back to
 the minimum, on underflow set it to the maximum. If <tt class="docutils literal">up</tt> or <tt class="docutils literal">down</tt> is
 omitted, assume <tt class="docutils literal">up</tt>.</p>
-<p class="last">Whether or not key-repeat is enabled by default depends on the property.
+<p>Whether or not key-repeat is enabled by default depends on the property.
 Currently properties with continuous values are repeatable by default (like
 <tt class="docutils literal">volume</tt>), while discrete values are not (like <tt class="docutils literal"><span class="pre">osd-level</span></tt>).</p>
+<p class="last">This is a scalable command. See the documentation of <tt class="docutils literal">nonscalable</tt> input
+command prefix in <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">cycle-values</span> <span class="pre">[&lt;&quot;!reverse&quot;&gt;]</span> &lt;property&gt; &lt;value1&gt; [&lt;value2&gt; <span class="pre">[...]]</span></tt></dt>
 <dd><p class="first">Cycle through a list of values. Each invocation of the command will set the
@@ -12201,23 +12230,28 @@ client names only consist of alphanumeric characters and <tt class="docutils lit
 <p class="last">This command has a variable number of arguments, and cannot be used with
 named arguments.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">script-binding</span> &lt;name&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">script-binding</span> &lt;name&gt; [&lt;arg&gt;]</tt></dt>
 <dd><p class="first">Invoke a script-provided key binding. This can be used to remap key
 bindings provided by external Lua scripts.</p>
-<p>The argument is the name of the binding.</p>
+<p><tt class="docutils literal">&lt;name&gt;</tt> is the name of the binding. <tt class="docutils literal">&lt;arg&gt;</tt> is a user-provided
+arbitrary string which can be used to provide extra information.</p>
 <p>It can optionally be prefixed with the name of the script, using <tt class="docutils literal">/</tt> as
 separator, e.g. <tt class="docutils literal"><span class="pre">script-binding</span> scriptname/bindingname</tt>. Note that script
 names only consist of alphanumeric characters and <tt class="docutils literal">_</tt>.</p>
 <p>For completeness, here is how this command works internally. The details
 could change any time. On any matching key event, <tt class="docutils literal"><span class="pre">script-message-to</span></tt>
 or <tt class="docutils literal"><span class="pre">script-message</span></tt> is called (depending on whether the script name is
-included), with the following arguments:</p>
+included), with the following arguments in string format:</p>
 <ol class="arabic simple">
 <li>The string <tt class="docutils literal"><span class="pre">key-binding</span></tt>.</li>
 <li>The name of the binding (as established above).</li>
 <li>The key state as string (see below).</li>
 <li>The key name (since mpv 0.15.0).</li>
 <li>The text the key would produce, or empty string if not applicable.</li>
+<li>The scale of the key, such as the ones produced by <tt class="docutils literal">WHEEL_*</tt> keys.
+The scale is 1 if the key is nonscalable.</li>
+<li>The user-provided string <tt class="docutils literal">&lt;arg&gt;</tt>, or empty string if the argument is
+not used.</li>
 </ol>
 <p>The 5th argument is only set if no modifiers are present (using the shift
 key with a letter is normally not emitted as having a modifier, and results
@@ -12233,8 +12267,10 @@ or <tt class="docutils literal">-</tt> (something else).</li>
 released but not physically released), either <tt class="docutils literal">c</tt> (canceled) or <tt class="docutils literal">-</tt>
 (something else). Not all types of cancellations set this flag.</li>
 </ol>
-<p class="last">Future versions can add more arguments and more key state characters to
+<p>Future versions can add more arguments and more key state characters to
 support more input peculiarities.</p>
+<p class="last">This is a scalable command. See the documentation of <tt class="docutils literal">nonscalable</tt> input
+command prefix in <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">load-script</span> &lt;filename&gt;</tt></dt>
 <dd><p class="first">Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option. Whether this waits for
@@ -12468,8 +12504,9 @@ and might disappear without replacement if the author decides it's useless.</p>
 <dd>Begin window dragging if supported by the current VO. This command should
 only be called while a mouse button is being pressed, otherwise it will
 be ignored. The exact effect of this command depends on the VO implementation
-of window dragging. For example, on Windows only the left mouse button can
-begin window dragging, while X11 and Wayland allow other mouse buttons.</dd>
+of window dragging. For example, on Windows and macOS only the left mouse
+button can begin window dragging, while X11 and Wayland allow other mouse
+buttons.</dd>
 <dt><tt class="docutils literal"><span class="pre">context-menu</span></tt></dt>
 <dd>Show context menu on the video window. See <a class="reference internal" href="#context-menu">Context Menu</a> section for details.</dd>
 </dl>
@@ -14451,6 +14488,23 @@ result in an entry with <tt class="docutils literal">comment = &quot;toggle bla&
 </dl>
 <p class="last">This property is read-only, and change notification is not supported.</p>
 </dd>
+<dt><tt class="docutils literal">clipboard</tt></dt>
+<dd><p class="first">The clipboard contents, only works when native clipboard
+(<tt class="docutils literal"><span class="pre">--clipboard-enable</span></tt>) is supported on the platform.
+Depending on the platform, some sub-properties, writing to properties,
+or change notifications are not currently functional.</p>
+<p>This has a number of sub-properties:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">clipboard/text</tt> (RW)</dt>
+<dd>The text content in the clipboard (Windows and Wayland only).
+Writing to this property sets the text clipboard content (Windows only).</dd>
+</dl>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">On Wayland, the clipboard content is only updated when the compositor
+sends a selection data offer (typically when VO window is focused).</p>
+</div>
+</dd>
 </dl>
 </div>
 <div class="section" id="inconsistencies-between-options-and-properties">
@@ -14662,13 +14716,13 @@ title, or the target chapter name while hovering the seekbar.</div>
 </colgroup>
 <tbody valign="top">
 <tr><td>left-click</td>
-<td>open the playlist selector</td>
+<td>show file and track info</td>
 </tr>
 <tr><td>middle-click</td>
 <td>show the filename</td>
 </tr>
 <tr><td>right-click</td>
-<td>show file and track info</td>
+<td>open the playlist selector</td>
 </tr>
 </tbody>
 </table>
@@ -14797,16 +14851,16 @@ title, or the target chapter name while hovering the seekbar.</div>
 </colgroup>
 <tbody valign="top">
 <tr><td>left-click</td>
-<td>open the audio/sub track selector</td>
+<td>cycle audio/sub tracks forward</td>
 </tr>
 <tr><td>shift+L-click</td>
-<td>show available audio/sub tracks</td>
+<td>cycle audio/sub tracks backwards</td>
 </tr>
 <tr><td>middle-click</td>
 <td>show available audio/sub tracks</td>
 </tr>
 <tr><td>right-click</td>
-<td>show available audio/sub tracks</td>
+<td>open the audio/sub track selector</td>
 </tr>
 <tr><td>mouse wheel</td>
 <td>cycle audio/sub tracks forward/backwards</td>
@@ -15168,9 +15222,9 @@ supports the <tt class="docutils literal"><span class="pre">display-fps</span></
 </dl>
 <p>The following options configure what commands are run when the buttons are
 clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered with <tt class="docutils literal">shift+mbtn_left</tt>.</p>
-<p><tt class="docutils literal"><span class="pre">title_mbtn_left_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_left_command=script-binding</span> <span class="pre">stats/display-page-5</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">title_mbtn_mid_command=show-text</span> ${filename}</tt></p>
-<p><tt class="docutils literal"><span class="pre">title_mbtn_right_command=script-binding</span> <span class="pre">stats/display-page-5</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_left_command=playlist-prev;</span> <span class="pre">show-text</span> ${playlist} 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_mid_command=show-text</span> ${playlist} 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_right_command=show-text</span> ${playlist} 3000</tt></p>
@@ -15186,14 +15240,14 @@ clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered 
 <p><tt class="docutils literal"><span class="pre">chapter_next_mbtn_left_command=osd-msg</span> add chapter 1</tt></p>
 <p><tt class="docutils literal"><span class="pre">chapter_next_mbtn_mid_command=show-text</span> <span class="pre">${chapter-list}</span> 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">chapter_next_mbtn_right_command=script-binding</span> <span class="pre">select/select-chapter;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
-<p><tt class="docutils literal"><span class="pre">audio_track_mbtn_left_command=script-binding</span> <span class="pre">select/select-aid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
-<p><tt class="docutils literal"><span class="pre">audio_track_mbtn_mid_command=show-text</span> <span class="pre">${track-list/audio}</span> 3000</tt></p>
-<p><tt class="docutils literal">audio_track_mbtn_right_command=cycle audio</tt></p>
+<p><tt class="docutils literal">audio_track_mbtn_left_command=cycle audio</tt></p>
+<p><tt class="docutils literal">audio_track_mbtn_mid_command=cycle audio down</tt></p>
+<p><tt class="docutils literal"><span class="pre">audio_track_mbtn_right_command=script-binding</span> <span class="pre">select/select-aid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal">audio_track_wheel_down_command=cycle audio</tt></p>
 <p><tt class="docutils literal">audio_track_wheel_up_command=cycle audio down</tt></p>
-<p><tt class="docutils literal"><span class="pre">sub_track_mbtn_left_command=script-binding</span> <span class="pre">select/select-sid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
-<p><tt class="docutils literal"><span class="pre">sub_track_mbtn_mid_command=show-text</span> <span class="pre">${track-list/sub}</span> 3000</tt></p>
-<p><tt class="docutils literal">sub_track_mbtn_right_command=cycle sub</tt></p>
+<p><tt class="docutils literal">sub_track_mbtn_left_command=cycle sub</tt></p>
+<p><tt class="docutils literal">sub_track_mbtn_mid_command=cycle sub down</tt></p>
+<p><tt class="docutils literal"><span class="pre">sub_track_mbtn_right_command=script-binding</span> <span class="pre">select/select-sid;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal">sub_track_wheel_down_command=cycle sub</tt></p>
 <p><tt class="docutils literal">sub_track_wheel_up_command=cycle sub down</tt></p>
 <p><tt class="docutils literal"><span class="pre">volume_mbtn_left_command=no-osd</span> cycle mute</tt></p>
@@ -15970,13 +16024,19 @@ overwritten. You can omit the name, in which case a random name is generated
 internally. (Omitting works as follows: either pass <tt class="docutils literal">nil</tt> for <tt class="docutils literal">name</tt>,
 or pass the <tt class="docutils literal">fn</tt> argument in place of the name. The latter is not
 recommended and is handled for compatibility only.)</p>
-<p>The last argument is used for optional flags. This is a table, which can
-have the following entries:</p>
+<p>The <tt class="docutils literal">flags</tt> argument is used for optional parameters. This is a table,
+which can have the following entries:</p>
 <blockquote>
 <dl class="docutils">
 <dt><tt class="docutils literal">repeatable</tt></dt>
 <dd>If set to <tt class="docutils literal">true</tt>, enables key repeat for this specific binding.
 This option only makes sense when <tt class="docutils literal">complex</tt> is not set to <tt class="docutils literal">true</tt>.</dd>
+<dt><tt class="docutils literal">scalable</tt></dt>
+<dd>If set to <tt class="docutils literal">true</tt>, enables key scaling for this specific binding.
+This option only makes sense when <tt class="docutils literal">complex</tt> is set to <tt class="docutils literal">true</tt>.
+Note that this has no effect if the key binding is invoked by
+<tt class="docutils literal"><span class="pre">script-binding</span></tt> command, where the scalability of the command
+takes precedence.</dd>
 <dt><tt class="docutils literal">complex</tt></dt>
 <dd><p class="first">If set to <tt class="docutils literal">true</tt>, then <tt class="docutils literal">fn</tt> is called on key down, repeat and up
 events, with the first argument being a table. This table has the
@@ -16000,6 +16060,13 @@ empty string.</dd>
 <dd>Text if triggered by a text key, otherwise <tt class="docutils literal">nil</tt>. See
 description of <tt class="docutils literal"><span class="pre">script-binding</span></tt> command for details (this
 field is equivalent to the 5th argument).</dd>
+<dt><tt class="docutils literal">scale</tt></dt>
+<dd>The scale of the key, such as the ones produced by <tt class="docutils literal">WHEEL_*</tt>
+keys. The scale is 1 if the key is nonscalable.</dd>
+<dt><tt class="docutils literal">arg</tt></dt>
+<dd>User-provided string in the <tt class="docutils literal">arg</tt> argument in the
+<tt class="docutils literal"><span class="pre">script-binding</span></tt> command if the key binding is invoked
+by that command.</dd>
 </dl>
 </blockquote>
 </dd>
