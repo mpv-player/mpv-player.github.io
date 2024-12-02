@@ -176,6 +176,8 @@ later will resume at the old playback position if possible. See
 <dd>Toggle infinite looping.</dd>
 <dt>Ctrl++ and Ctrl+-</dt>
 <dd>Adjust audio delay (A/V sync) by +/- 0.1 seconds.</dd>
+<dt>Ctrl+KP_ADD and Ctrl+KP_SUBTRACT</dt>
+<dd>Adjust audio delay (A/V sync) by +/- 0.1 seconds.</dd>
 <dt>Shift+g and Shift+f</dt>
 <dd>Adjust subtitle font size by +/- 10%.</dd>
 <dt>u</dt>
@@ -214,6 +216,8 @@ PGUP/PGDWN without Shift.)</dd>
 <dt>Alt+LEFT, Alt+RIGHT, Alt+UP, Alt+DOWN</dt>
 <dd>Move the video rectangle (panning).</dd>
 <dt>Alt++ and Alt+-</dt>
+<dd>Change video zoom.</dd>
+<dt>Alt+KP_ADD and Alt+KP_SUBTRACT</dt>
 <dd>Change video zoom.</dd>
 <dt>Alt+BACKSPACE</dt>
 <dd>Reset the pan/zoom settings.</dd>
@@ -7776,7 +7780,8 @@ runtime (i.e. if the device is rotated), via the surfaceChanged callback.</p>
 <p class="last">Android with <tt class="docutils literal"><span class="pre">--gpu-context=android</span></tt> only.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-sw</span></tt></dt>
-<dd>Continue even if a software renderer is detected.</dd>
+<dd>Continue even if a software renderer is detected. This only works with
+OpenGL/Vulkan backends. For d3d11, see <tt class="docutils literal"><span class="pre">--d3d11-warp</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-context=&lt;context1,context2,...[,]&gt;</span></tt></dt>
 <dd><p class="first">Specify a priority list of the GPU contexts to be used.
 The value <tt class="docutils literal">auto</tt> (the default) selects the GPU context with the default autoprobe
