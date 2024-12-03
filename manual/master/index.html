@@ -279,6 +279,8 @@ and <tt class="docutils literal">Page up</tt> and <tt class="docutils literal">C
 <dd>Select a track of any type.</dd>
 <dt>g-c</dt>
 <dd>Select a chapter.</dd>
+<dt>g-e</dt>
+<dd>Select an edition.</dd>
 <dt>g-l</dt>
 <dd>Select a subtitle line to seek to. This currently requires <tt class="docutils literal">ffmpeg</tt> in
 <tt class="docutils literal">PATH</tt>, or in the same folder as mpv on Windows.</dd>
@@ -2960,14 +2962,30 @@ the normal video aspect ratio. This option is disabled if
 <tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-align-x=&lt;-1-1&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-align-y=&lt;-1-1&gt;</span></tt></dt>
-<dd><p class="first">Moves the video rectangle within the black borders, which are usually added
-to pad the video to screen if video and screen aspect ratios are different.
-<tt class="docutils literal"><span class="pre">--video-align-y=-1</span></tt> would move the video to the top of the screen
-(leaving a border only on the bottom), a value of <tt class="docutils literal">0</tt> centers it
-(default), and a value of <tt class="docutils literal">1</tt> would put the video at the bottom of the
-screen.</p>
+<dd><p class="first">When the video is bigger than the window, these move the displayed rectangle
+to show different parts of the video. <tt class="docutils literal"><span class="pre">--video-align-y=-1</span></tt> would display
+the top of the video, <tt class="docutils literal">0</tt> would display the center (default), and <tt class="docutils literal">1</tt>
+would display the bottom.</p>
+<p>When the video is smaller than the window and <tt class="docutils literal"><span class="pre">--video-recenter</span></tt> is
+disabled, these move the video rectangle within the black borders, which are
+usually added to pad the video to the window if video and window aspect
+ratios are different. <tt class="docutils literal"><span class="pre">--video-align-y=-1</span></tt> would move the video to the top
+of the window (leaving a border only on the bottom), <tt class="docutils literal">0</tt> would center it,
+and <tt class="docutils literal">1</tt> would put the video at the bottom of the window.</p>
 <p>If video and screen aspect match perfectly, these options do nothing.</p>
+<p>Unlike <tt class="docutils literal"><span class="pre">--video-pan-x</span></tt> and <tt class="docutils literal"><span class="pre">--video-pan-y</span></tt>, these don't go beyond the
+video's or window's boundaries or make the displayed rectangle drift off
+after zooming.</p>
 <p class="last">This option is disabled if <tt class="docutils literal"><span class="pre">--keepaspect=no</span></tt> is used.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--video-recenter=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Whether to behave as if <tt class="docutils literal"><span class="pre">--video-align-x</span></tt> and <tt class="docutils literal"><span class="pre">--video-align-y</span></tt> were 0
+when the video becomes smaller than the window in the respective direction</p>
+<p>After zooming in until the video is bigger the window, panning with
+<cite>--video-align-x</cite> and/or <cite>--video-align-y</cite>, and zooming out until the video
+is smaller than the window, this is useful to recenter the video in the
+window.</p>
+<p class="last">Default: no.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-margin-ratio-left=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-right=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-top=&lt;val&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--video-margin-ratio-bottom=&lt;val&gt;</span></tt></dt>
 <dd><p class="first">Set extra video margins on each border (default: 0). Each value is a ratio
