@@ -8,15 +8,15 @@
 <meta content='mpv, mplayer, download, media player, encoder, video, video player, multimedia, Windows, Linux, Unix, BSD, Mac, macOS, Streaming, DVD, Bluray, Matroska, MPEG4, H264, H265, HEVC, AV1, HDR, MKV, m2ts, upscaling, open source, free software, FOSS, FLOSS, free' name='keywords'>
 <link href='/images/favicon-5d3b2a52.png' rel='icon' type='image/png'>
 <title>mpv.io</title>
-<link href="/stylesheets/all-0c4394b3.css" rel="stylesheet" />
-<script src="/javascripts/all-58be2b4c.js"></script>
+<link href="/stylesheets/all-5b1cae4f.css" rel="stylesheet" />
+<script src="/javascripts/all-bf11b3eb.js"></script>
 </head>
 <body class='manual manual_master manual_master_index'>
 <div class='navbar navbar-inverse navbar-static-top' role='navigation'>
 <div class='container'>
 <div class='navbar-header'>
 <a class='hidden-xs navbar-brand' href='/'>
-<img width="40" height="40" src="/images/mpv-logo-128-0baae5aa.png" alt="Mpv logo 128" />
+<img src="/images/mpv-logo-128-0baae5aa.png" width="40" height="40" alt="" />
 <span class='title'>mpv</span>
 <i class='fa fa-home'></i>
 </a>
@@ -14692,14 +14692,14 @@ player window and will hide if the mouse is not moved outside the OSC for
 <tr><td>left-click</td>
 <td>play previous file in playlist</td>
 </tr>
-<tr><td>right-click</td>
-<td>show the playlist</td>
-</tr>
 <tr><td>shift+L-click</td>
 <td>show the playlist</td>
 </tr>
 <tr><td>middle-click</td>
 <td>show the playlist</td>
+</tr>
+<tr><td>right-click</td>
+<td>open the playlist selector</td>
 </tr>
 </tbody>
 </table>
@@ -14714,14 +14714,14 @@ player window and will hide if the mouse is not moved outside the OSC for
 <tr><td>left-click</td>
 <td>play next file in playlist</td>
 </tr>
-<tr><td>right-click</td>
-<td>show the playlist</td>
-</tr>
 <tr><td>shift+L-click</td>
 <td>show the playlist</td>
 </tr>
 <tr><td>middle-click</td>
 <td>show the playlist</td>
+</tr>
+<tr><td>right-click</td>
+<td>open the playlist selector</td>
 </tr>
 </tbody>
 </table>
@@ -14740,11 +14740,14 @@ title, or the target chapter name while hovering the seekbar.</div>
 <tr><td>left-click</td>
 <td>show file and track info</td>
 </tr>
+<tr><td>shift+L-click</td>
+<td>show the filename</td>
+</tr>
 <tr><td>middle-click</td>
 <td>show the filename</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the playlist selector</td>
+<td>show the path</td>
 </tr>
 </tbody>
 </table>
@@ -14780,11 +14783,14 @@ title, or the target chapter name while hovering the seekbar.</div>
 <tr><td>left-click</td>
 <td>go to beginning of chapter / previous chapter</td>
 </tr>
-<tr><td>right-click</td>
-<td>open the chapter selector</td>
-</tr>
 <tr><td>shift+L-click</td>
 <td>show chapters</td>
+</tr>
+<tr><td>middle-click</td>
+<td>show chapters</td>
+</tr>
+<tr><td>right-click</td>
+<td>open the chapter selector</td>
 </tr>
 </tbody>
 </table>
@@ -14799,11 +14805,14 @@ title, or the target chapter name while hovering the seekbar.</div>
 <tr><td>left-click</td>
 <td>go to next chapter</td>
 </tr>
-<tr><td>right-click</td>
-<td>open the chapter selector</td>
-</tr>
 <tr><td>shift+L-click</td>
 <td>show chapters</td>
+</tr>
+<tr><td>middle-click</td>
+<td>show chapters</td>
+</tr>
+<tr><td>right-click</td>
+<td>open the chapter selector</td>
 </tr>
 </tbody>
 </table>
@@ -14879,7 +14888,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>cycle audio/sub tracks backwards</td>
 </tr>
 <tr><td>middle-click</td>
-<td>show available audio/sub tracks</td>
+<td>cycle audio/sub tracks backwards</td>
 </tr>
 <tr><td>right-click</td>
 <td>open the audio/sub track selector</td>
@@ -15248,15 +15257,15 @@ supports the <tt class="docutils literal"><span class="pre">display-fps</span></
 </dl>
 <p>The following options configure what commands are run when the buttons are
 clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered with <tt class="docutils literal">shift+mbtn_left</tt>.</p>
-<p><tt class="docutils literal"><span class="pre">title_mbtn_left_command=script-binding</span> <span class="pre">stats/display-page-5</span></tt></p>
-<p><tt class="docutils literal"><span class="pre">title_mbtn_mid_command=show-text</span> ${filename}</tt></p>
-<p><tt class="docutils literal"><span class="pre">title_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_left_command=playlist-prev;</span> <span class="pre">show-text</span> ${playlist} 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_mid_command=show-text</span> ${playlist} 3000</tt></p>
-<p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_right_command=show-text</span> ${playlist} 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_left_command=playlist-next;</span> <span class="pre">show-text</span> ${playlist} 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_mid_command=show-text</span> ${playlist} 3000</tt></p>
-<p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_right_command=show-text</span> ${playlist} 3000</tt></p>
+<p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_left_command=script-binding</span> <span class="pre">stats/display-page-5</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_mid_command=show-text</span> ${filename}</tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_right_command=show-text</span> ${path}</tt></p>
 <p><tt class="docutils literal">play_pause_mbtn_left_command=cycle pause</tt></p>
 <p><tt class="docutils literal">play_pause_mbtn_mid_command=</tt></p>
 <p><tt class="docutils literal"><span class="pre">play_pause_mbtn_right_command=cycle-values</span> <span class="pre">loop-file</span> inf no</tt></p>
