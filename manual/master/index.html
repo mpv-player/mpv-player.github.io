@@ -100,7 +100,7 @@ default, the ? key toggles the display of this list.</p>
 <dd>Seek to the previous/next subtitle. Subject to some restrictions and
 might not always work; see <tt class="docutils literal"><span class="pre">sub-seek</span></tt> command.</dd>
 <dt>Ctrl+Shift+LEFT and Ctrl+Shift+RIGHT</dt>
-<dd>Adjust subtitle delay so that the next or previous subtitle is displayed
+<dd>Adjust subtitle delay so that the previous or next subtitle is displayed
 now. This is especially useful to sync subtitles to audio.</dd>
 <dt>[ and ]</dt>
 <dd>Decrease/increase current playback speed by 10%.</dd>
@@ -169,7 +169,7 @@ later will resume at the old playback position if possible. See
 <dt>j and J</dt>
 <dd>Cycle through the available subtitles.</dd>
 <dt>z and Z</dt>
-<dd>Adjust subtitle delay by +/- 0.1 seconds. The <tt class="docutils literal">x</tt> key does the same as
+<dd>Adjust subtitle delay by -/+ 0.1 seconds. The <tt class="docutils literal">x</tt> key does the same as
 <tt class="docutils literal">Z</tt> currently, but use is discouraged.</dd>
 <dt>l</dt>
 <dd>Set/clear A-B loop points. See <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command for details.</dd>
@@ -179,7 +179,7 @@ later will resume at the old playback position if possible. See
 <dd>Adjust audio delay (A/V sync) by +/- 0.1 seconds.</dd>
 <dt>Ctrl+KP_ADD and Ctrl+KP_SUBTRACT</dt>
 <dd>Adjust audio delay (A/V sync) by +/- 0.1 seconds.</dd>
-<dt>Shift+g and Shift+f</dt>
+<dt>G and F</dt>
 <dd>Adjust subtitle font size by +/- 10%.</dd>
 <dt>u</dt>
 <dd>Switch between applying only <tt class="docutils literal"><span class="pre">--sub-ass-*</span></tt> overrides (default) to SSA/ASS
@@ -3965,7 +3965,7 @@ actual aspect ratio. Zero or negative aspect ratios are identical to <tt class="
 default. This also disables libass' incompatible extensions. This currently
 includes bracket pair matching according to the revised Unicode
 Bidirectional Algorithm introduced in Unicode 6.3, and also affects how BiDi
-runs are split and processed, as well as soft linewrapping of unicode text.</p>
+runs are split and processed, as well as soft linewrapping of Unicode text.</p>
 <p class="last">This affects plaintext (non-ASS) subtitles only. Default: no.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-vsfilter-color-compat=&lt;basic|full|force-601|no&gt;</span></tt></dt>
@@ -9526,7 +9526,7 @@ from mpv, which can lead to broken images. The options <tt class="docutils liter
 <dd><p class="first">Select how to write the pixels to the terminal.</p>
 <dl class="last docutils">
 <dt>half-blocks</dt>
-<dd>Uses unicode LOWER HALF BLOCK character to achieve higher vertical
+<dd>Uses Unicode LOWER HALF BLOCK character to achieve higher vertical
 resolution. (Default.)</dd>
 <dt>plain</dt>
 <dd>Uses spaces. Causes vertical resolution to drop twofolds, but in
@@ -11196,27 +11196,41 @@ of (non-modifier) keys for combinations is currently 4.</p>
 <div class="section" id="key-names">
 <h2>Key names</h2>
 <p>All mouse and keyboard input is to converted to mpv-specific key names. Key
-names are either special symbolic identifiers representing a physical key, or a
-text key names, which are unicode code points encoded as UTF-8. These are what
-keyboard input would normally produce, for example <tt class="docutils literal">a</tt> for the A key. As a
-consequence, mpv uses input translated by the current OS keyboard layout, rather
-than physical scan codes.</p>
+names are either special symbolic identifiers representing a physical key, or
+text key names, which are Unicode code points encoded as UTF-8. These are what
+keyboard input would normally produce, for example <tt class="docutils literal">a</tt> for the A key.
+These are influenced by keyboard modifiers which affect produced text, such as
+shift and caps lock. As a consequence, mpv uses input translated by the current
+OS keyboard layout, rather than physical scan codes.</p>
 <p>Currently there is the hardcoded assumption that every text key can be
-represented as a single unicode code point (in NFKC form).</p>
+represented as a single Unicode code point (in NFKC form).</p>
 <p>All key names can be combined with the modifiers <tt class="docutils literal">Shift</tt>, <tt class="docutils literal">Ctrl</tt>, <tt class="docutils literal">Alt</tt>,
 <tt class="docutils literal">Meta</tt>. They must be prefixed to the actual key name, where each modifier
 is followed by a <tt class="docutils literal">+</tt> (for example <tt class="docutils literal">ctrl+q</tt>).</p>
-<p>The <tt class="docutils literal">Shift</tt> modifier requires some attention. For instance <tt class="docutils literal">Shift+2</tt> should
-usually be specified as key-name <tt class="docutils literal">&#64;</tt> at <tt class="docutils literal">input.conf</tt>, and similarly the
-combination <tt class="docutils literal">Alt+Shift+2</tt> is usually <tt class="docutils literal">Alt+&#64;</tt>, etc. Special key names like
-<tt class="docutils literal">Shift+LEFT</tt> work as expected. If in doubt - use <tt class="docutils literal"><span class="pre">--input-test</span></tt> to check
-how a key/combination is seen by mpv.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The <tt class="docutils literal">Shift</tt> modifier requires some attention. In general, when the
+<tt class="docutils literal">Shift</tt> modifier is combined with a key which produces text, the actual
+produced text key name when shift is pressed should be used.</p>
+<p>For instance, on the US keyboard layout, <tt class="docutils literal">Shift+2</tt> should usually be
+specified as key-name <tt class="docutils literal">&#64;</tt> at <tt class="docutils literal">input.conf</tt>, and similarly the
+combination <tt class="docutils literal">Alt+Shift+2</tt> is usually <tt class="docutils literal">Alt+&#64;</tt>, etc.</p>
+<p>In general, the <tt class="docutils literal">Shift</tt> modifier, when specified with text key names,
+is ignored: for instance, mpv interprets <tt class="docutils literal">Shift+2</tt> as <tt class="docutils literal">2</tt>.
+The only exceptions are ASCII letters, which are normalized by mpv.
+For example, <tt class="docutils literal">Shift+a</tt> is interpreted as <tt class="docutils literal">A</tt>.</p>
+<p class="last">Special key names like <tt class="docutils literal">Shift+LEFT</tt> work as expected.
+If in doubt - use <tt class="docutils literal"><span class="pre">--input-test</span></tt> to check how a key/combination is seen
+by mpv.</p>
+</div>
 <p>Symbolic key names and modifier names are case-insensitive. Unicode key names
-are case-sensitive because input bindings typically respect the shift key.</p>
-<p>Another type of key names are hexadecimal key names, that serve as fallback
-for special keys that are neither unicode, nor have a special mpv defined name.
-They will break as soon as mpv adds proper names for them, but can enable you
-to use a key at all if that does not happen.</p>
+are case-sensitive just like how keyboard text input would produce.</p>
+<p>Another type of key names are hexadecimal key names, which start with <tt class="docutils literal">0x</tt>,
+followed by the hexadecimal value of the key. The hexadecimal value can be
+either a Unicode code point value, or can serve as fallback for special keys
+that do not have a special mpv defined name. They will break as soon as mpv
+adds proper names for them, but can enable you to use a key at all if that
+does not happen.</p>
 <p>All symbolic names are listed by <tt class="docutils literal"><span class="pre">--input-keylist</span></tt>. <tt class="docutils literal"><span class="pre">--input-test</span></tt> is a
 special mode that prints all input on the OSD.</p>
 <p>Comments on some symbolic names:</p>
@@ -15730,7 +15744,6 @@ filesystem.</dd>
 <div class="section" id="known-issues">
 <h2>Known issues</h2>
 <ul class="simple">
-<li>Pasting text is slow on Windows</li>
 <li>Non-ASCII keyboard input has restrictions</li>
 <li>The cursor keys move between Unicode code-points, not grapheme clusters</li>
 </ul>
