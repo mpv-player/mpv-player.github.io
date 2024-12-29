@@ -226,6 +226,10 @@ PGUP/PGDWN without Shift.)</dd>
 <dd>Show the playlist and the current position in it.</dd>
 <dt>F9</dt>
 <dd>Show the list of audio and subtitle streams.</dd>
+<dt>Ctrl+v</dt>
+<dd>Append the file or URL in the clipboard to the playlist. If nothing is
+currently playing, it is played immediately. Only works on platforms that
+support the <tt class="docutils literal">clipboard</tt> property.</dd>
 <dt>i and I</dt>
 <dd>Show/toggle an overlay displaying statistics about the currently playing
 file such as codec, framerate, number of dropped frames and so on. See
@@ -5411,9 +5415,10 @@ mpv iterated no archive entries yet.</p>
 <dd>When opening a directory, open subdirectories lazily, recursively or not at
 all. The default is <tt class="docutils literal">auto</tt>, which behaves like <tt class="docutils literal">recursive</tt> with
 <tt class="docutils literal"><span class="pre">--shuffle</span></tt>, and like <tt class="docutils literal">lazy</tt> otherwise.</dd>
-<dt><tt class="docutils literal"><span class="pre">--directory-filter-types=&lt;video,audio,image&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--directory-filter-types=&lt;video,audio,image,archive,playlist&gt;</span></tt></dt>
 <dd><p class="first">Media file types to filter when opening directory. If the list is empty,
-all files are added to the playlist. (Default: <tt class="docutils literal">video,audio,image</tt>)</p>
+all files are added to the playlist. (Default:
+<tt class="docutils literal">video,audio,image,archive,playlist</tt>)</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--autocreate-playlist=&lt;no|filter|same&gt;</span></tt></dt>
@@ -8765,6 +8770,18 @@ effect if <tt class="docutils literal"><span class="pre">cover-art-auto</span></
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.
 Use <tt class="docutils literal"><span class="pre">--help=video-exts</span></tt> to see default extensions.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--archive-exts=ext1,ext2,...</span></tt></dt>
+<dd><p class="first">Archive file extentions to try to match when using <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt>
+or <tt class="docutils literal"><span class="pre">--directory-filter-types</span></tt>.</p>
+<p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details. Use
+<tt class="docutils literal"><span class="pre">--help=archive-exts</span></tt> to see the default extensions.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--playlist-exts=ext1,ext2,...</span></tt></dt>
+<dd><p class="first">Playlist file extentions to try to match when using
+<tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt> or <tt class="docutils literal"><span class="pre">--directory-filter-types</span></tt>.</p>
+<p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details. Use
+<tt class="docutils literal"><span class="pre">--help=playlist-exts</span></tt> to see the default extensions.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--autoload-files=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Automatically load/select external files (default: yes).</p>
 <p>If set to <tt class="docutils literal">no</tt>, then do not automatically load external files as specified
@@ -9449,7 +9466,7 @@ proper graphics drivers.</p>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">dmabuf-wayland</span></tt></dt>
-<dd>Experimental Wayland output driver designed for use with either drm stateless
+<dd><p class="first">Experimental Wayland output driver designed for use with either drm stateless
 or VA API hardware decoding. The driver is designed to avoid any GPU to CPU copies,
 and to perform scaling and color space conversion using fixed-function hardware,
 if available, rather than GPU shaders. This frees up GPU resources for other tasks.
@@ -9457,8 +9474,17 @@ It is highly recommended to use this VO with the appropriate <tt class="docutils
 as <tt class="docutils literal"><span class="pre">auto-safe</span></tt>. It can still work in some circumstances without <tt class="docutils literal"><span class="pre">--hwdec</span></tt> due to
 mpv's internal conversion filters, but this is not recommended as it's a needless
 extra step. Correct output depends on support from your GPU, drivers, and compositor.
-Weston and wlroots-based compositors like Sway and Intel GPUs are known to generally
-work.</dd>
+This requires the compositor and mpv to support <tt class="docutils literal"><span class="pre">xx-color-management-v4</span></tt> to
+accurately display colorspaces that are different from the compositor
+default (bt.601 in most cases).</p>
+<div class="admonition warning last">
+<p class="first admonition-title">Warning</p>
+<p class="last">This driver is not required for mpv to work on Wayland. <tt class="docutils literal">vo=gpu</tt>
+and <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt> will switch to the appropriate Wayland context
+automatically. This driver is experimental and generally lower quality
+than <tt class="docutils literal">gpu</tt>/<tt class="docutils literal"><span class="pre">gpu-next</span></tt>.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal">vaapi</tt></dt>
 <dd><p class="first">Intel VA API video output driver with support for hardware decoding. Note
 that there is absolutely no reason to use this, other than compatibility.
@@ -15087,11 +15113,11 @@ constant size, depending on the <tt class="docutils literal"><span class="pre">-
 </dd>
 <dt><tt class="docutils literal">valign</tt></dt>
 <dd><p class="first">Default: 0.8</p>
-<p class="last">Vertical alignment, -1 (top) to 1 (bottom)</p>
+<p class="last">Vertical alignment in box and slimbox layouts, -1 (top) to 1 (bottom).</p>
 </dd>
 <dt><tt class="docutils literal">halign</tt></dt>
 <dd><p class="first">Default: 0.0</p>
-<p class="last">Horizontal alignment, -1 (left) to 1 (right)</p>
+<p class="last">Horizontal alignment in box and slimbox layouts, -1 (left) to 1 (right).</p>
 </dd>
 <dt><tt class="docutils literal">barmargin</tt></dt>
 <dd><p class="first">Default: 0</p>
