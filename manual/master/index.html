@@ -1951,8 +1951,8 @@ because filters see audio and video going backward.</li>
 </ul>
 <p>Known problems:</p>
 <ul class="simple">
-<li>It's fragile. If anything doesn't work, random non-useful behavior may
-occur. In simple cases, the player will just play nonsense and artifacts.
+<li>It's fragile. If anything doesn't work, random behavior may occur.
+In simple cases, the player will just play nonsense and artifacts.
 In other cases, it may get stuck or heat the CPU. (Exceeding memory usage
 significantly beyond the user-set limits would be a bug, though.)</li>
 <li>Performance and resource usage isn't good. In part this is inherent to
@@ -2310,7 +2310,7 @@ youtube-dl (via <tt class="docutils literal"><span class="pre">--ytdl-format</sp
 <dt><tt class="docutils literal"><span class="pre">thumbnails=&lt;all|best|none&gt;</span></tt></dt>
 <dd><p class="first">Add thumbnails as video tracks (default: none).</p>
 <p class="last">Thumbnails get downloaded when they are added as tracks, so 'all' can
-have a noticable impact on how long it takes to open the video when
+have a noticeable impact on how long it takes to open the video when
 there are a lot of thumbnails.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">use_manifests=&lt;yes|no&gt;</span></tt></dt>
@@ -3619,7 +3619,7 @@ directories.</td>
 </table>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--audio-exts=ext1,ext2,...</span></tt></dt>
-<dd><p class="first">Audio file extentions to try to match when using <tt class="docutils literal"><span class="pre">--audio-file-auto</span></tt>,
+<dd><p class="first">Audio file extensions to try to match when using <tt class="docutils literal"><span class="pre">--audio-file-auto</span></tt>,
 <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt> or <tt class="docutils literal"><span class="pre">--directory-filter-types</span></tt>.</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.
 Use <tt class="docutils literal"><span class="pre">--help=audio-exts</span></tt> to see default extensions.</p>
@@ -3737,6 +3737,11 @@ styling in the main subtitle stream.</p>
 rendering. Use with care, or use <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> instead.</p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-scale-signs=&lt;yes|no&gt;</span></tt></dt>
+<dd>When set to yes, also apply <tt class="docutils literal"><span class="pre">--sub-scale</span></tt> to typesetting (or &quot;signs&quot;).
+When this is set to no, <tt class="docutils literal"><span class="pre">--sub-scale</span></tt> is only applied to dialogue. The
+distinction between dialogue and typesetting is done on a best effort basis
+and is not infallible (default: no).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-scale-by-window=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Whether to scale subtitles with the window size (default: yes). If this is
 disabled while <tt class="docutils literal"><span class="pre">--sub-scale-with-window</span></tt> is set to yes, changing the window
@@ -4032,7 +4037,7 @@ the player won't know where exactly the text parts are located.)</p>
 (default: no). Normally, the subtitle canvas is fit into the video canvas
 (e.g. letterboxed). Setting this option uses the video size as subtitle
 canvas size. Can be useful to test broken subtitles, which often happen
-when the video was trancoded, while attempting to keep the old subtitles.</dd>
+when the video was transcoded, while attempting to keep the old subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Render ASS subtitles natively (default: yes).</p>
 <div class="admonition note">
@@ -4073,7 +4078,7 @@ language suffixes (default).</td>
 </table>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-auto-exts=ext1,ext2,...</span></tt></dt>
-<dd><p class="first">Subtitle extentions to try and match when using <tt class="docutils literal"><span class="pre">--sub-auto</span></tt>. Note that
+<dd><p class="first">Subtitle extensions to try and match when using <tt class="docutils literal"><span class="pre">--sub-auto</span></tt>. Note that
 modifying this list will also affect what mpv recognizes as subtitles when
 using drag and drop.</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
@@ -4629,7 +4634,7 @@ Manager.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--ontop-level=&lt;window|system|desktop|level&gt;</span></tt></dt>
 <dd><p class="first">(macOS only)
-Sets the level of an ontop window (default: window).</p>
+Sets the level of an on-top window (default: window).</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -8690,12 +8695,10 @@ idle|belownormal|normal|abovenormal|high|realtime</p>
 <p class="last">Using realtime priority can cause system lockup.</p>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--media-controls=&lt;yes|player|no&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--media-controls=&lt;yes|no&gt;</span></tt></dt>
 <dd>(Windows only)
 Enable integration of media control interface SystemMediaTransportControls.
-If set to <tt class="docutils literal">player</tt>, only the player will use the controls. Setting it to
-<tt class="docutils literal">yes</tt> will also enable the controls for libmpv integrations.
-(default: <tt class="docutils literal">player</tt>)</dd>
+Default: yes (except for libmpv)</dd>
 <dt><tt class="docutils literal"><span class="pre">--force-media-title=&lt;string&gt;</span></tt></dt>
 <dd>Force the contents of the <tt class="docutils literal"><span class="pre">media-title</span></tt> property to this value. Useful
 for scripts which want to set a title, without overriding the user's
@@ -8753,7 +8756,7 @@ option will add a new external file.</dd>
 used to disable cover art that is part of the file).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--image-exts=ext1,ext2,...</span></tt></dt>
-<dd><p class="first">Image file extentions to try to match when using <tt class="docutils literal"><span class="pre">--cover-art-auto</span></tt>,
+<dd><p class="first">Image file extensions to try to match when using <tt class="docutils literal"><span class="pre">--cover-art-auto</span></tt>,
 <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt> or <tt class="docutils literal"><span class="pre">--directory-filter-types</span></tt>.</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.
 Use <tt class="docutils literal"><span class="pre">--help=image-exts</span></tt> to see default extensions.</p>
@@ -8766,19 +8769,19 @@ effect if <tt class="docutils literal"><span class="pre">cover-art-auto</span></
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-exts=ext1,ext2,...</span></tt></dt>
-<dd><p class="first">Video file extentions to try to match when using <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt> or
+<dd><p class="first">Video file extensions to try to match when using <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt> or
 <tt class="docutils literal"><span class="pre">--directory-filter-types</span></tt>.</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.
 Use <tt class="docutils literal"><span class="pre">--help=video-exts</span></tt> to see default extensions.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--archive-exts=ext1,ext2,...</span></tt></dt>
-<dd><p class="first">Archive file extentions to try to match when using <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt>
+<dd><p class="first">Archive file extensions to try to match when using <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt>
 or <tt class="docutils literal"><span class="pre">--directory-filter-types</span></tt>.</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details. Use
 <tt class="docutils literal"><span class="pre">--help=archive-exts</span></tt> to see the default extensions.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--playlist-exts=ext1,ext2,...</span></tt></dt>
-<dd><p class="first">Playlist file extentions to try to match when using
+<dd><p class="first">Playlist file extensions to try to match when using
 <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt> or <tt class="docutils literal"><span class="pre">--directory-filter-types</span></tt>.</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details. Use
 <tt class="docutils literal"><span class="pre">--help=playlist-exts</span></tt> to see the default extensions.</p>
@@ -11433,7 +11436,7 @@ flag cannot be combined with <tt class="docutils literal">mark</tt>.</dd>
 </dl>
 <p class="last">Using it without any arguments gives you the default behavior.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">sub-seek</span> &lt;skip&gt; &lt;flags&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">sub-seek</span> &lt;skip&gt; [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Change video and audio position such that the subtitle event after
 <tt class="docutils literal">&lt;skip&gt;</tt> subtitle events is displayed. For example, <tt class="docutils literal"><span class="pre">sub-seek</span> 1</tt> skips
 to the next subtitle, <tt class="docutils literal"><span class="pre">sub-seek</span> <span class="pre">-1</span></tt> skips to the previous subtitles, and
@@ -11534,7 +11537,7 @@ equivalent is <tt class="docutils literal"><span class="pre">--glsl-shaders-appe
 <div class="section" id="playlist-manipulation">
 <h3>Playlist Manipulation</h3>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">playlist-next</span> &lt;flags&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">playlist-next</span> [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Go to the next entry on the playlist.</p>
 <p>First argument:</p>
 <dl class="last docutils">
@@ -11544,7 +11547,7 @@ equivalent is <tt class="docutils literal"><span class="pre">--glsl-shaders-appe
 <dd>Terminate playback if there are no more files on the playlist.</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">playlist-prev</span> &lt;flags&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">playlist-prev</span> [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Go to the previous entry on the playlist.</p>
 <p>First argument:</p>
 <dl class="last docutils">
@@ -11718,7 +11721,7 @@ the current track. (Works on external subtitle files only.)</dd>
 the current track. (Works on external subtitle files only.)</p>
 <p class="last">This works by unloading and re-adding the subtitle track.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">sub-step</span> &lt;skip&gt; &lt;flags&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">sub-step</span> &lt;skip&gt; [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Change subtitle timing such, that the subtitle event after the next
 <tt class="docutils literal">&lt;skip&gt;</tt> subtitle events is displayed. <tt class="docutils literal">&lt;skip&gt;</tt> can be negative to step
 backwards.</p>
@@ -12350,7 +12353,7 @@ handle.</p>
 <div class="section" id="screenshot-commands">
 <h3>Screenshot Commands</h3>
 <dl class="docutils">
-<dt><tt class="docutils literal">screenshot &lt;flags&gt;</tt></dt>
+<dt><tt class="docutils literal">screenshot [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Take a screenshot.</p>
 <p>Multiple flags are available (some can be combined with <tt class="docutils literal">+</tt>):</p>
 <dl class="docutils">
@@ -12381,7 +12384,7 @@ no effect. (This behavior changed with mpv 0.29.0.)</p>
 <p class="last">On success, returns a <tt class="docutils literal">mpv_node</tt> with a <tt class="docutils literal">filename</tt> field set to the
 saved screenshot location.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">screenshot-to-file</span> &lt;filename&gt; &lt;flags&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">screenshot-to-file</span> &lt;filename&gt; [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Take a screenshot and save it to a given file. The format of the file will
 be guessed by the extension (and <tt class="docutils literal"><span class="pre">--screenshot-format</span></tt> is ignored - the
 behavior when the extension is missing or unknown is arbitrary).</p>
@@ -15345,6 +15348,19 @@ clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered 
 <p><tt class="docutils literal">fullscreen_mbtn_mid_command=</tt></p>
 <p><tt class="docutils literal"><span class="pre">fullscreen_mbtn_right_command=&quot;cycle</span> <span class="pre">window-maximized&quot;</span></tt></p>
 </div>
+<div class="section" id="custom-buttons">
+<h3>Custom Buttons</h3>
+<p>Additional script-opts are available to define custom buttons in <tt class="docutils literal">bottombar</tt>
+and <tt class="docutils literal">topbar</tt> layouts.</p>
+<div class="admonition admonition-example-to-add-loop-and-shuffle-buttons">
+<p class="first admonition-title">Example to add loop and shuffle buttons</p>
+<p>custom_button_1_content=🔁
+custom_button_1_mbtn_left_command=cycle-values loop-file inf no
+custom_button_1_mbtn_right_command=cycle-values loop-playlist inf no</p>
+<p class="last">custom_button_2_content=🔀
+custom_button_2_mbtn_left_command=playlist-shuffle</p>
+</div>
+</div>
 <div class="section" id="script-commands">
 <h3>Script Commands</h3>
 <p>The OSC script listens to certain script commands. These commands can bound
@@ -15574,11 +15590,11 @@ text. Currently, monospaced digits are sufficient.</p>
 <p class="last">Color of the text border.</p>
 </dd>
 <dt><tt class="docutils literal">shadow_x_offset</tt></dt>
-<dd><p class="first">Default: 0</p>
+<dd><p class="first">Default: same as <tt class="docutils literal"><span class="pre">--osd-shadow-offset</span></tt></p>
 <p class="last">The horizontal distance from the text to position the shadow at.</p>
 </dd>
 <dt><tt class="docutils literal">shadow_y_offset</tt></dt>
-<dd><p class="first">Default: 0</p>
+<dd><p class="first">Default: same as <tt class="docutils literal"><span class="pre">--osd-shadow-offset</span></tt></p>
 <p class="last">The vertical distance from the text to position the shadow at.</p>
 </dd>
 <dt><tt class="docutils literal">shadow_color</tt></dt>
