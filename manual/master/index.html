@@ -292,6 +292,10 @@ and <tt class="docutils literal">Page up</tt> and <tt class="docutils literal">C
 <tt class="docutils literal">PATH</tt>, or in the same folder as mpv on Windows.</dd>
 <dt>g-d</dt>
 <dd>Select an audio device.</dd>
+<dt>g-w</dt>
+<dd>Select a file from watch later config files (see <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>) to
+resume playing. Requires <tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt>. This
+doesn't work with <tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt>.</dd>
 <dt>g-b</dt>
 <dd>Select a defined input binding.</dd>
 <dt>g-r</dt>
@@ -12394,20 +12398,36 @@ supports <tt class="docutils literal">subtitles</tt>, <tt class="docutils litera
 <p class="last">Like all input command parameters, the filename is subject to property
 expansion as described in <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">screenshot-raw</span> [&lt;flags&gt;]</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">screenshot-raw</span> [&lt;flags&gt; <span class="pre">[&lt;format&gt;]]</span></tt></dt>
 <dd><p class="first">Return a screenshot in memory. This can be used only through the client
 API. The MPV_FORMAT_NODE_MAP returned by this command has the <tt class="docutils literal">w</tt>, <tt class="docutils literal">h</tt>,
-<tt class="docutils literal">stride</tt> fields set to obvious contents. The <tt class="docutils literal">format</tt> field is set to
-<tt class="docutils literal">bgr0</tt> by default. This format is organized as <tt class="docutils literal">B8G8R8X8</tt> (where <tt class="docutils literal">B</tt>
-is the LSB). The contents of the padding <tt class="docutils literal">X</tt> are undefined. The <tt class="docutils literal">data</tt>
-field is of type MPV_FORMAT_BYTE_ARRAY with the actual image data. The image
-is freed as soon as the result mpv_node is freed. As usual with client API
-semantics, you are not allowed to write to the image data.</p>
+<tt class="docutils literal">stride</tt> fields set to obvious contents.</p>
+<p>The <tt class="docutils literal">format</tt> field is set to the format of the screenshot image data.
+This can be controlled by the <tt class="docutils literal">format</tt> argument. The format can be one of
+the following:</p>
+<dl class="docutils">
+<dt>bgr0 (default)</dt>
+<dd>This format is organized as <tt class="docutils literal">B8G8R8X8</tt> (where <tt class="docutils literal">B</tt> is the LSB).
+The contents of the padding <tt class="docutils literal">X</tt> are undefined.</dd>
+<dt>bgra</dt>
+<dd>This format is organized as <tt class="docutils literal">B8G8R8A8</tt> (where <tt class="docutils literal">B</tt> is the LSB).</dd>
+<dt>rgba</dt>
+<dd>This format is organized as <tt class="docutils literal">R8G8B8A8</tt> (where <tt class="docutils literal">R</tt> is the LSB).</dd>
+<dt>rgba64</dt>
+<dd>This format is organized as <tt class="docutils literal">R16G16B16A16</tt> (where <tt class="docutils literal">R</tt> is the LSB).
+Each component occupies 2 bytes per pixel.
+When this format is used, the image data will be high bit depth, and
+<tt class="docutils literal"><span class="pre">--screenshot-high-bit-depth</span></tt> is ignored.</dd>
+</dl>
+<p>The <tt class="docutils literal">data</tt> field is of type MPV_FORMAT_BYTE_ARRAY with the actual image
+data. The image is freed as soon as the result mpv_node is freed. As usual
+with client API semantics, you are not allowed to write to the image data.</p>
 <p>The <tt class="docutils literal">stride</tt> is the number of bytes from a pixel at <tt class="docutils literal">(x0, y0)</tt> to the
-pixel at <tt class="docutils literal">(x0, y0 + 1)</tt>. This can be larger than <tt class="docutils literal">w * 4</tt> if the image
+pixel at <tt class="docutils literal">(x0, y0 + 1)</tt>. This can be larger than <tt class="docutils literal">w * bpp</tt> if the image
 was cropped, or if there is padding. This number can be negative as well.
-You access a pixel with <tt class="docutils literal">byte_index = y * stride + x * 4</tt> (assuming the
-<tt class="docutils literal">bgr0</tt> format).</p>
+You access a pixel with <tt class="docutils literal">byte_index = y * stride + x * bpp</tt>.
+Here, <tt class="docutils literal">bpp</tt> is the number of bytes per pixel, which is 8 for <tt class="docutils literal">rgba64</tt>
+format and 4 for other formats.</p>
 <p class="last">The <tt class="docutils literal">flags</tt> argument is like the first argument to <tt class="docutils literal">screenshot</tt> and
 supports <tt class="docutils literal">subtitles</tt>, <tt class="docutils literal">video</tt>, <tt class="docutils literal">window</tt>.</p>
 </dd>
@@ -14390,6 +14410,10 @@ property to check if this is the case.</p>
 <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
 <dd>The working directory of the mpv process. Can be useful for JSON IPC users,
 because the command line player usually works with relative paths.</dd>
+<dt><tt class="docutils literal"><span class="pre">current-watch-later-dir</span></tt></dt>
+<dd>The directory in which watch later config files are stored. This returns
+<tt class="docutils literal"><span class="pre">--watch-later-dir</span></tt>, or the default directory if <tt class="docutils literal"><span class="pre">--watch-later-dir</span></tt> has
+not been modified, with tilde placeholders expanded.</dd>
 <dt><tt class="docutils literal"><span class="pre">protocol-list</span></tt></dt>
 <dd>List of protocol prefixes potentially recognized by the player. They are
 returned without trailing <tt class="docutils literal">://</tt> suffix (which is still always required).
@@ -15032,7 +15056,8 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dt><tt class="docutils literal">layout</tt></dt>
 <dd><p class="first">Default: bottombar</p>
 <p class="last">The layout for the OSC. Currently available are: box, slimbox,
-bottombar and topbar. Default pre-0.21.0 was 'box'.</p>
+bottombar, topbar, slimbottombar and slimtopbar. Default pre-0.21.0 was
+'box'.</p>
 </dd>
 <dt><tt class="docutils literal">seekbarstyle</tt></dt>
 <dd><p class="first">Default: bar</p>
@@ -15130,7 +15155,8 @@ constant size, depending on the <tt class="docutils literal"><span class="pre">-
 </dd>
 <dt><tt class="docutils literal">barmargin</tt></dt>
 <dd><p class="first">Default: 0</p>
-<p class="last">Margin from bottom (bottombar) or top (topbar), in pixels</p>
+<p class="last">Margin from bottom (bottombar, slimbottombar) or top (topbar, slimtopbar),
+in pixels.</p>
 </dd>
 <dt><tt class="docutils literal">boxalpha</tt></dt>
 <dd><p class="first">Default: 80</p>
@@ -15199,10 +15225,10 @@ the osc may overwrite the <tt class="docutils literal"><span class="pre">--video
 user has set them. (It will not overwrite them if all of them are set to
 default values.) Additionally, <tt class="docutils literal">visibility</tt> must be set to <tt class="docutils literal">always</tt>.
 Otherwise, this option does nothing.</p>
-<p>Currently, this is supported for the <tt class="docutils literal">bottombar</tt> and <tt class="docutils literal">topbar</tt> layout
-only. The other layouts do not change if this option is set. Separately,
-if window controls are present (see below), they will be affected
-regardless of which osc layout is in use.</p>
+<p>Currently, this is supported for the <tt class="docutils literal">bottombar</tt>, <tt class="docutils literal">slimbottombar</tt>,
+<tt class="docutils literal">topbar</tt> and <tt class="docutils literal">slimtopbar</tt> layouts only. The other layouts do not change
+if this option is set. Separately, if window controls are present (see
+below), they will be affected regardless of which osc layout is in use.</p>
 <p>The border is static and appears even if the OSC is configured to appear
 only on mouse interaction. If the OSC is invisible, the border is simply
 filled with the background color (black by default).</p>
@@ -15855,6 +15881,11 @@ or <tt class="docutils literal">auto</tt>, which follows the value of <tt class=
 <p class="last">The ratio of font height to font width.
 Adjusts table width of completion suggestions.
 Values in the range 1.8..2.5 make sense for common monospace fonts.</p>
+</dd>
+<dt><tt class="docutils literal">pause_on_open</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Whether to pause playback when the console opens, and resume it when the
+console is closed, if playback was not already paused.</p>
 </dd>
 </dl>
 </div>
