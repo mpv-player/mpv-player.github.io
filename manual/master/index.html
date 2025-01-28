@@ -292,15 +292,19 @@ and <tt class="docutils literal">Page up</tt> and <tt class="docutils literal">C
 <tt class="docutils literal">PATH</tt>, or in the same folder as mpv on Windows.</dd>
 <dt>g-d</dt>
 <dd>Select an audio device.</dd>
+<dt>g-h</dt>
+<dd>Select a file from the watch history. Requires <tt class="docutils literal"><span class="pre">--save-watch-history</span></tt>.</dd>
 <dt>g-w</dt>
 <dd>Select a file from watch later config files (see <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>) to
-resume playing. Requires <tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt>. This
-doesn't work with <tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt>.</dd>
+resume playing. Requires <tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt>.</dd>
 <dt>g-b</dt>
 <dd>Select a defined input binding.</dd>
 <dt>g-r</dt>
 <dd>Show the values of all properties.</dd>
+<dt>MENU</dt>
+<dd>Show a menu with miscellaneous entries.</dd>
 </dl>
+<p>See <a class="reference internal" href="#select">SELECT</a> for more information.</p>
 <p>(The following keys are valid if you have a keyboard with multimedia keys.)</p>
 <dl class="docutils">
 <dt>PAUSE</dt>
@@ -2460,6 +2464,27 @@ disabled by default.</p>
 <dt><tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt></dt>
 <dd>Ignore path (i.e. use filename only) when using watch later feature.
 (Default: disabled)</dd>
+</dl>
+</div>
+<div class="section" id="watch-history">
+<h2>Watch History</h2>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">--save-watch-history</span></tt></dt>
+<dd><p class="first">Whether to save which files are played. These can be then selected with the
+default <tt class="docutils literal"><span class="pre">g-h</span></tt> key binding.</p>
+<div class="admonition warning last">
+<p class="first admonition-title">Warning</p>
+<p class="last">This option may expose privacy-sensitive information and is thus
+disabled by default.</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--watch-history-path=&lt;path&gt;</span></tt></dt>
+<dd><p class="first">The path in which to store the watch history. Default:
+<tt class="docutils literal">~~state/watch_history.jsonl</tt> (see <a class="reference internal" href="#paths">PATHS</a>).</p>
+<p class="last">This file contains one JSON object per line. Its <tt class="docutils literal">time</tt> field is the UNIX
+timestamp when the file was opened, its <tt class="docutils literal">path</tt> field is the normalized
+path, and its <tt class="docutils literal">title</tt> field is the title when it was available.</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="video">
@@ -8897,12 +8922,15 @@ code is the same.)</p>
 writing to the <tt class="docutils literal">clipboard</tt> property to get and set clipboard contents.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--clipboard-monitor=&lt;yes|no&gt;</span></tt></dt>
-<dd><p class="first">(Windows and macOS only)</p>
-<p class="last">Enable clipboard monitoring so that the <tt class="docutils literal">clipboard</tt> property can be
+<dd><p class="first">(Windows, Wayland and macOS only)</p>
+<p>Enable clipboard monitoring so that the <tt class="docutils literal">clipboard</tt> property can be
 observed for content changes (default: no). This only affects clipboard
 implementations which use polling to monitor clipboard updates.
 Other platforms currently ignore this option and always/never notify
 changes.</p>
+<p class="last">On Wayland, this option only has effect on the <tt class="docutils literal">wayland</tt> backend, and
+not for the <tt class="docutils literal">vo</tt> backend. See <tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt> property for
+more details.</p>
 </dd>
 </dl>
 </div>
@@ -11468,17 +11496,36 @@ instead of adjusting the subtitle delay.</p>
 events that have already been displayed, or are within a short prefetch
 range. See <a class="reference internal" href="#cache">Cache</a> for details on how to control the available prefetch range.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">frame-step</span></tt></dt>
-<dd>Play one frame, then pause. Does nothing with audio-only playback.</dd>
-<dt><tt class="docutils literal"><span class="pre">frame-back-step</span></tt></dt>
-<dd><p class="first">Go back by one frame, then pause. Note that this can be very slow (it tries
-to be precise, not fast), and sometimes fails to behave as expected. How
-well this works depends on whether precise seeking works correctly (e.g.
-see the <tt class="docutils literal"><span class="pre">--hr-seek-demuxer-offset</span></tt> option). Video filters or other video
+<dt><tt class="docutils literal"><span class="pre">frame-step</span> [&lt;frames&gt;] [&lt;flags&gt;]</tt></dt>
+<dd><p class="first">Go forward or backwards by a given amount of frames. If <tt class="docutils literal">&lt;frames&gt;</tt> is
+omitted, the value is assumed to be <tt class="docutils literal">1</tt>.</p>
+<p>The second argument consists of flags controlling the frameskip mode:</p>
+<dl class="docutils">
+<dt>play (default)</dt>
+<dd>Play the video forward by the desired amount of frames and then pause.
+This only works with a positive value (i.e. frame stepping forwards).</dd>
+<dt>seek</dt>
+<dd>Perform a very exact seek that attempts to seek by the desired amount
+of frames. If <tt class="docutils literal">&lt;frames&gt;</tt> is <tt class="docutils literal"><span class="pre">-1</span></tt>, this will go exactly to the
+previous frame.</dd>
+</dl>
+<p>Note that the default frameskip mode, play, is more accurate but can be
+slow depending on how many frames you are skipping (i.e. skipping forward
+100 frames will play 100 frames of video before stopping). This mode only
+works when going forwards. Frame stepping back always performs a seek.</p>
+<p>When using seek mode, this can still be very slow (it tries to be precise,
+not fast), and sometimes fails to behave as expected. How well this works
+depends on whether precise seeking works correctly (e.g. see the
+<tt class="docutils literal"><span class="pre">--hr-seek-demuxer-offset</span></tt> option). Video filters or other video
 post-processing that modifies timing of frames (e.g. deinterlacing) should
-usually work, but might make backstepping silently behave incorrectly in
+usually work, but might make framestepping silently behave incorrectly in
 corner cases. Using <tt class="docutils literal"><span class="pre">--hr-seek-framedrop=no</span></tt> should help, although it
-might make precise seeking slower.</p>
+might make precise seeking slower. Also if the video is VFR, framestepping
+using seeks will probably not work correctly except for the <tt class="docutils literal"><span class="pre">-1</span></tt> case.</p>
+<p class="last">This does not work with audio-only playback.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">frame-back-step</span></tt></dt>
+<dd><p class="first">Calls <tt class="docutils literal"><span class="pre">frame-step</span></tt> with a value of <tt class="docutils literal"><span class="pre">-1</span></tt> and the <tt class="docutils literal">seek</tt> flag.</p>
 <p class="last">This does not work with audio-only playback.</p>
 </dd>
 <dt><tt class="docutils literal">stop [&lt;flags&gt;]</tt></dt>
@@ -14602,12 +14649,35 @@ or change notifications are not currently functional.</p>
 <dt><tt class="docutils literal">clipboard/text</tt> (RW)</dt>
 <dd>The text content in the clipboard (Windows, Wayland and macOS only).
 Writing to this property sets the text clipboard content (Windows only).</dd>
+<dt><tt class="docutils literal"><span class="pre">clipboard/text-primary</span></tt></dt>
+<dd>The text content in the primary selection (Wayland only).</dd>
 </dl>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
-<p class="last">On Wayland, the clipboard content is only updated when the compositor
-sends a selection data offer (typically when VO window is focused).</p>
+<p class="last">On Wayland with the <tt class="docutils literal">vo</tt> clipboard backend, the clipboard content is
+only updated when the compositor sends a selection data offer
+(typically when VO window is focused). The <tt class="docutils literal">wayland</tt> backend typically
+does not have this limitation.
+See <tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt> property for more details.</p>
 </div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt></dt>
+<dd><p class="first">A string containing the currently active clipboard backend.
+The following clipboard backends are implemented:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">win32</tt></dt>
+<dd>Windows backend.</dd>
+<dt><tt class="docutils literal">mac</tt></dt>
+<dd>macOS backend.</dd>
+<dt><tt class="docutils literal">wayland</tt></dt>
+<dd>Wayland backend. This backend is only available if the compositor
+supports the <tt class="docutils literal">zwlr_data_control_manager_v1</tt> protocol.</dd>
+<dt><tt class="docutils literal">vo</tt></dt>
+<dd>VO backend. Requires an active VO window, and support differs across
+platforms. Currently, this is used as a fallback for Wayland
+compositors without support for the <tt class="docutils literal">zwlr_data_control_manager_v1</tt>
+protocol.</dd>
+</dl>
 </dd>
 </dl>
 </div>
@@ -14756,14 +14826,27 @@ player window and will hide if the mouse is not moved outside the OSC for
 <div class="section" id="the-interface">
 <h3>The Interface</h3>
 <pre class="literal-block">
-+---------+----------+------------------------------------------+----------+
-| pl prev | pl next  |  title                                   |    cache |
-+------+--+---+------+---------+-----------+------+-------+-----+-----+----+
++------+---------+---------+-----------------------------------------------+
+| menu | pl prev | pl next | title                                   cache |
++------+------+------+---------+-----------+------+-------+-----+-----+----+
 | play | skip | skip | time    |  seekbar  | time | audio | sub | vol | fs |
 |      | back | frwd | elapsed |           | left |       |     |     |    |
 +------+------+------+---------+-----------+------+-------+-----+-----+----+
 </pre>
 <dl class="docutils">
+<dt>menu</dt>
+<dd><table border="1" class="first last docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>left-click</td>
+<td>open the menu</td>
+</tr>
+</tbody>
+</table>
+</dd>
 <dt>pl prev</dt>
 <dd><table border="1" class="first last docutils">
 <colgroup>
@@ -15347,6 +15430,9 @@ supports the <tt class="docutils literal"><span class="pre">display-fps</span></
 </dl>
 <p>The following options configure what commands are run when the buttons are
 clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered with <tt class="docutils literal">shift+mbtn_left</tt>.</p>
+<p><tt class="docutils literal"><span class="pre">menu_mbtn_left_command=script-binding</span> select/menu; <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
+<p><tt class="docutils literal">menu_mbtn_mid_command=</tt></p>
+<p><tt class="docutils literal">menu_mbtn_right_command=</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_left_command=playlist-prev;</span> <span class="pre">show-text</span> ${playlist} 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_mid_command=show-text</span> ${playlist} 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_prev_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
@@ -15731,8 +15817,10 @@ corresponding pthread API works and is supported).</p>
 </div>
 <div class="section" id="console">
 <h1>CONSOLE</h1>
-<p>The console is a REPL for mpv input commands. It is displayed on the video
-window. It also shows log messages. It can be disabled entirely using the
+<p>This script provides the ability to process the user's textual input to other
+scripts through the <tt class="docutils literal">mp.input</tt> API. It also has a builtin mode of operation to
+complete and run mpv input commands and print mpv's log. It can be displayed on
+both the video window and the terminal. It can be disabled entirely using the
 <tt class="docutils literal"><span class="pre">--load-console=no</span></tt> option.</p>
 <div class="section" id="keybindings">
 <h2>Keybindings</h2>
@@ -15895,6 +15983,127 @@ Values in the range 1.8..2.5 make sense for common monospace fonts.</p>
 <dd><p class="first">Default: no</p>
 <p class="last">Whether to pause playback when the console opens, and resume it when the
 console is closed, if playback was not already paused.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="section" id="select">
+<h1>SELECT</h1>
+<p>console can present a list of items to browse and select from with the
+<tt class="docutils literal">mp.input.select</tt> API. <tt class="docutils literal">select.lua</tt> is a builtin client of this API
+providing script bindings that gather and format the data to be selected in the
+console and do operations on the selected item. It can be disabled using the
+<tt class="docutils literal"><span class="pre">--load-select=no</span></tt> option.</p>
+<div class="section" id="key-bindings-1">
+<h2>Key bindings</h2>
+<p>When using <tt class="docutils literal">mp.input.select</tt>, typing printable characters does a fuzzy search
+of the presented items, and key bindings listed in <a class="reference internal" href="#console">CONSOLE</a> are extended with
+the following:</p>
+<dl class="docutils">
+<dt>ENTER, Ctrl+j and Ctrl+m</dt>
+<dd>Confirm the selection of the highlighted item.</dd>
+<dt>UP and Ctrl+p</dt>
+<dd>Select the item above, or the last one when the first item is selected.</dd>
+<dt>DOWN and Ctrl+n</dt>
+<dd>Select the item below, or the first one when the last item is selected.</dd>
+<dt>PGUP and Ctrl+b</dt>
+<dd>Scroll up one page.</dd>
+<dt>PGDN and Ctrl+f</dt>
+<dd>Scroll down one page.</dd>
+<dt>MBTN_LEFT</dt>
+<dd>Confirm the selection of the highlighted item, or close the console if
+clicking above the first item or below the last item.</dd>
+<dt>WHEEL_UP</dt>
+<dd>Scroll up.</dd>
+<dt>WHEEL_DOWN</dt>
+<dd>Scroll down.</dd>
+</dl>
+</div>
+<div class="section" id="script-bindings">
+<h2>Script bindings</h2>
+<p>By default select.lua's script bindings are bound to key sequences starting with
+<tt class="docutils literal">g</tt> listed in <a class="reference internal" href="#keyboard-control">Keyboard Control</a>. The names of the script bindings listed
+below can be used to bind them to different keys.</p>
+<div class="admonition admonition-example-to-rebind-playlist-selection-in-input-conf">
+<p class="first admonition-title">Example to rebind playlist selection in input.conf</p>
+<p class="last">Ctrl+p script-binding select/select-playlist</p>
+</div>
+<p>Available script bindings are:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">select-playlist</span></tt></dt>
+<dd>Select a playlist entry. <tt class="docutils literal"><span class="pre">--osd-playlist-entry</span></tt> determines how playlist
+entries are formatted.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-sid</span></tt></dt>
+<dd>Select a subtitle track, or disable the current one.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-secondary-sid</span></tt></dt>
+<dd>Select a secondary subtitle track, or disable the current one.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-aid</span></tt></dt>
+<dd>Select an audio track, or disable the current one.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-vid</span></tt></dt>
+<dd>Select a video track, or disable the current one.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-track</span></tt></dt>
+<dd>Select a track of any type, or disable a selected track.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-chapter</span></tt></dt>
+<dd>Select a chapter.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-edition</span></tt></dt>
+<dd>Select an MKV edition or DVD/Blu-ray title.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-subtitle-line</span></tt></dt>
+<dd><p class="first">Select a subtitle line to seek to. This doesn't work with image subtitles.</p>
+<p class="last">This currently requires <tt class="docutils literal">ffmpeg</tt> in <tt class="docutils literal">PATH</tt>, or in the same folder as mpv
+on Windows.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">select-audio-device</span></tt></dt>
+<dd>Select an audio device.</dd>
+<dt><tt class="docutils literal"><span class="pre">select-watch-history</span></tt></dt>
+<dd><p class="first">Select a file from the watch history. Requires <tt class="docutils literal"><span class="pre">--save-watch-history</span></tt>.</p>
+<p>If you don't already use <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt>, it is recommended to
+enable it with this script binding to populate the playlist with the other
+files in the entry's directory.</p>
+<div class="admonition admonition-example-for-input-conf-to-play-files-adjacent-to-the-history-entry last">
+<p class="first admonition-title">Example for input.conf to play files adjacent to the history entry</p>
+<p class="last">g-h script-binding select/select-watch-history; no-osd set autocreate-playlist filter</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">select-watch-later</span></tt></dt>
+<dd><p class="first">Select a file from watch later config files (see <a class="reference internal" href="#resuming-playback">RESUMING PLAYBACK</a>) to
+resume playing. Requires <tt class="docutils literal"><span class="pre">--write-filename-in-watch-later-config</span></tt>. This
+doesn't work with <tt class="docutils literal"><span class="pre">--ignore-path-in-watch-later-config</span></tt>.</p>
+<p>If you don't already use <tt class="docutils literal"><span class="pre">--autocreate-playlist</span></tt>, it is recommended to
+enable it with this script binding to populate the playlist with the other
+files in the entry's directory.</p>
+<div class="admonition admonition-example-for-input-conf-to-play-files-adjacent-to-the-watch-later-entry last">
+<p class="first admonition-title">Example for input.conf to play files adjacent to the watch later entry</p>
+<p class="last">g-w script-binding select/select-watch-later; no-osd set autocreate-playlist filter</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">select-binding</span></tt></dt>
+<dd>List the defined input bindings. You can also select one to run the
+associated command.</dd>
+<dt><tt class="docutils literal"><span class="pre">show-properties</span></tt></dt>
+<dd>List the names and values of all properties. You can also select one to
+print its value on the OSD, which is useful for long values that get
+clipped.</dd>
+<dt><tt class="docutils literal">menu</tt></dt>
+<dd>Show a menu with miscellaneous entries.</dd>
+</dl>
+</div>
+<div class="section" id="configuration-3">
+<h2>Configuration</h2>
+<p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/select.conf</span></tt>
+placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
+option. The configuration syntax is described in <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
+<div class="section" id="configurable-options-3">
+<h3>Configurable options</h3>
+<dl class="docutils">
+<dt><tt class="docutils literal">history_date_format</tt></dt>
+<dd><p class="first">Default: %Y-%m-%d %H:%M:%S</p>
+<p class="last">The format of dates of history entries. This is passed to Lua's <tt class="docutils literal">os.date</tt>,
+which uses the same formats as <tt class="docutils literal">strftime(3)</tt>.</p>
+</dd>
+<dt><tt class="docutils literal">hide_history_duplicates</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Whether to show only the last of history entries with the same path.</p>
 </dd>
 </dl>
 </div>
@@ -16772,11 +16981,7 @@ input.set_log({
 </pre>
 </dd>
 <dt><tt class="docutils literal">input.select(table)</tt></dt>
-<dd><p class="first">Specify a list of items that are presented to the user for selection. The
-user can type part of the desired item and/or navigate them with
-keybindings: <tt class="docutils literal">Down</tt> and <tt class="docutils literal">Ctrl+n</tt> go down, <tt class="docutils literal">Up</tt> and <tt class="docutils literal">Ctrl+p</tt> go up,
-<tt class="docutils literal">Page down</tt> and <tt class="docutils literal">Ctrl+f</tt> scroll down one page, and <tt class="docutils literal">Page up</tt> and
-<tt class="docutils literal">Ctrl+b</tt> scroll up one page.</p>
+<dd><p class="first">Specify a list of items that are presented to the user for selection.</p>
 <p>The following entries of <tt class="docutils literal">table</tt> are read:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal">prompt</tt></dt>
