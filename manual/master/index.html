@@ -3370,9 +3370,9 @@ matches the audio format is selected. If that is unavailable, the next
 decoder is used. Finally, it tries all other decoders that are not
 explicitly selected or rejected by the option.</p>
 <p><tt class="docutils literal">-</tt> at the end of the list suppresses fallback on other available
-decoders not on the <tt class="docutils literal"><span class="pre">--ad</span></tt> list. <tt class="docutils literal">+</tt> in front of an entry forces the
-decoder. Both of these should not normally be used, because they break
-normal decoder auto-selection! Both of these methods are deprecated.</p>
+decoders not on the <tt class="docutils literal"><span class="pre">--ad</span></tt> list. This should not normally be used,
+because they break normal decoder auto-selection! The <tt class="docutils literal">-</tt> mode is
+deprecated.</p>
 <div class="admonition admonition-examples">
 <p class="first admonition-title">Examples</p>
 <dl class="last docutils">
@@ -15303,6 +15303,11 @@ Use values above 100 to increase that spacing, or below 100 to decrease it.</p>
 <dd><p class="first">Default: auto (auto hide/show on mouse move)</p>
 <p class="last">Also supports <tt class="docutils literal">never</tt> and <tt class="docutils literal">always</tt></p>
 </dd>
+<dt><tt class="docutils literal">visibility_modes</tt></dt>
+<dd><p class="first">Default: never_auto_always</p>
+<p class="last">The list of visibility modes to cycle through when calling the
+osc-visibility cycle script message. Modes are separated by <tt class="docutils literal">_</tt>.</p>
+</dd>
 <dt><tt class="docutils literal">boxmaxchars</tt></dt>
 <dd><p class="first">Default: 80</p>
 <p class="last">Max chars for the osc title at the box layout. mpv does not measure the
@@ -15490,7 +15495,8 @@ in <tt class="docutils literal">input.conf</tt>, or sent by other scripts.</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">osc-visibility</span></tt></dt>
 <dd>Controls visibility mode <tt class="docutils literal">never</tt> / <tt class="docutils literal">auto</tt> (on mouse move) / <tt class="docutils literal">always</tt>
-and also <tt class="docutils literal">cycle</tt> to cycle between the modes.</dd>
+and also <tt class="docutils literal">cycle</tt> to cycle between the modes. If a second argument is
+passed (any value), then the output on the OSD will be silenced.</dd>
 <dt><tt class="docutils literal"><span class="pre">osc-show</span></tt></dt>
 <dd>Triggers the OSC to show up, just as if user moved mouse.</dd>
 <dt><tt class="docutils literal"><span class="pre">osc-hide</span></tt></dt>
@@ -15506,7 +15512,8 @@ b script-message osc-visibility auto
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">osc-idlescreen</span></tt></dt>
 <dd>Controls the visibility of the mpv logo on idle. Valid arguments are <tt class="docutils literal">yes</tt>,
-<tt class="docutils literal">no</tt>, and <tt class="docutils literal">cycle</tt> to toggle between yes and no.</dd>
+<tt class="docutils literal">no</tt>, and <tt class="docutils literal">cycle</tt> to toggle between yes and no. If a second argument is
+passed (any value), then the output on the OSD will be silenced.</dd>
 </dl>
 </div>
 </div>
