@@ -634,6 +634,9 @@ by the option system itself. However, most path or file list options use <tt cla
 <tr><td>-clr</td>
 <td>Clear the option (remove all items)</td>
 </tr>
+<tr><td>-del</td>
+<td>Delete 1 or more items if present (same syntax as -set)</td>
+</tr>
 <tr><td>-remove</td>
 <td>Delete item if present (does not interpret escapes)</td>
 </tr>
@@ -670,6 +673,12 @@ normally does not matter, although in some cases the order might matter.</p>
 </tr>
 <tr><td>-add</td>
 <td>Append 1 or more items (same syntax as -set)</td>
+</tr>
+<tr><td>-clr</td>
+<td>Clear the option (remove all items)</td>
+</tr>
+<tr><td>-del</td>
+<td>Delete 1 or more keys if present (same syntax as -set)</td>
 </tr>
 <tr><td>-remove</td>
 <td>Delete item by key if present (does not interpret escapes)</td>
@@ -716,7 +725,7 @@ They often require complicated escaping. See <a class="reference internal" href=
 <td>Clear the option (remove all items)</td>
 </tr>
 <tr><td>-remove</td>
-<td>Delete item if present</td>
+<td>Delete 1 or items if present (same syntax as -set)</td>
 </tr>
 <tr><td>-toggle</td>
 <td>Append an item, or remove it if it already exists</td>
@@ -730,10 +739,9 @@ They often require complicated escaping. See <a class="reference internal" href=
 <div class="section" id="general">
 <h3>General</h3>
 <p>Without suffix, the operation used is normally <tt class="docutils literal"><span class="pre">-set</span></tt>.</p>
-<p>Although some operations allow specifying multiple items, using this is strongly
-discouraged and deprecated, except for <tt class="docutils literal"><span class="pre">-set</span></tt>. There is a chance that
-operations like <tt class="docutils literal"><span class="pre">-add</span></tt> and <tt class="docutils literal"><span class="pre">-pre</span></tt> will work like <tt class="docutils literal"><span class="pre">-append</span></tt> and accept a
-single, unescaped item only (so the <tt class="docutils literal">,</tt> separator will not be interpreted and
+<p>Some operations like <tt class="docutils literal"><span class="pre">-add</span></tt> and <tt class="docutils literal"><span class="pre">-pre</span></tt> specify multiple items, but be
+aware that you may need to escape the arguments. <tt class="docutils literal"><span class="pre">-append</span></tt> accepts a single,
+unescaped item only (so the <tt class="docutils literal">,</tt> separator will not be interpreted and
 is passed on as part of the value).</p>
 <p>Some options (like <tt class="docutils literal"><span class="pre">--sub-file</span></tt>, <tt class="docutils literal"><span class="pre">--audio-file</span></tt>, <tt class="docutils literal"><span class="pre">--glsl-shader</span></tt>) are
 aliases for the proper option with <tt class="docutils literal"><span class="pre">-append</span></tt> action. For example,
@@ -3139,13 +3147,7 @@ only includes the codecs supported on the setup.</p>
 </dl>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--vd-lavc-check-hw-profile=&lt;yes|no&gt;</span></tt></dt>
-<dd>Check hardware decoder profile (default: yes). If <tt class="docutils literal">no</tt> is set, the
-highest profile of the hardware decoder is unconditionally selected, and
-decoding is forced even if the profile of the video is higher than that.
-The result is most likely broken decoding, but may also help if the
-detected or reported profiles are somehow incorrect.</dd>
-<dt><tt class="docutils literal"><span class="pre">--vd-lavc-software-fallback=&lt;yes|no|N&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--hwdec-software-fallback=&lt;yes|no|N&gt;</span></tt></dt>
 <dd><p class="first">Fallback to software decoding if the hardware-accelerated decoder fails
 (default: 3). If this is a number, then fallback will be triggered if
 N frames fail to decode in a row. 1 is equivalent to <tt class="docutils literal">yes</tt>.</p>
@@ -3154,6 +3156,12 @@ a fallback happens, parts of the file will be skipped, approximately by to
 the number of packets that could not be decoded. Values below an unspecified
 count will not have this problem, because mpv retains the packets.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--vd-lavc-check-hw-profile=&lt;yes|no&gt;</span></tt></dt>
+<dd>Check hardware decoder profile (default: yes). If <tt class="docutils literal">no</tt> is set, the
+highest profile of the hardware decoder is unconditionally selected, and
+decoding is forced even if the profile of the video is higher than that.
+The result is most likely broken decoding, but may also help if the
+detected or reported profiles are somehow incorrect.</dd>
 <dt><tt class="docutils literal"><span class="pre">--vd-lavc-film-grain=&lt;auto|cpu|gpu&gt;</span></tt></dt>
 <dd><p class="first">Enables film grain application on the GPU. If video decoding is done on
 the CPU, doing film grain application on the GPU can speed up decoding.
