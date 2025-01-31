@@ -12763,8 +12763,8 @@ changes when playing ordered chapters Matroska files.)</dd>
 <dt><tt class="docutils literal"><span class="pre">playback-restart</span></tt> (<tt class="docutils literal">MPV_EVENT_PLAYBACK_RESTART</tt>)</dt>
 <dd>Start of playback after seek or after file was loaded.</dd>
 <dt><tt class="docutils literal">shutdown</tt> (<tt class="docutils literal">MPV_EVENT_SHUTDOWN</tt>)</dt>
-<dd>Sent when the player quits, and the script should terminate. Normally
-handled automatically. See <a class="reference internal" href="#details-on-the-script-initialization-and-lifecycle">Details on the script initialization and lifecycle</a>.</dd>
+<dd>Sent when the player quits or when a script terminates. Normally handled
+automatically. See <a class="reference internal" href="#details-on-the-script-initialization-and-lifecycle">Details on the script initialization and lifecycle</a>.</dd>
 <dt><tt class="docutils literal"><span class="pre">log-message</span></tt> (<tt class="docutils literal">MPV_EVENT_LOG_MESSAGE</tt>)</dt>
 <dd><p class="first">Receives messages enabled with <tt class="docutils literal">mpv_request_log_messages()</tt> (Lua:
 <tt class="docutils literal">mp.enable_messages</tt>).</p>
@@ -14127,6 +14127,9 @@ these properties unavailable instead in this case.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/dolby-vision-profile</span></tt>, <tt class="docutils literal"><span class="pre">track-list/N/dolby-vision-level</span></tt></dt>
 <dd>Dolby Vision profile and level. May not be available if the container
 does not provide this information.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/metadata</span></tt>,</dt>
+<dd>Works like the <tt class="docutils literal">metadata</tt> property, but it accesses metadata that is
+set per track/stream instead of global values for the entire file.</dd>
 </dl>
 <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
 or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -14179,6 +14182,8 @@ MPV_FORMAT_NODE_ARRAY
         &quot;replaygain-album-gain&quot; MPV_FORMAT_DOUBLE
         &quot;dolby-vision-profile&quot; MPV_FORMAT_INT64
         &quot;dolby-vision-level&quot; MPV_FORMAT_INT64
+        &quot;metadata&quot;           MPV_FORMAT_NODE_MAP
+            (key and string value for each metadata entry)
 </pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">current-tracks/...</span></tt></dt>
@@ -14401,19 +14406,6 @@ Valid for <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> an
 general use (i.e. scripts, IPC clients, host applications, etc).
 The player itself does not use any data in it (although some builtin scripts may).
 The property is not preserved across player restarts.</p>
-<p>The following sub-paths are reserved for internal uses or have special semantics:
-<tt class="docutils literal"><span class="pre">user-data/osc</span></tt>, <tt class="docutils literal"><span class="pre">user-data/mpv</span></tt>. Unless noted otherwise, the semantics of
-any properties under these sub-paths can change at any time and may not be relied
-upon, and writing to these properties may prevent builtin scripts from working
-properly.</p>
-<p>Currently, the following properties have defined special semantics:</p>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">user-data/osc/margins</span></tt></dt>
-<dd>This property is written by an OSC implementation to indicate the margins that it
-occupies. Its sub-properties <tt class="docutils literal">l</tt>, <tt class="docutils literal">r</tt>, <tt class="docutils literal">t</tt>, and <tt class="docutils literal">b</tt> should all be set to
-the left, right, top, and bottom margins respectively.
-Values are between 0.0 and 1.0, normalized to window width/height.</dd>
-</dl>
 <p>Sub-paths can be accessed directly; e.g. <tt class="docutils literal"><span class="pre">user-data/my-script/state/a</span></tt> can be
 read, written, or observed.</p>
 <p>The top-level object itself cannot be written directly; write to sub-paths instead.</p>
@@ -14421,7 +14413,18 @@ read, written, or observed.</p>
 representation. If converting a leaf-level object (i.e. not a map or array)
 and not using raw mode, the underlying content will be given (e.g. strings will be
 printed directly, rather than quoted and JSON-escaped).</p>
+<p>The following sub-paths are reserved for internal uses or have special semantics:
+<tt class="docutils literal"><span class="pre">user-data/osc</span></tt>, <tt class="docutils literal"><span class="pre">user-data/mpv</span></tt>. Unless noted otherwise, the semantics of
+any properties under these sub-paths can change at any time and may not be relied
+upon, and writing to these properties may prevent builtin scripts from working
+properly.</p>
+<p>Currently, the following properties have defined special semantics:</p>
 <dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">user-data/osc/margins</span></tt></dt>
+<dd>This property is written by an OSC implementation to indicate the margins that it
+occupies. Its sub-properties <tt class="docutils literal">l</tt>, <tt class="docutils literal">r</tt>, <tt class="docutils literal">t</tt>, and <tt class="docutils literal">b</tt> should all be set to
+the left, right, top, and bottom margins respectively.
+Values are between 0.0 and 1.0, normalized to window width/height.</dd>
 <dt><tt class="docutils literal"><span class="pre">user-data/mpv/ytdl</span></tt></dt>
 <dd><p class="first">Data shared by the builtin ytdl hook script.</p>
 <dl class="last docutils">
@@ -14435,6 +14438,8 @@ loaded. The format is the same as <tt class="docutils literal">subprocess</tt>'s
 stdout and stderr.</dd>
 </dl>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">user-data/mpv/console/open</span></tt></dt>
+<dd>Whether the console is open.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">menu-data</span></tt> (RW)</dt>
@@ -15994,11 +15999,6 @@ or <tt class="docutils literal">auto</tt>, which follows the value of <tt class=
 Adjusts grid width of completions.
 Values in the range 1.8..2.5 make sense for common monospace fonts.</p>
 </dd>
-<dt><tt class="docutils literal">pause_on_open</tt></dt>
-<dd><p class="first">Default: no</p>
-<p class="last">Whether to pause playback when the console opens, and resume it when the
-console is closed, if playback was not already paused.</p>
-</dd>
 </dl>
 </div>
 </div>
@@ -17361,8 +17361,6 @@ we're about to sleep (wait != 0), but the observers may add timers or take
 non-negligible duration to complete, so we re-calculate <tt class="docutils literal">wait</tt> afterwards.</p>
 <p><tt class="docutils literal">mp.peek_timers_wait()</tt> returns the same values as <tt class="docutils literal">mp.process_timers()</tt>
 but without doing anything. Invalid result if called from a timer callback.</p>
-<p>Note: <tt class="docutils literal">exit()</tt> is also registered for the <tt class="docutils literal">shutdown</tt> event, and its
-implementation is a simple <tt class="docutils literal">mp.keep_running = false</tt>.</p>
 </div>
 </div>
 <div class="section" id="json-ipc">
