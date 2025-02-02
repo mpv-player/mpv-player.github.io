@@ -12763,8 +12763,8 @@ changes when playing ordered chapters Matroska files.)</dd>
 <dt><tt class="docutils literal"><span class="pre">playback-restart</span></tt> (<tt class="docutils literal">MPV_EVENT_PLAYBACK_RESTART</tt>)</dt>
 <dd>Start of playback after seek or after file was loaded.</dd>
 <dt><tt class="docutils literal">shutdown</tt> (<tt class="docutils literal">MPV_EVENT_SHUTDOWN</tt>)</dt>
-<dd>Sent when the player quits or when a script terminates. Normally handled
-automatically. See <a class="reference internal" href="#details-on-the-script-initialization-and-lifecycle">Details on the script initialization and lifecycle</a>.</dd>
+<dd>Sent when the player quits, and the script should terminate. Normally
+handled automatically. See <a class="reference internal" href="#details-on-the-script-initialization-and-lifecycle">Details on the script initialization and lifecycle</a>.</dd>
 <dt><tt class="docutils literal"><span class="pre">log-message</span></tt> (<tt class="docutils literal">MPV_EVENT_LOG_MESSAGE</tt>)</dt>
 <dd><p class="first">Receives messages enabled with <tt class="docutils literal">mpv_request_log_messages()</tt> (Lua:
 <tt class="docutils literal">mp.enable_messages</tt>).</p>
@@ -13089,10 +13089,7 @@ quantities: fps and possibly rounded timestamps.)</p>
 <dt><tt class="docutils literal">pid</tt></dt>
 <dd>Process-id of mpv.</dd>
 <dt><tt class="docutils literal">path</tt></dt>
-<dd>Full path of the currently played file. Usually this is exactly the same
-string you pass on the mpv command line or the <tt class="docutils literal">loadfile</tt> command, even
-if it's a relative path. If you expect an absolute path, you will have to
-determine it yourself, for example by using the <tt class="docutils literal"><span class="pre">normalize-path</span></tt> command.</dd>
+<dd>Full absolute path of the currently played file.</dd>
 <dt><tt class="docutils literal"><span class="pre">stream-open-filename</span></tt></dt>
 <dd>The full path to the currently played media. This is different from
 <tt class="docutils literal">path</tt> only in special cases. In particular, if <tt class="docutils literal"><span class="pre">--ytdl=yes</span></tt> is used,
@@ -17361,6 +17358,8 @@ we're about to sleep (wait != 0), but the observers may add timers or take
 non-negligible duration to complete, so we re-calculate <tt class="docutils literal">wait</tt> afterwards.</p>
 <p><tt class="docutils literal">mp.peek_timers_wait()</tt> returns the same values as <tt class="docutils literal">mp.process_timers()</tt>
 but without doing anything. Invalid result if called from a timer callback.</p>
+<p>Note: <tt class="docutils literal">exit()</tt> is also registered for the <tt class="docutils literal">shutdown</tt> event, and its
+implementation is a simple <tt class="docutils literal">mp.keep_running = false</tt>.</p>
 </div>
 </div>
 <div class="section" id="json-ipc">
