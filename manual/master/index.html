@@ -7124,11 +7124,14 @@ default, the highest available feature level is used. This option can be
 used to select a lower feature level, which is mainly useful for debugging.
 Most extended GPU features will not work at 9_x feature levels.</dd>
 <dt><tt class="docutils literal"><span class="pre">--d3d11-flip=&lt;yes|no&gt;</span></tt></dt>
-<dd>Enable flip-model presentation, which avoids unnecessarily copying the
+<dd><p class="first">Enable flip-model presentation, which avoids unnecessarily copying the
 backbuffer by sharing surfaces with the DWM (default: yes). This may cause
 performance issues with older drivers. If flip-model presentation is not
 supported (for example, on Windows 7 without the platform update), mpv will
-automatically fall back to the older bitblt presentation model.</dd>
+automatically fall back to the older bitblt presentation model.</p>
+<p class="last">flip-model needs presentation needs to be disabled for background
+transparency to work.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--d3d11-sync-interval=&lt;0..4&gt;</span></tt></dt>
 <dd>Schedule each frame to be presented for this number of VBlank intervals.
 (default: 1) Setting to 1 will enable VSync, setting to 0 will disable it.</dd>
@@ -8441,6 +8444,7 @@ normally black).</dd>
 <dt>none</dt>
 <dd>Do not blend the frame and leave the alpha as is.</dd>
 </dl>
+<p>Background transparency on d3d11 requires <tt class="docutils literal"><span class="pre">--d3d11-flip=no</span></tt>.</p>
 <p class="last">Before mpv 0.38.0, this option used to accept a color value specifying the
 background color. This is now done by the <tt class="docutils literal"><span class="pre">--background-color</span></tt> option.
 Use that instead.</p>
@@ -14916,13 +14920,13 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>show file and track info</td>
 </tr>
 <tr><td>shift+L-click</td>
-<td>show the filename</td>
+<td>show the path</td>
 </tr>
 <tr><td>middle-click</td>
-<td>show the filename</td>
+<td>show the path</td>
 </tr>
 <tr><td>right-click</td>
-<td>show the path</td>
+<td>open the history selector</td>
 </tr>
 </tbody>
 </table>
@@ -15455,8 +15459,8 @@ clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered 
 <p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_mid_command=show-text</span> ${playlist} 3000</tt></p>
 <p><tt class="docutils literal"><span class="pre">playlist_next_mbtn_right_command=script-binding</span> <span class="pre">select/select-playlist;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal"><span class="pre">title_mbtn_left_command=script-binding</span> <span class="pre">stats/display-page-5</span></tt></p>
-<p><tt class="docutils literal"><span class="pre">title_mbtn_mid_command=show-text</span> ${filename}</tt></p>
-<p><tt class="docutils literal"><span class="pre">title_mbtn_right_command=show-text</span> ${path}</tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_mid_command=show-text</span> ${path}</tt></p>
+<p><tt class="docutils literal"><span class="pre">title_mbtn_right_command=script-binding</span> <span class="pre">select/select-watch-history;</span> <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal">play_pause_mbtn_left_command=cycle pause</tt></p>
 <p><tt class="docutils literal"><span class="pre">play_pause_mbtn_mid_command=cycle-values</span> <span class="pre">loop-playlist</span> inf no</tt></p>
 <p><tt class="docutils literal"><span class="pre">play_pause_mbtn_right_command=cycle-values</span> <span class="pre">loop-file</span> inf no</tt></p>
