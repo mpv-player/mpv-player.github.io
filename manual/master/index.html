@@ -2900,7 +2900,7 @@ controls how much of the image is cropped. May not work with all video
 output drivers.</p>
 <p class="last">This option has no effect if <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt> option is used.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--video-aspect-override=&lt;ratio|no&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--video-aspect-override=&lt;ratio|no|original&gt;</span></tt></dt>
 <dd><p class="first">Override video aspect ratio, in case aspect information is incorrect or
 missing in the file being played.</p>
 <p>These values have special meaning:</p>
@@ -2912,7 +2912,9 @@ missing in the file being played.</p>
 </tr>
 <tr class="field"><th class="field-name">no:</th><td class="field-body">same as <tt class="docutils literal">0</tt></td>
 </tr>
-<tr class="field"><th class="field-name">-1:</th><td class="field-body">use the video stream or container aspect (default)</td>
+<tr class="field"><th class="field-name">original:</th><td class="field-body">use the video stream or container aspect (default)</td>
+</tr>
+<tr class="field"><th class="field-name">-1:</th><td class="field-body">same as <tt class="docutils literal">1</tt> (deprecated)</td>
 </tr>
 </tbody>
 </table>
@@ -7981,9 +7983,9 @@ image's native colorspace and output normalized non-linear RGB.</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-colorspace-hint=&lt;auto|yes|no&gt;</span></tt></dt>
 <dd>Automatically configure the output colorspace of the display to pass
 through the input values of the stream (e.g. for HDR passthrough), if
-possible. In <tt class="docutils literal">auto</tt> mode (the default), the target colorspace is only set,
+possible. In <tt class="docutils literal">auto</tt> mode, the target colorspace is only set,
 if the display signals support for HDR colorspace.
-Requires a supporting driver and <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>. (Default: <tt class="docutils literal">auto</tt>)</dd>
+Requires a supporting driver and <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>. (Default: <tt class="docutils literal">no</tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
 this colorspace when ICC color management is not being used. Valid values
@@ -8127,7 +8129,8 @@ reduction (e.g. playing back BT.2020 content on a standard gamut display).
 Valid values are:</p>
 <dl class="last docutils">
 <dt>auto</dt>
-<dd>Choose the best curve according to internal heuristics. (Default)</dd>
+<dd>Maps to <tt class="docutils literal">bt.2390</tt> when using <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, and to <tt class="docutils literal">spline</tt> with
+<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>. (Default)</dd>
 <dt>clip</dt>
 <dd>Hard-clip any out-of-range values. Use this when you care about
 perfect color accuracy for in-range values at the cost of completely
@@ -13574,7 +13577,7 @@ odd or confusing. Can be unavailable with some formats.</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/crop-w</span></tt>, <tt class="docutils literal"><span class="pre">video-params/crop-h</span></tt></dt>
 <dd>Video size after cropping.</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/aspect</span></tt></dt>
-<dd>Display aspect ratio as float.</dd>
+<dd>Display aspect ratio as double.</dd>
 <dt><tt class="docutils literal"><span class="pre">video-params/aspect-name</span></tt></dt>
 <dd>Display aspect ratio name as string. The name corresponds to motion
 picture film format that introduced given aspect ratio in film.</dd>
