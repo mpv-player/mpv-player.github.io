@@ -159,7 +159,8 @@ later will resume at the old playback position if possible. See
 <dd>Toggle stay-on-top (see also <tt class="docutils literal"><span class="pre">--ontop</span></tt>).</dd>
 <dt>w and W</dt>
 <dd>Decrease/increase pan-and-scan range. The <tt class="docutils literal">e</tt> key does the same as
-<tt class="docutils literal">W</tt> currently, but use is discouraged.</dd>
+<tt class="docutils literal">W</tt> currently, but use is discouraged. See <tt class="docutils literal"><span class="pre">--panscan</span></tt> for more
+information.</dd>
 <dt>o and P</dt>
 <dd>Show progression bar, elapsed time and total duration on the OSD.</dd>
 <dt>O</dt>
@@ -2898,7 +2899,11 @@ if unset. Alternatives are listed when the name &quot;help&quot; is given.</p>
 video to make it fit a 4:3 display without black bands). The range
 controls how much of the image is cropped. May not work with all video
 output drivers.</p>
-<p class="last">This option has no effect if <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt> option is used.</p>
+<p>This option has no effect if <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt> option is used.</p>
+<p class="last">The difference between <tt class="docutils literal"><span class="pre">--panscan</span></tt> and <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> is that
+<tt class="docutils literal"><span class="pre">--panscan</span></tt> can only zoom in until either the video width or height fills
+the window, while <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> can zoom in or out arbitrary amounts, and
+also works with <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--video-aspect-override=&lt;ratio|no|original&gt;</span></tt></dt>
 <dd><p class="first">Override video aspect ratio, in case aspect information is incorrect or
@@ -13475,9 +13480,10 @@ infer behavior of the <tt class="docutils literal">volume</tt> property.</p>
 <dt><tt class="docutils literal"><span class="pre">ao-volume</span></tt> (RW)</dt>
 <dd>System volume. This property is available only if mpv audio output is
 currently active, and only if the underlying implementation supports volume
-control. What this option does depends on the API. For example, on ALSA
-this usually changes system-wide audio, while with PulseAudio this controls
-per-application volume.</dd>
+control. What this option does, or how the value is interpreted depends on
+the API. For example, on ALSA this usually changes system-wide audio volume
+on a linear curve, while with PulseAudio this controls per-application volume
+on a cubic curve.</dd>
 <dt><tt class="docutils literal"><span class="pre">ao-mute</span></tt> (RW)</dt>
 <dd>Similar to <tt class="docutils literal"><span class="pre">ao-volume</span></tt>, but controls the mute state. May be unimplemented
 even if <tt class="docutils literal"><span class="pre">ao-volume</span></tt> works.</dd>
@@ -14688,15 +14694,18 @@ The following clipboard backends are implemented:</p>
 <dd>macOS backend.</dd>
 <dt><tt class="docutils literal">wayland</tt></dt>
 <dd>Wayland backend. This backend is only available if the compositor
-supports the <tt class="docutils literal">zwlr_data_control_manager_v1</tt> protocol.</dd>
+supports the <tt class="docutils literal"><span class="pre">ext-data-control-v1</span></tt> protocol.</dd>
 <dt><tt class="docutils literal">vo</tt></dt>
 <dd>VO backend. Requires an active VO window, and support differs across
 platforms. Currently, this is used as a fallback for Wayland
-compositors without support for the <tt class="docutils literal">zwlr_data_control_manager_v1</tt>
+compositors without support for the <tt class="docutils literal"><span class="pre">ext-data-control-v1</span></tt>
 protocol.</dd>
 </dl>
 </dd>
 </dl>
+<p><tt class="docutils literal">clock</tt></p>
+<blockquote>
+The current local time in hour:minutes format.</blockquote>
 </div>
 <div class="section" id="inconsistencies-between-options-and-properties">
 <h2>Inconsistencies between options and properties</h2>
