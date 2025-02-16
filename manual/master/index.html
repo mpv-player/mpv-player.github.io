@@ -7876,7 +7876,7 @@ order. You can also pass <tt class="docutils literal">help</tt> to get a complet
 (sorted by the default autoprobe order).</p>
 <p>Note that the default GPU context is subject to change, and must not be relied upon.
 If a certain GPU context needs to be used, it must be explicitly specified.</p>
-<dl class="last docutils">
+<dl class="docutils">
 <dt>auto</dt>
 <dd>auto-select (default). Note that this context must be used alone and
 does not participate in the priority list.</dd>
@@ -7915,10 +7915,11 @@ manager.</dd>
 <dt>macvk</dt>
 <dd>Vulkan on macOS with a metal surface through a translation layer (experimental)</dd>
 </dl>
+<p class="last">This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--gpu-api=&lt;type1,type2,...[,]&gt;</span></tt></dt>
 <dd><p class="first">Specify a priority list of accepted graphics APIs.</p>
-<dl class="last docutils">
+<dl class="docutils">
 <dt>auto</dt>
 <dd>Use any available API (default). Note that the default GPU API used for this
 value is subject to change, and must not be relied upon. If a certain GPU API
@@ -7930,6 +7931,7 @@ needs to be used, it must be explicitly specified.</dd>
 <dt>d3d11</dt>
 <dd>Allow only <tt class="docutils literal"><span class="pre">--gpu-context=d3d11</span></tt></dd>
 </dl>
+<p class="last">This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--opengl-es=&lt;mode&gt;</span></tt></dt>
 <dd><p class="first">Controls which type of OpenGL context will be accepted:</p>
@@ -8965,6 +8967,7 @@ syntax is:</p>
 </dl>
 <p>If the list has a trailing ',', mpv will fall back on drivers not contained
 in the list.</p>
+<p>This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>See <tt class="docutils literal"><span class="pre">--ao=help</span></tt> for a list of compiled-in audio output drivers sorted by
@@ -9258,6 +9261,7 @@ syntax is:</p>
 </dl>
 <p>If the list has a trailing <tt class="docutils literal">,</tt>, mpv will fall back on drivers not contained
 in the list.</p>
+<p>This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>See <tt class="docutils literal"><span class="pre">--vo=help</span></tt> for a list of compiled-in video output drivers.</p>
@@ -9971,8 +9975,10 @@ performance.</p>
 syntax is:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--af=...</span></tt></dt>
-<dd>Setup a chain of audio filters. See <tt class="docutils literal"><span class="pre">--vf</span></tt> (<a class="reference internal" href="#video-filters">VIDEO FILTERS</a>) for the
-full syntax.</dd>
+<dd><p class="first">Setup a chain of audio filters. See <tt class="docutils literal"><span class="pre">--vf</span></tt> (<a class="reference internal" href="#video-filters">VIDEO FILTERS</a>) for the
+full syntax.</p>
+<p class="last">This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
+</dd>
 </dl>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -10254,6 +10260,7 @@ will be skipped on filter creation. This is also useful for runtime filter
 toggling.</p>
 <p>See the <tt class="docutils literal">vf</tt> command (and <tt class="docutils literal">toggle</tt> sub-command) for further explanations
 and examples.</p>
+<p>This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <p>The general filter entry syntax is:</p>
 <blockquote>
 <tt class="docutils literal"><span class="pre">[&quot;&#64;&quot;&lt;label-name&gt;&quot;:&quot;]</span> <span class="pre">[&quot;!&quot;]</span> <span class="pre">&lt;filter-name&gt;</span> [ &quot;=&quot; <span class="pre">&lt;filter-parameter-list&gt;</span> ]</tt></blockquote>
@@ -11857,7 +11864,7 @@ perfect, and could be improved on request.)</dd>
 <dd>Property-expand the argument and return the expanded string. This can be
 used only through the client API or from a script using
 <tt class="docutils literal">mp.command_native</tt>. (see <a class="reference internal" href="#property-expansion">Property Expansion</a>).</dd>
-<dt><tt class="docutils literal"><span class="pre">expand-path</span> &quot;&lt;text&gt;&quot;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">expand-path</span> &lt;text&gt;</tt></dt>
 <dd><p class="first">Expand a path's double-tilde placeholders into a platform-specific path.
 As <tt class="docutils literal"><span class="pre">expand-text</span></tt>, this can only be used through the client API or from
 a script using <tt class="docutils literal">mp.command_native</tt>.</p>
@@ -14576,7 +14583,7 @@ end of playback, cannot be read or written until end of playback.)</p>
 <dd><p class="first">Additional per-option information.</p>
 <p>This has a number of sub-properties. Replace <tt class="docutils literal">&lt;name&gt;</tt> with the name of
 a top-level option. No guarantee of stability is given to any of these
-sub-properties - they may change radically in the feature.</p>
+sub-properties - they may change radically in the future.</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/name</span></tt></dt>
 <dd>The name of the option.</dd>
