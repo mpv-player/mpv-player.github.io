@@ -265,12 +265,12 @@ corresponding adjustment.)</p>
 <dt>Command + f (macOS only)</dt>
 <dd>Toggle fullscreen (see also <tt class="docutils literal"><span class="pre">--fs</span></tt>).</dd>
 </dl>
-<p>(The following keybindings open a selector in the console that lets you choose
-from a list of items by typing part of the desired item, by clicking the desired
+<p>(The following keybindings open a menu in the console that lets you choose from
+a list of items by typing part of the desired item, by clicking the desired
 item, or by navigating them with keybindings: <tt class="docutils literal">Down</tt> and <tt class="docutils literal">Ctrl+n</tt> go down,
 <tt class="docutils literal">Up</tt> and <tt class="docutils literal">Ctrl+p</tt> go up, <tt class="docutils literal">Page down</tt> and <tt class="docutils literal">Ctrl+f</tt> scroll down one page,
 and <tt class="docutils literal">Page up</tt> and <tt class="docutils literal">Ctrl+b</tt> scroll up one page.)</p>
-<p>In track selectors, selecting the current tracks disables it.</p>
+<p>In track menus, selecting the current tracks disables it.</p>
 <dl class="docutils">
 <dt>g-p</dt>
 <dd>Select a playlist entry.</dd>
@@ -302,7 +302,7 @@ resume playing. Requires <tt class="docutils literal"><span class="pre">--write-
 <dd>Select a defined input binding.</dd>
 <dt>g-r</dt>
 <dd>Show the values of all properties.</dd>
-<dt>MENU</dt>
+<dt>g-m, MENU, Ctrl+p</dt>
 <dd>Show a menu with miscellaneous entries.</dd>
 </dl>
 <p>See <a class="reference internal" href="#select">SELECT</a> for more information.</p>
@@ -2595,7 +2595,7 @@ monitor.</p>
 <p class="last">Set this option only if you have reason to believe the automatically
 determined value is wrong.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--hwdec=&lt;api1,api2,...|no|auto|auto-safe|auto-copy&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--hwdec=&lt;api1,api2,...|no|auto|auto-copy&gt;</span></tt></dt>
 <dd><p class="first">Specify the hardware video decoding API that should be used if possible.
 Whether hardware decoding is actually done depends on the video codec. If
 hardware decoding is not possible, mpv will fall back on software decoding.</p>
@@ -2605,23 +2605,24 @@ hardware video decoding should work correctly, offering reduced CPU usage,
 and possibly lower power consumption. On older systems, it may be necessary
 to use hardware decoding due to insufficient CPU resources; and even on
 modern systems, sufficiently complex content (eg: 4K60 AV1) may require it.</p>
+<p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Use the <tt class="docutils literal">Ctrl+h</tt> shortcut to toggle hardware decoding at runtime. It
-toggles this option between <tt class="docutils literal"><span class="pre">auto-safe</span></tt> and <tt class="docutils literal">no</tt>.</p>
+toggles this option between <tt class="docutils literal">auto</tt> and <tt class="docutils literal">no</tt>.</p>
 <p>If you decide you want to use hardware decoding by default, the general
 recommendation is to try out decoding with the command line option, and
 prove to yourself that it works as desired for the content you care
 about. After that, you can add it to your config file.</p>
-<p>When testing, you should start by using <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt> as it will
+<p>When testing, you should start by using <tt class="docutils literal">hwdec=auto</tt> as it will
 limit itself to choosing from hwdecs that are actively supported by the
 development team. If that doesn't result in working hardware decoding,
-you can try <tt class="docutils literal">hwdec=auto</tt> to have it attempt to load every possible
-hwdec, but if <tt class="docutils literal"><span class="pre">auto-safe</span></tt> didn't work, you will probably need to know
-exactly which hwdec matches your hardware and read up on that entry
-below.</p>
-<p>If <tt class="docutils literal"><span class="pre">auto-safe</span></tt> or <tt class="docutils literal">auto</tt> produced the desired results, we recommend
-just sticking with that and only setting a specific hwdec in your config
+you can try <tt class="docutils literal"><span class="pre">hwdec=auto-unsafe</span></tt> to have it attempt to load every
+possible hwdec, but if <tt class="docutils literal">auto</tt> didn't work, you will probably need
+to know exactly which hwdec matches your hardware and read up on that
+entry below.</p>
+<p>If <tt class="docutils literal">auto</tt> produced the desired results, we recommend just
+sticking with that and only setting a specific hwdec in your config
 file if it is really necessary.</p>
 <p class="last">If you use the Ubuntu package, keep in mind that their
 <tt class="docutils literal">/etc/mpv/mpv.conf</tt> contains <tt class="docutils literal">hwdec=vaapi</tt>, which is less than
@@ -2642,8 +2643,8 @@ parameter, or put <tt class="docutils literal">hwdec=no</tt> into your <tt class
 distros which force-enable it by default, such as on Ubuntu). Use the
 <tt class="docutils literal">Ctrl+h</tt> default binding to enable it at runtime.</li>
 <li>If you're not sure, but want hardware decoding always enabled by
-default, put <tt class="docutils literal"><span class="pre">hwdec=auto-safe</span></tt> into your <tt class="docutils literal">mpv.conf</tt>, and
-acknowledge that this may cause problems.</li>
+default, put <tt class="docutils literal">hwdec=yes</tt> into your <tt class="docutils literal">mpv.conf</tt>, and acknowledge that
+this may cause problems.</li>
 <li>If you want to test available hardware decoding methods, pass
 <tt class="docutils literal"><span class="pre">--hwdec=auto</span> <span class="pre">--hwdec-codecs=all</span></tt> and look at the terminal output.</li>
 <li>If you're a developer, or want to perform elaborate tests, you may
@@ -2658,13 +2659,13 @@ special values:</p>
 <tbody valign="top">
 <tr class="field"><th class="field-name">no:</th><td class="field-body">always use software decoding (default)</td>
 </tr>
-<tr class="field"><th class="field-name">auto-safe:</th><td class="field-body">enable any whitelisted hw decoder (see below)</td>
+<tr class="field"><th class="field-name">auto:</th><td class="field-body">enable any whitelisted hw decoder (see below)</td>
 </tr>
-<tr class="field"><th class="field-name">auto:</th><td class="field-body">forcibly enable any hw decoder found (see below)</td>
+<tr class="field"><th class="field-name">auto-unsafe:</th><td class="field-body">forcibly enable any hw decoder found (see below)</td>
 </tr>
-<tr class="field"><th class="field-name">yes:</th><td class="field-body">exactly the same as <tt class="docutils literal"><span class="pre">auto-safe</span></tt></td>
+<tr class="field"><th class="field-name">yes:</th><td class="field-body">exactly the same as <tt class="docutils literal">auto</tt></td>
 </tr>
-<tr class="field"><th class="field-name">auto-copy:</th><td class="field-body">enable best hw decoder with copy-back (see below)</td>
+<tr class="field"><th class="field-name">auto-safe:</th><td class="field-body">exactly the same as <tt class="docutils literal">auto</tt></td>
 </tr>
 </tbody>
 </table>
@@ -2740,31 +2741,35 @@ or <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></
 </tr>
 </tbody>
 </table>
-<p><tt class="docutils literal">auto</tt> tries to automatically enable hardware decoding using the first
-available method. This still depends what VO you are using. See the list
-above, for which <tt class="docutils literal"><span class="pre">--vo</span></tt> and <tt class="docutils literal"><span class="pre">gpu-context</span></tt> is required for a given
-hwdec. It will go down the list of available hwdecs until one is
-successfully initialised. If all of them fail, it will fallback to software
-decoding.</p>
-<p><tt class="docutils literal"><span class="pre">auto-safe</span></tt> is similar to <tt class="docutils literal">auto</tt>, but allows only whitelisted methods
-that are considered &quot;safe&quot;. This is supposed to be a reasonable way to
-enable hardware decdoding by default in a config file (even though you
-shouldn't do that anyway; prefer runtime enabling with <tt class="docutils literal">Ctrl+h</tt>). Unlike
-<tt class="docutils literal">auto</tt>, this will not try to enable unknown or known-to-be-bad methods. In
-addition, this may disable hardware decoding in other situations when it's
-known to cause problems, but currently this mechanism is quite primitive.
-(As an example for something that still causes problems: certain
+<p><tt class="docutils literal">auto</tt> tries to automatically enable hardware decoding using the
+first available method, but allows only whitelisted methods that are
+considered &quot;safe&quot;. This is supposed to be a reasonable way to enable
+hardware decoding by default in a config file (even though you shouldn't
+do that anyway; prefer runtime enabling with <tt class="docutils literal">Ctrl+h</tt>). Unlike
+<tt class="docutils literal"><span class="pre">auto-unsafe</span></tt>, this will not try to enable unknown or known-to-be-bad
+methods. In addition, this may disable hardware decoding in other situations
+when it's known to cause problems, but currently this mechanism is quite
+primitive. (As an example for something that still causes problems: certain
 combinations of HEVC and Intel chips on Windows tend to cause mpv to crash,
 most likely due to driver bugs.)</p>
-<p><tt class="docutils literal"><span class="pre">auto-copy-safe</span></tt> selects the union of methods selected with <tt class="docutils literal"><span class="pre">auto-safe</span></tt>
-and <tt class="docutils literal"><span class="pre">auto-copy</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">auto-unsafe</span></tt> is similar to <tt class="docutils literal">auto</tt>, but without the whitelist.
+In general, you should never need to use this beyond debugging or
+development use. Any known unsafe hwdec you want to test can simply be
+appended to the list option such as <tt class="docutils literal"><span class="pre">--hwdec=auto,unsafe-hwdec</span></tt>.
+This still depends what VO you are using. See the list above, for which
+<tt class="docutils literal"><span class="pre">--vo</span></tt> and <tt class="docutils literal"><span class="pre">gpu-context</span></tt> is required for a given hwdec. It will go down
+the list of available hwdecs until one is successfully initialised. If all
+of them fail, it will fallback to software decoding.</p>
 <p><tt class="docutils literal"><span class="pre">auto-copy</span></tt> selects only modes that copy the video data back to system
-memory after decoding. This selects modes like <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> (and so on).
-If none of these work, hardware decoding is disabled. This mode is usually
-guaranteed to incur no additional quality loss compared to software
-decoding (assuming modern codecs and an error free video stream), and will
-allow CPU processing with video filters. This mode works with all video
-filters and VOs.</p>
+memory after decoding. This selects modes like <tt class="docutils literal"><span class="pre">vaapi-copy</span></tt> (and so on),
+but it only allows whitelisted methods that are considered &quot;safe&quot;. If none
+of these work, hardware decoding is disabled. This mode is usually guaranteed
+to incur no additional quality loss compared to software decoding (assuming
+modern codecs and an error free video stream), and will allow CPU processing
+with video filters. This mode works with all video filters and VOs.</p>
+<p><tt class="docutils literal"><span class="pre">auto-copy-safe</span></tt> is an alias for <tt class="docutils literal"><span class="pre">auto-copy</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">auto-copy-unsafe</span></tt> is the same as <tt class="docutils literal"><span class="pre">auto-copy</span></tt> except that it goes through
+all methods and not just the whitelisted ones that are considered &quot;safe&quot;.</p>
 <p>Because these copy the decoded video back to system RAM, they're often less
 efficient than the direct modes, and may not help too much over software
 decoding if you are short on CPU resources.</p>
@@ -2774,9 +2779,9 @@ decoding if you are short on CPU resources.</p>
 only the <tt class="docutils literal">vaapi</tt>, <tt class="docutils literal">nvdec</tt>, <tt class="docutils literal">cuda</tt> and <tt class="docutils literal">vulkan</tt> methods work with
 Vulkan.</p>
 </div>
-<p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, requires Mesa 11, and most
-likely works with Intel and AMD GPUs only. It also requires the opengl EGL
-backend.</p>
+<p>The <tt class="docutils literal">vaapi</tt> mode, if used with <tt class="docutils literal"><span class="pre">--vo=gpu``or</span> <span class="pre">``--vo=gpu-next</span></tt> most
+likely works with Intel and AMD GPUs only. It requires the opengl EGL
+backend if the GPU does not support drm modifiers.</p>
 <p><tt class="docutils literal">nvdec</tt> and <tt class="docutils literal"><span class="pre">nvdec-copy</span></tt> are the newest, and recommended method to do
 hardware decoding on Nvidia GPUs.</p>
 <p><tt class="docutils literal">cuda</tt> and <tt class="docutils literal"><span class="pre">cuda-copy</span></tt> are an older implementation of hardware decoding
@@ -5041,20 +5046,22 @@ of hardware/drivers/etc. happens to be.</p>
 <h2>Disc Devices</h2>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--cdda-device=&lt;path&gt;</span></tt></dt>
-<dd>Specify the CD device for CDDA playback (default: <tt class="docutils literal">/dev/cdrom</tt>).</dd>
+<dd>Specify the CD device for CDDA playback. The default device path depends on
+the OS. See the <a class="reference internal" href="#optical-drives">OPTICAL DRIVES</a> section.</dd>
 <dt><tt class="docutils literal"><span class="pre">--dvd-device=&lt;path&gt;</span></tt></dt>
-<dd><p class="first">Specify the DVD device or .iso filename (default: <tt class="docutils literal">/dev/dvd</tt>). You can
+<dd><p class="first">Specify the DVD device or .iso filename. You can
 also specify a directory that contains files previously copied directly
-from a DVD (with e.g. vobcopy).</p>
+from a DVD (with e.g. vobcopy). The default device path depends on
+the OS. See the <a class="reference internal" href="#optical-drives">OPTICAL DRIVES</a> section.</p>
 <div class="admonition admonition-example last">
 <p class="first admonition-title">Example</p>
 <p class="last"><tt class="docutils literal">mpv <span class="pre">dvd://</span> <span class="pre">--dvd-device=/path/to/dvd/</span></tt></p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--bluray-device=&lt;path&gt;</span></tt></dt>
-<dd><p class="first">(Blu-ray only)
-Specify the Blu-ray disc location. Must be a directory with Blu-ray
-structure.</p>
+<dd><p class="first">Specify the Blu-ray disc location. Must be a directory with Blu-ray
+structure. The default device path depends on the OS. See the
+<a class="reference internal" href="#optical-drives">OPTICAL DRIVES</a> section.</p>
 <div class="admonition admonition-example last">
 <p class="first admonition-title">Example</p>
 <p class="last"><tt class="docutils literal">mpv <span class="pre">bd://</span> <span class="pre">--bluray-device=/path/to/bd/</span></tt></p>
@@ -5689,13 +5696,21 @@ which do not support <tt class="docutils literal"><span class="pre">--native-tou
 affects VOs which support the <tt class="docutils literal"><span class="pre">begin-vo-dragging</span></tt> command.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-ime=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Enable keyboard input via an active input method (IME) connected to the VO.
-(default: yes). The input popup window, if there is any, is always
+(default: no). The input popup window, if there is any, is always
 positioned at the top left of the window. Whether pre-edit text is drawn
 depends on the platform. You may need to configure your IME to display the
 pre-edit inside of the input popup window if you cannot read the pre-edit
 text in the mpv window.</p>
-<p class="last">Wayland only. On Windows, the IME is currently always enabled. This option
-is not applicable to terminal input.</p>
+<p>Wayland and Windows only. This option is not applicable to terminal input.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p>Enabling IME can cause problems with key bindings, because mpv cannot
+detect any key presses when they go into the IME pre-edit area.
+It is recommended to enable IME on demand only for the duration
+while text input is expected.</p>
+<p class="last">The builtin console and input selector enable IME for the duration
+of accepting text input.</p>
+</div>
 </dd>
 </dl>
 </div>
@@ -7207,10 +7222,6 @@ silently be ignored if any <tt class="docutils literal">autofit</tt> or <tt clas
 protocol telling the compositor what type of content is being displayed. <tt class="docutils literal">auto</tt>
 (default) will automatically switch between telling the compositor the content
 is a photo, video or possibly none depending on internal heuristics.</dd>
-<dt><tt class="docutils literal"><span class="pre">--wayland-disable-vsync=&lt;yes|no&gt;</span></tt></dt>
-<dd>Disable mpv's internal vsync for Wayland-based video output (default: no).
-This is mainly useful for benchmarking wayland VOs when combined with
-<tt class="docutils literal"><span class="pre">video-sync=display-desync</span></tt>, <tt class="docutils literal"><span class="pre">--audio=no</span></tt>, and <tt class="docutils literal"><span class="pre">--untimed=yes</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-edge-pixels-pointer=&lt;value&gt;</span></tt></dt>
 <dd>Defines the size of an edge border (default: 16) to initiate client side
 resize events in the wayland contexts with the mouse. This is only active if
@@ -7218,6 +7229,14 @@ there are no server side decorations from the compositor.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-edge-pixels-touch=&lt;value&gt;</span></tt></dt>
 <dd>Defines the size of an edge border (default: 32) to initiate client side
 resizes events in the wayland contexts with touch events.</dd>
+<dt><tt class="docutils literal"><span class="pre">--wayland-internal-vsync=&lt;no|auto|yes&gt;</span></tt></dt>
+<dd>Controls whether to use mpv's internal vsync for Wayland-base video outputs
+(default: <tt class="docutils literal">auto</tt>). This is mainly useful for benchmarking wayland VOs when
+combined with <tt class="docutils literal"><span class="pre">video-sync=display-desync</span></tt>, <tt class="docutils literal"><span class="pre">--audio=no</span></tt>, and
+<tt class="docutils literal"><span class="pre">--untimed=yes</span></tt>. The special <tt class="docutils literal">auto</tt> value will disable the internal
+vsync if the compositor supports the fifo protocol and version 2 of the
+presentation time protocol when using <tt class="docutils literal"><span class="pre">--gpu-api=vulkan</span></tt>. In any other
+situation, it is exactly the same as <tt class="docutils literal">yes</tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-present=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable the use of wayland's presentation time protocol for more accurate
 frame presentation if it is supported by the compositor (default: <tt class="docutils literal">yes</tt>).
@@ -14897,7 +14916,7 @@ player window and will hide if the mouse is not moved outside the OSC for
 <td>show the playlist</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the playlist selector</td>
+<td>open the playlist menu</td>
 </tr>
 </tbody>
 </table>
@@ -14919,7 +14938,7 @@ player window and will hide if the mouse is not moved outside the OSC for
 <td>show the playlist</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the playlist selector</td>
+<td>open the playlist menu</td>
 </tr>
 </tbody>
 </table>
@@ -14945,7 +14964,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>show the path</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the history selector</td>
+<td>open the history menu</td>
 </tr>
 </tbody>
 </table>
@@ -14994,7 +15013,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>show chapters</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the chapter selector</td>
+<td>open the chapter menu</td>
 </tr>
 </tbody>
 </table>
@@ -15016,7 +15035,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>show chapters</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the chapter selector</td>
+<td>open the chapter menu</td>
 </tr>
 </tbody>
 </table>
@@ -15095,7 +15114,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>cycle audio/sub tracks backwards</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the audio/sub track selector</td>
+<td>open the audio/sub track menu</td>
 </tr>
 <tr><td>mouse wheel</td>
 <td>cycle audio/sub tracks forward/backwards</td>
@@ -15114,7 +15133,7 @@ title, or the target chapter name while hovering the seekbar.</div>
 <td>toggle mute</td>
 </tr>
 <tr><td>right-click</td>
-<td>open the audio device selector</td>
+<td>open the audio device menu</td>
 </tr>
 <tr><td>mouse wheel</td>
 <td>volume up/down</td>
@@ -15220,7 +15239,7 @@ based on the seekbarstyle option. Also, <tt class="docutils literal">slider</tt>
 seekbar or separately if <tt class="docutils literal">seekbarstyle</tt> is set to <tt class="docutils literal">bar</tt>.</p>
 </dd>
 <dt><tt class="docutils literal">seekrangealpha</tt></dt>
-<dd><p class="first">Default: 200</p>
+<dd><p class="first">Default: 20</p>
 <p class="last">Alpha of the seekable ranges, 0 (opaque) to 255 (fully transparent).</p>
 </dd>
 <dt><tt class="docutils literal">scrollcontrols</tt></dt>
@@ -15927,8 +15946,6 @@ words, to the end of the next word.</dd>
 <dd>Cycle through the completions backwards.</dd>
 <dt>Ctrl+l</dt>
 <dd>Clear all log messages from the console.</dd>
-<dt>MBTN_RIGHT</dt>
-<dd>Hide the console.</dd>
 <dt>MBTN_MID</dt>
 <dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
 <dt>WHEEL_UP</dt>
@@ -15992,6 +16009,27 @@ the window.</p>
 <dd><p class="first">Default: 1.65</p>
 <p class="last">Set the font border size used for the REPL and the console.</p>
 </dd>
+<dt><tt class="docutils literal">background_alpha</tt></dt>
+<dd><p class="first">Default: 80</p>
+<p class="last">The transparency of the menu's background. Ranges from 0 (opaque) to 255
+(fully transparent).</p>
+</dd>
+<dt><tt class="docutils literal">padding</tt></dt>
+<dd><p class="first">Default: 10</p>
+<p class="last">The padding of the menu.</p>
+</dd>
+<dt><tt class="docutils literal">menu_outline_size</tt></dt>
+<dd><p class="first">Default: 0</p>
+<p class="last">The size of the menu's border.</p>
+</dd>
+<dt><tt class="docutils literal">menu_outline_color</tt></dt>
+<dd><p class="first">Default: #FFFFFF</p>
+<p class="last">The color of the menu's border.</p>
+</dd>
+<dt><tt class="docutils literal">corner_radius</tt></dt>
+<dd><p class="first">Default: 8</p>
+<p class="last">The radius of the menu's corners.</p>
+</dd>
 <dt><tt class="docutils literal">margin_x</tt></dt>
 <dd><p class="first">Default: same as <tt class="docutils literal"><span class="pre">--osd-margin-x</span></tt></p>
 <p class="last">The margin from the left of the window.</p>
@@ -16004,6 +16042,14 @@ the window.</p>
 <dd><p class="first">Default: <tt class="docutils literal">auto</tt></p>
 <p class="last">Whether to scale the console with the window height. Can be <tt class="docutils literal">yes</tt>, <tt class="docutils literal">no</tt>,
 or <tt class="docutils literal">auto</tt>, which follows the value of <tt class="docutils literal"><span class="pre">--osd-scale-by-window</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal">selected_color</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">#222222</tt></p>
+<p class="last">The color of the selected item.</p>
+</dd>
+<dt><tt class="docutils literal">selected_back_color</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">#FFFFFF</tt></p>
+<p class="last">The background color of the selected item.</p>
 </dd>
 <dt><tt class="docutils literal">case_sensitive</tt></dt>
 <dd><p class="first">Default: no on Windows, yes on other platforms.</p>
@@ -16048,7 +16094,7 @@ the following:</p>
 <dd>Scroll down one page.</dd>
 <dt>MBTN_LEFT</dt>
 <dd>Confirm the selection of the highlighted item, or close the console if
-clicking above the first item or below the last item.</dd>
+clicking outside of the menu rectangle.</dd>
 <dt>WHEEL_UP</dt>
 <dd>Scroll up.</dd>
 <dt>WHEEL_DOWN</dt>
@@ -17921,6 +17967,39 @@ default quit key bindings in encoding mode.</td>
 <p>Note that quitting the player manually will always lead to exit code 0,
 overriding the exit code that would be returned normally. Also, the <tt class="docutils literal">quit</tt>
 input command can take an exit code: in this case, that exit code is returned.</p>
+</div>
+<div class="section" id="optical-drives">
+<h1>OPTICAL DRIVES</h1>
+<p>Depending on the OS, mpv will choose a different disc device by default.
+This applies for all optical disc playback (CDDA, DVD, and BD).</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="35%" />
+<col width="65%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">OS</th>
+<th class="head">Default Drive</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Linux</td>
+<td>/dev/sr0</td>
+</tr>
+<tr><td>Windows</td>
+<td>D:</td>
+</tr>
+<tr><td>macOS</td>
+<td>/dev/disk1</td>
+</tr>
+<tr><td>FreeBSD</td>
+<td>/dev/cd0</td>
+</tr>
+<tr><td>OpenBSD</td>
+<td>/dev/rcd0c</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="files">
 <h1>FILES</h1>
