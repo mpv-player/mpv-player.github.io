@@ -2910,7 +2910,7 @@ output drivers.</p>
 the window, while <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> can zoom in or out arbitrary amounts, and
 also works with <tt class="docutils literal"><span class="pre">--video-unscaled</span></tt>.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--video-aspect-override=&lt;ratio|no|original&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--video-aspect-override=&lt;ratio|no&gt;</span></tt></dt>
 <dd><p class="first">Override video aspect ratio, in case aspect information is incorrect or
 missing in the file being played.</p>
 <p>These values have special meaning:</p>
@@ -2918,13 +2918,14 @@ missing in the file being played.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">0:</th><td class="field-body">disable aspect ratio handling, pretend the video has square pixels</td>
+<tr class="field"><th class="field-name">no:</th><td class="field-body">use the method of the <tt class="docutils literal"><span class="pre">--video-aspect-method</span></tt> option (default)</td>
 </tr>
-<tr class="field"><th class="field-name">no:</th><td class="field-body">same as <tt class="docutils literal">0</tt></td>
+<tr class="field"><th class="field-name">0:</th><td class="field-body">disable aspect ratio handling, pretend the video has square pixels
+(deprecated, use
+<tt class="docutils literal"><span class="pre">--video-aspect-override=no</span> <span class="pre">--video-aspect-method=ignore</span></tt> instead)</td>
 </tr>
-<tr class="field"><th class="field-name">original:</th><td class="field-body">use the video stream or container aspect (default)</td>
-</tr>
-<tr class="field"><th class="field-name">-1:</th><td class="field-body">same as <tt class="docutils literal">1</tt> (deprecated)</td>
+<tr class="field"><th class="field-name">-1:</th><td class="field-body">strictly prefer the container aspect ratio (deprecated, use
+<tt class="docutils literal"><span class="pre">--video-aspect-override=no</span> <span class="pre">--video-aspect-method=container</span></tt> instead)</td>
 </tr>
 </tbody>
 </table>
@@ -2938,7 +2939,7 @@ missing in the file being played.</p>
 </ul>
 </div>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;bitstream|container&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--video-aspect-method=&lt;bitstream|container|ignore&gt;</span></tt></dt>
 <dd><p class="first">This sets the default video aspect determination method (if the aspect is
 _not_ overridden by the user with <tt class="docutils literal"><span class="pre">--video-aspect-override</span></tt> or others).</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -2953,6 +2954,9 @@ same as with bitstream.</td>
 <tr class="field"><th class="field-name">bitstream:</th><td class="field-body">Strictly prefer the bitstream aspect ratio, unless the bitstream
 aspect ratio is not set. This is apparently the default behavior
 with XBMC/kodi, at least with Matroska.</td>
+</tr>
+<tr class="field"><th class="field-name">ignore:</th><td class="field-body">Disable aspect ratio handling, pretend the video has square
+pixels.</td>
 </tr>
 </tbody>
 </table>
@@ -3997,7 +4001,7 @@ It's thus recommended to only change this selectively if required on a per-file 
 <tr class="field"><th class="field-name">none:</th><td class="field-body">Don't forward any video stream information.</td>
 </tr>
 <tr class="field"><th class="field-name">aspect-ratio:</th><td class="field-body">Only forward aspect ratio; fallbacks are used for other properties.
-This makes behaviour consistent across different video resolutions.</td>
+This makes behavior consistent across different video resolutions.</td>
 </tr>
 <tr class="field"><th class="field-name">all:</th><td class="field-body">Forward all available information, notably including storage resolution.</td>
 </tr>
@@ -4016,7 +4020,7 @@ using <tt class="docutils literal">none</tt>. This has never an effect on non-an
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-video-aspect-override=&lt;no|ratio&gt;</span></tt></dt>
 <dd><p class="first">Allows passing any arbitrary aspect ratio to libass instead of the video’s
-actual aspect ratio. Zero or negative aspect ratios are identical to <tt class="docutils literal">no</tt>.</p>
+actual aspect ratio. Zero aspect ratio is identical to <tt class="docutils literal">no</tt>.</p>
 <p class="last">This has no effect if <tt class="docutils literal"><span class="pre">sub-ass-use-video-data</span></tt> is set to <tt class="docutils literal">none</tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-vsfilter-bidi-compat=&lt;yes|no&gt;</span></tt></dt>
