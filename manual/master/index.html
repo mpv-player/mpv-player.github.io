@@ -121,6 +121,8 @@ where you left off.</dd>
 <dd>Go backward/forward in the playlist.</dd>
 <dt>ENTER</dt>
 <dd>Go forward in the playlist.</dd>
+<dt>Shift+HOME and Shift+END</dt>
+<dd>Go to the first/last playlist entry.</dd>
 <dt>p and SPACE</dt>
 <dd>Pause (pressing again unpauses).</dd>
 <dt>.</dt>
@@ -200,6 +202,8 @@ driver support.)</dd>
 <dt>Ctrl+s</dt>
 <dd>Take a screenshot, as the window shows it (with subtitles, OSD, and scaled
 video).</dd>
+<dt>HOME</dt>
+<dd>Seek to the beginning of the file.</dd>
 <dt>PGUP and PGDWN</dt>
 <dd>Seek to the beginning of the previous/next chapter. In most cases,
 &quot;previous&quot; will actually go to the beginning of the current chapter; see
@@ -1270,7 +1274,7 @@ Play data from stdin.</blockquote>
 <p><tt class="docutils literal"><span class="pre">smb://PATH</span></tt></p>
 <blockquote>
 Play a path from  Samba share. (Requires FFmpeg support.)</blockquote>
-<p><tt class="docutils literal"><span class="pre">bd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--bluray-device=PATH</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">bd://[title]</span></tt> <tt class="docutils literal"><span class="pre">--bluray-device=PATH</span></tt></p>
 <blockquote>
 <p>Play a Blu-ray disc. Since libbluray 1.0.1, you can read from ISO files
 by passing them to <tt class="docutils literal"><span class="pre">--bluray-device</span></tt>.</p>
@@ -1280,7 +1284,7 @@ playlist); <tt class="docutils literal"><span class="pre">mpls/&lt;number&gt;</s
 the available playlists on loading.</p>
 <p><tt class="docutils literal"><span class="pre">bluray://</span></tt> is an alias.</p>
 </blockquote>
-<p><tt class="docutils literal"><span class="pre">dvd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">dvd://[title]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
 <blockquote>
 <p>Play a DVD. DVD menus are not supported. If no title is given, the longest
 title is auto-selected. Without <tt class="docutils literal"><span class="pre">--dvd-device</span></tt>, it will probably try
@@ -1305,9 +1309,20 @@ example, <tt class="docutils literal"><span class="pre">mf://image-%d.jpg</span>
 <tt class="docutils literal"><span class="pre">image-2.jpg</span></tt> and <tt class="docutils literal"><span class="pre">image-10.jpg</span></tt>, provided that there are no big gaps
 between the files.</p>
 </blockquote>
-<p><tt class="docutils literal"><span class="pre">cdda://[device]</span></tt> <tt class="docutils literal"><span class="pre">--cdrom-device=PATH</span></tt> <tt class="docutils literal"><span class="pre">--cdda-...</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">cdda://</span></tt> <tt class="docutils literal"><span class="pre">--cdda-device=PATH</span></tt></p>
 <blockquote>
-Play CD.</blockquote>
+<p>Play CD. You can select a specific range of tracks to play by using the
+<tt class="docutils literal"><span class="pre">--start</span></tt> and <tt class="docutils literal"><span class="pre">--end</span></tt> options and specifying chapters. Navigating
+forwards and backwards through tracks can also be done by navigating through
+chapters (<tt class="docutils literal">PGUP</tt> and <tt class="docutils literal">PGDOWN</tt> in the default keybinds).</p>
+<div class="admonition admonition-example">
+<p class="first admonition-title">Example</p>
+<pre class="literal-block">
+mpv cdda:// --start=#4 --end=#6
+</pre>
+<p class="last">This will start from track 4, play track 5, and then end.</p>
+</div>
+</blockquote>
 <p><tt class="docutils literal"><span class="pre">lavf://...</span></tt></p>
 <blockquote>
 Access any FFmpeg libavformat protocol. Basically, this passed the
@@ -4989,10 +5004,6 @@ draw directly on the root window.</p>
 <tt class="docutils literal">uint32_t</tt> (all Windows handles are 32-bit), this is important as mpv will
 not accept negative values. mpv will create its own window and set the
 wid window as parent, like with X11.</p>
-<p>On macOS/Cocoa, the ID is interpreted as <tt class="docutils literal">NSView*</tt>. Pass it as value cast
-to <tt class="docutils literal">intptr_t</tt>. mpv will create its own sub-view. Because macOS does not
-support window embedding of foreign processes, this works only with libmpv,
-and will crash when used from the command line.</p>
 <p class="last">On Android, the ID is interpreted as <tt class="docutils literal">android.view.Surface</tt>. Pass it as a
 value cast to <tt class="docutils literal">intptr_t</tt>. Use with <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> and
 <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for direct rendering using MediaCodec, or with
@@ -11559,6 +11570,9 @@ This only works with a positive value (i.e. frame stepping forwards).</dd>
 <dd>Perform a very exact seek that attempts to seek by the desired amount
 of frames. If <tt class="docutils literal">&lt;frames&gt;</tt> is <tt class="docutils literal"><span class="pre">-1</span></tt>, this will go exactly to the
 previous frame.</dd>
+<dt>mute</dt>
+<dd>The same as <tt class="docutils literal">play</tt> but mutes the audio stream if there is any during
+the duration of the frame step.</dd>
 </dl>
 <p>Note that the default frameskip mode, play, is more accurate but can be
 slow depending on how many frames you are skipping (i.e. skipping forward
