@@ -327,10 +327,15 @@ in the mpv git repository.</p>
 <div class="section" id="mouse-control">
 <h2>Mouse Control</h2>
 <dl class="docutils">
+<dt>Ctrl+left click</dt>
+<dd>Pan while holding the button, keeping the clicked part of the video under
+the cursor.</dd>
 <dt>Left double click</dt>
 <dd>Toggle fullscreen on/off.</dd>
 <dt>Right click</dt>
 <dd>Toggle pause on/off.</dd>
+<dt>Middle click</dt>
+<dd>Pan through the whole video while holding the button.</dd>
 <dt>Forward/Back button</dt>
 <dd>Skip to next/previous entry in playlist.</dd>
 <dt>Wheel up/down</dt>
@@ -338,7 +343,8 @@ in the mpv git repository.</p>
 <dt>Wheel left/right</dt>
 <dd>Seek forward/backward 10 seconds.</dd>
 <dt>Ctrl+Wheel up/down</dt>
-<dd>Change video zoom.</dd>
+<dd>Change video zoom keeping the part of the video hovered by the cursor under
+it.</dd>
 </dl>
 </div>
 <div class="section" id="context-menu">
@@ -2414,6 +2420,9 @@ but immediately unload it if there are no conditional profiles.</dd>
 <dt><tt class="docutils literal"><span class="pre">--load-select=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable the builtin script that lets you select from lists of items (default:
 yes). By default, its keybindings start with the <tt class="docutils literal">g</tt> key.</dd>
+<dt><tt class="docutils literal"><span class="pre">--load-positioning=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable the builtin script that provides various keybindings to pan videos
+and images (default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--player-operation-mode=&lt;cplayer|pseudo-gui&gt;</span></tt></dt>
 <dd>For enabling &quot;pseudo GUI mode&quot;, which means that the defaults for some
 options are changed. This option should not normally be used directly, but
@@ -5445,7 +5454,7 @@ value of 10 seconds probably works well for most usecases.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--prefetch-playlist=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Prefetch next playlist entry while playback of the current entry is ending
-(default: no).</p>
+(default: yes).</p>
 <p>This does not prefill the cache with the video data of the next URL.
 Prefetching video data is supported only for the current playlist entry,
 and depends on the demuxer cache settings (on by default). This merely
@@ -5453,13 +5462,9 @@ opens the URL of the next playlist entry as soon the current URL is fully
 read.</p>
 <p>This does <strong>not</strong> work with URLs resolved by the <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> wrapper,
 and it won't.</p>
-<p>This can give subtly wrong results if per-file options are used, or if
-options are changed in the time window between prefetching start and next
-file played.</p>
-<p>This can occasionally make wrong prefetching decisions. For example, it
+<p class="last">This can occasionally make wrong prefetching decisions. For example, it
 can't predict whether you go backwards in the playlist, and assumes you
 won't edit the playlist.</p>
-<p class="last">Highly experimental.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--force-seekable=&lt;yes|no&gt;</span></tt></dt>
 <dd>If the player thinks that the media is not seekable (e.g. playing from a
@@ -8973,10 +8978,32 @@ details regarding autodetection and codepage conversion. (The underlying
 code is the same.)</p>
 <p class="last">Conversion is not applied to metadata that is updated at runtime.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--clipboard-enable=&lt;yes|no&gt;</span></tt></dt>
-<dd><p class="first">(Windows, Wayland and macOS only)</p>
-<p class="last">Enable native clipboard support (default: yes). This allows reading and
-writing to the <tt class="docutils literal">clipboard</tt> property to get and set clipboard contents.</p>
+<dt><tt class="docutils literal"><span class="pre">--clipboard-backends=&lt;backend1,backend2,...[,]&gt;</span></tt></dt>
+<dd><p class="first">Specify a priority list of the clipboard backends to be used.
+You can also pass <tt class="docutils literal">help</tt> to get a complete list of compiled in backends.</p>
+<p>If the list is not empty, it enables native clipboard support for the
+specified backends. This allows reading and writing to the <tt class="docutils literal">clipboard</tt>
+property to get and set clipboard contents.</p>
+<p>Native clipboard support is enabled by default. To disable this, remove
+all backends in this list with <tt class="docutils literal"><span class="pre">--clipboard-backends-clr</span></tt>.</p>
+<p>Note that the default clipboard backends are subject to change,
+and must not be relied upon.</p>
+<p>The following clipboard backends are implemented:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">win32</tt></dt>
+<dd>Windows backend.</dd>
+<dt><tt class="docutils literal">mac</tt></dt>
+<dd>macOS backend.</dd>
+<dt><tt class="docutils literal">wayland</tt></dt>
+<dd>Wayland backend. This backend is only available if the compositor
+supports the <tt class="docutils literal"><span class="pre">ext-data-control-v1</span></tt> protocol.</dd>
+<dt><tt class="docutils literal">vo</tt></dt>
+<dd>VO backend. Requires an active VO window, and support differs across
+platforms. Currently, this is used as a fallback for Wayland
+compositors without support for the <tt class="docutils literal"><span class="pre">ext-data-control-v1</span></tt>
+protocol, or if the <tt class="docutils literal">wayland</tt> backend is disabled.</dd>
+</dl>
+<p class="last">This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--clipboard-monitor=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">(Windows, Wayland and macOS only)</p>
@@ -14730,23 +14757,8 @@ See <tt class="docutils literal"><span class="pre">current-clipboard-backend</sp
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt></dt>
-<dd><p class="first">A string containing the currently active clipboard backend.
-The following clipboard backends are implemented:</p>
-<dl class="last docutils">
-<dt><tt class="docutils literal">win32</tt></dt>
-<dd>Windows backend.</dd>
-<dt><tt class="docutils literal">mac</tt></dt>
-<dd>macOS backend.</dd>
-<dt><tt class="docutils literal">wayland</tt></dt>
-<dd>Wayland backend. This backend is only available if the compositor
-supports the <tt class="docutils literal"><span class="pre">ext-data-control-v1</span></tt> protocol.</dd>
-<dt><tt class="docutils literal">vo</tt></dt>
-<dd>VO backend. Requires an active VO window, and support differs across
-platforms. Currently, this is used as a fallback for Wayland
-compositors without support for the <tt class="docutils literal"><span class="pre">ext-data-control-v1</span></tt>
-protocol.</dd>
-</dl>
-</dd>
+<dd>A string containing the currently active clipboard backend.
+See <tt class="docutils literal"><span class="pre">--clipboard-backends</span></tt> option for the list of available backends.</dd>
 </dl>
 <p><tt class="docutils literal">clock</tt></p>
 <blockquote>
@@ -15555,8 +15567,13 @@ and <tt class="docutils literal">topbar</tt> layouts.</p>
 <p>custom_button_1_content=🔁
 custom_button_1_mbtn_left_command=cycle-values loop-file inf no
 custom_button_1_mbtn_right_command=cycle-values loop-playlist inf no</p>
-<p class="last">custom_button_2_content=🔀
+<p>custom_button_2_content=🔀
 custom_button_2_mbtn_left_command=playlist-shuffle</p>
+<p class="last">custom_button_3_content=⏱
+custom_button_3_mbtn_left_command=add speed 1
+custom_button_3_mbtn_right_command=set speed 1
+custom_button_3_wheel_up_command=add speed 0.25
+custom_button_3_wheel_down_command=add speed -0.25</p>
 </div>
 </div>
 <div class="section" id="script-commands">
@@ -16020,13 +16037,12 @@ case.</p>
 </dd>
 <dt><tt class="docutils literal">font_size</tt></dt>
 <dd><p class="first">Default: 24</p>
-<p class="last">Set the font size used for the REPL and the console. This will be
-multiplied by <tt class="docutils literal"><span class="pre">display-hidpi-scale</span></tt> when the console is not scaled with
-the window.</p>
+<p class="last">The font size. This will be multiplied by <tt class="docutils literal"><span class="pre">display-hidpi-scale</span></tt> when the
+console is not scaled with the window.</p>
 </dd>
 <dt><tt class="docutils literal">border_size</tt></dt>
 <dd><p class="first">Default: 1.65</p>
-<p class="last">Set the font border size used for the REPL and the console.</p>
+<p class="last">The font border size.</p>
 </dd>
 <dt><tt class="docutils literal">background_alpha</tt></dt>
 <dd><p class="first">Default: 80</p>
@@ -16070,6 +16086,10 @@ or <tt class="docutils literal">auto</tt>, which follows the value of <tt class=
 <dd><p class="first">Default: <tt class="docutils literal">#FFFFFF</tt></p>
 <p class="last">The background color of the selected item.</p>
 </dd>
+<dt><tt class="docutils literal">match_color</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">#0088FF</tt></p>
+<p class="last">The color of characters that match the searched string.</p>
+</dd>
 <dt><tt class="docutils literal">case_sensitive</tt></dt>
 <dd><p class="first">Default: no on Windows, yes on other platforms.</p>
 <p class="last">Whether autocompletion is case sensitive. Only works with ASCII characters.</p>
@@ -16077,6 +16097,14 @@ or <tt class="docutils literal">auto</tt>, which follows the value of <tt class=
 <dt><tt class="docutils literal">history_dedup</tt></dt>
 <dd><p class="first">Default: true</p>
 <p class="last">Remove duplicate entries in history as to only keep the latest one.</p>
+</dd>
+<dt><tt class="docutils literal">persist_history</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Whether to save the command history to a file and load it.</p>
+</dd>
+<dt><tt class="docutils literal">history_path</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">~~state/command_history.txt</tt></p>
+<p class="last">The file path for <tt class="docutils literal">persist_history</tt> (see <a class="reference internal" href="#paths">PATHS</a>).</p>
 </dd>
 <dt><tt class="docutils literal">font_hw_ratio</tt></dt>
 <dd><p class="first">Default: auto</p>
@@ -16204,6 +16232,62 @@ which uses the same formats as <tt class="docutils literal">strftime(3)</tt>.</p
 <dt><tt class="docutils literal">hide_history_duplicates</tt></dt>
 <dd><p class="first">Default: yes</p>
 <p class="last">Whether to show only the last of history entries with the same path.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="section" id="positioning">
+<h1>POSITIONING</h1>
+<p>This script provides script bindings to pan videos and images. It can be
+disabled using the <tt class="docutils literal"><span class="pre">--load-positioning=no</span></tt> option.</p>
+<div class="section" id="script-bindings-1">
+<h2>Script bindings</h2>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">pan-x</span> &lt;amount&gt;</tt></dt>
+<dd><p class="first">Adjust <tt class="docutils literal"><span class="pre">--video-align-x</span></tt> relatively to the OSD width, rather than
+relatively to the video width like the option. This is useful to pan large
+images consistently.</p>
+<p class="last"><tt class="docutils literal">amount</tt> is a number such that an amount of 1 scrolls as much as the OSD
+width.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">pan-y</span> &lt;amount&gt;</tt></dt>
+<dd><p class="first">Adjust <tt class="docutils literal"><span class="pre">--video-align-y</span></tt> relatively to the OSD height, rather than
+relatively to the video height like the option.</p>
+<p class="last"><tt class="docutils literal">amount</tt> is a number such that an amount of 1 scrolls as much as the OSD
+height.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">drag-to-pan</span></tt></dt>
+<dd>Pan the video while holding a mouse button, keeping the clicked part of the
+video under the cursor.</dd>
+<dt><tt class="docutils literal"><span class="pre">align-to-cursor</span></tt></dt>
+<dd>Pan through the whole video while holding a mouse button, or after clicking
+once if <tt class="docutils literal">toggle_align_to_cursor</tt> is <tt class="docutils literal">yes</tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">cursor-centric-zoom</span> &lt;amount&gt;</tt></dt>
+<dd>Increase <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> by <tt class="docutils literal">amount</tt> while keeping the part of the video
+hovered by the cursor under it, or the average position of touch points if
+known.</dd>
+</dl>
+</div>
+<div class="section" id="configuration-4">
+<h2>Configuration</h2>
+<p>This script can be customized through a config file
+<tt class="docutils literal"><span class="pre">script-opts/positioning.conf</span></tt> placed in mpv's user directory and through the
+<tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line option. The configuration syntax is described in
+<a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
+<div class="section" id="configurable-options-4">
+<h3>Configurable Options</h3>
+<dl class="docutils">
+<dt><tt class="docutils literal">toggle_align_to_cursor</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Whether <tt class="docutils literal"><span class="pre">align-to-cursor</span></tt> requires holding down a mouse button to pan. If
+<tt class="docutils literal">no</tt>, dragging pans. If <tt class="docutils literal">yes</tt>, clicking the first time makes pan follow
+the cursor, and clicking a second time disables this.</p>
+</dd>
+<dt><tt class="docutils literal">suppress_osd</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Whether to not print the new value of <tt class="docutils literal"><span class="pre">--video-zoom</span></tt> when using
+<tt class="docutils literal"><span class="pre">cursor-centric-zoom</span></tt>.</p>
 </dd>
 </dl>
 </div>
@@ -17021,9 +17105,9 @@ REPL.</p>
 <dd>The string to be displayed before the input field.</dd>
 <dt><tt class="docutils literal">submit</tt></dt>
 <dd>A callback invoked when the user presses Enter. The first argument is
-the text in the console. You can close the console from within the
-callback by calling <tt class="docutils literal">input.terminate()</tt>. If you don't, the console
-stays open and the user can input more text.</dd>
+the text in the console.</dd>
+<dt><tt class="docutils literal">keep_open</tt></dt>
+<dd>Whether to keep the console open on submit. Defaults to <tt class="docutils literal">false</tt>.</dd>
 <dt><tt class="docutils literal">opened</tt></dt>
 <dd>A callback invoked when the console is shown. This can be used to
 present a list of options with <tt class="docutils literal">input.set_log()</tt>.</dd>
@@ -17092,9 +17176,9 @@ input.set_log({
 <dd>The 1-based integer index of the preselected item.</dd>
 <dt><tt class="docutils literal">submit</tt></dt>
 <dd>The callback invoked when the user presses Enter. The first argument is
-the 1-based index of the selected item. Unlike with <tt class="docutils literal">input.get()</tt>, the
-console is automatically closed on submit without having to call
-<tt class="docutils literal">input.terminate()</tt>.</dd>
+the 1-based index of the selected item.</dd>
+<dt><tt class="docutils literal">keep_open</tt></dt>
+<dd>Whether to keep the console open on submit. Defaults to <tt class="docutils literal">false</tt>.</dd>
 </dl>
 <p>Example:</p>
 <blockquote class="last">
