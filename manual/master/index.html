@@ -11642,6 +11642,9 @@ stopped without terminating the player.</p>
 <dt><tt class="docutils literal">add &lt;name&gt; [&lt;value&gt;]</tt></dt>
 <dd><p class="first">Add the given value to the property or option. On overflow or underflow,
 clamp the property to the maximum. If <tt class="docutils literal">&lt;value&gt;</tt> is omitted, assume <tt class="docutils literal">1</tt>.</p>
+<p>Whether or not key-repeat is enabled by default depends on the property.
+Currently properties with continuous values are repeatable by default (like
+<tt class="docutils literal">volume</tt>), while discrete values are not (like <tt class="docutils literal"><span class="pre">osd-level</span></tt>).</p>
 <p class="last">This is a scalable command. See the documentation of <tt class="docutils literal">nonscalable</tt> input
 command prefix in <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> for details.</p>
 </dd>
@@ -13311,7 +13314,15 @@ active. This is initialized from the value of <tt class="docutils literal"><span
 counts the number of times it causes the player to seek to <tt class="docutils literal"><span class="pre">--ab-loop-a</span></tt>,
 so it is 0 the last the time the loop is played. -1 corresponds to infinity.</dd>
 <dt><tt class="docutils literal">chapter</tt> (RW)</dt>
-<dd>Current chapter number. The number of the first chapter is 0.</dd>
+<dd><p class="first">Current chapter number. The number of the first chapter is 0.
+A value of -1 indicates that the current playback position is before the
+start of the first chapter,</p>
+<p class="last">Setting this property results in an absolute seek to the start of the
+chapter. However, if the property is changed with <tt class="docutils literal">add</tt> or <tt class="docutils literal">cycle</tt>
+command which results in a decrement in value, it may go to the start of
+the current chapter instead of the previous chapter.
+See <tt class="docutils literal"><span class="pre">--chapter-seek-threshold</span></tt> for details.</p>
+</dd>
 <dt><tt class="docutils literal">edition</tt> (RW)</dt>
 <dd><p class="first">Current edition number. Setting this property to a different value will
 restart playback. The number of the first edition is 0.</p>
