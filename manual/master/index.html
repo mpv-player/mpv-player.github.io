@@ -5305,6 +5305,25 @@ from the end of the file. The <tt class="docutils literal">full</tt> mode actual
 file and can make a reliable estimate even without an index present (such
 as partial files).</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--demuxer-mkv-crop-compat=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Enable compatibility mode for files that do not fully comply with the
+Matroska specification. (default: yes)</p>
+<p>Most files containing cropping metadata require this mode to display correctly.</p>
+<p>If this option is enabled, crop metadata will be applied before calculating
+the video's aspect ratio, ensuring it is cropped accordingly. If this option
+is disabled, the image will be cropped first and then stretched to match
+DisplayWidth and DisplayHeight.</p>
+<p>According to the Matroska specification, the Pixel Aspect Ratio (PAR) should
+be calculated after cropping. However, the majority of files do not adhere
+to this rule, as it would cause incompatibility with crop-unaware players.
+Additionally, MKVToolNix does not automatically adjust DisplayWidth and
+DisplayHeight when cropping metadata is applied, leading to most of files
+created with it also failing to conform to the specification.</p>
+<p class="last">See for more details:
+<a class="reference external" href="https://github.com/ietf-wg-cellar/matroska-specification/pull/947">https://github.com/ietf-wg-cellar/matroska-specification/pull/947</a>
+<a class="reference external" href="https://gitlab.com/mbunkus/mkvtoolnix/-/issues/2389">https://gitlab.com/mbunkus/mkvtoolnix/-/issues/2389</a>
+<a class="reference external" href="https://github.com/mpv-player/mpv/pull/13446">https://github.com/mpv-player/mpv/pull/13446</a></p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--demuxer-rawaudio-channels=&lt;value&gt;</span></tt></dt>
 <dd>Number of channels (or channel layout) if <tt class="docutils literal"><span class="pre">--demuxer=rawaudio</span></tt> is used
 (default: stereo).</dd>
