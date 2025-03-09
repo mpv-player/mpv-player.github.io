@@ -2415,9 +2415,10 @@ started.</dd>
 binding (default: yes). By default, the <tt class="docutils literal">i</tt> key is used (<tt class="docutils literal">I</tt> to make
 the overlay permanent).</dd>
 <dt><tt class="docutils literal"><span class="pre">--load-console=&lt;yes|no&gt;</span></tt></dt>
-<dd>Enable the built-in script that shows a console on a key binding and lets
-you enter commands (default: yes). The <tt class="docutils literal">`</tt> key is used to show the
-console by default, and <tt class="docutils literal">ESC</tt> to hide it again.</dd>
+<dd>Enable the built-in script to handle textual input (default: yes).</dd>
+<dt><tt class="docutils literal"><span class="pre">--load-commands=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable the built-in script to enter commands in the console (default: yes).
+The <tt class="docutils literal">`</tt> key is used to activate this by default.</dd>
 <dt><tt class="docutils literal"><span class="pre">--load-auto-profiles=&lt;yes|no|auto&gt;</span></tt></dt>
 <dd>Enable the builtin script that does auto profiles (default: auto). See
 <a class="reference internal" href="#conditional-auto-profiles">Conditional auto profiles</a> for details. <tt class="docutils literal">auto</tt> will load the script,
@@ -15959,15 +15960,14 @@ corresponding pthread API works and is supported).</p>
 <div class="section" id="console">
 <h1>CONSOLE</h1>
 <p>This script provides the ability to process the user's textual input to other
-scripts through the <tt class="docutils literal">mp.input</tt> API. It also has a builtin mode of operation to
-complete and run mpv input commands and print mpv's log. It can be displayed on
-both the video window and the terminal. It can be disabled entirely using the
+scripts through the <tt class="docutils literal">mp.input</tt> API. It can be displayed on both the video
+window and the terminal. It can be disabled entirely using the
 <tt class="docutils literal"><span class="pre">--load-console=no</span></tt> option.</p>
-<div class="section" id="keybindings">
-<h2>Keybindings</h2>
+<p>Console can either process free-form text or select from a predefined list of
+items.</p>
+<div class="section" id="free-form-text-mode-keybindings">
+<h2>Free-form text mode keybindings</h2>
 <dl class="docutils">
-<dt>`</dt>
-<dd>Show the console.</dd>
 <dt>ESC and Ctrl+[</dt>
 <dd>Hide the console.</dd>
 <dt>ENTER, Ctrl+j and Ctrl+m</dt>
@@ -16015,7 +16015,7 @@ words, to the end of the next word.</dd>
 <dt>PGDN</dt>
 <dd>Stop navigating the command history.</dd>
 <dt>Ctrl+r</dt>
-<dd>Search the command history.</dd>
+<dd>Search the command history. See <a class="reference internal" href="#select">SELECT</a> for the key bindings in this mode.</dd>
 <dt>INSERT</dt>
 <dd>Toggle insert mode.</dd>
 <dt>Ctrl+v</dt>
@@ -16036,26 +16036,6 @@ words, to the end of the next word.</dd>
 <dd>Move forward in the command history.</dd>
 </dl>
 </div>
-<div class="section" id="commands">
-<h2>Commands</h2>
-<dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">script-message-to</span> console type &lt;text&gt; [&lt;cursor_pos&gt;]</tt></dt>
-<dd><p class="first">Show the console and pre-fill it with the provided text, optionally
-specifying the initial cursor position as a positive integer starting from
-1.</p>
-<div class="admonition admonition-examples-for-input-conf last">
-<p class="first admonition-title">Examples for input.conf</p>
-<dl class="last docutils">
-<dt><tt class="docutils literal">% <span class="pre">script-message-to</span> console type &quot;seek&nbsp; <span class="pre">absolute-percent;</span> keypress ESC&quot; 6</tt></dt>
-<dd>Enter a percent position to seek to and close the console.</dd>
-<dt><tt class="docutils literal">Ctrl+o <span class="pre">script-message-to</span> console type &quot;loadfile ''; keypress ESC&quot; 11</tt></dt>
-<dd>Enter a file or URL to play, with autocompletion of paths in the
-filesystem.</dd>
-</dl>
-</div>
-</dd>
-</dl>
-</div>
 <div class="section" id="known-issues">
 <h2>Known issues</h2>
 <ul class="simple">
@@ -16068,18 +16048,14 @@ filesystem.</dd>
 <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/console.conf</span></tt>
 placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
 option. The configuration syntax is described in <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
-<p>Key bindings can be changed in a standard way, see for example stats.lua
-documentation.</p>
 <div class="section" id="configurable-options-2">
 <h3>Configurable Options</h3>
 <dl class="docutils">
 <dt><tt class="docutils literal">font</tt></dt>
-<dd><p class="first">Default: a monospace font depending on the platform</p>
-<p class="last">Set the font used for the console.
-A monospaced font is necessary to align completions correctly in a grid.
-If the console was opened by calling <tt class="docutils literal">mp.input.select</tt> and no font was
-configured, <tt class="docutils literal"><span class="pre">--osd-font</span></tt> is used, as alignment is not necessary in that
-case.</p>
+<dd><p class="first">The font name.</p>
+<p class="last">When necessary to align completions in a grid, a monospace font depending on
+the platform is the default. When there are no completions, <tt class="docutils literal"><span class="pre">--osd-font</span></tt>
+is the default.</p>
 </dd>
 <dt><tt class="docutils literal">font_size</tt></dt>
 <dd><p class="first">Default: 24</p>
@@ -16144,6 +16120,58 @@ or <tt class="docutils literal">auto</tt>, which follows the value of <tt class=
 <dd><p class="first">Default: true</p>
 <p class="last">Remove duplicate entries in history as to only keep the latest one.</p>
 </dd>
+<dt><tt class="docutils literal">font_hw_ratio</tt></dt>
+<dd><p class="first">Default: auto</p>
+<p class="last">The ratio of font height to font width.
+Adjusts grid width of completions.
+Values in the range 1.8..2.5 make sense for common monospace fonts.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="section" id="commands">
+<h1>COMMANDS</h1>
+<p>This script allows running and completing input commands in the console
+interactively, and also adds mpv's log to the console's log.</p>
+<div class="section" id="keybindings">
+<h2>Keybindings</h2>
+<dl class="docutils">
+<dt>`</dt>
+<dd>Open the console to enter commands.</dd>
+</dl>
+</div>
+<div class="section" id="commands-1">
+<h2>Commands</h2>
+<p><tt class="docutils literal"><span class="pre">script-binding</span> commands/open</tt></p>
+<blockquote>
+Open the console to enter commands.</blockquote>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">script-message-to</span> commands type &lt;text&gt; [&lt;cursor_pos&gt;]</tt></dt>
+<dd><p class="first">Show the console and pre-fill it with the provided text, optionally
+specifying the initial cursor position as a positive integer starting from
+1. The console is automatically closed after running the command.</p>
+<div class="admonition admonition-examples-for-input-conf last">
+<p class="first admonition-title">Examples for input.conf</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">% <span class="pre">script-message-to</span> commands type &quot;seek&nbsp; <span class="pre">absolute-percent&quot;</span> 6</tt></dt>
+<dd>Enter a percent position to seek to.</dd>
+<dt><tt class="docutils literal">Ctrl+o <span class="pre">script-message-to</span> console type &quot;loadfile ''&quot; 11</tt></dt>
+<dd>Enter a file or URL to play, with autocompletion of paths in the
+filesystem.</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="configuration-3">
+<h2>Configuration</h2>
+<p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/commands.conf</span></tt>
+placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
+option. The configuration syntax is described in <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
+<div class="section" id="configurable-options-3">
+<h3>Configurable Options</h3>
+<dl class="docutils">
 <dt><tt class="docutils literal">persist_history</tt></dt>
 <dd><p class="first">Default: no</p>
 <p class="last">Whether to save the command history to a file and load it.</p>
@@ -16151,12 +16179,6 @@ or <tt class="docutils literal">auto</tt>, which follows the value of <tt class=
 <dt><tt class="docutils literal">history_path</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">~~state/command_history.txt</tt></p>
 <p class="last">The file path for <tt class="docutils literal">persist_history</tt> (see <a class="reference internal" href="#paths">PATHS</a>).</p>
-</dd>
-<dt><tt class="docutils literal">font_hw_ratio</tt></dt>
-<dd><p class="first">Default: auto</p>
-<p class="last">The ratio of font height to font width.
-Adjusts grid width of completions.
-Values in the range 1.8..2.5 make sense for common monospace fonts.</p>
 </dd>
 </dl>
 </div>
@@ -16262,12 +16284,12 @@ clipped.</dd>
 <dd>Show a menu with miscellaneous entries.</dd>
 </dl>
 </div>
-<div class="section" id="configuration-3">
+<div class="section" id="configuration-4">
 <h2>Configuration</h2>
 <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/select.conf</span></tt>
 placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
 option. The configuration syntax is described in <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
-<div class="section" id="configurable-options-3">
+<div class="section" id="configurable-options-4">
 <h3>Configurable options</h3>
 <dl class="docutils">
 <dt><tt class="docutils literal">history_date_format</tt></dt>
@@ -16315,13 +16337,13 @@ hovered by the cursor under it, or the average position of touch points if
 known.</dd>
 </dl>
 </div>
-<div class="section" id="configuration-4">
+<div class="section" id="configuration-5">
 <h2>Configuration</h2>
 <p>This script can be customized through a config file
 <tt class="docutils literal"><span class="pre">script-opts/positioning.conf</span></tt> placed in mpv's user directory and through the
 <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line option. The configuration syntax is described in
 <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
-<div class="section" id="configurable-options-4">
+<div class="section" id="configurable-options-5">
 <h3>Configurable Options</h3>
 <dl class="docutils">
 <dt><tt class="docutils literal">toggle_align_to_cursor</tt></dt>
@@ -17161,13 +17183,18 @@ present a list of options with <tt class="docutils literal">input.set_log()</tt>
 <dd>A callback invoked when the text changes. The first argument is the text
 in the console.</dd>
 <dt><tt class="docutils literal">complete</tt></dt>
-<dd>A callback invoked when the user presses TAB. The first argument is the
-text before the cursor. The callback should return a table of the string
-candidate completion values and the 1-based cursor position from which
-the completion starts. console.lua will filter the suggestions beginning
-with the the text between this position and the cursor, sort them
-alphabetically, insert their longest common prefix, and show them when
-there are multiple ones.</dd>
+<dd><p class="first">A callback invoked when the user edits the text or moves the cursor. The
+first argument is the text before the cursor. The callback should return
+a table of the string candidate completion values and the 1-based cursor
+position from which the completion starts. console will show the
+completions that fuzzily match the text between this position and the
+cursor and allow selecting them.</p>
+<p class="last">The third and optional return value is a string that will be appended to
+the input line without displaying it in the completions.</p>
+</dd>
+<dt><tt class="docutils literal">autoselect_completion</tt></dt>
+<dd>Whether to automatically select the first completion on submit if one
+wasn't already manually selected. Defaults to <tt class="docutils literal">false</tt>.</dd>
 <dt><tt class="docutils literal">closed</tt></dt>
 <dd>A callback invoked when the console is hidden, either because
 <tt class="docutils literal">input.terminate()</tt> was invoked from the other callbacks, or because
@@ -17177,12 +17204,13 @@ the console, and the second argument is the cursor position.</dd>
 <dd>A string to pre-fill the input field with.</dd>
 <dt><tt class="docutils literal">cursor_position</tt></dt>
 <dd>The initial cursor position, starting from 1.</dd>
+<dt><tt class="docutils literal">history_path</tt></dt>
+<dd>If specified, the path to save and load the history of the entered
+lines.</dd>
 <dt><tt class="docutils literal">id</tt></dt>
 <dd>An identifier that determines which input history and log buffer to use
-among the ones stored for <tt class="docutils literal">input.get()</tt> calls. The input histories
-and logs are stored in memory and do not persist across different mpv
-invocations. Defaults to the calling script name with <tt class="docutils literal">prompt</tt>
-appended.</dd>
+among the ones stored for <tt class="docutils literal">input.get()</tt> calls. Defaults to the calling
+script name with <tt class="docutils literal">prompt</tt> appended.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">input.terminate()</tt></dt>
@@ -17192,8 +17220,8 @@ appended.</dd>
 apply to <tt class="docutils literal">message</tt>, and <tt class="docutils literal">terminal_style</tt> can contain escape sequences
 that are used when the console is displayed in the terminal.</dd>
 <dt><tt class="docutils literal">input.log_error(message)</tt></dt>
-<dd>Helper to add a line to the log buffer with the same color as the one the
-console uses for errors. Useful when the user submits invalid input.</dd>
+<dd>Helper to add a line to the log buffer with the same color as the one used
+for commands that error. Useful when the user submits invalid input.</dd>
 <dt><tt class="docutils literal">input.set_log(log)</tt></dt>
 <dd><p class="first">Replace the entire log buffer.</p>
 <p><tt class="docutils literal">log</tt> is a table of strings, or tables with <tt class="docutils literal">text</tt>, <tt class="docutils literal">style</tt> and
@@ -17745,7 +17773,7 @@ readable, while some obscure commands basically require using named arguments.</
 <p>Currently, only &quot;proper&quot; commands (as listed by <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>)
 support named arguments.</p>
 </div>
-<div class="section" id="commands-1">
+<div class="section" id="commands-2">
 <h2>Commands</h2>
 <p>In addition to the commands described in <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>, a few
 extra commands can also be used as part of the protocol:</p>
