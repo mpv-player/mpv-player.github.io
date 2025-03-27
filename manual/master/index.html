@@ -3169,7 +3169,7 @@ instead, if available.</p>
 <tt class="docutils literal">all</tt> always allows all codecs.</p>
 <p>You can get the list of allowed codecs with <tt class="docutils literal">mpv <span class="pre">--vd=help</span></tt>. Remove the
 prefix, e.g. instead of <tt class="docutils literal">lavc:h264</tt> use <tt class="docutils literal">h264</tt>.</p>
-<p>By default, this is set to <tt class="docutils literal">h264,vc1,hevc,vp8,vp9,av1,prores</tt>. Note that
+<p>By default, this is set to <tt class="docutils literal">h264,vc1,hevc,vp8,vp9,av1,prores,ffv1</tt>. Note that
 the hardware acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not
 relevant anymore, and in fact have been removed from FFmpeg in this form.</p>
 <p>This is usually only needed with broken GPUs, where a codec is reported
@@ -9770,6 +9770,13 @@ supported by as many terminals. It also only works on the local machine
 and not via e.g. SSH connections.</p>
 <p class="last">This option is not implemented on Windows.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--vo-kitty-auto-multiplexer-passthrough=&lt;yes|no&gt;</span></tt> (default: no)</dt>
+<dd><p class="first">Automatically detect terminal multiplexer to passthrough escape
+sequences. This allows the image protocol to work in multiplexers that
+might not support the kitty image protocol by passing through the
+escape sequences directly to the terminal.</p>
+<p class="last">Currently only supports tmux and GNU screen.</p>
+</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">sixel</tt></dt>
@@ -16173,6 +16180,11 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dt><tt class="docutils literal">history_path</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">~~state/command_history.txt</tt></p>
 <p class="last">The file path for <tt class="docutils literal">persist_history</tt> (see <a class="reference internal" href="#paths">PATHS</a>).</p>
+</dd>
+<dt><tt class="docutils literal">remember_input</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Whether to remember the input line and cursor position when closing the
+console, and prefill it the next time it is opened.</p>
 </dd>
 </dl>
 </div>
