@@ -2402,6 +2402,8 @@ https URLs also bypass the proxy. This is a limitation in FFmpeg.</p>
 </ul>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--ytdl-extract-chapters=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable chapter extracting from youtube-dl video description (default: yes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--js-memory-report=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable memory reporting for javascript scripts in the stats overlay.
 This is disabled by default because it has an overhead and increases
@@ -3959,6 +3961,16 @@ off screen.</td>
 from forward to backward during runtime for events that were already
 &quot;seen&quot; and need to be rendered again, if those events got pruned.</p>
 </div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-glyph-limit=&lt;value&gt;</span></tt></dt>
+<dd><p class="first">Set the maximum number of cached glyphs in libass cache for the subtitle
+track. 0 means libass uses its default value.</p>
+<p class="last">Default: 0.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-bitmap-max-size=&lt;value&gt;</span></tt></dt>
+<dd><p class="first">Set the maximum bitmap cache size in libass cache for the subtitle track. 0
+means libass uses its default value. This accepts values in MB.</p>
+<p class="last">Default: 0.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-styles=&lt;filename&gt;</span></tt></dt>
 <dd><p class="first">Load all SSA/ASS styles found in the specified file and use them for
@@ -5980,6 +5992,22 @@ mechanism in the future.</p>
 unlike subtitles, OSD never uses embedded fonts from media files.</dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-fonts-dir=&lt;path&gt;</span></tt></dt>
 <dd>See <tt class="docutils literal"><span class="pre">--sub-fonts-dir</span></tt> for details.  Defaults to <tt class="docutils literal"><span class="pre">~~/fonts</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-glyph-limit=&lt;value&gt;</span></tt></dt>
+<dd><p class="first">Set the maximum number of cached glyphs in libass cache for the OSD.
+0 means libass uses its default value.</p>
+<p class="last">Default: 0.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-bitmap-max-size=&lt;value&gt;</span></tt></dt>
+<dd><p class="first">Set the maximum bitmap cache size in libass cache for the OSD. 0 means
+libass uses its default value. This accepts values in MB.</p>
+<p class="last">Default: 0.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-prune-delay=&lt;-1|seconds&gt;</span></tt></dt>
+<dd>Set the delay for automatic pruning of events from memory in libass.
+Disabled by default. See also <tt class="docutils literal"><span class="pre">--sub-ass-prune-delay</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-shaper=&lt;simple|complex&gt;</span></tt></dt>
+<dd>Set the text layout engine used by libass for the OSD. Default: simple.
+See also <tt class="docutils literal"><span class="pre">--sub-shaper</span></tt></dd>
 </dl>
 </div>
 <div class="section" id="screenshot">
@@ -10714,13 +10742,14 @@ to prevent the option parser from interpreting the <tt class="docutils literal">
 <dt><tt class="docutils literal"><span class="pre">&lt;force-scaler=auto|zimg|sws&gt;</span></tt></dt>
 <dd>Force a specific scaler backend, if applicable. This is a debug option
 and could go away any time.</dd>
-<dt><tt class="docutils literal">&lt;alpha=auto|straight|premul&gt;</tt></dt>
+<dt><tt class="docutils literal">&lt;alpha=auto|straight|premul|none&gt;</tt></dt>
 <dd>Set the kind of alpha the video uses. Undefined effect if the image
 format has no alpha channel (could be ignored or cause an error,
 depending on how mpv internals evolve). Setting this may or may not
 cause downstream image processing to treat alpha differently, depending
 on support. With <tt class="docutils literal">convert</tt> and zimg used, this will convert the alpha.
-libswscale and other FFmpeg components completely ignore this.</dd>
+libswscale and other FFmpeg components completely ignore this.
+<tt class="docutils literal">none</tt> is available only starting from libplacebo vN.344.0.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">lavfi=graph[:sws-flags[:o=opts]]</span></tt></dt>
@@ -15819,14 +15848,18 @@ scripts decide to print text at the same time.</p>
 <p class="last">Whether to clip lines to the terminal width.</p>
 </dd>
 <dt><tt class="docutils literal">plot_perfdata</tt></dt>
-<dd><p class="first">Default: yes</p>
+<dd><p class="first">Default: no</p>
 <p class="last">Show graphs for performance data (page 2).</p>
 </dd>
 <dt><tt class="docutils literal">plot_vsync_ratio</tt></dt>
-<dd>Default: yes</dd>
+<dd>Default: no</dd>
 <dt><tt class="docutils literal">plot_vsync_jitter</tt></dt>
-<dd><p class="first">Default: yes</p>
+<dd><p class="first">Default: no</p>
 <p class="last">Show graphs for vsync and jitter values (page 1). Only when toggled.</p>
+</dd>
+<dt><tt class="docutils literal">plot_cache</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Show graphs for cache values (page 3). Only when toggled.</p>
 </dd>
 <dt><tt class="docutils literal">plot_tonemapping_lut</tt></dt>
 <dd><p class="first">Default: no</p>
@@ -16060,11 +16093,10 @@ option. The configuration syntax is described in <a class="reference internal" h
 <div class="section" id="configurable-options-2">
 <h3>Configurable Options</h3>
 <dl class="docutils">
-<dt><tt class="docutils literal">font</tt></dt>
-<dd><p class="first">The font name.</p>
-<p class="last">When necessary to align completions in a grid, a monospace font depending on
-the platform is the default. When there are no completions, <tt class="docutils literal"><span class="pre">--osd-font</span></tt>
-is the default.</p>
+<dt><tt class="docutils literal">monospace_font</tt></dt>
+<dd><p class="first">Default: platform dependent</p>
+<p>The monospace font used when there are completions to align in a grid.</p>
+<p class="last">When there are no completions, <tt class="docutils literal"><span class="pre">--osd-font</span></tt> is used.</p>
 </dd>
 <dt><tt class="docutils literal">font_size</tt></dt>
 <dd><p class="first">Default: 24</p>
@@ -16109,21 +16141,26 @@ console is not scaled with the window.</p>
 <p class="last">Whether to scale the console with the window height. Can be <tt class="docutils literal">yes</tt>, <tt class="docutils literal">no</tt>,
 or <tt class="docutils literal">auto</tt>, which follows the value of <tt class="docutils literal"><span class="pre">--osd-scale-by-window</span></tt>.</p>
 </dd>
-<dt><tt class="docutils literal">selected_color</tt></dt>
+<dt><tt class="docutils literal">focused_color</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">#222222</tt></p>
-<p class="last">The color of the selected item.</p>
+<p class="last">The color of the focused item.</p>
 </dd>
-<dt><tt class="docutils literal">selected_back_color</tt></dt>
+<dt><tt class="docutils literal">focused_back_color</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">#FFFFFF</tt></p>
-<p class="last">The background color of the selected item.</p>
+<p class="last">The background color of the focused item.</p>
 </dd>
 <dt><tt class="docutils literal">match_color</tt></dt>
 <dd><p class="first">Default: <tt class="docutils literal">#0088FF</tt></p>
 <p class="last">The color of characters that match the searched string.</p>
 </dd>
+<dt><tt class="docutils literal">exact_match</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Whether to match menu search queries exactly instead of fuzzily. Without
+this option, prefixing queries with <tt class="docutils literal">'</tt> enables exact matching.</p>
+</dd>
 <dt><tt class="docutils literal">case_sensitive</tt></dt>
-<dd><p class="first">Default: no on Windows, yes on other platforms.</p>
-<p class="last">Whether autocompletion is case sensitive. Only works with ASCII characters.</p>
+<dd><p class="first">Default: no</p>
+<p class="last">Whether exact searches are case sensitive. Only works with ASCII characters.</p>
 </dd>
 <dt><tt class="docutils literal">history_dedup</tt></dt>
 <dd><p class="first">Default: true</p>
@@ -16207,28 +16244,31 @@ console and do operations on the selected item. It can be disabled using the
 <tt class="docutils literal"><span class="pre">--load-select=no</span></tt> option.</p>
 <div class="section" id="key-bindings-1">
 <h2>Key bindings</h2>
-<p>When using <tt class="docutils literal">mp.input.select</tt>, typing printable characters does a fuzzy search
-of the presented items, and key bindings listed in <a class="reference internal" href="#console">CONSOLE</a> are extended with
-the following:</p>
+<p>When using <tt class="docutils literal">mp.input.select</tt>, the key bindings listed in <a class="reference internal" href="#console">CONSOLE</a> are
+extended with the following:</p>
 <dl class="docutils">
 <dt>ENTER, Ctrl+j and Ctrl+m</dt>
-<dd>Confirm the selection of the highlighted item.</dd>
+<dd>Select the focused item.</dd>
 <dt>UP and Ctrl+p</dt>
-<dd>Select the item above, or the last one when the first item is selected.</dd>
+<dd>Focus the item above, or the last one when the first item is selected.</dd>
 <dt>DOWN and Ctrl+n</dt>
-<dd>Select the item below, or the first one when the last item is selected.</dd>
+<dd>Focus the item below, or the first one when the last item is selected.</dd>
 <dt>PGUP and Ctrl+b</dt>
 <dd>Scroll up one page.</dd>
 <dt>PGDN and Ctrl+f</dt>
 <dd>Scroll down one page.</dd>
 <dt>MBTN_LEFT</dt>
-<dd>Confirm the selection of the highlighted item, or close the console if
-clicking outside of the menu rectangle.</dd>
+<dd>Select the item under the cursor, or close the console if clicking outside
+of the menu rectangle.</dd>
 <dt>WHEEL_UP</dt>
 <dd>Scroll up.</dd>
 <dt>WHEEL_DOWN</dt>
 <dd>Scroll down.</dd>
 </dl>
+<p>Typing printable characters does a fuzzy search of the presented items.</p>
+<p>If the query starts with <tt class="docutils literal">'</tt>, only exact matches are filtered. You can also
+specify multiple search terms delimited by spaces, and only items matching all
+terms are filtered.</p>
 </div>
 <div class="section" id="script-bindings">
 <h2>Script bindings</h2>
