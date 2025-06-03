@@ -18033,7 +18033,7 @@ file extension. They can also be explicitly loaded with the <tt class="docutils 
 <pre class="literal-block">
 int mpv_open_cplugin(mpv_handle *handle)
 </pre>
-<p>The plugin function will be called on loading time. This function does not
+<p>The plugin function will be called on loading time. This function must not
 return as long as your plugin is loaded (it runs in its own thread). The
 <tt class="docutils literal">handle</tt> will be deallocated as soon as the plugin function returns.</p>
 <p>The return value is interpreted as error status. A value of <tt class="docutils literal">0</tt> is
@@ -18044,7 +18044,8 @@ behavior.</p>
 <p>Within the plugin function, you can call libmpv API functions. The <tt class="docutils literal">handle</tt>
 is created by <tt class="docutils literal">mpv_create_client()</tt> (or actually an internal equivalent),
 and belongs to you. You can call <tt class="docutils literal">mpv_wait_event()</tt> to wait for things
-happening, and so on.</p>
+happening, and so on. However do not call <tt class="docutils literal">mpv_destroy()</tt> or
+<tt class="docutils literal">mpv_terminate_destroy()</tt> on this handle.</p>
 <p>Note that the player might block until your plugin calls <tt class="docutils literal">mpv_wait_event()</tt>
 for the first time. This gives you a chance to install initial hooks etc.
 before playback begins.</p>
