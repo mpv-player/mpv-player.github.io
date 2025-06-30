@@ -16561,14 +16561,10 @@ nil if it's missing.</p>
 as possible), and upon completion, fn is called. fn has three arguments:
 <tt class="docutils literal">fn(success, result, error)</tt>:</p>
 <blockquote>
-<blockquote>
 <dl class="docutils">
 <dt><tt class="docutils literal">success</tt></dt>
 <dd>Always a Boolean and is true if the command was successful,
 otherwise false.</dd>
-</dl>
-</blockquote>
-<dl class="docutils">
 <dt><tt class="docutils literal">result</tt></dt>
 <dd>The result value (can be nil) in case of success, nil otherwise (as
 returned by <tt class="docutils literal">mp.command_native()</tt>).</dd>
@@ -16833,9 +16829,9 @@ method.</p>
 <dt><tt class="docutils literal">mp.add_periodic_timer(seconds, fn [, disabled])</tt></dt>
 <dd><p class="first">Call the given function periodically. This is like <tt class="docutils literal">mp.add_timeout</tt>, but
 the timer is re-added after the function fn is run.</p>
+<p>Returns a timer object. The timer object provides the following methods:</p>
+<blockquote>
 <dl class="docutils">
-<dt>Returns a timer object. The timer object provides the following methods:</dt>
-<dd><dl class="first last docutils">
 <dt><tt class="docutils literal">stop()</tt></dt>
 <dd>Disable the timer. Does nothing if the timer is already disabled.
 This will remember the current elapsed time when stopping, so that
@@ -16865,8 +16861,7 @@ new timeout.)</p>
 (<tt class="docutils literal">true</tt>). This value is used when the timer expires (but before
 the timer callback function fn is run).</dd>
 </dl>
-</dd>
-</dl>
+</blockquote>
 <p>Note that these are methods, and you have to call them using <tt class="docutils literal">:</tt> instead
 of <tt class="docutils literal">.</tt> (Refer to <a class="reference external" href="https://www.lua.org/manual/5.2/manual.html#3.4.9">https://www.lua.org/manual/5.2/manual.html#3.4.9</a> .)</p>
 <p>Example:</p>
