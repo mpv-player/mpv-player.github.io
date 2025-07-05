@@ -8486,7 +8486,8 @@ content. The default of <tt class="docutils literal">no</tt> means to use the pr
 value <tt class="docutils literal">inf</tt> causes the BT.1886 curve to be treated as a pure power gamma
 2.4 function.</dd>
 <dt><tt class="docutils literal"><span class="pre">--icc-use-luma</span></tt></dt>
-<dd>Use ICC profile luminance value. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
+<dd>Use ICC profile luminance value. Applies only to HDR targets.
+(Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--lut=&lt;file&gt;</span></tt></dt>
 <dd>Specifies a custom LUT (in Adobe .cube format) to apply to the colors
 as part of color conversion. The exact interpretation depends on the value
@@ -8540,7 +8541,10 @@ to blend it with. This does nothing if there is no alpha component.</p>
 <dd>Blend the frame against the background color (<tt class="docutils literal"><span class="pre">--background-color</span></tt>,
 normally black).</dd>
 <dt>tiles</dt>
-<dd>Blend the frame against a 16x16 gray/white tiles background (default).</dd>
+<dd>Blend the frame against a checkerboard pattern with colors specified
+in the <tt class="docutils literal"><span class="pre">--background-tile-color-0</span></tt> and <tt class="docutils literal"><span class="pre">--background-tile-color-1</span></tt>
+options and tile size specified in the <tt class="docutils literal"><span class="pre">--background-tile-size</span></tt> option
+(default).</dd>
 <dt>none</dt>
 <dd>Do not blend the frame and leave the alpha as is.</dd>
 </dl>
@@ -8550,8 +8554,16 @@ background color. This is now done by the <tt class="docutils literal"><span cla
 Use that instead.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--background-color=&lt;color&gt;</span></tt></dt>
-<dd>Color used to draw parts of the mpv window not covered by video. See the
-<tt class="docutils literal"><span class="pre">--sub-color</span></tt> option for how colors are defined.</dd>
+<dd>Color used to draw parts of the mpv window not covered by video in
+<tt class="docutils literal"><span class="pre">--background=color</span></tt> mode.
+See the <tt class="docutils literal"><span class="pre">--sub-color</span></tt> option for how colors are defined.</dd>
+<dt><tt class="docutils literal"><span class="pre">--background-tile-color-0=&lt;color&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--background-tile-color-1=&lt;color&gt;</span></tt></dt>
+<dd>Colors used to draw parts of the mpv window not covered by video in
+<tt class="docutils literal"><span class="pre">--background=tiles</span></tt> mode.
+See the <tt class="docutils literal"><span class="pre">--sub-color</span></tt> option for how colors are defined.</dd>
+<dt><tt class="docutils literal"><span class="pre">--background-tile-size=&lt;1-4096&gt;</span></tt></dt>
+<dd>Tile size used to draw parts of the mpv window not covered by video in
+<tt class="docutils literal"><span class="pre">--background=tiles</span></tt> mode (default: 16).</dd>
 <dt><tt class="docutils literal"><span class="pre">--border-background=&lt;none|color|tiles&gt;</span></tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">--background</span></tt> but only applies to the black bar/border area of
 the window. <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt> only. Defaults to <tt class="docutils literal">color</tt>.</dd>
@@ -16065,6 +16077,8 @@ words, to the end of the next word.</dd>
 <dd>Paste text (uses the clipboard on X11 and Wayland).</dd>
 <dt>Shift+INSERT</dt>
 <dd>Paste text (uses the primary selection on X11 and Wayland).</dd>
+<dt>Ctrl+y</dt>
+<dd>Copy the current line to the clipboard.</dd>
 <dt>TAB and Ctrl+i</dt>
 <dd>Cycle through completions.</dd>
 <dt>Shift+TAB</dt>
@@ -16258,6 +16272,8 @@ extended with the following:</p>
 <dd>Scroll up one page.</dd>
 <dt>PGDN and Ctrl+f</dt>
 <dd>Scroll down one page.</dd>
+<dt>Ctrl+y</dt>
+<dd>Copy the focused item to the clipboard.</dd>
 <dt>MBTN_LEFT</dt>
 <dd>Select the item under the cursor, or close the console if clicking outside
 of the menu rectangle.</dd>
