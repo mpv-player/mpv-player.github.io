@@ -5488,14 +5488,14 @@ value of 10 seconds probably works well for most usecases.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--prefetch-playlist=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Prefetch next playlist entry while playback of the current entry is ending
-(default: yes).</p>
-<p>This does not prefill the cache with the video data of the next URL.
-Prefetching video data is supported only for the current playlist entry,
-and depends on the demuxer cache settings (on by default). This merely
-opens the URL of the next playlist entry as soon the current URL is fully
-read.</p>
+(default: no). This merely opens the URL of the next playlist entry as soon
+as the current URL is fully read.</p>
 <p>This does <strong>not</strong> work with URLs resolved by the <tt class="docutils literal"><span class="pre">youtube-dl</span></tt> wrapper,
 and it won't.</p>
+<p>This does not affect HLS streams (<tt class="docutils literal">.m3u8</tt> URLs). Such stream by itself is
+internally a playlist of data segments, but is treated as a single media
+item by mpv. HLS prefetching depends on the demuxer cache settings and is
+on by default.</p>
 <p class="last">This can occasionally make wrong prefetching decisions. For example, it
 can't predict whether you go backwards in the playlist, and assumes you
 won't edit the playlist.</p>
@@ -8486,8 +8486,7 @@ content. The default of <tt class="docutils literal">no</tt> means to use the pr
 value <tt class="docutils literal">inf</tt> causes the BT.1886 curve to be treated as a pure power gamma
 2.4 function.</dd>
 <dt><tt class="docutils literal"><span class="pre">--icc-use-luma</span></tt></dt>
-<dd>Use ICC profile luminance value. Applies only to HDR targets.
-(Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
+<dd>Use ICC profile luminance value. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--lut=&lt;file&gt;</span></tt></dt>
 <dd>Specifies a custom LUT (in Adobe .cube format) to apply to the colors
 as part of color conversion. The exact interpretation depends on the value
