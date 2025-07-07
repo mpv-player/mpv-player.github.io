@@ -4131,6 +4131,18 @@ the player won't know where exactly the text parts are located.)</p>
 (e.g. letterboxed). Setting this option uses the video size as subtitle
 canvas size. Can be useful to test broken subtitles, which often happen
 when the video was transcoded, while attempting to keep the old subtitles.</dd>
+<dt><tt class="docutils literal"><span class="pre">--image-subs-hdr-peak=&lt;sdr|video|10-10000&gt;</span></tt></dt>
+<dd><p class="first">Controls the image subtitle diffuse white level in cd/m² (nits) for HDR
+output. <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white, while <tt class="docutils literal">video</tt>
+uses video metadata. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+<p class="last">Default: sdr</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-hdr-peak=&lt;sdr|10-10000&gt;</span></tt></dt>
+<dd><p class="first">Controls the text subtitle and OSD diffuse white level in cd/m² (nits)
+for HDR output. <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+<p class="last">Default: sdr</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Render ASS subtitles natively (default: yes).</p>
 <div class="admonition note">
@@ -7211,6 +7223,13 @@ backend (default: auto). This is a high performance software renderer. By
 default, it is only used when the system has no hardware adapters that
 support D3D11. While the extended GPU features will work with WARP, they
 can be very slow.</dd>
+<dt><tt class="docutils literal"><span class="pre">--d3d11-output-mode=&lt;auto|window|composition&gt;</span></tt></dt>
+<dd>Use a specific output mode for creating the D3D11 swapchain. &quot;composition&quot;
+will not create a window. If you want to use the D3D11 GPU backend in WinUI
+applications, you need to set this to &quot;composition&quot;. &quot;window&quot; will create
+a window and use the DWM to present the video. &quot;auto&quot; is the same as
+&quot;window&quot;. After creating the swapchain, you can get the swapchain address
+(int64 type value) by getting the <tt class="docutils literal"><span class="pre">display-swapchain</span></tt> property.</dd>
 <dt><tt class="docutils literal"><span class="pre">--d3d11-feature-level=&lt;12_1|12_0|11_1|11_0|10_1|10_0|9_3|9_2|9_1&gt;</span></tt></dt>
 <dd>Select a specific feature level when using the D3D11 GPU backend. By
 default, the highest available feature level is used. This option can be
@@ -8112,6 +8131,8 @@ gamut (i.e. BT.601 and BT.709) content is not touched. (default)</dd>
 <dd>CIE 1931 RGB (not to be confused with CIE XYZ)</dd>
 <dt>dci-p3</dt>
 <dd>DCI-P3 (Digital Cinema Colorspace), SMPTE RP431-2</dd>
+<dt>display-p3</dt>
+<dd>DCI-P3 with a D65 white point</dd>
 <dt>v-gamut</dt>
 <dd>Panasonic V-Gamut (VARICAM) primaries</dd>
 <dt>s-gamut</dt>
@@ -11943,6 +11964,9 @@ Marks the track as suitable for the visually impaired.</blockquote>
 <p>&lt;forced&gt;</p>
 <blockquote>
 Marks the track as forced.</blockquote>
+<p>&lt;default&gt;</p>
+<blockquote>
+Marks the track as default.</blockquote>
 <p>&lt;attached-picture&gt; (only for <tt class="docutils literal"><span class="pre">video-add</span></tt>)</p>
 <blockquote>
 Marks the track as an attached picture, same as <tt class="docutils literal">albumart</tt> argument
@@ -13986,6 +14010,11 @@ polling.</p>
 <dt><tt class="docutils literal"><span class="pre">window-id</span></tt></dt>
 <dd>Read-only - mpv's window id. May not always be available, i.e due to window
 not being opened yet or not being supported by the VO.</dd>
+<dt><tt class="docutils literal"><span class="pre">display-swapchain</span></tt></dt>
+<dd>Read-only - Direct3D 11 swapchain address. Returns an int64 type value
+representing the memory address of the D3D11 swapchain. May not always be
+available, i.e d3d11-output-mode is not set to <tt class="docutils literal">composition</tt> or the VO
+does not support it.</dd>
 <dt><tt class="docutils literal"><span class="pre">mouse-pos</span></tt></dt>
 <dd><p class="first">Read-only - last known mouse position, normalized to OSD dimensions.</p>
 <p>Has the following sub-properties (which can be read as <tt class="docutils literal">MPV_FORMAT_NODE</tt>
