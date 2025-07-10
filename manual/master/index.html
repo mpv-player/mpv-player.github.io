@@ -4133,15 +4133,17 @@ canvas size. Can be useful to test broken subtitles, which often happen
 when the video was transcoded, while attempting to keep the old subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">--image-subs-hdr-peak=&lt;sdr|video|10-10000&gt;</span></tt></dt>
 <dd><p class="first">Controls the image subtitle diffuse white level in cd/m² (nits) for HDR
-output. <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white, while <tt class="docutils literal">video</tt>
-uses video metadata. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
-<p class="last">Default: sdr</p>
+output (default: sdr). <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white, while
+<tt class="docutils literal">video</tt> uses video metadata. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+<p class="last">This also affects image subtitle brightness in HDR tone mapping with
+<tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video&gt;</span></tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-hdr-peak=&lt;sdr|10-10000&gt;</span></tt></dt>
 <dd><p class="first">Controls the text subtitle and OSD diffuse white level in cd/m² (nits)
-for HDR output. <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white.
+for HDR output (default: sdr). <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white.
 (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
-<p class="last">Default: sdr</p>
+<p class="last">This also affects text subtitle brightness in HDR tone mapping with
+<tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video&gt;</span></tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Render ASS subtitles natively (default: yes).</p>
@@ -11440,10 +11442,23 @@ should be quoted, typically with <tt class="docutils literal">&quot;</tt>. See <
 <div class="line">a-b-c show-text &quot;command run after a, b, c have been pressed&quot;</div>
 </div>
 <p>(This is not shown in the general command syntax.)</p>
-<p>If <tt class="docutils literal">a</tt> or <tt class="docutils literal"><span class="pre">a-b</span></tt> or <tt class="docutils literal">b</tt> are already bound, this will run the first command
-that matches, and the multi-key command will never be called. Intermediate keys
-can be remapped to <tt class="docutils literal">ignore</tt> in order to avoid this issue. The maximum number
-of (non-modifier) keys for combinations is currently 4.</p>
+</div>
+<div class="section" id="key-matching">
+<h2>Key matching</h2>
+<p>mpv maintains key press history. If the current key completes one or more bound
+sequences (including single-key bindings), then mpv chooses the longest. If this
+sequence is bound to <tt class="docutils literal">ignore</tt>, then tracking continues as if nothing was
+matched. Otherwise, it triggers the command bound to this sequence and clears
+the key history.</p>
+<p>Note that while single-key bindings override builtin bindings, this is not the
+case with multi-key sequences. For example, a <tt class="docutils literal"><span class="pre">b-c</span></tt> sequence in input.conf
+would be overridden by a builtin binding <tt class="docutils literal">b</tt>. In this case, if you don't care
+about <tt class="docutils literal">b</tt>, you can bind it to <tt class="docutils literal">ignore</tt>.</p>
+<p>As a more complex example, if you want to bind both <tt class="docutils literal">b</tt> and <tt class="docutils literal"><span class="pre">a-b-c</span></tt>, then it
+won't work, because <tt class="docutils literal">b</tt> would override <tt class="docutils literal"><span class="pre">a-b-c</span></tt>. However, binding <tt class="docutils literal"><span class="pre">a-b</span></tt> to
+<tt class="docutils literal">ignore</tt> would allow that, because after <tt class="docutils literal"><span class="pre">a-b</span></tt> the longest match <tt class="docutils literal"><span class="pre">a-b</span></tt> is
+ignored, and a following <tt class="docutils literal">c</tt> would trigger the sequence <tt class="docutils literal"><span class="pre">a-b-c</span></tt> while <tt class="docutils literal">b</tt>
+alone would still work.</p>
 </div>
 <div class="section" id="key-names">
 <h2>Key names</h2>
