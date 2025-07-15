@@ -5759,6 +5759,10 @@ or enabled by <tt class="docutils literal"><span class="pre">--native-touch</spa
 for the touch events (default: yes). This is useful for compatibility
 for mouse key bindings and scripts which read mouse positions for platforms
 which do not support <tt class="docutils literal"><span class="pre">--native-touch=no</span></tt> (e.g. Wayland).</dd>
+<dt><tt class="docutils literal"><span class="pre">--input-tablet-emulate-mouse=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Emulate mouse move and button presses for tablet events (default: yes).</p>
+<p class="last">Wayland only.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-dragging-deadzone=&lt;N&gt;</span></tt></dt>
 <dd>Begin the built-in window dragging when the mouse moves outside a deadzone of
 <tt class="docutils literal">N</tt> pixels while the mouse button is being held down (default: 3). This only
@@ -14171,6 +14175,26 @@ MPV_FORMAT_NODE_ARRAY
         &quot;y&quot;        MPV_FORMAT_INT64
         &quot;id&quot;       MPV_FORMAT_INT64
 </pre>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">tablet-pos</span></tt></dt>
+<dd><p class="first">Read-only - last known tablet tool (pen) position, normalized to OSD dimensions,
+and tool state.</p>
+<p>Has the following sub-properties:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal"><span class="pre">tablet-pos/x</span></tt>, <tt class="docutils literal"><span class="pre">tablet-pos/y</span></tt></dt>
+<dd>Last known coordinates of the tablet tool.</dd>
+<dt><tt class="docutils literal"><span class="pre">tablet-pos/tool-in-proximity</span></tt></dt>
+<dd>Boolean - whether a tablet tool is currently in proximity of the tablet
+surface / hovers above the tablet surface.</dd>
+<dt><tt class="docutils literal"><span class="pre">tablet-pos/tool-tip</span></tt>,</dt>
+<dd>The state of the tablet tool tip, <tt class="docutils literal">up</tt> or <tt class="docutils literal">down.</tt></dd>
+<dt><tt class="docutils literal"><span class="pre">tablet-pos/tool-stylus-btn1</span></tt>, <tt class="docutils literal"><span class="pre">tablet-pos/tool-stylus-btn2</span></tt>, <tt class="docutils literal"><span class="pre">tablet-pos/tool-stylus-btn3</span></tt></dt>
+<dd>The state of tablet tool side buttons, <tt class="docutils literal">pressed</tt> or <tt class="docutils literal">released</tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">tablet-pos/pad-focus</span></tt></dt>
+<dd>Boolean - whether a tablet pad is currently focused.</dd>
+<dt><tt class="docutils literal"><span class="pre">tablet-pos/pad-btns/N</span></tt></dt>
+<dd>The state of the Nth tablet pad button, <tt class="docutils literal">pressed</tt> or <tt class="docutils literal">released</tt>.</dd>
+</dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">sub-ass-extradata</span></tt></dt>
 <dd>The current ASS subtitle track's extradata. There is no formatting done.
