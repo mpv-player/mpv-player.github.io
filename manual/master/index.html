@@ -7545,8 +7545,18 @@ the source.</dd>
 <dt>NATIVE (resizable)</dt>
 <dd>The combined image, in the source colorspace, before conversion to RGB.</dd>
 <dt>MAINPRESUB (resizable)</dt>
-<dd>The image, after conversion to RGB, but before
-<tt class="docutils literal"><span class="pre">--blend-subtitles=video</span></tt> is applied.</dd>
+<dd><p class="first">The image, after conversion to RGB, but before
+<tt class="docutils literal"><span class="pre">--blend-subtitles=video</span></tt> is applied.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">With <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>, <tt class="docutils literal">MAIN</tt> and <tt class="docutils literal">MAINPRESUB</tt> are separate shader
+stages, this allows rendering overlays directly onto the pre-scaled
+video stage. <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> does not support this feature,
+and as such, the <tt class="docutils literal">MAINPRESUB</tt> shader stage does not exist.
+It is still valid to refer to this name in shaders, but it is
+handled identically to <tt class="docutils literal">MAIN</tt>.</p>
+</div>
+</dd>
 <dt>MAIN (resizable)</dt>
 <dd>The main image, after conversion to RGB but before upscaling.</dd>
 <dt>LINEAR (fixed)</dt>
@@ -8637,6 +8647,23 @@ portion of the video, so you can't have subtitles exist in the black
 margins below a video (for example).</p>
 <p>If <tt class="docutils literal">video</tt> is selected, the behavior is similar to <tt class="docutils literal">yes</tt>, but subs are
 drawn at the video's native resolution, and scaled along with the video.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> with <tt class="docutils literal"><span class="pre">--blend-subtitles=video</span></tt> will
+correctly follow <tt class="docutils literal"><span class="pre">--video-rotate</span></tt> if rotated in 90-degree steps.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">With <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, the <tt class="docutils literal"><span class="pre">--blend-subtitles=video</span></tt> mode
+blends the subtitles after scaling the video, similar to
+<tt class="docutils literal"><span class="pre">--blend-subtitles=yes</span></tt>. The difference is that the subtitles
+are rendered at the video's native resolution and then scaled
+separately to blend with the video. This is useful for
+performance reasons, as it allows subtitles to be rendered at a
+lower resolution, but it does not have the same effect as
+hardsubbing, which would require blending before scaling. This
+may change in the future.</p>
+</div>
 <div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
 <p class="last">This changes the way subtitle colors are handled. Normally,
