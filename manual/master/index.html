@@ -6761,8 +6761,11 @@ switching functionality.</dd>
 <dt><tt class="docutils literal"><span class="pre">--dvbin-file=&lt;filename&gt;</span></tt></dt>
 <dd>Instructs mpv to read the channels list from <tt class="docutils literal">&lt;filename&gt;</tt>. The default is
 in the mpv configuration directory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv</span></tt>) with the
-filename <tt class="docutils literal"><span class="pre">channels.conf.{sat,ter,cbl,atsc,isdbt}</span></tt> (based on your card
-type) or <tt class="docutils literal">channels.conf</tt> as a last resort.
+filename <tt class="docutils literal"><span class="pre">channels.conf.{sat,sat1,ter,ter1,cbl,atsc,isdbt}</span></tt> (based on your
+card type) or <tt class="docutils literal">channels.conf</tt> as a last resort.
+For cards supporting multiple delivery systems of the same kind, i.e.
+DVB-T/T2 or DVB-S/S2, T2/S2 is assumed, unless the file extension
+is <tt class="docutils literal">ter1</tt> or <tt class="docutils literal">sat1</tt>.
 Please note that using specific file name with card type is recommended,
 since the legacy channel format is not fully standardized
 so autodetection of the delivery system may fail otherwise.
