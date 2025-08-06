@@ -5026,11 +5026,13 @@ intervals when not paused in order to support screensaver inhibition in some
 environments. This functionality was removed in 0.33.0, but it is possible to
 call the <tt class="docutils literal"><span class="pre">xdg-screensaver</span></tt> command line program from a user script instead.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--wid=&lt;ID&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--wid=&lt;ID|-1&gt;</span></tt></dt>
 <dd><p class="first">This tells mpv to attach to an existing window. If a VO is selected that
 supports this option, it will use that window for video output. mpv will
 scale the video to the size of this window, and will add black bars to
 compensate if the aspect ratio of the video is different.</p>
+<p>An ID of value <tt class="docutils literal"><span class="pre">-1</span></tt> is interpreted specially, and mpv will detach from
+the currently attached window to its own window.</p>
 <p>On X11, the ID is interpreted as a <tt class="docutils literal">Window</tt> on X11. Unlike
 MPlayer/mplayer2, mpv always creates its own window, and sets the wid
 window as parent. The window will always be resized to cover the parent
