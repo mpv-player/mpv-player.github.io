@@ -3190,6 +3190,14 @@ only includes the codecs supported on the setup.</p>
 </dl>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--hwdec-threads=&lt;N&gt;</span></tt></dt>
+<dd><p class="first">Number of threads used for hardware decoding (default: 4). This, as opposed
+to vd-queue, enables frame and slice threading in libavcodec. It can help
+with pipelining the decoding process and improve performance. The exact
+behavior depends on the hardware decoder API used.</p>
+<p class="last">If this is set to 0, the number of threads will be automatically determined
+by the number of CPU cores available.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--hwdec-software-fallback=&lt;yes|no|N&gt;</span></tt></dt>
 <dd><p class="first">Fallback to software decoding if the hardware-accelerated decoder fails
 (default: 3). If this is a number, then fallback will be triggered if
