@@ -5049,11 +5049,22 @@ draw directly on the root window.</p>
 <p>On win32, the ID is interpreted as <tt class="docutils literal">HWND</tt>. Pass it as value cast to
 <tt class="docutils literal">uint32_t</tt> (all Windows handles are 32-bit), this is important as mpv will
 not accept negative values. mpv will create its own window and set the
-wid window as parent, like with X11.</p>
-<p class="last">On Android, the ID is interpreted as <tt class="docutils literal">android.view.Surface</tt>. Pass it as a
+wid window as parent, like with X11. The value <tt class="docutils literal">0</tt> is interpreted
+specially, and mpv will draw on top of the desktop wallpaper and below
+desktop icons.</p>
+<p>On Android, the ID is interpreted as <tt class="docutils literal">android.view.Surface</tt>. Pass it as a
 value cast to <tt class="docutils literal">intptr_t</tt>. Use with <tt class="docutils literal"><span class="pre">--vo=mediacodec_embed</span></tt> and
 <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt> for direct rendering using MediaCodec, or with
 <tt class="docutils literal"><span class="pre">--vo=gpu</span> <span class="pre">--gpu-context=android</span></tt> (with or without <tt class="docutils literal"><span class="pre">--hwdec=mediacodec</span></tt>).</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p>On win32, if desktop wallpaper transition occurs (e.g. setting desktop
+slideshow of multiple images in Windows settings) and an ID value <tt class="docutils literal">0</tt>
+is used, Windows may sometimes destroy the window mpv is attached to.
+mpv will simply treat this as a quit signal in this case.</p>
+<p class="last">To prevent this from happening, set a static desktop wallpaper,
+such as single image or pure color.</p>
+</div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--window-dragging=&lt;yes|no&gt;</span></tt></dt>
 <dd>Move the window when clicking on it and moving the mouse pointer (default: yes).</dd>
