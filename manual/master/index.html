@@ -349,11 +349,6 @@ it.</dd>
 </div>
 <div class="section" id="context-menu">
 <h2>Context Menu</h2>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">This feature is experimental. It may not work with all VOs. A libass based
-fallback may be implemented in the future.</p>
-</div>
 <p>Context Menu is a menu that pops up on the video window on user interaction
 (mouse right click, etc.).</p>
 <p>To use this feature, you need to fill the <tt class="docutils literal"><span class="pre">menu-data</span></tt> property with menu
@@ -2422,6 +2417,10 @@ but immediately unload it if there are no conditional profiles.</dd>
 <dt><tt class="docutils literal"><span class="pre">--load-select=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable the builtin script that lets you select from lists of items (default:
 yes). By default, its keybindings start with the <tt class="docutils literal">g</tt> key.</dd>
+<dt><tt class="docutils literal"><span class="pre">--load-context-menu=&lt;yes|no&gt;</span></tt></dt>
+<dd>Enable the builtin script that implements a context menu. Defaults to
+<tt class="docutils literal">yes</tt> on platforms where integration with a native context menu is not
+implemented, and to <tt class="docutils literal">no</tt> on platform where it is.</dd>
 <dt><tt class="docutils literal"><span class="pre">--load-positioning=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enable the builtin script that provides various keybindings to pan videos
 and images (default: yes).</dd>
@@ -5186,6 +5185,9 @@ multiples of 1385 kB/s, i.e. <tt class="docutils literal"><span class="pre">--dv
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--dvd-angle=&lt;ID&gt;</span></tt></dt>
 <dd>Some DVDs contain scenes that can be viewed from multiple angles.
+This option tells mpv which angle to use (default: 1).</dd>
+<dt><tt class="docutils literal"><span class="pre">--bluray-angle=&lt;ID&gt;</span></tt></dt>
+<dd>Some Blu-ray discs contain scenes that can be viewed from multiple angles.
 This option tells mpv which angle to use (default: 1).</dd>
 </dl>
 </div>
@@ -9026,9 +9028,13 @@ idle|belownormal|normal|abovenormal|high|realtime</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--media-controls=&lt;yes|no&gt;</span></tt></dt>
-<dd>(Windows only)
-Enable integration of media control interface SystemMediaTransportControls.
-Default: yes (except for libmpv)</dd>
+<dd><p class="first">(Windows only)
+Enable integration of media control interface SystemMediaTransportControls.</p>
+<p>Windows may display &quot;Unknown app&quot; or show a missing mpv icon in the media
+control panel. To fully support it, you need to register mpv using the
+<tt class="docutils literal"><span class="pre">--register</span></tt> command.</p>
+<p class="last">Default: yes (except for libmpv)</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--force-media-title=&lt;string&gt;</span></tt></dt>
 <dd>Force the contents of the <tt class="docutils literal"><span class="pre">media-title</span></tt> property to this value. Useful
 for scripts which want to set a title, without overriding the user's
@@ -9244,6 +9250,61 @@ changes.</p>
 <p class="last">On Wayland, this option only has effect on the <tt class="docutils literal">wayland</tt> backend, and
 not for the <tt class="docutils literal">vo</tt> backend. See <tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt> property for
 more details.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--register</span></tt></dt>
+<dd><p class="first">(Windows only) (available also as mpv-register helper)</p>
+<p>Registers mpv as a media player on Windows. This includes adding registry
+entries to associate mpv with media files and protocols, as well as enabling
+autoplay handlers for Blu-ray, DVD, and CD-Audio.</p>
+<p>Note that the registration is done in-place, so the current mpv.exe path will
+be used. If you move mpv after registering it, you can re-run this command to
+update the registry entries. You can also <tt class="docutils literal"><span class="pre">--unregister</span></tt> at any time and
+using any mpv binary that supports this command, it doesn't have to be
+specifically the one that was used to register it.</p>
+<p>When using this option, mpv will exit after completing the process.
+To see a detailed list of operations, run mpv with the <tt class="docutils literal"><span class="pre">-v</span></tt> option.</p>
+<p>The list of the file extensions to register, can be controlled with the
+<tt class="docutils literal"><span class="pre">--video-exts</span></tt>, <tt class="docutils literal"><span class="pre">--audio-exts</span></tt>, <tt class="docutils literal"><span class="pre">--image-exts</span></tt>, <tt class="docutils literal"><span class="pre">--playlist-exts</span></tt>
+and <tt class="docutils literal"><span class="pre">--archive-exts</span></tt> options.</p>
+<p>By default, mpv will be registered for the current user. To register it for
+all users, run mpv as an administrator with this option. However, this is
+not recommended, as registering it per user is generally preferable.</p>
+<p class="last">You can unregister mpv from the Windows Settings or by running mpv with the
+<tt class="docutils literal"><span class="pre">--unregister</span></tt> option.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--register-rpath=&lt;string&gt;</span></tt></dt>
+<dd><p class="first">(Windows only)</p>
+<p>When registering with <tt class="docutils literal"><span class="pre">--register</span></tt>, this option allows you to specify the
+path(s) to prepend so that mpv can find the necessary DLLs. The specified
+string will be prepended to the runtime PATH whenever mpv is executed.</p>
+<p>This is useful for setting up paths to external libraries required by mpv
+without adding them to the global PATH environment variable.</p>
+<p>The format of the string follows the same structure as the PATH environment
+variable, a semicolon-separated list of paths.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p>This sets the <tt class="docutils literal">App Paths</tt> for mpv in the Windows registry, which
+Windows Shell uses to locate the executable and its dependencies. As a
+result, mpv can be launched seamlessly in most cases, but not in every
+scenario. Notably, running mpv from the command line does not use
+<cite>ShellExecute</cite> under the hood, it uses <cite>CreateProcess</cite>, which does not
+handle the <tt class="docutils literal">App Paths</tt> registry key.</p>
+<p class="last">To work around this, you can create a small wrapper PowerShell script that
+runs <tt class="docutils literal"><span class="pre">Start-Process</span> &lt;mpv path&gt;</tt> and all will work as expected.</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--unregister</span></tt></dt>
+<dd><p class="first">(Windows only) (available also as mpv-unregister helper)</p>
+<p>Unregisters mpv as a media player on Windows, undoing all changes made by
+the <tt class="docutils literal"><span class="pre">--register</span></tt> option. This will not remove mpv binary itself.</p>
+<p>You can use any mpv binary that supports this command, to unregister, doesn't
+have to be specifically the one that was used to register it.</p>
+<p>Windows Settings Application entry is tied to the mpv.exe path. If you
+remove the binary, it will not work. However, you can still unregister it
+using this command, register it in a new location, or restore mpv to its
+original location.</p>
+<p class="last">If mpv was previously registered for all users, run this command as an
+administrator to remove it for all users.</p>
 </dd>
 </dl>
 </div>
@@ -16600,6 +16661,91 @@ which uses the same formats as <tt class="docutils literal">strftime(3)</tt>.</p
 </div>
 </div>
 </div>
+<div class="section" id="context-menu-script">
+<h1>CONTEXT MENU SCRIPT</h1>
+<p>This script provides a context menu for platforms without integration with a
+native context menu. On these platforms, it can be disabled entirely using the
+<tt class="docutils literal"><span class="pre">--load-context-menu=no</span></tt> option. On platforms where the integration is
+implemented, it is already disabled by default.</p>
+<div class="section" id="script-messages">
+<h2>Script messages</h2>
+<dl class="docutils">
+<dt><tt class="docutils literal">open</tt></dt>
+<dd>Show the context menu.</dd>
+<dt><tt class="docutils literal">select</tt></dt>
+<dd>Select the focused item when there is one.</dd>
+</dl>
+</div>
+<div class="section" id="configuration-5">
+<h2>Configuration</h2>
+<p>This script can be customized through a config file
+<tt class="docutils literal"><span class="pre">script-opts/context_menu.conf</span></tt> placed in mpv's user directory and through
+the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line option. The configuration syntax is
+described in <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
+<div class="section" id="configurable-options-5">
+<h3>Configurable Options</h3>
+<dl class="docutils">
+<dt><tt class="docutils literal">font_size</tt></dt>
+<dd><p class="first">Default: 14</p>
+<p class="last">The font size.</p>
+</dd>
+<dt><tt class="docutils literal">gap</tt></dt>
+<dd><p class="first">Default: 3</p>
+<p class="last">The gap between menu items.</p>
+</dd>
+<dt><tt class="docutils literal">padding_x</tt></dt>
+<dd><p class="first">Default: 8</p>
+<p class="last">The horizontal padding of the menu.</p>
+</dd>
+<dt><tt class="docutils literal">padding_y</tt></dt>
+<dd><p class="first">Default: 4</p>
+<p class="last">The vertical padding of the menu.</p>
+</dd>
+<dt><tt class="docutils literal">menu_outline_size</tt></dt>
+<dd><p class="first">Default: 0</p>
+<p class="last">The size of the menu's border.</p>
+</dd>
+<dt><tt class="docutils literal">menu_outline_color</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">#FFFFFF</tt></p>
+<p class="last">The color of the menu's border.</p>
+</dd>
+<dt><tt class="docutils literal">corner_radius</tt></dt>
+<dd><p class="first">Default: 5</p>
+<p class="last">The radius of the menu's corners.</p>
+</dd>
+<dt><tt class="docutils literal">scale_with_window</tt></dt>
+<dd><p class="first">Default: auto</p>
+<p>Whether to scale sizes with the window height. Can be <tt class="docutils literal">yes</tt>, <tt class="docutils literal">no</tt>, or
+<tt class="docutils literal">auto</tt>, which follows the value of <tt class="docutils literal"><span class="pre">--osd-scale-by-window</span></tt>.</p>
+<p class="last">When sizes aren't scaled with the window, they are scaled by
+<tt class="docutils literal"><span class="pre">display-hidpi-scale</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal">focused_color</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">#222222</tt></p>
+<p class="last">The color of the focused item.</p>
+</dd>
+<dt><tt class="docutils literal">focused_back_color</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">#FFFFFF</tt></p>
+<p class="last">The background color of the focused item.</p>
+</dd>
+<dt><tt class="docutils literal">disabled_color</tt></dt>
+<dd><p class="first">Default: <tt class="docutils literal">#555555</tt></p>
+<p class="last">The color of disabled items.</p>
+</dd>
+<dt><tt class="docutils literal">seconds_to_open_submenus</tt></dt>
+<dd><p class="first">Default: 0.2</p>
+<p class="last">The number of seconds to open submenus after the cursor enters items
+associated with one.</p>
+</dd>
+<dt><tt class="docutils literal">seconds_to_close_submenus</tt></dt>
+<dd><p class="first">Default: 0.2</p>
+<p class="last">The number of seconds to close submenus after the cursor enters a parent
+menu.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
 <div class="section" id="positioning">
 <h1>POSITIONING</h1>
 <p>This script provides script bindings to pan videos and images. It can be
@@ -16632,13 +16778,13 @@ hovered by the cursor under it, or the average position of touch points if
 known.</dd>
 </dl>
 </div>
-<div class="section" id="configuration-5">
+<div class="section" id="configuration-6">
 <h2>Configuration</h2>
 <p>This script can be customized through a config file
 <tt class="docutils literal"><span class="pre">script-opts/positioning.conf</span></tt> placed in mpv's user directory and through the
 <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line option. The configuration syntax is described in
 <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
-<div class="section" id="configurable-options-5">
+<div class="section" id="configurable-options-6">
 <h3>Configurable Options</h3>
 <dl class="docutils">
 <dt><tt class="docutils literal">toggle_align_to_cursor</tt></dt>
