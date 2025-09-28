@@ -3330,9 +3330,7 @@ latency. Increasing the swapchain depth can improve pipelining and prevent
 missed vsyncs, but increases visible latency. This option only mandates an
 upper limit, the implementation can use a lower latency than requested
 internally. A setting of 1 means that the VO will wait for every frame to
-become visible before starting to render the next frame. (Default: 3)
-If <tt class="docutils literal"><span class="pre">--video-sync=display-*</span></tt> is used, this option is ignored and the depth
-is always 1.</dd>
+become visible before starting to render the next frame. (Default: 2)</dd>
 </dl>
 </div>
 <div class="section" id="audio">
@@ -8240,6 +8238,13 @@ HDR-like.</p>
 is no single answer, but try experimenting, you may be surprised.</p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--target-colorspace-hint-strict</span></tt></dt>
+<dd>When enabled (default), the configured swapchain colorspace (with the hint)
+will be respected. In this mode, the <tt class="docutils literal"><span class="pre">--target-*</span></tt> options act only as a
+hint, while the negotiated swapchain format is used for rendering output.
+This ensures correct results, since downstream processing depends on the
+signaled colorspace. When disabled, the swapchain colorspace will be
+overridden to match the <tt class="docutils literal"><span class="pre">--target-*</span></tt> options. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-prim=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Specifies the primaries of the display. Video colors will be adapted to
 this colorspace when ICC color management is not being used. Valid values
@@ -8368,11 +8373,19 @@ If supported by the API, display contrast will be used as reported.
 <tt class="docutils literal">inf</tt> contrast specifies display with perfect black level, in practice OLED.
 (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-gamut=&lt;value&gt;</span></tt></dt>
-<dd>Constrains the gamut of the display. You can use this option to output e.g.
+<dd><p class="first">Constrains the gamut of the display. You can use this option to output e.g.
 DCIP3-in-BT.2020. Set <tt class="docutils literal"><span class="pre">--target-prim</span></tt> to the primaries of the containing
 colorspace (into which values will be encoded), and <tt class="docutils literal"><span class="pre">--target-gamut</span></tt> to
 the gamut you want to limit colors to. Takes the same values as
-<tt class="docutils literal"><span class="pre">--target-prim</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
+<tt class="docutils literal"><span class="pre">--target-prim</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">If the selected gamut is wider, it will be limited to <tt class="docutils literal"><span class="pre">--target-prim</span></tt>.
+Additionally, if <tt class="docutils literal"><span class="pre">--target-colorspace-hint</span></tt> is specified, the signaled
+gamut will be limited to the supported gamut of the swapchain. Which may
+differ from the requested <tt class="docutils literal"><span class="pre">--target-prim</span></tt>.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--target-lut=&lt;file&gt;</span></tt></dt>
 <dd>Specifies a custom LUT file (in Adobe .cube format) to apply to the colors
 before display on-screen. This LUT is fed values in normalized RGB, after
@@ -16420,6 +16433,10 @@ console is not scaled with the window.</p>
 <p class="last">The transparency of the menu's background. Ranges from 0 (opaque) to 255
 (fully transparent).</p>
 </dd>
+<dt><tt class="docutils literal">gap</tt></dt>
+<dd><p class="first">Default: 0.2</p>
+<p class="last">The gap between menu items, specified as a percentage the font size.</p>
+</dd>
 <dt><tt class="docutils literal">padding</tt></dt>
 <dd><p class="first">Default: 10</p>
 <p class="last">The padding of the menu.</p>
@@ -16706,8 +16723,8 @@ described in <a class="reference internal" href="#mp-options-functions">mp.optio
 <p class="last">The font size.</p>
 </dd>
 <dt><tt class="docutils literal">gap</tt></dt>
-<dd><p class="first">Default: 3</p>
-<p class="last">The gap between menu items.</p>
+<dd><p class="first">Default: 0.2</p>
+<p class="last">The gap between menu items, specified as a percentage the font size.</p>
 </dd>
 <dt><tt class="docutils literal">padding_x</tt></dt>
 <dd><p class="first">Default: 8</p>
