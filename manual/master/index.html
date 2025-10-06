@@ -4233,9 +4233,18 @@ Should help with subtitles which erroneously have zero durations.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-fix-timing=&lt;yes|no&gt;</span></tt></dt>
-<dd>Adjust subtitle timing is to remove minor gaps or overlaps between
-subtitles (if the difference is smaller than 210 ms, the gap or overlap
-is removed).</dd>
+<dd><p class="first">Adjust subtitle timing is to remove minor gaps or overlaps between
+subtitles.</p>
+<p class="last">See also: <tt class="docutils literal"><span class="pre">--sub-fix-timing-threshold</span></tt> and <tt class="docutils literal"><span class="pre">--sub-fix-timing-keep</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-fix-timing-threshold=&lt;amount&gt;</span></tt></dt>
+<dd>Set the threshold in milliseconds for fixing subtitle timing (default: 210).
+If the gap between two subtitle events is smaller than this, the gap is
+removed.</dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-fix-timing-keep=&lt;amount&gt;</span></tt></dt>
+<dd>Set the minimum duration in milliseconds for subtitle events to be
+considered for timing fixes (default: 400). If a subtitle event has a
+duration smaller than this, its timing is not changed.</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-forced-events-only=&lt;yes|no&gt;</span></tt></dt>
 <dd>Enabling this displays only forced events within subtitle streams. Only
 some bitmap subtitle formats (such as DVD or PGS) are capable of having a
@@ -8167,7 +8176,8 @@ capabilities. However in most cases <tt class="docutils literal">auto</tt> mode 
 <dd>Uses metadata based on the target display's actual capabilities. This
 mode adapts the source content to the target display before output.
 Note: HDR primaries are not overridden by the <tt class="docutils literal"><span class="pre">--target-prim</span></tt> option
-this only affects the enclosing container for the colorspace.</dd>
+this only affects the enclosing container for the colorspace.
+<tt class="docutils literal"><span class="pre">--target-gamut</span></tt> can be used to limit the output gamut if needed.</dd>
 <dt>source</dt>
 <dd>Uses the source content's metadata. This is the traditional
 &quot;HDR passthrough&quot; mode (SDR too), where it is assumed that the compositor
@@ -12861,16 +12871,21 @@ handle.</p>
 <dd><p class="first">Take a screenshot.</p>
 <p>Multiple flags are available (some can be combined with <tt class="docutils literal">+</tt>):</p>
 <dl class="docutils">
+<dt>&lt;video&gt;</dt>
+<dd>Save the video image in its original resolution, without OSD or
+subtitles. This is the default when no flag is specified, and it does
+not need to be explicitly added when combined with other flags.</dd>
+<dt>&lt;scaled&gt;</dt>
+<dd>Save the video image in the current playback resolution.</dd>
 <dt>&lt;subtitles&gt; (default)</dt>
-<dd>Save the video image, in its original resolution, and with subtitles.
+<dd>Save the video image with subtitles.
 Some video outputs may still include the OSD in the output under certain
 circumstances.</dd>
-<dt>&lt;video&gt;</dt>
-<dd>Like <tt class="docutils literal">subtitles</tt>, but typically without OSD or subtitles. The exact
-behavior depends on the selected video output.</dd>
+<dt>&lt;osd&gt;</dt>
+<dd>Save the video image with OSD.</dd>
 <dt>&lt;window&gt;</dt>
-<dd>Save the contents of the mpv window. Typically scaled, with OSD and
-subtitles. The exact behavior depends on the selected video output.</dd>
+<dd>Save the contents of the mpv window, with OSD and subtitles.
+This is an alias of <tt class="docutils literal">scaled+subtitles+osd</tt>.</dd>
 <dt>&lt;each-frame&gt;</dt>
 <dd>Take a screenshot each frame. Issue this command again to stop taking
 screenshots. Note that you should disable frame-dropping when using
@@ -12878,6 +12893,8 @@ this mode - or you might receive duplicate images in cases when a
 frame was dropped. This flag can be combined with the other flags,
 e.g. <tt class="docutils literal"><span class="pre">video+each-frame</span></tt>.</dd>
 </dl>
+<p>The exact behaviors of all flags other than <tt class="docutils literal"><span class="pre">each-frame</span></tt> depend on the
+selected video output.</p>
 <p>Older mpv versions required passing <tt class="docutils literal">single</tt> and <tt class="docutils literal"><span class="pre">each-frame</span></tt> as
 second argument (and did not have flags). This syntax is still understood,
 but deprecated and might be removed in the future.</p>
@@ -12899,9 +12916,10 @@ supports <tt class="docutils literal">subtitles</tt>, <tt class="docutils litera
 expansion as described in <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">screenshot-raw</span> [&lt;flags&gt; <span class="pre">[&lt;format&gt;]]</span></tt></dt>
-<dd><p class="first">Return a screenshot in memory. This can be used only through the client
-API. The MPV_FORMAT_NODE_MAP returned by this command has the <tt class="docutils literal">w</tt>, <tt class="docutils literal">h</tt>,
-<tt class="docutils literal">stride</tt> fields set to obvious contents.</p>
+<dd><p class="first">Return a screenshot in memory. This can be used only through the client API
+or from a script using <tt class="docutils literal">mp.command_native</tt>. The MPV_FORMAT_NODE_MAP
+returned by this command has the <tt class="docutils literal">w</tt>, <tt class="docutils literal">h</tt>, <tt class="docutils literal">stride</tt> fields set to
+obvious contents.</p>
 <p>The <tt class="docutils literal">format</tt> field is set to the format of the screenshot image data.
 This can be controlled by the <tt class="docutils literal">format</tt> argument. The format can be one of
 the following:</p>
