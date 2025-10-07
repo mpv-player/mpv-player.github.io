@@ -8764,9 +8764,11 @@ See the <tt class="docutils literal"><span class="pre">--sub-color</span></tt> o
 <dt><tt class="docutils literal"><span class="pre">--background-tile-size=&lt;1-4096&gt;</span></tt></dt>
 <dd>Tile size used to draw parts of the mpv window not covered by video in
 <tt class="docutils literal"><span class="pre">--background=tiles</span></tt> mode (default: 16).</dd>
-<dt><tt class="docutils literal"><span class="pre">--border-background=&lt;none|color|tiles&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--border-background=&lt;none|color|tiles|blur&gt;</span></tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">--background</span></tt> but only applies to the black bar/border area of
 the window. <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt> only. Defaults to <tt class="docutils literal">color</tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">--background-blur-radius=&lt;radius&gt;</span></tt></dt>
+<dd>The blur radius (in pixels) to use for <tt class="docutils literal"><span class="pre">--border-background=blur</span></tt></dd>
 <dt><tt class="docutils literal"><span class="pre">--opengl-rectangle-textures</span></tt></dt>
 <dd>Force use of rectangle textures (default: no). Normally this shouldn't have
 any advantages over normal textures. Note that hardware decoding overrides
@@ -10899,13 +10901,13 @@ used.</p>
 </tbody>
 </table>
 </dd>
-<dt><tt class="docutils literal">&lt;gamma&gt;</tt></dt>
-<dd><p class="first">Gamma function the source file was encoded with. Normally this should be set
+<dt><tt class="docutils literal">&lt;transfer&gt;</tt> or <tt class="docutils literal">&lt;gamma&gt;</tt></dt>
+<dd><p class="first">Transfer function the source file was encoded with. Normally this should be set
 in the file header, but when playing broken or mistagged files this can be
 used to override the setting.</p>
 <p>This option only affects video output drivers that perform color management.</p>
 <p>If this option is set to <tt class="docutils literal">auto</tt> (which is the default), the gamma will
-be set to BT.1886 for YCbCr content, sRGB for RGB content and Linear for
+be set to BT.1886 for YCbCr content, sRGB for RGB content and st428 for
 XYZ content.</p>
 <p>Available gamma functions are:</p>
 <table class="last docutils field-list" frame="void" rules="none">
@@ -10943,6 +10945,8 @@ XYZ content.</p>
 <tr class="field"><th class="field-name">s-log1:</th><td class="field-body">Sony S-Log1 transfer curve</td>
 </tr>
 <tr class="field"><th class="field-name">s-log2:</th><td class="field-body">Sony S-Log2 transfer curve</td>
+</tr>
+<tr class="field"><th class="field-name">st428:</th><td class="field-body">Digital Cinema Distribution Master (XYZ)</td>
 </tr>
 </tbody>
 </table>
@@ -10986,6 +10990,24 @@ disabled, any Dolby Vision metadata will be stripped from frames.</dd>
 <dt><tt class="docutils literal">&lt;hdr10plus=yes|no&gt;</tt></dt>
 <dd>Whether or not to include HDR10+ metadata (default: yes). If
 disabled, any HDR10+ metadata will be stripped from frames.</dd>
+<dt><tt class="docutils literal"><span class="pre">&lt;min-luma&gt;</span></tt></dt>
+<dd><p class="first">Set the minimum luminance value for the mastering display metadata.
+This is a float value in nits (cd/m²).</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">0.0 means undefined, which is the default. To set 0.0 as actual value,
+use a very small value like 1e-6.</p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">&lt;max-luma&gt;</span></tt></dt>
+<dd>Set the maximum luminance value for the mastering display metadata.
+This is a float value in nits (cd/m²).</dd>
+<dt><tt class="docutils literal">&lt;max_cll&gt;</tt></dt>
+<dd>Set the maximum content light level for the mastering display
+metadata. This is a float value in nits (cd/m²).</dd>
+<dt><tt class="docutils literal">&lt;max_fall&gt;</tt></dt>
+<dd>Set the maximum frame-average light level for the mastering
+display metadata. This is a float value in nits (cd/m²).</dd>
 <dt><tt class="docutils literal"><span class="pre">&lt;film-grain=yes|no&gt;</span></tt></dt>
 <dd>Whether or not to include film grain metadata (default: yes). If
 disabled, any film grain metadata will be stripped from frames.</dd>
