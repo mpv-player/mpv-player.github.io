@@ -15146,12 +15146,41 @@ value (either because it was not set, or set explicitly to <tt class="docutils l
 but in the future it might hold the value <tt class="docutils literal">default</tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">command-list</span></tt></dt>
-<dd>The list of input commands. This returns an array of maps, where each map
-node represents a command. This map currently only has a single entry:
-<tt class="docutils literal">name</tt> for the name of the command. (This property is supposed to be a
-replacement for <tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt>. The option dumps some more
-information, but it's a valid feature request to extend this property if
-needed.)</dd>
+<dd><p class="first">The list of input commands. This returns an array of maps, where each map
+node represents a command. This map has the following entries:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">name</tt></dt>
+<dd>The name of the command.</dd>
+<dt><tt class="docutils literal">vararg</tt></dt>
+<dd>Whether the command accepts a variable number of arguments.</dd>
+<dt><tt class="docutils literal">args</tt></dt>
+<dd><p class="first">An array of maps, where each map node represents an argument with the
+following entries:</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">name</tt></dt>
+<dd>The name of the argument.</dd>
+<dt><tt class="docutils literal">type</tt></dt>
+<dd>The name of the argument type, like <tt class="docutils literal">String</tt> or <tt class="docutils literal">Integer</tt>.</dd>
+<dt><tt class="docutils literal">optional</tt></dt>
+<dd>Whether the argument is optional.</dd>
+</dl>
+</dd>
+</dl>
+<p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+the following contents:</p>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_ARRAY
+    MPV_FORMAT_NODE_MAP (for each command entry)
+        &quot;name&quot;    MPV_FORMAT_STRING
+        &quot;vararg&quot;  MPV_FORMAT_FLAG
+        &quot;args&quot;    MPV_FORMAT_NODE_ARRAY
+            MPV_FORMAT_NODE_MAP
+                &quot;name&quot;     MPV_FORMAT_STRING
+                &quot;type&quot;     MPV_FORMAT_STRING
+                &quot;optional&quot; MPV_FORMAT_FLAG
+</pre>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">input-bindings</span></tt></dt>
 <dd><p class="first">The list of current input key bindings. This returns an array of maps,
 where each map node represents a binding for a single key/command. This map
