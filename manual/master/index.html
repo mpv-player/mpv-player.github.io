@@ -3169,7 +3169,7 @@ instead, if available.</p>
 <tt class="docutils literal">all</tt> always allows all codecs.</p>
 <p>You can get the list of allowed codecs with <tt class="docutils literal">mpv <span class="pre">--vd=help</span></tt>. Remove the
 prefix, e.g. instead of <tt class="docutils literal">lavc:h264</tt> use <tt class="docutils literal">h264</tt>.</p>
-<p>By default, this is set to <tt class="docutils literal">h264,vc1,hevc,vp8,vp9,av1,prores,ffv1</tt>. Note that
+<p>By default, this is set to <tt class="docutils literal">h264,vc1,hevc,vp8,vp9,av1,prores,prores_raw,ffv1</tt>. Note that
 the hardware acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not
 relevant anymore, and in fact have been removed from FFmpeg in this form.</p>
 <p>This is usually only needed with broken GPUs, where a codec is reported
@@ -9274,6 +9274,9 @@ and must not be relied upon.</p>
 <dd>Windows backend.</dd>
 <dt><tt class="docutils literal">mac</tt></dt>
 <dd>macOS backend.</dd>
+<dt><tt class="docutils literal">x11</tt></dt>
+<dd>X11 backend. This backend is only available if the X server
+supports the <tt class="docutils literal">Xfixes</tt> extension.</dd>
 <dt><tt class="docutils literal">wayland</tt></dt>
 <dd>Wayland backend. This backend is only available if the compositor
 supports the <tt class="docutils literal"><span class="pre">ext-data-control-v1</span></tt> protocol.</dd>
@@ -9286,8 +9289,7 @@ protocol, or if the <tt class="docutils literal">wayland</tt> backend is disable
 <p class="last">This is an object settings list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--clipboard-monitor=&lt;yes|no&gt;</span></tt></dt>
-<dd><p class="first">(Windows, Wayland and macOS only)</p>
-<p>Enable clipboard monitoring so that the <tt class="docutils literal">clipboard</tt> property can be
+<dd><p class="first">Enable clipboard monitoring so that the <tt class="docutils literal">clipboard</tt> property can be
 observed for content changes (default: no). This only affects clipboard
 implementations which use polling to monitor clipboard updates.
 Other platforms currently ignore this option and always/never notify
@@ -9295,6 +9297,14 @@ changes.</p>
 <p class="last">On Wayland, this option only has effect on the <tt class="docutils literal">wayland</tt> backend, and
 not for the <tt class="docutils literal">vo</tt> backend. See <tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt> property for
 more details.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--clipboard-xwayland=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Enable X11 clipboard backend in suspected Wayland environments
+(default: no).</p>
+<p class="last">Depending on the Wayland compositor, using X11 backend may result in mpv
+unable to acquire clipboard data from native Wayland clients. Disabling the
+X11 backend when Wayland backend is unavailable makes mpv fallback to the
+VO backend which allows clipboard to work properly.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--register</span></tt></dt>
 <dd><p class="first">(Windows only) (available also as mpv-register helper)</p>
@@ -15223,11 +15233,10 @@ or change notifications are not currently functional.</p>
 <p>This has a number of sub-properties:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal">clipboard/text</tt> (RW)</dt>
-<dd>The text content in the clipboard (Windows, Wayland and macOS only).
-Writing to this property sets the text clipboard content
-(Windows, Wayland and macOS only).</dd>
+<dd>The text content in the clipboard.
+Writing to this property sets the text clipboard content</dd>
 <dt><tt class="docutils literal"><span class="pre">clipboard/text-primary</span></tt> (RW)</dt>
-<dd>The text content in the primary selection (Wayland only).</dd>
+<dd>The text content in the primary selection (X11 and Wayland only).</dd>
 </dl>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
