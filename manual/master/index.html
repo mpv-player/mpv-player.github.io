@@ -8413,6 +8413,39 @@ transfer function is SDR. This way you can control SDR output separately
 from HDR output.</p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--sdr-adjust-gamma=&lt;auto|yes|no&gt;</span></tt></dt>
+<dd><p class="first">SDR transfer functions are often ambiguous or mismatched. Even if files are
+tagged with a specific function (e.g. <tt class="docutils literal">bt.709</tt>), the actual content may
+not match. For example, most screen capture software tags its output as
+<tt class="docutils literal">bt.709</tt>, but the content is usually a direct sRGB capture.</p>
+<p>On the target side, &quot;sRGB&quot; is also ambiguous, some displays are factory
+calibrated to a pure power 2.2 gamma, while others may use the sRGB
+piecewise curve. Both of which are typically configured as &quot;sRGB&quot; in the
+swapchain configuration. Similar inconsistencies exist across compositor
+implementations of color management, as different platforms handle this in
+different ways. See also <tt class="docutils literal"><span class="pre">--treat-srgb-as-power22</span></tt>.
+Additionally, <tt class="docutils literal">bt.1886</tt> requires display contrast ratio to be known for
+correct rendering, which is often unavailable. Use``--target-contrast`` to
+specify it.</p>
+<p>This option controls whether SDR content should have its gamma adjusted.
+It only applies to the &quot;sRGB&quot; swapchain target configuration, since that is
+the most common and ambiguous case. If set to <tt class="docutils literal">no</tt>, content tagged as
+<tt class="docutils literal">sRGB</tt>, <tt class="docutils literal">gamma2.2</tt> or <tt class="docutils literal">bt.1886</tt> will be rendered as-is. If set to
+<tt class="docutils literal">yes</tt>, it will be converted based on the available metadata.</p>
+<p><tt class="docutils literal">auto</tt> (default) behaves like <tt class="docutils literal">no</tt>, except when <tt class="docutils literal"><span class="pre">--target-trc</span></tt> is
+explicitly set, in which case it behaves like <tt class="docutils literal">yes</tt>.</p>
+<p>Generally it's recommended to enable this option, if you can ensure that
+both source and target metadata is correct.</p>
+<p class="last">(Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--treat-srgb-as-power22=&lt;no|input|output|both|auto&gt;</span></tt></dt>
+<dd><p class="first">When enabled, sRGB is (de)linearized using a pure power 2.2 curve instead of
+the standard sRGB piecewise transfer function.</p>
+<p><tt class="docutils literal">auto</tt> behaves like <tt class="docutils literal">both</tt>, with possible platform-specific adjustments
+to ensure a consistent appearance. Depending on the platform, the sRGB EOTF
+used by the system compositor may differ.</p>
+<p class="last">The default is <tt class="docutils literal">input</tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--tone-mapping=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Specifies the algorithm used for tone-mapping images onto the target
 display. This is relevant for both HDR-&gt;SDR conversion as well as gamut
