@@ -7105,7 +7105,7 @@ might be slower or cause latency issues.</dd>
 <dt>auto</dt>
 <dd>Automatic selection.
 On <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>: detected depth or 8 bpc otherwise
-On <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>: detected depth or 8 bpc (for SDR target)</dd>
+On <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>: detected depth</dd>
 <dt>8</dt>
 <dd>Dither to 8 bit output.</dd>
 </dl>
@@ -12215,29 +12215,42 @@ before the current file is stopped, and the new file even begins loading.</p>
 <dd>Stop playback of the current file, and play the new file immediately.</dd>
 <dt>&lt;append&gt;</dt>
 <dd>Append the file to the playlist.</dd>
+<dt>&lt;insert-next&gt;</dt>
+<dd>Insert the file into the playlist, directly after the current entry.</dd>
+<dt>&lt;insert-at&gt;</dt>
+<dd>Insert the file into the playlist, at the index given in the third
+argument.</dd>
+<dt>&lt;play&gt;</dt>
+<dd>If nothing is currently playing, start playback. (Always starts with the
+added file, even if the playlist was not empty before running this
+command).</dd>
+</dl>
+<p>Multiple flags can be combined, e.g.: <tt class="docutils literal">append+play</tt>.</p>
+<p>By default, <tt class="docutils literal">append</tt>, <tt class="docutils literal"><span class="pre">insert-next</span></tt>, and <tt class="docutils literal"><span class="pre">insert-at</span></tt> will not
+immediately start playback even if the playlist was previously empty. Adding
+the <tt class="docutils literal">play</tt> flag to them forces playback to start.</p>
+<p>The following values are considered deprecated and were the old way
+(before mpv 0.42) of forcing playback to start before the <tt class="docutils literal">play</tt> flag was
+added.</p>
+<dl class="docutils">
 <dt>&lt;append-play&gt;</dt>
 <dd>Append the file, and if nothing is currently playing, start playback.
 (Always starts with the added file, even if the playlist was not empty
 before running this command.)</dd>
-<dt>&lt;insert-next&gt;</dt>
-<dd>Insert the file into the playlist, directly after the current entry.</dd>
 <dt>&lt;insert-next-play&gt;</dt>
 <dd>Insert the file next, and if nothing is currently playing, start playback.
 (Always starts with the added file, even if the playlist was not empty
 before running this command.)</dd>
-<dt>&lt;insert-at&gt;</dt>
-<dd>Insert the file into the playlist, at the index given in the third
-argument.</dd>
 <dt>&lt;insert-at-play&gt;</dt>
 <dd>Insert the file at the index given in the third argument, and if nothing
 is currently playing, start playback. (Always starts with the added
 file, even if the playlist was not empty before running this command.)</dd>
 </dl>
-<p>The third argument is an insertion index, used only by the <tt class="docutils literal"><span class="pre">insert-at</span></tt> and
-<tt class="docutils literal"><span class="pre">insert-at-play</span></tt> actions. When used with those actions, the new item will
-be inserted at the index position in the playlist, or appended to the end if
-index is less than 0 or greater than the size of the playlist. This argument
-will be ignored for all other actions. This argument is added in mpv 0.38.0.</p>
+<p>The third argument is an insertion index, used only by the <tt class="docutils literal"><span class="pre">insert-at</span></tt>
+action. When used with those actions, the new item will be inserted at the
+index position in the playlist, or appended to the end if index is less than
+0 or greater than the size of the playlist. This argument will be ignored for
+all other actions. This argument was added in mpv 0.38.0.</p>
 <p>The fourth argument is a list of options and values which should be set
 while the file is playing. It is of the form <tt class="docutils literal"><span class="pre">opt1=value1,opt2=value2,..</span></tt>.
 When using the client API, this can be a <tt class="docutils literal">MPV_FORMAT_NODE_MAP</tt> (or a Lua
@@ -12261,30 +12274,43 @@ argument needs to be used.</p>
 <dd>Stop playback and replace the internal playlist with the new one.</dd>
 <dt>&lt;append&gt;</dt>
 <dd>Append the new playlist at the end of the current internal playlist.</dd>
+<dt>&lt;insert-next&gt;</dt>
+<dd>Insert the new playlist into the current internal playlist, directly
+after the current entry.</dd>
+<dt>&lt;insert-at&gt;</dt>
+<dd>Insert the new playlist at the index given in the third argument.</dd>
+<dt>&lt;play&gt;</dt>
+<dd>If nothing is currently playing, start playback. (Always starts with the
+added playlist, even if the internal playlist was not empty before running
+this command).</dd>
+</dl>
+<p>Multiple flags can be combined, e.g.: <tt class="docutils literal">append+play</tt>.</p>
+<p>By default, <tt class="docutils literal">append</tt>, <tt class="docutils literal"><span class="pre">insert-next</span></tt>, and <tt class="docutils literal"><span class="pre">insert-at</span></tt> will not
+immediately start playback even if the playlist was previously empty. Adding
+the <tt class="docutils literal">play</tt> flag to them forces playback to start.</p>
+<p>The following values are considered deprecated and were the old way
+(before mpv 0.42) of forcing playback to start before the <tt class="docutils literal">play</tt> flag was
+added.</p>
+<dl class="docutils">
 <dt>&lt;append-play&gt;</dt>
 <dd>Append the new playlist, and if nothing is currently playing, start
 playback. (Always starts with the new playlist, even if the internal
 playlist was not empty before running this command.)</dd>
-<dt>&lt;insert-next&gt;</dt>
-<dd>Insert the new playlist into the current internal playlist, directly
-after the current entry.</dd>
 <dt>&lt;insert-next-play&gt;</dt>
 <dd>Insert the new playlist, and if nothing is currently playing, start
 playback. (Always starts with the new playlist, even if the internal
 playlist was not empty before running this command.)</dd>
-<dt>&lt;insert-at&gt;</dt>
-<dd>Insert the new playlist at the index given in the third argument.</dd>
 <dt>&lt;insert-at-play&gt;</dt>
 <dd>Insert the new playlist at the index given in the third argument, and if
 nothing is currently playing, start playback. (Always starts with the
 new playlist, even if the internal playlist was not empty before running
 this command.)</dd>
 </dl>
-<p class="last">The third argument is an insertion index, used only by the <tt class="docutils literal"><span class="pre">insert-at</span></tt> and
-<tt class="docutils literal"><span class="pre">insert-at-play</span></tt> actions. When used with those actions, the new playlist
-will be inserted at the index position in the internal playlist, or appended
-to the end if index is less than 0 or greater than the size of the internal
-playlist. This argument will be ignored for all other actions.</p>
+<p class="last">The third argument is an insertion index, used only by the <tt class="docutils literal"><span class="pre">insert-at</span></tt> action.
+When used with those actions, the new playlist will be inserted at the index
+position in the internal playlist, or appended to the end if index is less
+than 0 or greater than the size of the internal playlist. This argument will be
+ignored for all other actions. This argument was added in mpv 0.38.0.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">playlist-clear</span></tt></dt>
 <dd>Clear the playlist, except the currently played file.</dd>
