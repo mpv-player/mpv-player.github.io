@@ -2197,8 +2197,9 @@ first playlist has finished playing back.</p>
 configuration subdirectory (usually <tt class="docutils literal"><span class="pre">~/.config/mpv/scripts/</span></tt>).
 (Default: <tt class="docutils literal">yes</tt>)</dd>
 <dt><tt class="docutils literal"><span class="pre">--script=&lt;filename&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scripts=file1.lua:file2.lua:...</span></tt></dt>
-<dd><p class="first">Load a Lua script. The second option allows you to load multiple scripts by
-separating them with the path separator (<tt class="docutils literal">:</tt> on Unix, <tt class="docutils literal">;</tt> on Windows).</p>
+<dd><p class="first">Load a script (Lua or JS) or a C plugin. The second option allows you to
+load multiple scripts by separating them with the path separator (<tt class="docutils literal">:</tt> on
+Unix, <tt class="docutils literal">;</tt> on Windows).</p>
 <p class="last"><tt class="docutils literal"><span class="pre">--scripts</span></tt> is a path list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--script-opt=&lt;key=value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--script-opts=key1=value1,key2=value2,...</span></tt></dt>
@@ -4712,6 +4713,8 @@ during &quot;playback&quot;.)</p>
 and no audio. The player may recognize certain non-images as images, for
 example if <tt class="docutils literal"><span class="pre">--length</span></tt> is used to reduce the length to 1 frame, or if
 you seek to the last frame.</p>
+<p>The effective duration is now <cite>--speed</cite> aware, which was not the case in
+older mpv versions before v0.41.0.</p>
 <p>This option does not affect the framerate used for <tt class="docutils literal"><span class="pre">mf://</span></tt> or
 <tt class="docutils literal"><span class="pre">--merge-files</span></tt>. For that, use <tt class="docutils literal"><span class="pre">--mf-fps</span></tt> instead.</p>
 <p class="last">When viewing images, the playback time is not tracked on the command line
@@ -6973,11 +6976,13 @@ ratio, the radius that actually being used might be different (most likely
 being increased a bit).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--scale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-antiring=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-antiring=&lt;value&gt;</span></tt></dt>
-<dd><p class="first">Set the antiringing strength. This tries to eliminate ringing, but can
-introduce other artifacts in the process. Must be a float number between
-0.0 and 1.0. The default value of 0.0 disables antiringing entirely.</p>
+<dd><p class="first">Set the antiringing strength. This option tries to eliminate ringing, but can
+introduce other artifacts in the process. The value must be a floating-point
+number between 0.0 and 1.0.</p>
+<p>The default is 0.0. The <tt class="docutils literal"><span class="pre">high-quality</span></tt> profile sets this to 0.6, which is
+a fairly conservative value and should subtly enhance image quality.</p>
 <p>Note that this doesn't affect the special filters <tt class="docutils literal">bilinear</tt> and
-<tt class="docutils literal">bicubic_fast</tt>, nor does it affect any polar (EWA) scalers.</p>
+<tt class="docutils literal">bicubic_fast</tt>, nor does it affect any polar (EWA) scalers with vo_gpu.</p>
 <p>On <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, this also affects polar (EWA) scalers. Certain
 filter aliases may also implicitly enable antiringing, regardless of this
 setting (see <tt class="docutils literal"><span class="pre">--scale</span></tt>).</p>
@@ -16886,6 +16891,8 @@ already exist.</dd>
 already exist.</dd>
 <dt><tt class="docutils literal"><span class="pre">open-docs</span></tt></dt>
 <dd>Open mpv's online documentation in the browser.</dd>
+<dt><tt class="docutils literal"><span class="pre">open-chat</span></tt></dt>
+<dd>Open mpv's chat in the browser.</dd>
 <dt><tt class="docutils literal">menu</tt></dt>
 <dd>Show a menu with miscellaneous entries.</dd>
 </dl>
@@ -17899,16 +17906,19 @@ script name with <tt class="docutils literal">prompt</tt> appended.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">input.terminate()</tt></dt>
-<dd>Close the console.</dd>
+<dd>Closes any currently active input request. This will not close
+requests made by other scripts.</dd>
 <dt><tt class="docutils literal">input.log(message, style, terminal_style)</tt></dt>
-<dd>Add a line to the log buffer. <tt class="docutils literal">style</tt> can contain additional ASS tags to
-apply to <tt class="docutils literal">message</tt>, and <tt class="docutils literal">terminal_style</tt> can contain escape sequences
-that are used when the console is displayed in the terminal.</dd>
+<dd>Add a line to the log buffer of the latest <tt class="docutils literal">input.get()</tt> request.
+<tt class="docutils literal">style</tt> can contain additional ASS tags to apply to <tt class="docutils literal">message</tt>,
+and <tt class="docutils literal">terminal_style</tt> can contain escape sequences that are used
+when the console is displayed in the terminal.</dd>
 <dt><tt class="docutils literal">input.log_error(message)</tt></dt>
-<dd>Helper to add a line to the log buffer with the same color as the one used
+<dd>Helper to add an error line to the log buffer of the latest <tt class="docutils literal">input.get()</tt>
+request. The line is styled with the same color as the one used
 for commands that error. Useful when the user submits invalid input.</dd>
 <dt><tt class="docutils literal">input.set_log(log)</tt></dt>
-<dd><p class="first">Replace the entire log buffer.</p>
+<dd><p class="first">Replace the entire log buffer of the latest <tt class="docutils literal">input.get()</tt> request.</p>
 <p><tt class="docutils literal">log</tt> is a table of strings, or tables with <tt class="docutils literal">text</tt>, <tt class="docutils literal">style</tt> and
 <tt class="docutils literal">terminal_style</tt> keys.</p>
 <p>Example:</p>
