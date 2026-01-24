@@ -1513,7 +1513,7 @@ terminal when starting playback of a file.</p>
 others) sometimes expose behavior that may appear strange. Also, the
 behavior tends to change around with each mpv release.</p>
 <p>The track selection properties will return the option value outside of
-playback (as expected), but during playback, the affective track
+playback (as expected), but during playback, the effective track
 selection is returned. For example, with <tt class="docutils literal"><span class="pre">--aid=auto</span></tt>, the <tt class="docutils literal">aid</tt>
 property will suddenly return <tt class="docutils literal">2</tt> after playback initialization
 (assuming the file has at least 2 audio tracks, and the second is the
@@ -1525,8 +1525,8 @@ another audio track was added during playback, and you tried to set the
 <tt class="docutils literal">aid</tt> property to <tt class="docutils literal">2</tt>, nothing happened, because the <tt class="docutils literal">aid</tt> option
 still had the value <tt class="docutils literal">2</tt>, and writing the same value has no effect.</p>
 <p>With mpv 0.33.0, the behavior was changed. Now track selection options
-are reset to <tt class="docutils literal">auto</tt> at playback initialization, if the option had
-tries to select a track that does not exist. The same is done if the
+are reset to <tt class="docutils literal">auto</tt> at playback initialization, if the option tried
+to select a track that does not exist. The same is done if the
 track exists, but fails to initialize. The consequence is that unlike
 before mpv 0.33.0, the user's track selection parameters are clobbered
 in certain situations.</p>
@@ -1537,10 +1537,10 @@ initialization. The new behavior is more consistent.</p>
 <p>Setting a track selection property at runtime, and then playing a new
 file might reset the track selection to defaults, if the fingerprint
 of the track list of the new file is different.</p>
-<p>Be aware of tricky combinations of all of all of the above: for example,
+<p>Be aware of tricky combinations of all of the above: for example,
 <tt class="docutils literal">mpv <span class="pre">--aid=2</span> file_with_2_audio_tracks.mkv file_with_1_audio_track.mkv</tt>
 would first play the correct track, and the second file without audio.
-If you then go back the first file, its first audio track will be played,
+If you then go back to the first file, its first audio track will be played,
 and the second file is played with audio. If you do the same thing again
 but instead of using <tt class="docutils literal"><span class="pre">--aid=2</span></tt> you run <tt class="docutils literal">set aid 2</tt> while the file is
 playing, then changing to the second file will play its audio track.
@@ -1580,7 +1580,7 @@ referenced tracks are always selected.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--subs-with-matching-audio=&lt;yes|forced|no&gt;</span></tt></dt>
 <dd>When autoselecting a subtitle track, select it even if the selected audio
-stream matches you preferred subtitle language (default: yes). If this
+stream matches your preferred subtitle language (default: yes). If this
 option is set to <tt class="docutils literal">no</tt>, then no subtitle track that matches the audio
 language will ever be autoselected by mpv regardless of <tt class="docutils literal"><span class="pre">--slang</span></tt> or
 <tt class="docutils literal"><span class="pre">subs-fallback</span></tt>. If set to <tt class="docutils literal">forced</tt>, then only forced subtitles
@@ -1938,8 +1938,8 @@ files.</dd>
 <dt><tt class="docutils literal"><span class="pre">--play-direction=&lt;forward|+|backward|-&gt;</span></tt></dt>
 <dd><p class="first">Control the playback direction (default: forward). Setting <tt class="docutils literal">backward</tt>
 will attempt to play the file in reverse direction, with decreasing
-playback time. If this is set on playback starts, playback will start from
-the end of the file. If this is changed at during playback, a hr-seek will
+playback time. If this is set on playback start, playback will start from
+the end of the file. If this is changed during playback, a hr-seek will
 be issued to change the direction.</p>
 <p><tt class="docutils literal">+</tt> and <tt class="docutils literal">-</tt> are aliases for <tt class="docutils literal">forward</tt> and <tt class="docutils literal">backward</tt>.</p>
 <p>The rest of this option description pertains to the <tt class="docutils literal">backward</tt> mode.</p>
@@ -2056,8 +2056,7 @@ through more packets all the time, even if the cache is large enough.</li>
 <li>Setting <tt class="docutils literal"><span class="pre">--demuxer-cache-wait</span></tt> may be useful to cache the entire file
 into the demuxer cache. Set <tt class="docutils literal"><span class="pre">--demuxer-max-bytes</span></tt> to a large size to
 make sure it can read the entire cache; <tt class="docutils literal"><span class="pre">--demuxer-max-back-bytes</span></tt>
-should also be set to a large size to prevent that tries to trim the
-cache.</li>
+should also be set to a large size to prevent it from trimming the cache.</li>
 <li>If audio artifacts are audible, even though the AO does not underrun,
 increasing <tt class="docutils literal"><span class="pre">--audio-backward-overlap</span></tt> might help in some cases.</li>
 </ul>
@@ -2179,7 +2178,7 @@ considered &quot;configuration&quot; and keep their auto-detection logic.</p>
 <dt><tt class="docutils literal"><span class="pre">--dump-stats=&lt;filename&gt;</span></tt></dt>
 <dd><p class="first">Write certain statistics to the given file. The file is truncated on
 opening. The file will contain raw samples, each with a timestamp. To
-make this file into a readable, the script <tt class="docutils literal"><span class="pre">TOOLS/stats-conv.py</span></tt> can be
+visualize the statistics, the script <tt class="docutils literal"><span class="pre">TOOLS/stats-conv.py</span></tt> can be
 used (which currently displays it as a graph).</p>
 <p class="last">This option is useful for debugging only.</p>
 </dd>
@@ -3065,7 +3064,7 @@ after zooming.</p>
 <dt><tt class="docutils literal"><span class="pre">--video-recenter=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">Whether to behave as if <tt class="docutils literal"><span class="pre">--video-align-x</span></tt> and <tt class="docutils literal"><span class="pre">--video-align-y</span></tt> were 0
 when the video becomes smaller than the window in the respective direction</p>
-<p>After zooming in until the video is bigger the window, panning with
+<p>After zooming in until the video is bigger than the window, panning with
 <cite>--video-align-x</cite> and/or <cite>--video-align-y</cite>, and zooming out until the video
 is smaller than the window, this is useful to recenter the video in the
 window.</p>
@@ -9000,7 +8999,7 @@ interpolation.</p>
 <dt><tt class="docutils literal"><span class="pre">--video-sync-max-video-change=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Maximum speed difference in percent that is applied to video with
 <tt class="docutils literal"><span class="pre">--video-sync=display-...</span></tt> (default: 1). Display sync mode will be
-disabled if the monitor and video refresh way do not match within the
+disabled if the monitor and video refresh rate do not match within the
 given range. It tries multiples as well: playing 30 fps video on a 60 Hz
 screen will duplicate every second frame. Playing 24 fps video on a 60 Hz
 screen will play video in a 2-3-2-3-... pattern.</p>
@@ -16741,7 +16740,7 @@ specifying the initial cursor position as a positive integer starting from
 <dl class="last docutils">
 <dt><tt class="docutils literal">% <span class="pre">script-message-to</span> commands type &quot;seek&nbsp; <span class="pre">absolute-percent&quot;</span> 6</tt></dt>
 <dd>Enter a percent position to seek to.</dd>
-<dt><tt class="docutils literal">Ctrl+o <span class="pre">script-message-to</span> console type &quot;loadfile ''&quot; 11</tt></dt>
+<dt><tt class="docutils literal">Ctrl+o <span class="pre">script-message-to</span> commands type &quot;loadfile ''&quot; 11</tt></dt>
 <dd>Enter a file or URL to play, with autocompletion of paths in the
 filesystem.</dd>
 </dl>
@@ -17867,7 +17866,12 @@ REPL.</p>
 <dd>A callback invoked when the user presses Enter. The first argument is
 the text in the console.</dd>
 <dt><tt class="docutils literal">keep_open</tt></dt>
-<dd>Whether to keep the console open on submit. Defaults to <tt class="docutils literal">false</tt>.</dd>
+<dd><p class="first">Whether to keep the console open on submit, allowing further input.
+Defaults to <tt class="docutils literal">false</tt>.</p>
+<p class="last">If calling <tt class="docutils literal">input.get()</tt> or <tt class="docutils literal">input.select()</tt> again from inside the
+<tt class="docutils literal">submit</tt> callback, setting this option to <tt class="docutils literal">true</tt> allows a seamless
+transition without the console closing and reopening.</p>
+</dd>
 <dt><tt class="docutils literal">opened</tt></dt>
 <dd>A callback invoked when the console is shown. This can be used to
 present a list of options with <tt class="docutils literal">input.set_log()</tt>.</dd>
@@ -17947,7 +17951,12 @@ input.set_log({
 <dd>The callback invoked when the user presses Enter. The first argument is
 the 1-based index of the selected item.</dd>
 <dt><tt class="docutils literal">keep_open</tt></dt>
-<dd>Whether to keep the console open on submit. Defaults to <tt class="docutils literal">false</tt>.</dd>
+<dd><p class="first">Whether to keep the console open on submit, allowing further input.
+Defaults to <tt class="docutils literal">false</tt>.</p>
+<p class="last">If calling <tt class="docutils literal">input.get()</tt> or <tt class="docutils literal">input.select()</tt> again from inside the
+<tt class="docutils literal">submit</tt> callback, setting this option to <tt class="docutils literal">true</tt> allows a seamless
+transition without the console closing and reopening.</p>
+</dd>
 </dl>
 <p>Example:</p>
 <blockquote class="last">
