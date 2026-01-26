@@ -308,10 +308,14 @@ resume playing. Requires <tt class="docutils literal"><span class="pre">--write-
 <dd>Select a defined input binding.</dd>
 <dt>g-r</dt>
 <dd>Show the values of all properties.</dd>
-<dt>g-m, MENU, Ctrl+p</dt>
+<dt>g-m, Ctrl+p</dt>
 <dd>Show a menu with miscellaneous entries.</dd>
 </dl>
 <p>See <a class="reference internal" href="#select">SELECT</a> for more information.</p>
+<dl class="docutils">
+<dt>MENU, Shift+F10</dt>
+<dd>Show the context menu (see <a class="reference internal" href="#context-menu">CONTEXT MENU</a>).</dd>
+</dl>
 <p>(The following keys are valid if you have a keyboard with multimedia keys.)</p>
 <dl class="docutils">
 <dt>PAUSE</dt>
@@ -346,14 +350,6 @@ the cursor.</dd>
 <dd>Change video zoom keeping the part of the video hovered by the cursor under
 it.</dd>
 </dl>
-</div>
-<div class="section" id="context-menu">
-<h2>Context Menu</h2>
-<p>Context Menu is a menu that pops up on the video window on user interaction
-(mouse right click, etc.).</p>
-<p>To use this feature, you need to fill the <tt class="docutils literal"><span class="pre">menu-data</span></tt> property with menu
-definition data, and add a keybinding to run the <tt class="docutils literal"><span class="pre">context-menu</span></tt> command,
-which can be done with a user script.</p>
 </div>
 </div>
 <div class="section" id="usage">
@@ -16780,6 +16776,7 @@ console, and prefill it the next time it is opened.</p>
 providing script bindings that gather and format the data to be selected in the
 console and do operations on the selected item. It can be disabled using the
 <tt class="docutils literal"><span class="pre">--load-select=no</span></tt> option.</p>
+<p>This script is also used to populate the context menu.</p>
 <div class="section" id="key-bindings-1">
 <h2>Key bindings</h2>
 <p>When using <tt class="docutils literal">mp.input.select</tt>, the key bindings listed in <a class="reference internal" href="#console">CONSOLE</a> are
@@ -16894,6 +16891,8 @@ already exist.</dd>
 <dd>Open mpv's chat in the browser.</dd>
 <dt><tt class="docutils literal">menu</tt></dt>
 <dd>Show a menu with miscellaneous entries.</dd>
+<dt><tt class="docutils literal"><span class="pre">context-menu</span></tt></dt>
+<dd>Show the context menu.</dd>
 </dl>
 </div>
 <div class="section" id="configuration-4">
@@ -16913,16 +16912,61 @@ which uses the same formats as <tt class="docutils literal">strftime(3)</tt>.</p
 <dd><p class="first">Default: yes</p>
 <p class="last">Whether to show only the last of history entries with the same path.</p>
 </dd>
+<dt><tt class="docutils literal">menu_conf_path</tt></dt>
+<dd><p class="first">Default: ~~/menu.conf (see <a class="reference internal" href="#files">FILES</a>).</p>
+<p class="last">The path from which to read the custom context menu definition (see <a class="reference internal" href="#context-menu">CONTEXT
+MENU</a>).</p>
+</dd>
+<dt><tt class="docutils literal">max_playlist_items</tt></dt>
+<dd><p class="first">Default: 25</p>
+<p class="last">The maximum number of playlist entries in the context menu.</p>
+</dd>
+<dt><tt class="docutils literal">populate_menu_data</tt></dt>
+<dd><p class="first">Default: yes, except for libmpv</p>
+<p class="last">Whether observe the properties referenced in <tt class="docutils literal">menu.conf</tt> and update
+<tt class="docutils literal"><span class="pre">menu-data</span></tt> with suitable menu items after mpv's window is created.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
-<div class="section" id="context-menu-script">
-<h1>CONTEXT MENU SCRIPT</h1>
-<p>This script provides a context menu for platforms without integration with a
-native context menu. On these platforms, it can be disabled entirely using the
+<div class="section" id="context-menu">
+<h1>CONTEXT MENU</h1>
+<p>The context menu is a menu that pops up on the video window. By default, it is
+bound to right click.</p>
+<div class="section" id="menu-conf">
+<h2>menu.conf</h2>
+<p>You can define your own menu in <tt class="docutils literal"><span class="pre">~~/menu.conf</span></tt> (see <a class="reference internal" href="#files">FILES</a>), or an
+alternative path specified with <tt class="docutils literal"><span class="pre">--script-opt=select-menu_conf_path</span></tt>. It is
+recommended to use the default <tt class="docutils literal">menu.conf</tt> from
+<a class="reference external" href="https://github.com/mpv-player/mpv/blob/master/etc/menu.conf">https://github.com/mpv-player/mpv/blob/master/etc/menu.conf</a> as an example to get
+started.</p>
+<p>Each line of <tt class="docutils literal">menu.conf</tt> is a menu item with fields separated by 1 or more
+tabs. The first field is the text shown in the menu. The second field is usually
+the command that is run when that item is selected. Fields from the third
+onwards can specify <tt class="docutils literal">checked=</tt>, <tt class="docutils literal">disabled=</tt> and <tt class="docutils literal">hidden=</tt> states in the
+same way as <a class="reference internal" href="#conditional-auto-profiles">Conditional auto profiles</a>.</p>
+<p>When there is no command, the item will open a submenu. Fields below indented
+with leading whitespace are added to this submenu. Nested submenu items are
+defined by adding more leading whitespace than the parent menu entry.</p>
+<p>Empty lines are interpreted as separators.</p>
+<p>The second field can also be one of the following tokens to make that entry a
+submenu with the relative items: <tt class="docutils literal">$playlist</tt>, <tt class="docutils literal">$tracks</tt>, <tt class="docutils literal"><span class="pre">$video-tracks</span></tt>,
+<tt class="docutils literal"><span class="pre">$audio-tracks</span></tt>, <tt class="docutils literal"><span class="pre">$sub-tracks</span></tt>, <tt class="docutils literal"><span class="pre">$secondary-sub-tracks</span></tt>, <tt class="docutils literal">$chapters</tt>,
+<tt class="docutils literal">$editions</tt>, <tt class="docutils literal"><span class="pre">$audio-devices</span></tt>, <tt class="docutils literal">$profiles</tt>. These menus are automatically
+disabled when empty.</p>
+<p>To use the native context menu, you need to fill the <tt class="docutils literal"><span class="pre">menu-data</span></tt> property with
+menu definition data, and call the <tt class="docutils literal"><span class="pre">context-menu</span></tt> command. In builtin scripts,
+this is done by <tt class="docutils literal">select.lua</tt>, which parses <tt class="docutils literal">menu.conf</tt> to populate
+<tt class="docutils literal"><span class="pre">menu-data</span></tt>. It then calls the <tt class="docutils literal"><span class="pre">context-menu</span></tt> command on platforms where
+integration with the native context menu is implemented, while on platforms
+where it is not, it opens <tt class="docutils literal">context_menu.lua</tt>.</p>
+<p>On platforms without integration with the native context menu,
+<tt class="docutils literal">context_menu.lua</tt> can be disabled entirely using the
 <tt class="docutils literal"><span class="pre">--load-context-menu=no</span></tt> option. On platforms where the integration is
-implemented, it is already disabled by default.</p>
+implemented, it is already disabled by default, and <tt class="docutils literal"><span class="pre">--load-context-menu=yes</span></tt>
+will make <tt class="docutils literal">select.lua</tt> use it.</p>
+</div>
 <div class="section" id="script-messages">
 <h2>Script messages</h2>
 <dl class="docutils">
