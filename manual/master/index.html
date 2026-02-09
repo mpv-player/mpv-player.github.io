@@ -7187,16 +7187,12 @@ This option is mutually exclusive with <tt class="docutils literal"><span class=
 based on the order given by the driver.</p>
 <p>All formats are not available.
 A fatal error is caused if an unavailable format is selected.</p>
-<div class="admonition note">
+<div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">There is no reliable API to query desktop bit depth in EGL.
 You can manually set this option
 according to the bit depth of your display.
 This option also affects the auto-detection of <tt class="docutils literal"><span class="pre">--dither-depth</span></tt>.</p>
-</div>
-<div class="admonition note last">
-<p class="first admonition-title">Note</p>
-<p class="last">Unlike  <tt class="docutils literal"><span class="pre">--d3d11-output-format</span></tt>, this option also takes effect with <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--vulkan-device=&lt;device</span> name|UUID&gt;</tt></dt>
@@ -7313,10 +7309,16 @@ the autodetection logic, and are available for manual testing.</p>
 from Windows 10. Thus on older systems it will only automatically
 utilize the rgba8 output format.</p>
 </div>
-<div class="admonition note last">
+<div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, this is used as a best-effort hint and
 libplacebo has the last say on which format is utilized.</p>
+</div>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">For <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, <tt class="docutils literal">rgba16f</tt> enables scRGB output. However, it is
+not currently fully supported. Colors may appear darker than expected,
+and HDR output is not supported.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--d3d11-output-csp=&lt;auto|srgb|linear|pq|bt.2020&gt;</span></tt></dt>
@@ -17961,10 +17963,6 @@ requests made by other scripts.</dd>
 <tt class="docutils literal">style</tt> can contain additional ASS tags to apply to <tt class="docutils literal">message</tt>,
 and <tt class="docutils literal">terminal_style</tt> can contain escape sequences that are used
 when the console is displayed in the terminal.</dd>
-<dt><tt class="docutils literal">input.log_error(message)</tt></dt>
-<dd>Helper to add an error line to the log buffer of the latest <tt class="docutils literal">input.get()</tt>
-request. The line is styled with the same color as the one used
-for commands that error. Useful when the user submits invalid input.</dd>
 <dt><tt class="docutils literal">input.set_log(log)</tt></dt>
 <dd><p class="first">Replace the entire log buffer of the latest <tt class="docutils literal">input.get()</tt> request.</p>
 <p><tt class="docutils literal">log</tt> is a table of strings, or tables with <tt class="docutils literal">text</tt>, <tt class="docutils literal">style</tt> and
@@ -18197,7 +18195,6 @@ string/boolean/number)</p>
 <p><tt class="docutils literal">mp.input.select(obj)</tt></p>
 <p><tt class="docutils literal">mp.input.terminate()</tt></p>
 <p><tt class="docutils literal">mp.input.log(message, style)</tt></p>
-<p><tt class="docutils literal">mp.input.log_error(message)</tt></p>
 <p><tt class="docutils literal">mp.input.set_log(log)</tt></p>
 <p><tt class="docutils literal">exit()</tt> (global)</p>
 </div>
