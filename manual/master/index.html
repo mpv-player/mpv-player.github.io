@@ -11432,7 +11432,7 @@ deinterlacing.</dd>
 <dd><p class="first">Direct3D 11 video post-processing. Requires a D3D11 context and works best
 with hardware decoding. Software frames are automatically uploaded to hardware
 for processing.</p>
-<dl class="last docutils">
+<dl class="docutils">
 <dt><tt class="docutils literal">format</tt></dt>
 <dd>Convert to the selected image format, e.g., nv12, p010, etc. (default: don't change).
 Format names can be queried with <tt class="docutils literal"><span class="pre">--vf=d3d11vpp=format=help</span></tt>.
@@ -11460,12 +11460,25 @@ panel (default: standard).</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">interlaced-only=&lt;yes|no&gt;</span></tt></dt>
 <dd>If <tt class="docutils literal">yes</tt>, only deinterlace frames marked as interlaced (default: no).</dd>
-<dt><tt class="docutils literal"><span class="pre">mode=&lt;blend|bob|adaptive|mocomp|ivctc|none&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">mode=&lt;blend|bob|adaptive|mocomp|ivtc|none&gt;</span></tt></dt>
 <dd>Tries to select a video processor with the given processing capability.
-If a video processor supports multiple capabilities, it is not clear
-which algorithm is actually selected. <tt class="docutils literal">none</tt> always falls back. On
-most if not all hardware, this option will probably do nothing, because
-a video processor usually supports all modes or none.</dd>
+If a video processor supports multiple capabilities, it is not guaranteed
+which algorithm will actually be selected, this is left to the driver.
+However, <tt class="docutils literal">blend</tt> and <tt class="docutils literal">bob</tt> modes are enforced by not passing reference
+frames and adjusting the output frame rate. The other modes are used to
+select an appropriate video processor, but the algorithm chosen depends
+on the driver and the content. <tt class="docutils literal">ivtc</tt> mode outputs at the half rate.</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal">ivtc</tt> mode only performs field matching and does not drop duplicate
+frames. Duplicated frames can be removed manually using the <tt class="docutils literal">decimate</tt>
+filter: <tt class="docutils literal"><span class="pre">--vf=d3d11vpp=&quot;deint:mode=ivtc,format=nv12,decimate=5&quot;</span></tt> for
+3:2 pulldown cadence. <tt class="docutils literal">format=nv12</tt> is required to download frames back
+to the CPU for decimation, the format should match the underlying format
+of the d3d11 frame.</p>
+</div>
+<dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">nvidia-true-hdr</span></tt></dt>
 <dd>Enable NVIDIA RTX Video HDR processing.</dd>
 </dl>
