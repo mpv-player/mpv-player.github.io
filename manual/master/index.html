@@ -13028,9 +13028,13 @@ command prefix in <a class="reference internal" href="#input-command-prefixes">I
 <dd><p class="first">Load a script, similar to the <tt class="docutils literal"><span class="pre">--script</span></tt> option. Whether this waits for
 the script to finish initialization or not changed multiple times, and the
 future behavior is left undefined.</p>
-<p class="last">On success, returns a <tt class="docutils literal">mpv_node</tt> with a <tt class="docutils literal">client_id</tt> field set to the
+<p>On success, returns a <tt class="docutils literal">mpv_node</tt> with a <tt class="docutils literal">client_id</tt> field set to the
 return value of the <tt class="docutils literal">mpv_client_id()</tt> API call of the newly created script
 handle.</p>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_MAP
+    &quot;client_id&quot;    MPV_FORMAT_STRING
+</pre>
 </dd>
 </dl>
 </div>
@@ -13072,8 +13076,12 @@ but deprecated and might be removed in the future.</p>
 <tt class="docutils literal">async</tt> flag to make encoding/writing the image file asynchronous. For
 normal standalone commands, this is always asynchronous, and the flag has
 no effect. (This behavior changed with mpv 0.29.0.)</p>
-<p class="last">On success, returns a <tt class="docutils literal">mpv_node</tt> with a <tt class="docutils literal">filename</tt> field set to the
+<p>On success, returns a <tt class="docutils literal">mpv_node</tt> with a <tt class="docutils literal">filename</tt> field set to the
 saved screenshot location.</p>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_MAP
+    &quot;filename&quot;    MPV_FORMAT_STRING
+</pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">screenshot-to-file</span> &lt;filename&gt; [&lt;flags&gt;]</tt></dt>
 <dd><p class="first">Take a screenshot and save it to a given file. The format of the file will
@@ -13116,8 +13124,16 @@ was cropped, or if there is padding. This number can be negative as well.
 You access a pixel with <tt class="docutils literal">byte_index = y * stride + x * bpp</tt>.
 Here, <tt class="docutils literal">bpp</tt> is the number of bytes per pixel, which is 8 for <tt class="docutils literal">rgba64</tt>
 format and 4 for other formats.</p>
-<p class="last">The <tt class="docutils literal">flags</tt> argument is like the first argument to <tt class="docutils literal">screenshot</tt> and
+<p>The <tt class="docutils literal">flags</tt> argument is like the first argument to <tt class="docutils literal">screenshot</tt> and
 supports <tt class="docutils literal">subtitles</tt>, <tt class="docutils literal">video</tt>, <tt class="docutils literal">window</tt>.</p>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_MAP
+    &quot;w&quot;         MPV_FORMAT_INT64
+    &quot;h&quot;         MPV_FORMAT_INT64
+    &quot;stride&quot;    MPV_FORMAT_INT64
+    &quot;format&quot;    MPV_FORMAT_STRING
+    &quot;data&quot;      MPV_FORMAT_BYTE_ARRAY
+</pre>
 </dd>
 </dl>
 </div>
@@ -14037,8 +14053,8 @@ the following contents:</p>
 MPV_FORMAT_NODE_MAP
     &quot;seekable-ranges&quot;   MPV_FORMAT_NODE_ARRAY
         MPV_FORMAT_NODE_MAP
-            &quot;start&quot;             MPV_FORMAT_DOUBLE
-            &quot;end&quot;               MPV_FORMAT_DOUBLE
+            &quot;start&quot;           MPV_FORMAT_DOUBLE
+            &quot;end&quot;             MPV_FORMAT_DOUBLE
     &quot;bof-cached&quot;        MPV_FORMAT_FLAG
     &quot;eof-cached&quot;        MPV_FORMAT_FLAG
     &quot;fw-bytes&quot;          MPV_FORMAT_INT64
@@ -14049,10 +14065,10 @@ MPV_FORMAT_NODE_MAP
     &quot;raw-input-rate&quot;    MPV_FORMAT_INT64
     &quot;ts-per-stream&quot;     MPV_FORMAT_NODE_ARRAY
         MPV_FORMAT_NODE_MAP
-              &quot;type&quot;            MPV_FORMAT_STRING
-              &quot;cache-duration&quot;  MPV_FORMAT_DOUBLE
-              &quot;reader-pts&quot;      MPV_FORMAT_DOUBLE
-              &quot;cache-end&quot;       MPV_FORMAT_DOUBLE
+            &quot;type&quot;            MPV_FORMAT_STRING
+            &quot;cache-duration&quot;  MPV_FORMAT_DOUBLE
+            &quot;reader-pts&quot;      MPV_FORMAT_DOUBLE
+            &quot;cache-end&quot;       MPV_FORMAT_DOUBLE
 </pre>
 <p>Other fields (might be changed or removed in the future):</p>
 <dl class="last docutils">
@@ -14275,6 +14291,7 @@ MPV_FORMAT_NODE_MAP
     &quot;dw&quot;                MPV_FORMAT_INT64
     &quot;dh&quot;                MPV_FORMAT_INT64
     &quot;aspect&quot;            MPV_FORMAT_DOUBLE
+    &quot;aspect-name&quot;       MPV_FORMAT_STRING
     &quot;par&quot;               MPV_FORMAT_DOUBLE
     &quot;colormatrix&quot;       MPV_FORMAT_STRING
     &quot;colorlevels&quot;       MPV_FORMAT_STRING
@@ -14662,11 +14679,12 @@ the following contents:</p>
 <pre class="last literal-block">
 MPV_FORMAT_NODE_ARRAY
     MPV_FORMAT_NODE_MAP (for each playlist entry)
-        &quot;filename&quot;  MPV_FORMAT_STRING
-        &quot;current&quot;   MPV_FORMAT_FLAG (might be missing; since mpv 0.7.0)
-        &quot;playing&quot;   MPV_FORMAT_FLAG (same)
-        &quot;title&quot;     MPV_FORMAT_STRING (optional)
-        &quot;id&quot;        MPV_FORMAT_INT64
+        &quot;filename&quot;      MPV_FORMAT_STRING
+        &quot;current&quot;       MPV_FORMAT_FLAG (might be missing; since mpv 0.7.0)
+        &quot;playing&quot;       MPV_FORMAT_FLAG (same)
+        &quot;title&quot;         MPV_FORMAT_STRING (optional)
+        &quot;id&quot;            MPV_FORMAT_INT64
+        &quot;playlist-path&quot; MPV_FORMAT_STRING (optional)
 </pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">track-list</span></tt></dt>
@@ -14901,8 +14919,7 @@ MPV_FORMAT_NODE_ARRAY
         &quot;label&quot;     MPV_FORMAT_STRING [optional]
         &quot;enabled&quot;   MPV_FORMAT_FLAG [optional]
         &quot;params&quot;    MPV_FORMAT_NODE_MAP [optional]
-            &quot;key&quot;   MPV_FORMAT_STRING
-            &quot;value&quot; MPV_FORMAT_STRING
+            (key and string value for each param entry)
 </pre>
 <p class="last">It's also possible to write the property using this format.</p>
 </dd>
@@ -14990,15 +15007,16 @@ or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will 
 the following contents:</p>
 <pre class="literal-block">
 MPV_FORMAT_NODE_MAP
-&quot;TYPE&quot; MPV_FORMAT_NODE_ARRAY
-    MPV_FORMAT_NODE_MAP
-        &quot;desc&quot;    MPV_FORMAT_STRING
-        &quot;last&quot;    MPV_FORMAT_INT64
-        &quot;avg&quot;     MPV_FORMAT_INT64
-        &quot;peak&quot;    MPV_FORMAT_INT64
-        &quot;count&quot;   MPV_FORMAT_INT64
-        &quot;samples&quot; MPV_FORMAT_NODE_ARRAY
-             MP_FORMAT_INT64
+    (key and array value for each TYPE entry)
+    MPV_FORMAT_NODE_ARRAY (for each pass entry)
+        MPV_FORMAT_NODE_MAP
+            &quot;desc&quot;    MPV_FORMAT_STRING
+            &quot;last&quot;    MPV_FORMAT_INT64
+            &quot;avg&quot;     MPV_FORMAT_INT64
+            &quot;peak&quot;    MPV_FORMAT_INT64
+            &quot;count&quot;   MPV_FORMAT_INT64
+            &quot;samples&quot; MPV_FORMAT_NODE_ARRAY
+                 MPV_FORMAT_INT64
 </pre>
 <p class="last">Note that directly accessing this structure via subkeys is not supported,
 the only access is through aforementioned <tt class="docutils literal">MPV_FORMAT_NODE</tt>.</p>
@@ -15247,7 +15265,7 @@ end of playback, cannot be read or written until end of playback.)</p>
 <p>This has a number of sub-properties. Replace <tt class="docutils literal">&lt;name&gt;</tt> with the name of
 a top-level option. No guarantee of stability is given to any of these
 sub-properties - they may change radically in the future.</p>
-<dl class="last docutils">
+<dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/name</span></tt></dt>
 <dd>The name of the option.</dd>
 <dt><tt class="docutils literal"><span class="pre">option-info/&lt;name&gt;/type</span></tt></dt>
@@ -15277,6 +15295,19 @@ and <tt class="docutils literal">max</tt>). Note that options which behave like 
 are not actual choice options internally, may not have this info
 available.</dd>
 </dl>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_MAP
+    &quot;name&quot;                    MPV_FORMAT_STRING
+    &quot;type&quot;                    MPV_FORMAT_STRING
+    &quot;set-from-commandline&quot;    MPV_FORMAT_FLAG
+    &quot;set-locally&quot;             MPV_FORMAT_FLAG
+    &quot;expects-file&quot;            MPV_FORMAT_FLAG
+    &quot;default-value&quot;           MPV_FORMAT_NODE (optional, value of &quot;type&quot;)
+    &quot;min&quot;                     MPV_FORMAT_DOUBLE (optional)
+    &quot;max&quot;                     MPV_FORMAT_DOUBLE (optional)
+    &quot;choices&quot;                 MPV_FORMAT_NODE_ARRAY (optional)
+        MPV_FORMAT_STRING
+</pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">property-list</span></tt></dt>
 <dd>The list of top-level properties.</dd>
@@ -15287,9 +15318,18 @@ array of options for each profile. Each option has a name and a value, with
 the value currently always being a string. Note that the options array is
 not a map, as order matters and duplicate entries are possible. Recursive
 profiles are not expanded, and show up as special <tt class="docutils literal">profile</tt> options.</p>
-<p class="last">The <tt class="docutils literal"><span class="pre">profile-restore</span></tt> field is currently missing if it holds the default
+<p>The <tt class="docutils literal"><span class="pre">profile-restore</span></tt> field is currently missing if it holds the default
 value (either because it was not set, or set explicitly to <tt class="docutils literal">default</tt>),
 but in the future it might hold the value <tt class="docutils literal">default</tt>.</p>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_ARRAY
+    MPV_FORMAT_NODE_MAP (for each profile entry)
+        &quot;name&quot;       MPV_FORMAT_STRING
+        &quot;options&quot;    MPV_FORMAT_NODE_ARRAY (for each option entry)
+            MPV_FORMAT_NODE_MAP
+                &quot;key&quot;      MPV_FORMAT_STRING
+                &quot;value&quot;    MPV_FORMAT_STRING
+</pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">command-list</span></tt></dt>
 <dd><p class="first">The list of input commands. This returns an array of maps, where each map
@@ -15359,6 +15399,17 @@ at runtime.</dd>
 example, the input.conf entry <tt class="docutils literal">f cycle bla # toggle bla</tt> would
 result in an entry with <tt class="docutils literal">comment = &quot;toggle bla&quot;, cmd = &quot;cycle bla&quot;</tt>.)</dd>
 </dl>
+<pre class="literal-block">
+MPV_FORMAT_NODE_ARRAY
+    MPV_FORMAT_NODE_MAP
+        &quot;key&quot;         MPV_FORMAT_STRING
+        &quot;cmd&quot;         MPV_FORMAT_STRING
+        &quot;is_weak&quot;     MPV_FORMAT_FLAG
+        &quot;owner&quot;       MPV_FORMAT_STRING (optional)
+        &quot;section&quot;     MPV_FORMAT_STRING
+        &quot;priority&quot;    MPV_FORMAT_INT64
+        &quot;comment&quot;     MPV_FORMAT_STRING (optional)
+</pre>
 <p class="last">This property is read-only, and change notification is not supported.</p>
 </dd>
 <dt><tt class="docutils literal">clipboard</tt></dt>
@@ -15374,7 +15425,7 @@ Writing to this property sets the text clipboard content</dd>
 <dt><tt class="docutils literal"><span class="pre">clipboard/text-primary</span></tt> (RW)</dt>
 <dd>The text content in the primary selection (X11 and Wayland only).</dd>
 </dl>
-<div class="admonition note last">
+<div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">On Wayland with the <tt class="docutils literal">vo</tt> clipboard backend, the clipboard content is
 only updated when the compositor sends a selection data offer
@@ -15382,6 +15433,11 @@ only updated when the compositor sends a selection data offer
 does not have this limitation.
 See <tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt> property for more details.</p>
 </div>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_MAP
+    &quot;text&quot;            MPV_FORMAT_STRING
+    &quot;text-primary&quot;    MPV_FORMAT_STRING
+</pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt></dt>
 <dd>A string containing the currently active clipboard backend.
