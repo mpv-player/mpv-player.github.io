@@ -14794,11 +14794,13 @@ number of channels.)</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-fps</span></tt></dt>
 <dd>Video FPS as indicated by the container. (Not always accurate.)</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-bitrate</span></tt></dt>
-<dd>Audio average bitrate, in bits per second. (Not always accurate.)</dd>
+<dd>Average bitrate, in bits per second. (Not always accurate.)</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-rotation</span></tt></dt>
 <dd>Video clockwise rotation metadata, in degrees.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/demux-par</span></tt></dt>
 <dd>Pixel aspect ratio.</dd>
+<dt><tt class="docutils literal"><span class="pre">track-list/N/demux-duration</span></tt></dt>
+<dd>Track duration as indicated by the container.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/format-name</span></tt></dt>
 <dd>Short name for format from ffmpeg. If the track is audio, this will be
 the name of the sample format. If the track is video, this will be the
@@ -16448,6 +16450,10 @@ scripts decide to print text at the same time.</p>
 <dd><p class="first">Default: yes</p>
 <p class="last">Whether to clip lines to the terminal width.</p>
 </dd>
+<dt><tt class="docutils literal">track_info_selected_only</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Show track info for selected tracks only instead of all tracks.</p>
+</dd>
 <dt><tt class="docutils literal">plot_perfdata</tt></dt>
 <dd><p class="first">Default: no</p>
 <p class="last">Show graphs for performance data (page 2).</p>
@@ -17995,19 +18001,25 @@ transition without the console closing and reopening.</p>
 </dd>
 <dt><tt class="docutils literal">opened</tt></dt>
 <dd>A callback invoked when the console is shown. This can be used to
-present a list of options with <tt class="docutils literal">input.set_log()</tt>.</dd>
+override keybinds set by the console with <tt class="docutils literal">mp.add_forced_key_binding()</tt>.</dd>
 <dt><tt class="docutils literal">edited</tt></dt>
 <dd>A callback invoked when the text changes. The first argument is the text
 in the console.</dd>
 <dt><tt class="docutils literal">complete</tt></dt>
 <dd><p class="first">A callback invoked when the user edits the text or moves the cursor. The
-first argument is the text before the cursor. The callback should return
-a table of the string candidate completion values and the 1-based cursor
+first argument is the text before the cursor, and the second argument is
+a response function which can be called to present completion values to
+the user.</p>
+<p>The first argument to the response function is a table of the string
+candidate completion values, and the second argument is the 1-based cursor
 position from which the completion starts. console will show the
 completions that fuzzily match the text between this position and the
-cursor and allow selecting them.</p>
-<p class="last">The third and optional return value is a string that will be appended to
-the input line without displaying it in the completions.</p>
+cursor, which the user can select with <tt class="docutils literal">TAB</tt>. The completions will only
+be shown to the user if the text before the cursor has not since changed.
+The response function should be called with an empty table if there are no
+completion values to display.</p>
+<p class="last">The third and optional argument to the response function is a string that
+will be appended to the input line without displaying it in the completions.</p>
 </dd>
 <dt><tt class="docutils literal">autoselect_completion</tt></dt>
 <dd>Whether to automatically select the first completion on submit if one
