@@ -448,6 +448,12 @@ interpreted as protocol prefix, even though <tt class="docutils literal">://</tt
 UNIX path. To avoid problems with arbitrary paths, you should be sure that
 absolute paths passed to mpv start with <tt class="docutils literal">/</tt>, and prefix relative paths with
 <tt class="docutils literal">./</tt>.</p>
+<p>URLs that are passed to mpv should be percent-encoded for it to work reliably.
+There are some heuristics in place that tries to automatically do it, but these
+heuristics are not foolproof. For example, in order to play a file literally
+named <tt class="docutils literal">foo%20.mp4</tt>, using <tt class="docutils literal"><span class="pre">http://localhost/foo%20.mp4</span></tt> without any
+percent-encoding will not work. Percent-encoding it as
+<tt class="docutils literal"><span class="pre">http://localhost/foo%2520.mp4</span></tt> will work as expected.</p>
 <p>Using the <tt class="docutils literal"><span class="pre">file://</span></tt> pseudo-protocol is discouraged, because it involves
 strange URL unescaping rules.</p>
 <p>The name <tt class="docutils literal">-</tt> itself is interpreted as stdin, and will cause mpv to disable
