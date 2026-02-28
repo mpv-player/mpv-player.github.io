@@ -237,6 +237,9 @@ PGUP/PGDWN without Shift.)</dd>
 <dd>Append the file or URL in the clipboard to the playlist. If nothing is
 currently playing, it is played immediately. Only works on platforms that
 support the <tt class="docutils literal">clipboard</tt> property.</dd>
+<dt>Ctrl+r</dt>
+<dd>Reload the current file, preserving the time position and any changed
+option. Empties any network cache.</dd>
 <dt>i and I</dt>
 <dd>Show/toggle an overlay displaying statistics about the currently playing
 file such as codec, framerate, number of dropped frames and so on. See
@@ -12203,7 +12206,7 @@ equivalent is <tt class="docutils literal"><span class="pre">--glsl-shaders-appe
 <dt><tt class="docutils literal"><span class="pre">playlist-prev-playlist</span></tt></dt>
 <dd>Go to the first of the previous entries on the playlist with a different
 <tt class="docutils literal"><span class="pre">playlist-path</span></tt>.</dd>
-<dt><tt class="docutils literal"><span class="pre">playlist-play-index</span> &lt;integer|current|none&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">playlist-play-index</span> &lt;integer|current|none&gt; <span class="pre">[preserve-options]</span></tt>]</dt>
 <dd><p class="first">Start (or restart) playback of the given playlist index. In addition to the
 0-based playlist entry index, it supports the following values:</p>
 <dl class="docutils">
@@ -12216,6 +12219,8 @@ even if playback is currently inactive,</dd>
 <dd>Playback is stopped. If idle mode (<tt class="docutils literal"><span class="pre">--idle</span></tt>) is enabled, the player
 will enter idle mode, otherwise it will exit.</dd>
 </dl>
+<p>Setting <tt class="docutils literal"><span class="pre">preserve-options</span></tt> (<tt class="docutils literal">MPV_FORMAT_FLAG</tt>) will not reset file-local
+options when the playback of the current playlist index is restarted.</p>
 <p>This command is similar to <tt class="docutils literal">loadfile</tt> in that it only manipulates the
 state of what to play next, without waiting until the current file is
 unloaded, and the next one is loaded.</p>
