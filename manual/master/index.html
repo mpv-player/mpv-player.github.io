@@ -4477,9 +4477,7 @@ Details see <tt class="docutils literal"><span class="pre">--sub-align-x</span><
 <dt><tt class="docutils literal"><span class="pre">--sub-justify=&lt;auto|left|center|right&gt;</span></tt></dt>
 <dd>Control how multi line subs are justified irrespective of where they
 are aligned (default: <tt class="docutils literal">auto</tt> which justifies as defined by
-<tt class="docutils literal"><span class="pre">--sub-align-x</span></tt>).
-Left justification is recommended to make the subs easier to read
-as it is easier for the eyes.</dd>
+<tt class="docutils literal"><span class="pre">--sub-align-x</span></tt>).</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-ass-justify=&lt;yes|no&gt;</span></tt></dt>
 <dd>Applies justification as defined by <tt class="docutils literal"><span class="pre">--sub-justify</span></tt> on ASS subtitles
 if <tt class="docutils literal"><span class="pre">--sub-ass-override</span></tt> is not set to <tt class="docutils literal">no</tt>.
@@ -18097,6 +18095,18 @@ Defaults to <tt class="docutils literal">false</tt>.</p>
 <tt class="docutils literal">submit</tt> callback, setting this option to <tt class="docutils literal">true</tt> allows a seamless
 transition without the console closing and reopening.</p>
 </dd>
+<dt><tt class="docutils literal">opened</tt></dt>
+<dd>A callback invoked when the console is shown. This can be used to
+override keybinds set by the console with <tt class="docutils literal">mp.add_forced_key_binding()</tt>.</dd>
+<dt><tt class="docutils literal">closed</tt></dt>
+<dd>A callback invoked when the console is hidden, either because
+<tt class="docutils literal">input.terminate()</tt> was invoked from the other callbacks, or because
+the user closed it with a key binding. The first argument is the text in
+the console, and the second argument is the cursor position.</dd>
+<dt><tt class="docutils literal">default_text</tt></dt>
+<dd>A string to pre-fill the input field with.</dd>
+<dt><tt class="docutils literal">cursor_position</tt></dt>
+<dd>The initial cursor position, starting from 1.</dd>
 </dl>
 <p>Example:</p>
 <blockquote class="last">
