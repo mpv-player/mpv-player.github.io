@@ -7323,9 +7323,8 @@ libplacebo has the last say on which format is utilized.</p>
 </div>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
-<p class="last">For <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, <tt class="docutils literal">rgba16f</tt> enables scRGB output. However, it is
-not currently fully supported. Colors may appear darker than expected,
-and HDR output is not supported.</p>
+<p class="last">For <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, <tt class="docutils literal">rgba16f</tt> enables scRGB output. Alternatively,
+<tt class="docutils literal"><span class="pre">--target-trc=scrgb</span></tt> can be used to request scRGB output.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--d3d11-output-csp=&lt;auto|srgb|linear|pq|bt.2020&gt;</span></tt></dt>
@@ -8336,6 +8335,12 @@ gamma 2.2, while SDR content is not touched. (default)</dd>
 <dd>Sony S-Log1 curve</dd>
 <dt>s-log2</dt>
 <dd>Sony S-Log2 curve</dd>
+<dt>scrgb</dt>
+<dd>scRGB, extended linear light transfer. Supports both HDR
+and wide color gamut content. The output gamut defaults to BT.709
+unless display primaries are reported by the system. You can also use
+<tt class="docutils literal"><span class="pre">--target-gamut</span></tt> to manually specify a wider gamut.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
 </dl>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
