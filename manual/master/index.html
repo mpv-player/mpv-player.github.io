@@ -16722,6 +16722,7 @@ words, to the end of the next word.</dd>
 <p>This script can be customized through a config file <tt class="docutils literal"><span class="pre">script-opts/console.conf</span></tt>
 placed in mpv's user directory and through the <tt class="docutils literal"><span class="pre">--script-opts</span></tt> command-line
 option. The configuration syntax is described in <a class="reference internal" href="#mp-options-functions">mp.options functions</a>.</p>
+<p>Note that <tt class="docutils literal">mp.input</tt> clients can selectively override these options.</p>
 <div class="section" id="configurable-options-2">
 <h3>Configurable Options</h3>
 <dl class="docutils">
@@ -18058,6 +18059,10 @@ lines.</dd>
 <dd>An identifier that determines which input history and log buffer to use
 among the ones stored for <tt class="docutils literal">input.get()</tt> calls. Defaults to the calling
 script name with <tt class="docutils literal">prompt</tt> appended.</dd>
+<dt><tt class="docutils literal">console_opt_overrides</tt></dt>
+<dd>A table containing configuration overrides for the console script.
+Can be used to change the visual style of the text input, among other things.
+See <a class="reference internal" href="#console">CONSOLE</a> for the full list of options.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal">input.terminate()</tt></dt>
@@ -18116,6 +18121,10 @@ the console, and the second argument is the cursor position.</dd>
 <dd>A string to pre-fill the input field with.</dd>
 <dt><tt class="docutils literal">cursor_position</tt></dt>
 <dd>The initial cursor position, starting from 1.</dd>
+<dt><tt class="docutils literal">console_opt_overrides</tt></dt>
+<dd>A table containing configuration overrides for the console script.
+Can be used to change the visual style of the select window, among other things.
+See <a class="reference internal" href="#console">CONSOLE</a> for the full list of options.</dd>
 </dl>
 <p>Example:</p>
 <blockquote class="last">
