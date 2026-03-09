@@ -13527,7 +13527,7 @@ loading definitely fails.</p>
 </dd>
 <dt><tt class="docutils literal">on_preloaded</tt></dt>
 <dd><p class="first">Called after a file has been opened, and before tracks are selected and
-decoders are created. This has some usefulness if an API users wants
+decoders are created. This has some usefulness if an API user wants
 to select tracks manually, based on the set of available tracks. It's
 also useful to initialize <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt> in a specific way by API,
 without having to &quot;probe&quot; the available streams at first.</p>
@@ -13535,6 +13535,12 @@ without having to &quot;probe&quot; the available streams at first.</p>
 exactly can be done and not be done, and what information is available and
 what is not yet available yet, is all subject to change.</p>
 <p class="last">Ordered after <tt class="docutils literal">on_load_fail</tt> etc. and before <tt class="docutils literal"><span class="pre">playback-restart</span></tt>.</p>
+</dd>
+<dt><tt class="docutils literal">on_loaded</tt></dt>
+<dd><p class="first">Called after a file has been loaded, after tracks are selected but before
+starting playback. This has some usefulness if an API user wants
+to act on selected track metadata before the media is shown.</p>
+<p class="last">Ordered after <tt class="docutils literal">on_preloaded</tt>. and before <tt class="docutils literal"><span class="pre">playback-restart</span></tt>.</p>
 </dd>
 <dt><tt class="docutils literal">on_unload</tt></dt>
 <dd><p class="first">Run before closing a file, and before actually uninitializing
@@ -14535,7 +14541,7 @@ MPV_FORMAT_NODE_ARRAY
 <dd><p class="first">Read-only - last known tablet tool (pen) position, normalized to OSD dimensions,
 and tool state.</p>
 <p>Has the following sub-properties:</p>
-<dl class="last docutils">
+<dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">tablet-pos/x</span></tt>, <tt class="docutils literal"><span class="pre">tablet-pos/y</span></tt></dt>
 <dd>Last known coordinates of the tablet tool.</dd>
 <dt><tt class="docutils literal"><span class="pre">tablet-pos/tool-in-proximity</span></tt></dt>
@@ -14550,6 +14556,19 @@ surface / hovers above the tablet surface.</dd>
 <dt><tt class="docutils literal"><span class="pre">tablet-pos/pad-btns/N</span></tt></dt>
 <dd>The state of the Nth tablet pad button, <tt class="docutils literal">pressed</tt> or <tt class="docutils literal">released</tt>.</dd>
 </dl>
+<pre class="last literal-block">
+MPV_FORMAT_NODE_MAP
+    &quot;x&quot;                  MPV_FORMAT_INT64
+    &quot;y&quot;                  MPV_FORMAT_INT64
+    &quot;tool-in-proximity&quot;  MPV_FORMAT_FLAG
+    &quot;tool-tip&quot;           MPV_FORMAT_STRING
+    &quot;tool-stylus-btn1&quot;   MPV_FORMAT_STRING
+    &quot;tool-stylus-btn2&quot;   MPV_FORMAT_STRING
+    &quot;tool-stylus-btn3&quot;   MPV_FORMAT_STRING
+    &quot;pad-focus&quot;          MPV_FORMAT_FLAG
+    &quot;pad-btns&quot;           MPV_FORMAT_NODE_MAP
+       (key and string value for each pad-btn entry)
+</pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">sub-ass-extradata</span></tt></dt>
 <dd>The current ASS subtitle track's extradata. There is no formatting done.
@@ -16003,6 +16022,10 @@ the OSC show up. Default pre-0.21.0 was 3.</p>
 <dt><tt class="docutils literal">idlescreen</tt></dt>
 <dd><p class="first">Default: yes</p>
 <p class="last">Show the mpv logo and message when idle</p>
+</dd>
+<dt><tt class="docutils literal">audioonlyscreen</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Show the mpv logo when no video track is present or selected.</p>
 </dd>
 <dt><tt class="docutils literal">scalewindowed</tt></dt>
 <dd><p class="first">Default: 1.0</p>
