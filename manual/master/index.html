@@ -16125,20 +16125,43 @@ However, with many common fonts a bigger number can be used. YMMV.</p>
 within the areas not covered by the osc (<tt class="docutils literal">yes</tt>). If this option is set,
 the osc may overwrite the <tt class="docutils literal"><span class="pre">--video-margin-ratio-*</span></tt> options, even if the
 user has set them. (It will not overwrite them if all of them are set to
-default values.) Additionally, <tt class="docutils literal">visibility</tt> must be set to <tt class="docutils literal">always</tt>.
-Otherwise, this option does nothing.</p>
+default values.) By default, <tt class="docutils literal">visibility</tt> must be set to <tt class="docutils literal">always</tt>.
+Use <tt class="docutils literal">dynamic_margins</tt> to allow margins to update with OSC visibility
+instead.</p>
 <p>Currently, this is supported for the <tt class="docutils literal">bottombar</tt>, <tt class="docutils literal">slimbottombar</tt>,
 <tt class="docutils literal">topbar</tt> and <tt class="docutils literal">slimtopbar</tt> layouts only. The other layouts do not change
 if this option is set. Separately, if window controls are present (see
 below), they will be affected regardless of which osc layout is in use.</p>
-<p>The border is static and appears even if the OSC is configured to appear
-only on mouse interaction. If the OSC is invisible, the border is simply
-filled with the background color (black by default).</p>
-<p>This currently still makes the OSC overlap with subtitles (if the
-<tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt> option is set to <tt class="docutils literal">yes</tt>, the default). This may be
-fixed later.</p>
+<p>Subtitles may still overlap with the OSC when <tt class="docutils literal"><span class="pre">--sub-use-margins</span></tt> is set
+to <tt class="docutils literal">yes</tt> (the default), as they are allowed to extend into the margin
+area. Setting <tt class="docutils literal"><span class="pre">--sub-use-margins=no</span></tt> confines subtitles to the video
+area.</p>
 <p class="last">This does not work correctly with video outputs like <tt class="docutils literal"><span class="pre">--vo=xv</span></tt>, which
 render OSD into the unscaled video.</p>
+</dd>
+<dt><tt class="docutils literal">dynamic_margins</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">When set to <tt class="docutils literal">yes</tt>, margins follow the actual OSC visibility: they are
+applied when the OSC appears and removed when it hides. Without this
+option, margins are only applied when <tt class="docutils literal">visibility</tt> is set to <tt class="docutils literal">always</tt>.</p>
+</dd>
+<dt><tt class="docutils literal">sub_margins</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p>Whether to adjust <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> so that subtitles do not overlap
+with the OSC. The offset is derived from the bottom OSC margin and added
+on top of the current <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> value. Requires
+<tt class="docutils literal">dynamic_margins</tt> or <tt class="docutils literal">visibility=always</tt> to take effect.</p>
+<p class="last">With <tt class="docutils literal">boxvideo</tt> enabled and <tt class="docutils literal"><span class="pre">--sub-use-margins=no</span></tt>, subtitles are
+already confined to the video area and this option has no additional
+effect.</p>
+</dd>
+<dt><tt class="docutils literal">osd_margins</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Whether to adjust <tt class="docutils literal"><span class="pre">--osd-margin-y</span></tt> so that OSD text does not overlap
+with the OSC. The offset is derived from the top OSC margin (including
+window controls when present) and added on top of the current
+<tt class="docutils literal"><span class="pre">--osd-margin-y</span></tt> value. Requires <tt class="docutils literal">dynamic_margins</tt> or
+<tt class="docutils literal">visibility=always</tt> to take effect.</p>
 </dd>
 <dt><tt class="docutils literal">windowcontrols</tt></dt>
 <dd><p class="first">Default: auto (Show window controls if there is no window border)</p>
