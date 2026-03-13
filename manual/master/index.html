@@ -12582,18 +12582,15 @@ while reusing an ID will update it.</p>
 <p><tt class="docutils literal">x</tt> and <tt class="docutils literal">y</tt> specify the position where the OSD should be displayed.</p>
 <p><tt class="docutils literal">file</tt> specifies the file the raw image data is read from. It can be
 either a numeric UNIX file descriptor prefixed with <tt class="docutils literal">&#64;</tt> (e.g. <tt class="docutils literal">&#64;4</tt>),
-or a filename. The file will be mapped into memory with <tt class="docutils literal">mmap()</tt>,
-copied, and unmapped before the command returns (changed in mpv 0.18.1).</p>
+or a filename. The file will be read into memory before the command returns.
+Note that since mpv 0.42.0, if a file descriptor is specified, the file
+offset of the descriptor will be modified.</p>
 <p>It is also possible to pass a raw memory address for use as bitmap memory
 by passing a memory address as integer prefixed with an <tt class="docutils literal">&amp;</tt> character.
 Passing the wrong thing here will crash the player. This mode might be
 useful for use with libmpv. The <tt class="docutils literal">offset</tt> parameter is simply added to the
 memory address (since mpv 0.8.0, ignored before).</p>
-<p><tt class="docutils literal">offset</tt> is the byte offset of the first pixel in the source file.
-(The current implementation always mmap's the whole file from position 0 to
-the end of the image, so large offsets should be avoided. Before mpv 0.8.0,
-the offset was actually passed directly to <tt class="docutils literal">mmap</tt>, but it was changed to
-make using it easier.)</p>
+<p><tt class="docutils literal">offset</tt> is the byte offset of the first pixel in the source file.</p>
 <p><tt class="docutils literal">fmt</tt> is a string identifying the image format. Currently, only <tt class="docutils literal">bgra</tt>
 is defined. This format has 4 bytes per pixels, with 8 bits per component.
 The least significant 8 bits are blue, and the most significant 8 bits
@@ -12617,12 +12614,18 @@ in display to <tt class="docutils literal">dw</tt> and <tt class="docutils liter
 values for <tt class="docutils literal">w</tt> and <tt class="docutils literal">h</tt> are used.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
-<p class="last">Before mpv 0.18.1, you had to do manual &quot;double buffering&quot; when updating
-an overlay by replacing it with a different memory buffer. Since mpv
-0.18.1, the memory is simply copied and doesn't reference any of the
-memory indicated by the command's arguments after the command returns.
-If you want to use this command before mpv 0.18.1, reads the old docs
-to see how to handle this correctly.</p>
+<p>Before mpv 0.42.0, the file was mapped into memory with <tt class="docutils literal">mmap()</tt>,
+copied, and unmapped before the command returns. Changing the file
+before the command returns is highly discouraged as this could lead to
+crashes on versions before 0.42.0.</p>
+<p>Before mpv 0.18.1, you had to do manual &quot;double buffering&quot; when updating
+an overlay by replacing it with a different memory buffer. If you want
+to use this command before mpv 0.18.1, read the old docs to see how to
+handle this correctly.</p>
+<p class="last">Larger offsets should be avoided as mpv versions before 0.42.0 used to
+mmap the whole file from position 0 to the end of the image. Before mpv
+0.8.0, the offset was actually passed directly to <tt class="docutils literal">mmap</tt>. Since mpv
+0.42.0, no mmap happens, so offset is handled by seeking on the file.</p>
 </div>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">overlay-remove</span> &lt;id&gt;</tt></dt>
