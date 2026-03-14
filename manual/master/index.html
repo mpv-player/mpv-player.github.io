@@ -4465,6 +4465,14 @@ which distance from the right border long sub text will be broken.</p>
 If you just want to raise the vertical subtitle position, use <tt class="docutils literal"><span class="pre">--sub-pos</span></tt>.</p>
 <p class="last">Default: 34</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--sub-margin-y-offset=&lt;size&gt;</span></tt></dt>
+<dd><p class="first">Additional vertical offset added to the subtitle margin, in scaled pixels.
+This is added on top of <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt>.</p>
+<p>This is intended for dynamic margin adjustments at runtime (e.g. by
+scripts like the OSC to avoid subtitle/UI overlap). For persistent
+settings, use <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> instead.</p>
+<p class="last">Default: 0</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--sub-align-x=&lt;left|center|right&gt;</span></tt></dt>
 <dd><p class="first">Control to which corner of the screen text subtitles should be
 aligned to (default: <tt class="docutils literal">center</tt>).</p>
@@ -4995,7 +5003,7 @@ regardless of visibility).</dd>
 <dt><tt class="docutils literal"><span class="pre">--force-window-position</span></tt></dt>
 <dd>Forcefully move mpv's video output window to default location whenever
 there is a change in video parameters, video stream or file. This used to
-be the default behavior. Currently only affects X11, macvk and SDL VOs.</dd>
+be the default behavior. Currently only affects Windows, X11, macvk and SDL VOs.</dd>
 <dt><tt class="docutils literal"><span class="pre">--auto-window-resize=&lt;yes|no&gt;</span></tt></dt>
 <dd>By default, mpv will automatically resize itself if the video's size changes
 (i.e. advancing forward in a playlist). Setting this to <tt class="docutils literal">no</tt> disables this
@@ -6004,6 +6012,14 @@ which distance from the right border long OSD text will be broken.</p>
 <tt class="docutils literal"><span class="pre">--sub-font-size</span></tt> for details).</p>
 <p>This option specifies the vertical margins of the OSD.</p>
 <p class="last">Default: 16</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--osd-margin-y-offset=&lt;size&gt;</span></tt></dt>
+<dd><p class="first">Additional vertical offset added to the OSD margin, in scaled pixels.
+This is added on top of <tt class="docutils literal"><span class="pre">--osd-margin-y</span></tt>.</p>
+<p>This is intended for dynamic margin adjustments at runtime (e.g. by
+scripts like the OSC to avoid OSD/UI overlap). For persistent settings,
+use <tt class="docutils literal"><span class="pre">--osd-margin-y</span></tt> instead.</p>
+<p class="last">Default: 0</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--osd-align-x=&lt;left|center|right&gt;</span></tt></dt>
 <dd>Control to which corner of the screen OSD should be
@@ -15952,8 +15968,8 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dt><tt class="docutils literal">layout</tt></dt>
 <dd><p class="first">Default: bottombar</p>
 <p class="last">The layout for the OSC. Currently available are: box, slimbox,
-bottombar, topbar, slimbottombar and slimtopbar. Default pre-0.21.0 was
-'box'.</p>
+bottombar, topbar, slimbottombar, slimtopbar and floating. Default
+pre-0.21.0 was 'box'.</p>
 </dd>
 <dt><tt class="docutils literal">seekbarstyle</tt></dt>
 <dd><p class="first">Default: bar</p>
@@ -16150,22 +16166,19 @@ applied when the OSC appears and removed when it hides. Without this
 option, margins are only applied when <tt class="docutils literal">visibility</tt> is set to <tt class="docutils literal">always</tt>.</p>
 </dd>
 <dt><tt class="docutils literal">sub_margins</tt></dt>
-<dd><p class="first">Default: yes</p>
-<p>Whether to adjust <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> so that subtitles do not overlap
-with the OSC. The offset is derived from the bottom OSC margin and added
-on top of the current <tt class="docutils literal"><span class="pre">--sub-margin-y</span></tt> value. Requires
-<tt class="docutils literal">dynamic_margins</tt> or <tt class="docutils literal">visibility=always</tt> to take effect.</p>
+<dd><p class="first">Default: no</p>
+<p>Whether to adjust the subtitle margin so that subtitles do not overlap
+with the OSC. Requires <tt class="docutils literal">dynamic_margins</tt> or <tt class="docutils literal">visibility=always</tt> to
+take effect. Uses <tt class="docutils literal"><span class="pre">--sub-margin-y-offset</span></tt> to apply the adjustment.</p>
 <p class="last">With <tt class="docutils literal">boxvideo</tt> enabled and <tt class="docutils literal"><span class="pre">--sub-use-margins=no</span></tt>, subtitles are
 already confined to the video area and this option has no additional
 effect.</p>
 </dd>
 <dt><tt class="docutils literal">osd_margins</tt></dt>
 <dd><p class="first">Default: yes</p>
-<p class="last">Whether to adjust <tt class="docutils literal"><span class="pre">--osd-margin-y</span></tt> so that OSD text does not overlap
-with the OSC. The offset is derived from the top OSC margin (including
-window controls when present) and added on top of the current
-<tt class="docutils literal"><span class="pre">--osd-margin-y</span></tt> value. Requires <tt class="docutils literal">dynamic_margins</tt> or
-<tt class="docutils literal">visibility=always</tt> to take effect.</p>
+<p class="last">Whether to adjust the OSD margin so that OSD text does not overlap
+with the OSC. Requires <tt class="docutils literal">dynamic_margins</tt> or <tt class="docutils literal">visibility=always</tt> to
+take effect. Uses <tt class="docutils literal"><span class="pre">--osd-margin-y-offset</span></tt> to apply the adjustment.</p>
 </dd>
 <dt><tt class="docutils literal">windowcontrols</tt></dt>
 <dd><p class="first">Default: auto (Show window controls if there is no window border/title-bar)</p>
@@ -16201,6 +16214,26 @@ respective sides.</p>
 windowcontrols title.
 ASS tags are escaped, and newlines and trailing slashes are stripped.</p>
 </dd>
+<dt><tt class="docutils literal">floatingtitle</tt></dt>
+<dd><p class="first">Default: yes</p>
+<p class="last">Whether to show the title row in the <tt class="docutils literal">floating</tt> layout. When enabled,
+window controls are rendered as compact buttons without a full-width
+background bar.</p>
+</dd>
+<dt><tt class="docutils literal">floatingwidth</tt></dt>
+<dd><p class="first">Default: 700</p>
+<p class="last">Width of the <tt class="docutils literal">floating</tt> layout.</p>
+</dd>
+<dt><tt class="docutils literal">floatingalpha</tt></dt>
+<dd><p class="first">Default: 130</p>
+<p class="last">Alpha of the <tt class="docutils literal">floating</tt> layout background, 0 (opaque) to 255 (fully
+transparent).</p>
+</dd>
+<dt><tt class="docutils literal">tracknumberswidth</tt></dt>
+<dd><p class="first">Default: 35</p>
+<p class="last">Width of the track number labels next to the audio/subtitle track selector
+icons. Set to <tt class="docutils literal">0</tt> to hide track numbers and show only the icons.</p>
+</dd>
 <dt><tt class="docutils literal">greenandgrumpy</tt></dt>
 <dd><p class="first">Default: no</p>
 <p class="last">Set to <tt class="docutils literal">yes</tt> to reduce festivity (i.e. disable santa hat in December.)</p>
@@ -16220,6 +16253,19 @@ Use <tt class="docutils literal">no</tt> to disable chapter display on hover. Ot
 <dd><p class="first">Default: no</p>
 <p class="last">Use a Unicode minus sign instead of an ASCII hyphen when displaying
 the remaining playback time.</p>
+</dd>
+<dt><tt class="docutils literal">icon_style</tt></dt>
+<dd><p class="first">Default: layout</p>
+<p>Selects the icon set used for OSC buttons. Both sets are bundled in the
+mpv-osd-symbols font.</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">layout</tt></dt>
+<dd>Select the icon set based on the current layout.</dd>
+<dt><tt class="docutils literal">classic</tt></dt>
+<dd>The original mpv icon set.</dd>
+<dt><tt class="docutils literal">fluent</tt></dt>
+<dd>Icons based on Microsoft's Fluent UI System Icons.</dd>
+</dl>
 </dd>
 <dt><tt class="docutils literal">background_color</tt></dt>
 <dd><p class="first">Default: #000000</p>
