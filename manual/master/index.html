@@ -1393,23 +1393,24 @@ Stitch together parts of multiple files and play them.</blockquote>
 suffixes such as <tt class="docutils literal">KiB</tt> and <tt class="docutils literal">MiB</tt>. <tt class="docutils literal">end</tt> is optional.</p>
 <p>if <tt class="docutils literal">end</tt> starts with <tt class="docutils literal">+</tt>, it is considered as offset from <tt class="docutils literal">start</tt>.</p>
 <p>Only works with seekable streams.</p>
-<p>Examples:</p>
+<div class="admonition admonition-example">
+<p class="first admonition-title">Example</p>
 <pre class="literal-block">
 mpv slice://1g-2g&#64;cap.ts
-
-This starts reading from cap.ts after seeking 1 GiB, then
-reads until reaching 2 GiB or end of file.
-
-mpv slice://1g-+2g&#64;cap.ts
-
-This starts reading from cap.ts after seeking 1 GiB, then
-reads until reaching 3 GiB or end of file.
-
-mpv slice://100m&#64;appending://cap.ts
-
-This starts reading from cap.ts after seeking 100MiB, then
-reads until end of file.
 </pre>
+<p>This starts reading from cap.ts after seeking 1 GiB, then
+reads until reaching 2 GiB or end of file.</p>
+<pre class="literal-block">
+mpv slice://1g-+2g&#64;cap.ts
+</pre>
+<p>This starts reading from cap.ts after seeking 1 GiB, then
+reads until reaching 3 GiB or end of file.</p>
+<pre class="literal-block">
+mpv slice://100m&#64;appending://cap.ts
+</pre>
+<p class="last">This starts reading from cap.ts after seeking 100MiB, then
+reads until end of file.</p>
+</div>
 </blockquote>
 <p><tt class="docutils literal"><span class="pre">null://</span></tt></p>
 <blockquote>
@@ -1422,6 +1423,19 @@ Use the <tt class="docutils literal">data</tt> part as source data.</blockquote>
 <p><tt class="docutils literal"><span class="pre">hex://data</span></tt></p>
 <blockquote>
 Like <tt class="docutils literal"><span class="pre">memory://</span></tt>, but the string is interpreted as hexdump.</blockquote>
+<p><tt class="docutils literal"><span class="pre">archive://[ARCHIVE</span> <span class="pre">PATH]|[FILE</span> PATH IN ARCHIVE]</tt></p>
+<blockquote>
+<p>Open a file at the specified path inside an archive. Requires libarchive
+feature enabled. The archive path must have all <tt class="docutils literal">%</tt> and <tt class="docutils literal">|</tt> characters
+URL escaped. The file path should not be URL escaped.</p>
+<div class="admonition admonition-example">
+<p class="first admonition-title">Example</p>
+<pre class="literal-block">
+mpv &quot;archive://file.zip|video.mkv&quot;
+</pre>
+<p class="last">This will play <tt class="docutils literal">video.mkv</tt> in the archive file <tt class="docutils literal">file.zip</tt>.</p>
+</div>
+</blockquote>
 </div>
 <div class="section" id="pseudo-gui-mode">
 <h1>PSEUDO GUI MODE</h1>
