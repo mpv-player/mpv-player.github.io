@@ -13348,6 +13348,20 @@ button can begin window dragging, while X11 and Wayland allow other mouse
 buttons.</dd>
 <dt><tt class="docutils literal"><span class="pre">context-menu</span></tt></dt>
 <dd>Show context menu on the video window. See <a class="reference internal" href="#context-menu">Context Menu</a> section for details.</dd>
+<dt><tt class="docutils literal"><span class="pre">update-clipboard</span> &lt;type&gt; [timeout]</tt></dt>
+<dd><p class="first">Update the clipboard content so that the <tt class="docutils literal">clipboard</tt> property reflects
+up-to-date value. This command is required to update the <tt class="docutils literal">clipboard</tt>
+property value if <tt class="docutils literal"><span class="pre">--clipboard-monitor=no</span></tt>. <tt class="docutils literal">&lt;type&gt;</tt> must be <tt class="docutils literal">text</tt>
+or <tt class="docutils literal"><span class="pre">text-primary</span></tt> to indicate whether to update clipboard or primary
+selection. <tt class="docutils literal">[timeout]</tt> specifies the maximum timeout in ms to wait for
+the clipboard content to be updated. A negative timeout means infinite.
+The default timeout is 10 ms.</p>
+<p>This command returns as soon as the clipboard content is updated or the
+timeout has reached. On some platforms, this command does nothing and
+returns immediately.</p>
+<p class="last">This command can be asynchronously aborted via API. See <a class="reference internal" href="#asynchronous-command-details">Asynchronous
+command details</a>.</p>
+</dd>
 </dl>
 <p>Undocumented commands: <tt class="docutils literal"><span class="pre">ao-reload</span></tt> (experimental/internal).</p>
 </div>
@@ -15500,6 +15514,13 @@ only updated when the compositor sends a selection data offer
 (typically when VO window is focused). The <tt class="docutils literal">wayland</tt> backend typically
 does not have this limitation.
 See <tt class="docutils literal"><span class="pre">current-clipboard-backend</span></tt> property for more details.</p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Since mpv 0.42.0, this property does not return the current clipboard
+content on certain platforms if <tt class="docutils literal"><span class="pre">--clipboard-monitor=no</span></tt>.
+When reading clipboard content, you must run <tt class="docutils literal"><span class="pre">update-clipboard</span></tt>
+command to update the clipboard content manually in this case.</p>
 </div>
 <pre class="last literal-block">
 MPV_FORMAT_NODE_MAP
