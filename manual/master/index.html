@@ -4866,6 +4866,15 @@ option is ignored.</p>
 video output drivers that fully support <tt class="docutils literal"><span class="pre">--screen</span></tt>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
+<p class="last">The geometry size and position are applied during window initialization.
+Subsequent automatic resizes (via <tt class="docutils literal"><span class="pre">--auto-window-resize</span></tt>) reapply the
+size from <tt class="docutils literal"><span class="pre">--geometry</span></tt> but not the position, unless
+<tt class="docutils literal"><span class="pre">--force-window-position</span></tt> is enabled. Updating <tt class="docutils literal"><span class="pre">--geometry</span></tt> during
+playback always applies the position, regardless of the
+<tt class="docutils literal"><span class="pre">--force-window-position</span></tt> setting.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
 <p class="last">Generally only supported by GUI VOs. Ignored for encoding.</p>
 </div>
 <div class="admonition admonition-note-macos">
@@ -5014,10 +5023,14 @@ rendering slower.</dd>
 window. Currently only affects X11, Wayland and macvk VOs since they are the
 only ones that have this optimization (i.e. everything else always renders
 regardless of visibility).</dd>
-<dt><tt class="docutils literal"><span class="pre">--force-window-position</span></tt></dt>
-<dd>Forcefully move mpv's video output window to default location whenever
-there is a change in video parameters, video stream or file. This used to
-be the default behavior. Currently only affects Windows, X11, macvk and SDL VOs.</dd>
+<dt><tt class="docutils literal"><span class="pre">--force-window-position=&lt;yes|no&gt;</span></tt></dt>
+<dd>Controls whether the window is moved back to its initial position after an
+automatic resize due to video stream size changes (see
+<tt class="docutils literal"><span class="pre">--auto-window-resize</span></tt>). When disabled, the window preserves its current
+position and only resizes to match the new video size. When enabled, the
+window is repositioned to the initial location set by <tt class="docutils literal"><span class="pre">--geometry</span></tt>, or
+the center of the screen if no geometry is specified. Currently only
+affects Windows, X11, macvk and SDL VOs. (default: no)</dd>
 <dt><tt class="docutils literal"><span class="pre">--auto-window-resize=&lt;yes|no&gt;</span></tt></dt>
 <dd>By default, mpv will automatically resize itself if the video's size changes
 (i.e. advancing forward in a playlist). Setting this to <tt class="docutils literal">no</tt> disables this
