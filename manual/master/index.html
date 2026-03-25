@@ -8439,8 +8439,12 @@ If supported by the API, display contrast will be used as reported.
 <dd><p class="first">Constrains the gamut of the display. You can use this option to output e.g.
 DCIP3-in-BT.2020. Set <tt class="docutils literal"><span class="pre">--target-prim</span></tt> to the primaries of the containing
 colorspace (into which values will be encoded), and <tt class="docutils literal"><span class="pre">--target-gamut</span></tt> to
-the gamut you want to limit colors to. Takes the same values as
-<tt class="docutils literal"><span class="pre">--target-prim</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
+the gamut you want to limit colors to.</p>
+<p>Accepts either a named primary set (same values as <tt class="docutils literal"><span class="pre">--target-prim</span></tt>) or
+8 comma-separated CIE xy chromaticity values specifying custom primaries
+in the format <tt class="docutils literal">Rx,Ry,Gx,Gy,Bx,By,Wx,Wy</tt> (red, green, blue, white point).
+All values must be in the range 0.0-1.0. Use <tt class="docutils literal"><span class="pre">--target-gamut=help</span></tt> to
+list all named primaries. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">If the selected gamut is wider, it will be limited to <tt class="docutils literal"><span class="pre">--target-prim</span></tt>.
