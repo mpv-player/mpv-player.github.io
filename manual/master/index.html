@@ -5617,9 +5617,9 @@ mpv iterated no archive entries yet.</p>
 all. The default is <tt class="docutils literal">auto</tt>, which behaves like <tt class="docutils literal">recursive</tt> with
 <tt class="docutils literal"><span class="pre">--shuffle</span></tt>, and like <tt class="docutils literal">lazy</tt> otherwise.</dd>
 <dt><tt class="docutils literal"><span class="pre">--directory-filter-types=&lt;video,audio,image,archive,playlist&gt;</span></tt></dt>
-<dd><p class="first">Media file types to filter when opening directory. If the list is empty,
-all files are added to the playlist. (Default:
-<tt class="docutils literal">video,audio,image,archive,playlist</tt>)</p>
+<dd><p class="first">Media file types to filter when opening directory. To have all files added
+to the playlist, clear the list using <tt class="docutils literal"><span class="pre">--directory-filter-types-clr</span></tt>.
+(Default: <tt class="docutils literal">video,audio,image,archive,playlist</tt>)</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--autocreate-playlist=&lt;no|filter|same&gt;</span></tt></dt>
@@ -7409,11 +7409,12 @@ protocol telling the compositor what type of content is being displayed. <tt cla
 is a photo, video or possibly none depending on internal heuristics.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-edge-pixels-pointer=&lt;value&gt;</span></tt></dt>
 <dd>Defines the size of an edge border (default: 16) to initiate client side
-resize events in the wayland contexts with the mouse. This is only active if
-there are no server side decorations from the compositor.</dd>
+resize events in the wayland contexts with the mouse or tablet. This is only
+active if there are no server side decorations from the compositor.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-edge-pixels-touch=&lt;value&gt;</span></tt></dt>
 <dd>Defines the size of an edge border (default: 32) to initiate client side
-resizes events in the wayland contexts with touch events.</dd>
+resizes events in the wayland contexts with touch events. This is only
+active if there are no server side decorations from the compositor.</dd>
 <dt><tt class="docutils literal"><span class="pre">--wayland-internal-vsync=&lt;no|auto|yes&gt;</span></tt></dt>
 <dd>Controls whether to use mpv's internal vsync for Wayland-base video outputs
 (default: <tt class="docutils literal">auto</tt>). This is mainly useful for benchmarking wayland VOs when
@@ -10057,6 +10058,10 @@ than <tt class="docutils literal">gpu</tt>/<tt class="docutils literal"><span cl
 that there is absolutely no reason to use this, other than compatibility.
 This is low quality, and has issues with OSD. We strongly recommend that
 you use <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt> with <tt class="docutils literal"><span class="pre">--hwdec=vaapi</span></tt> instead.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This VO is deprecated will be removed next release.</p>
+</div>
 <p>The following global options are supported by this video output:</p>
 <dl class="last docutils">
 <dt><tt class="docutils literal"><span class="pre">--vo-vaapi-scaling=&lt;algorithm&gt;</span></tt></dt>
