@@ -13784,6 +13784,9 @@ quantities: fps and stream length.)</p>
 quantities: fps and possibly rounded timestamps.)</p>
 </div>
 </dd>
+<dt><tt class="docutils literal">env</tt></dt>
+<dd>Read-only table of all the environment variables. A specific variable can be
+accessed as a sub-property, e.g. <tt class="docutils literal">${env/HOME}</tt> returns <tt class="docutils literal">$HOME</tt> if set.</dd>
 <dt><tt class="docutils literal">pid</tt></dt>
 <dd>Process-id of mpv.</dd>
 <dt><tt class="docutils literal">path</tt></dt>
@@ -14948,8 +14951,9 @@ entry in <tt class="docutils literal"><span class="pre">track-list</span></tt>.<
 <tt class="docutils literal">sub2</tt></p>
 <p>For example, <tt class="docutils literal"><span class="pre">current-tracks/audio/lang</span></tt> returns the current audio track's
 language field (the same value as <tt class="docutils literal"><span class="pre">track-list/N/lang</span></tt>).</p>
-<p class="last">If tracks of the requested type are selected via <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt>, the
+<p>If tracks of the requested type are selected via <tt class="docutils literal"><span class="pre">--lavfi-complex</span></tt>, the
 first one is returned.</p>
+<p class="last">Note that this property cannot be used directly, a sub-property is required.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">chapter-list</span></tt> (RW)</dt>
 <dd><p class="first">List of chapters, current entry marked.</p>
