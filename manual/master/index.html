@@ -13411,8 +13411,7 @@ circumstances.</dd>
 <dt><tt class="docutils literal">quit</tt></dt>
 <dd>Playback was ended by sending the quit command.</dd>
 <dt><tt class="docutils literal">error</tt></dt>
-<dd>An error happened. In this case, an <tt class="docutils literal">error</tt> field is present with
-the error string.</dd>
+<dd>An error happened.</dd>
 <dt><tt class="docutils literal">redirect</tt></dt>
 <dd>Happens with playlists and similar. Details see
 <tt class="docutils literal">MPV_END_FILE_REASON_REDIRECT</tt> in the C API.</dd>
@@ -13429,10 +13428,7 @@ played. This has the same value as the <tt class="docutils literal">playlist_ent
 corresponding <tt class="docutils literal"><span class="pre">start-file</span></tt> event.</dd>
 <dt><tt class="docutils literal">file_error</tt></dt>
 <dd>Set to mpv error string describing the approximate reason why playback
-failed. Unset if no error known. (In Lua scripting, this value was set
-on the <tt class="docutils literal">error</tt> field directly. This is deprecated since mpv 0.33.0.
-In the future, this <tt class="docutils literal">error</tt> field will be unset for this specific
-event.)</dd>
+failed. Unset if no error known.</dd>
 <dt><tt class="docutils literal">playlist_insert_id</tt></dt>
 <dd>If loading ended, because the playlist entry to be played was for example
 a playlist, and the current playlist entry is replaced with a number of
@@ -13872,10 +13868,6 @@ duration is not known.</dd>
 <dd><tt class="docutils literal"><span class="pre">time-pos</span></tt> with milliseconds.</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">time-start</span></tt></dt>
-<dd>Deprecated. Always returns 0. Before mpv 0.14, this used to return the start
-time of the file (could affect e.g. transport streams). See
-<tt class="docutils literal"><span class="pre">--rebase-start-time</span></tt> option.</dd>
 <dt><tt class="docutils literal"><span class="pre">time-remaining</span></tt></dt>
 <dd><p class="first">Remaining length of the file in seconds. Note that the file duration is not
 always exactly known, so this is an estimate.</p>
@@ -15432,9 +15424,12 @@ MPV_FORMAT_NODE_ARRAY
         &quot;vararg&quot;  MPV_FORMAT_FLAG
         &quot;args&quot;    MPV_FORMAT_NODE_ARRAY
             MPV_FORMAT_NODE_MAP
-                &quot;name&quot;     MPV_FORMAT_STRING
-                &quot;type&quot;     MPV_FORMAT_STRING
-                &quot;optional&quot; MPV_FORMAT_FLAG
+                &quot;name&quot;           MPV_FORMAT_STRING
+                &quot;type&quot;           MPV_FORMAT_STRING
+                &quot;optional&quot;       MPV_FORMAT_FLAG
+                &quot;default-value&quot;  MPV_FORMAT_NODE (optional, value of &quot;type&quot;)
+                &quot;choices&quot;        MPV_FORMAT_NODE_ARRAY (optional)
+                    MPV_FORMAT_STRING
 </pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">input-bindings</span></tt></dt>
