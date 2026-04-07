@@ -5612,8 +5612,8 @@ to the playlist, clear the list using <tt class="docutils literal"><span class="
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--autocreate-playlist=&lt;no|filter|same&gt;</span></tt></dt>
-<dd><p class="first">When opening a local file, act as if the parent directory is opened and
-create a playlist automatically.</p>
+<dd><p class="first">When opening a local regular file, act as if the parent directory is opened
+and create a playlist automatically.</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -5720,8 +5720,11 @@ or intend to read from stdin later on via the loadfile or loadlist input
 commands.</dd>
 <dt><tt class="docutils literal"><span class="pre">--input-ipc-server=&lt;filename&gt;</span></tt></dt>
 <dd><p class="first">Enable the IPC support and create the listening socket at the given path.</p>
-<p>On Linux and Unix, the given path is a regular filesystem path. On Windows,
-named pipes are used, so the path refers to the pipe namespace
+<p>On Linux and Unix, if the first character of the path is <tt class="docutils literal">&#64;</tt>, then it
+is internally replaced with a null character, which represents an abstract
+socket address on Linux, but can have unspecified behavior on other UNIX
+platforms. Otherwise, the given path is a regular filesystem path.
+On Windows, named pipes are used, so the path refers to the pipe namespace
 (<tt class="docutils literal"><span class="pre">\\.\pipe\&lt;name&gt;</span></tt>). If the <tt class="docutils literal"><span class="pre">\\.\pipe\</span></tt> prefix is missing, mpv will add
 it automatically before creating the pipe, so
 <tt class="docutils literal"><span class="pre">--input-ipc-server=/tmp/mpv-socket</span></tt> and
@@ -6213,11 +6216,18 @@ frames.)</p>
 </dl>
 </dd>
 <dt><tt class="docutils literal">%tX</tt></dt>
-<dd>Specify the current local date/time using the format <tt class="docutils literal">X</tt>. This format
+<dd><p class="first">Specify the current local date/time using the format <tt class="docutils literal">X</tt>. This format
 specifier uses the UNIX <tt class="docutils literal">strftime()</tt> function internally, and inserts
 the result of passing &quot;%X&quot; to <tt class="docutils literal">strftime</tt>. For example, <tt class="docutils literal">%tm</tt> will
 insert the number of the current month as number. You have to use
-multiple <tt class="docutils literal">%tX</tt> specifiers to build a full date/time string.</dd>
+multiple <tt class="docutils literal">%tX</tt> specifiers to build a full date/time string.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">Since mpv 0.42.0, this only supports the <tt class="docutils literal">strftime</tt> format
+specifiers specified in C11 standard, or the <tt class="docutils literal">%s</tt> extension for
+UNIX timestamp. Other format specifiers are unsupported.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">%{prop[:fallback</span> text]}</tt></dt>
 <dd>Insert the value of the input property 'prop'. E.g. <tt class="docutils literal">%{filename}</tt> is
 the same as <tt class="docutils literal">%f</tt>. If the property does not exist or is not available,
@@ -12021,7 +12031,7 @@ and inherently take an array, though.</p>
 <p>This applies to certain APIs, such as <tt class="docutils literal">mp.command_native()</tt> (with tables that
 have string keys) in Lua scripting, or <tt class="docutils literal">mpv_command_node()</tt> (with
 MPV_FORMAT_NODE_MAP) in the C libmpv client API.</p>
-<p>The name of the command is provided with a <tt class="docutils literal">name</tt> string field. The name of
+<p>The name of the command is provided with a <tt class="docutils literal">_name</tt> string field. The name of
 each command is defined in each command description in the
 <a class="reference internal" href="#list-of-input-commands">List of Input Commands</a>. <tt class="docutils literal"><span class="pre">--input-cmdlist</span></tt> also lists them. See the
 <tt class="docutils literal">subprocess</tt> command for an example.</p>
@@ -12985,7 +12995,7 @@ want the end of playback to kill the command.</p>
 <p class="first admonition-title">Example</p>
 <pre class="literal-block">
 local r = mp.command_native({
-    name = &quot;subprocess&quot;,
+    _name = &quot;subprocess&quot;,
     playback_only = false,
     capture_stdout = true,
     args = {&quot;cat&quot;, &quot;/proc/cpuinfo&quot;},
@@ -17438,11 +17448,14 @@ native types. It also allows you to use named argument.</p>
 <p>If the table is an array, each array item is like an argument in
 <tt class="docutils literal">mp.commandv()</tt> (but can be a native type instead of a string).</p>
 <p>If the table contains string keys, it's interpreted as command with named
-arguments. This requires at least an entry with the key <tt class="docutils literal">name</tt> to be
-present, which must be a string, and contains the command name. The special
-entry <tt class="docutils literal">_flags</tt> is optional, and if present, must be an array of
-<a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> to apply. All other entries are interpreted as
-arguments.</p>
+arguments. This requires at least an entry with the key <tt class="docutils literal">_name</tt> to be
+present, which must be a string, and contains the command name.
+For compatibility, if the key <tt class="docutils literal">_name</tt> does not exist, then the entry with
+the key <tt class="docutils literal">name</tt> will be used instead. The special entry <tt class="docutils literal">_flags</tt> is
+optional, and if present, must be an array of <a class="reference internal" href="#input-command-prefixes">Input Command Prefixes</a> to
+apply. All other entries are interpreted as arguments. Note that some
+commands have arguments named <tt class="docutils literal">name</tt>, and can only be used if the command
+name is specified with key <tt class="docutils literal">_name</tt> instead of <tt class="docutils literal">name</tt>.</p>
 <p class="last">Returns a result table on success (usually empty), or <tt class="docutils literal">def, error</tt> on
 error. <tt class="docutils literal">def</tt> is the second parameter provided to the function, and is
 nil if it's missing.</p>
@@ -18045,7 +18058,7 @@ things:</p>
 <li>rename <tt class="docutils literal">cancellable</tt> field to <tt class="docutils literal">playback_only</tt></li>
 <li>rename <tt class="docutils literal">max_size</tt> to <tt class="docutils literal">capture_size</tt></li>
 <li>set <tt class="docutils literal">capture_stdout</tt> field to <tt class="docutils literal">true</tt> if unset</li>
-<li>set <tt class="docutils literal">name</tt> field to <tt class="docutils literal">subprocess</tt></li>
+<li>set <tt class="docutils literal">_name</tt> field to <tt class="docutils literal">subprocess</tt></li>
 <li>call <tt class="docutils literal">mp.command_native(copied_t)</tt></li>
 <li>if the command failed, create a dummy result table</li>
 <li>copy <tt class="docutils literal">error_string</tt> to <tt class="docutils literal">error</tt> field if the string is non-empty</li>
