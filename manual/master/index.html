@@ -13791,8 +13791,16 @@ quantities: fps and possibly rounded timestamps.)</p>
 </div>
 </dd>
 <dt><tt class="docutils literal">env</tt></dt>
-<dd>Read-only table of all the environment variables. A specific variable can be
-accessed as a sub-property, e.g. <tt class="docutils literal">${env/HOME}</tt> returns <tt class="docutils literal">$HOME</tt> if set.</dd>
+<dd><p class="first">Read-only table of all the environment variables. A specific variable can be
+accessed as a sub-property, e.g. <tt class="docutils literal">${env/HOME}</tt> returns <tt class="docutils literal">$HOME</tt> if set.</p>
+<div class="admonition note last">
+<p class="first admonition-title">Note</p>
+<p class="last">On certain platforms (e.g Windows) environment variables are case
+insensitive and so <tt class="docutils literal">${env/PATH}</tt> and <tt class="docutils literal">${env/Path}</tt> will
+resolve to the same thing. However, the returned table will
+contain the variable name as is without any case-normalization.</p>
+</div>
+</dd>
 <dt><tt class="docutils literal">pid</tt></dt>
 <dd>Process-id of mpv.</dd>
 <dt><tt class="docutils literal">path</tt></dt>
