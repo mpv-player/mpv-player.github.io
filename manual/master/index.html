@@ -4152,10 +4152,12 @@ the player won't know where exactly the text parts are located.)</p>
 (e.g. letterboxed). Setting this option uses the video size as subtitle
 canvas size. Can be useful to test broken subtitles, which often happen
 when the video was transcoded, while attempting to keep the old subtitles.</dd>
-<dt><tt class="docutils literal"><span class="pre">--image-subs-hdr-peak=&lt;sdr|video|10-10000&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--image-subs-hdr-peak=&lt;sdr|video|video-static|video-dynamic|10-10000&gt;</span></tt></dt>
 <dd><p class="first">Controls the image subtitle diffuse white level in cd/m² (nits) for HDR
-output (default: sdr). <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white, while
-<tt class="docutils literal">video</tt> uses video metadata. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+videos (default: 1000). <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white,
+<tt class="docutils literal">video</tt> uses all video metadata including peak detection,
+<tt class="docutils literal"><span class="pre">video-dynamic</span></tt> uses only per-scene video metadata,
+<tt class="docutils literal"><span class="pre">video-static</span></tt> uses only static video metadata, (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
 <p class="last">This also affects image subtitle brightness in HDR tone mapping with
 <tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video&gt;</span></tt>.</p>
 </dd>
@@ -7468,8 +7470,8 @@ vec4 hook() {
 ...
 </pre>
 <p>Each section of metadata, along with the non-metadata lines after it,
-defines a single block. There are currently two types of blocks, HOOKs and
-TEXTUREs.</p>
+defines a single block. There are currently three types of blocks, HOOKs,
+TEXTUREs, and PARAMs.</p>
 <p>A <tt class="docutils literal">TEXTURE</tt> block can set the following options:</p>
 <dl class="docutils">
 <dt>TEXTURE &lt;name&gt; (required)</dt>
@@ -7498,6 +7500,40 @@ are available on all hardware, drivers, GL versions, and so on.</p>
 <p>Following the metadata is a string of bytes in hexadecimal notation that
 define the raw texture data, corresponding to the format specified by
 <cite>FORMAT</cite>, on a single line with no extra whitespace.</p>
+<p>A <tt class="docutils literal">PARAM</tt> block can set the following options:</p>
+<dl class="docutils">
+<dt>PARAM &lt;name&gt; (required)</dt>
+<dd>Starts a parameter block that defines a tunable shader parameter.
+Parameters are global across the entire shader file, all hooks in the
+file can reference them, regardless of declaration order.</dd>
+<dt>TYPE [ENUM] &lt;DEFINE | &lt;type&gt;&gt; (required)</dt>
+<dd><p class="first">The parameter type. Supported types are <tt class="docutils literal">float</tt> and <tt class="docutils literal">int</tt>.</p>
+<p>The special type <tt class="docutils literal">DEFINE</tt> emits a preprocessor define which can be
+used inside <tt class="docutils literal">#if</tt> directives.</p>
+<p class="last">If the <tt class="docutils literal">ENUM</tt> qualifier is used then the type must be either
+<tt class="docutils literal">DEFINE</tt> or <tt class="docutils literal">int</tt>. Instead of accepting a default value, <tt class="docutils literal">ENUM</tt>
+qualified parameter body lists all the possible enumeration values
+separated by newlines. These values are assigned integer values starting
+from 0 incremented by 1. Each enumeration will also be emitted as a
+preprocessor define. <tt class="docutils literal">MINIMUM</tt> and <tt class="docutils literal">MAXIMUM</tt> are ignored.</p>
+</dd>
+<dt>MINIMUM &lt;value&gt;</dt>
+<dd>Minimum allowed value for this parameter.</dd>
+<dt>MAXIMUM &lt;value&gt;</dt>
+<dd>Maximum allowed value for this parameter.</dd>
+<dt>DESC &lt;text&gt;</dt>
+<dd>Human-readable description of the parameter.</dd>
+</dl>
+<p>The initial/default value of the parameter is the first non-metadata line
+after the parameter headers.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal">vo=gpu</tt> supports only a subset of the parameter features available in
+<tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt>. See libplacebo documentation for more detailed
+information about PARAM features supported in <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt>. Notably
+<tt class="docutils literal">uint</tt>, <tt class="docutils literal">DYNAMIC</tt>, and <tt class="docutils literal">CONSTANT</tt> types are not available, and
+parameters cannot be referenced in <tt class="docutils literal">WHEN</tt> expression.</p>
+</div>
 <p>A <tt class="docutils literal">HOOK</tt> block can set the following options:</p>
 <dl class="docutils">
 <dt>HOOK &lt;name&gt; (required)</dt>
@@ -7673,7 +7709,7 @@ OFFSET must be left at their default values.</p>
 specific named shaders by prefixing the shader name with a <tt class="docutils literal">/</tt>, e.g.
 <tt class="docutils literal">shader/param=value</tt>. Without a prefix, parameters affect all shaders.
 The shader name is the base part of the shader filename, without the
-extension. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+extension.</p>
 <p>Some parameters are filled automatically if the shader requests them.
 Currently following parameters are available:</p>
 <dl class="last docutils">
@@ -10767,7 +10803,7 @@ and examples.</p>
 <tt class="docutils literal"><span class="pre">&quot;&#64;&quot;&lt;label-name&gt;</span></tt></blockquote>
 <p>and the <tt class="docutils literal"><span class="pre">filter-parameter-list</span></tt>:</p>
 <blockquote>
-<tt class="docutils literal"><span class="pre">&lt;filter-parameter&gt;</span> | <span class="pre">&lt;filter-parameter&gt;</span> &quot;,&quot; <span class="pre">&lt;filter-parameter-list&gt;</span></tt></blockquote>
+<tt class="docutils literal"><span class="pre">&lt;filter-parameter&gt;</span> | <span class="pre">&lt;filter-parameter&gt;</span> &quot;:&quot; <span class="pre">&lt;filter-parameter-list&gt;</span></tt></blockquote>
 <p>and <tt class="docutils literal"><span class="pre">filter-parameter</span></tt>:</p>
 <blockquote>
 <tt class="docutils literal">( <span class="pre">&lt;param-name&gt;</span> &quot;=&quot; <span class="pre">&lt;param-value&gt;</span> ) | <span class="pre">&lt;param-value&gt;</span></tt></blockquote>
@@ -13948,7 +13984,8 @@ See <tt class="docutils literal"><span class="pre">--chapter-seek-threshold</spa
 <dt><tt class="docutils literal">edition</tt> (RW)</dt>
 <dd><p class="first">Current edition number. Setting this property to a different value will
 restart playback. The number of the first edition is 0.</p>
-<p>For Matroska files, this is the edition. For DVD/Blu-ray, this is the title.</p>
+<p>For Matroska files, this is the edition. For DVD/Blu-ray, this is the title.
+For MPEG-TS, HLS, and EDL streams, this maps to the underlying program/variant.</p>
 <p class="last">This strictly returns the user-set option or property value, and the
 <tt class="docutils literal"><span class="pre">current-edition</span></tt> property returns the runtime selected edition (this
 matters with <tt class="docutils literal"><span class="pre">--edition=auto</span></tt>, the default).</p>
@@ -13976,6 +14013,8 @@ if there's a useless dummy edition).</dd>
 <dd>Whether this is the default edition.</dd>
 <dt><tt class="docutils literal"><span class="pre">edition-list/N/title</span></tt></dt>
 <dd>Edition title as stored in the file. Not always available.</dd>
+<dt><tt class="docutils literal"><span class="pre">edition-list/N/metadata</span></tt></dt>
+<dd>Per-edition metadata key/value pairs.</dd>
 </dl>
 <p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
 or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
@@ -13986,6 +14025,7 @@ MPV_FORMAT_NODE_ARRAY
         &quot;id&quot;                MPV_FORMAT_INT64
         &quot;title&quot;             MPV_FORMAT_STRING
         &quot;default&quot;           MPV_FORMAT_FLAG
+        &quot;metadata&quot;          MPV_FORMAT_NODE_MAP
 </pre>
 </dd>
 <dt><tt class="docutils literal">metadata</tt></dt>
@@ -13998,7 +14038,7 @@ with tag keys mapping to tag values.</p>
 a raw string doesn't work.</p>
 <p>This has a number of sub-properties:</p>
 <dl class="docutils">
-<dt><tt class="docutils literal"><span class="pre">metadata/by-key/&lt;key&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">metadata/by-key/&lt;key&gt;</span></tt> (RW)</dt>
 <dd>Value of metadata entry <tt class="docutils literal">&lt;key&gt;</tt>.</dd>
 <dt><tt class="docutils literal">metadata/list/count</tt></dt>
 <dd>Number of metadata entries.</dd>
@@ -14765,7 +14805,8 @@ MPV_FORMAT_NODE_ARRAY
 </pre>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">track-list</span></tt></dt>
-<dd><p class="first">List of audio/video/sub tracks, current entry marked.</p>
+<dd><p class="first">List of audio/video/sub tracks, current entry marked. When the file has
+editions, only tracks belonging to the currently selected edition are listed.</p>
 <p>This has a number of sub-properties. Replace <tt class="docutils literal">N</tt> with the 0-based track
 index.</p>
 <dl class="docutils">
@@ -14821,7 +14862,7 @@ cover art, <tt class="docutils literal">no</tt>/false or unavailable otherwise.<
 <dt><tt class="docutils literal"><span class="pre">track-list/N/hls-bitrate</span></tt></dt>
 <dd>The bitrate of the HLS stream, if available.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/program-id</span></tt></dt>
-<dd>The program ID of the HLS stream, if available.</dd>
+<dd>The program ID of the stream, if available.</dd>
 <dt><tt class="docutils literal"><span class="pre">track-list/N/codec</span></tt></dt>
 <dd>The codec name used by this track, for example <tt class="docutils literal">h264</tt>. Unavailable
 in some rare cases.</dd>
@@ -15194,6 +15235,9 @@ properly.</p>
 occupies. Its sub-properties <tt class="docutils literal">l</tt>, <tt class="docutils literal">r</tt>, <tt class="docutils literal">t</tt>, and <tt class="docutils literal">b</tt> should all be set to
 the left, right, top, and bottom margins respectively.
 Values are between 0.0 and 1.0, normalized to window width/height.</dd>
+<dt><tt class="docutils literal"><span class="pre">user-data/osc/draw-preview</span></tt></dt>
+<dd>Used to communicate between osc and compatible thumbnailer (if
+installed). See <a class="reference internal" href="#osc-preview-api">OSC Preview API</a> section for more details.</dd>
 <dt><tt class="docutils literal"><span class="pre">user-data/mpv/ytdl</span></tt></dt>
 <dd><p class="first">Data shared by the builtin ytdl hook script.</p>
 <dl class="last docutils">
@@ -15209,6 +15253,8 @@ stdout and stderr.</dd>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">user-data/mpv/console/open</span></tt></dt>
 <dd>Whether the console is open.</dd>
+<dt><tt class="docutils literal"><span class="pre">user-data/mpv/context-menu/open</span></tt></dt>
+<dd>Whether the context menu script is open.</dd>
 </dl>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">menu-data</span></tt> (RW)</dt>
@@ -16248,7 +16294,7 @@ background bar.</p>
 <p class="last">Width of the <tt class="docutils literal">floating</tt> layout.</p>
 </dd>
 <dt><tt class="docutils literal">floatingalpha</tt></dt>
-<dd><p class="first">Default: 130</p>
+<dd><p class="first">Default: 105</p>
 <p class="last">Alpha of the <tt class="docutils literal">floating</tt> layout background, 0 (opaque) to 255 (fully
 transparent).</p>
 </dd>
@@ -16342,6 +16388,11 @@ supports the <tt class="docutils literal"><span class="pre">display-fps</span></
 <dd><p class="first">Default: no</p>
 <p class="last">Use display fps to calculate the interval between OSC redraws.</p>
 </dd>
+<dt><tt class="docutils literal">max_thumb_size</tt></dt>
+<dd><p class="first">Default: 200</p>
+<p class="last">Maximum display size of the preview thumbnail. Only meaningful when a
+Thumbnailer is active. See the <a class="reference internal" href="#osc-preview-api">OSC Preview API</a> section.</p>
+</dd>
 </dl>
 <p>The following options configure what commands are run when the buttons are
 clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered with <tt class="docutils literal">shift+mbtn_left</tt>.</p>
@@ -16434,6 +16485,36 @@ b script-message osc-visibility auto
 <tt class="docutils literal">no</tt>, and <tt class="docutils literal">cycle</tt> to toggle between yes and no. If a second argument is
 passed (any value), then the output on the OSD will be silenced.</dd>
 </dl>
+</div>
+<div class="section" id="osc-preview-api">
+<h3>OSC Preview API</h3>
+<p>The OSC supports displaying preview thumbnails when hovering over the seekbar if
+a compatible thumbnailer script is installed. It communicates with a thumbnailer
+script via the following <tt class="docutils literal"><span class="pre">user-data</span></tt> properties:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">user-data/osc/draw-preview</span></tt></dt>
+<dd><p class="first">Set by the OSC to request a thumbnail within the currently playing file.
+The requested thumbnail timestamp in seconds is set in
+<tt class="docutils literal"><span class="pre">user-data/osc/hover-sec</span></tt>. The <tt class="docutils literal"><span class="pre">draw-preview</span></tt> property is a table with
+the following fields:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">x</tt>, <tt class="docutils literal">y</tt></dt>
+<dd>Top-left coordinates (positive integers) to draw the thumbnail at.</dd>
+<dt><tt class="docutils literal">w</tt>, <tt class="docutils literal">h</tt></dt>
+<dd>Width and height (positive non-zero integers) of the area to draw the
+thumbnail in. Note that this only specifies the drawing width and
+height, the actual backing thumbnail size may differ.</dd>
+<dt><tt class="docutils literal">ass</tt></dt>
+<dd>Optional ASS string to render alongside the thumbnail, using OSD
+coordinates. This can be used for decorations such as a thumbnail
+border.</dd>
+</dl>
+<p class="last">The OSC sets this property to <tt class="docutils literal">nil</tt> to signal the thumbnailer to clear
+the displayed thumbnail.</p>
+</dd>
+</dl>
+<p>Avoid installing/enabling multiple thumbnailer script since this api expects
+only one to be active at a time.</p>
 </div>
 </div>
 </div>
