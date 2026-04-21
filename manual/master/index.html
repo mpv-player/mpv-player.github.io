@@ -7515,7 +7515,8 @@ used inside <tt class="docutils literal">#if</tt> directives.</p>
 qualified parameter body lists all the possible enumeration values
 separated by newlines. These values are assigned integer values starting
 from 0 incremented by 1. Each enumeration will also be emitted as a
-preprocessor define. <tt class="docutils literal">MINIMUM</tt> and <tt class="docutils literal">MAXIMUM</tt> are ignored.</p>
+preprocessor define and will be accessible within RPN expressions.
+<tt class="docutils literal">MINIMUM</tt> and <tt class="docutils literal">MAXIMUM</tt> are ignored.</p>
 </dd>
 <dt>MINIMUM &lt;value&gt;</dt>
 <dd>Minimum allowed value for this parameter.</dd>
@@ -7531,8 +7532,7 @@ after the parameter headers.</p>
 <p class="last"><tt class="docutils literal">vo=gpu</tt> supports only a subset of the parameter features available in
 <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt>. See libplacebo documentation for more detailed
 information about PARAM features supported in <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt>. Notably
-<tt class="docutils literal">uint</tt>, <tt class="docutils literal">DYNAMIC</tt>, and <tt class="docutils literal">CONSTANT</tt> types are not available, and
-parameters cannot be referenced in <tt class="docutils literal">WHEN</tt> expression.</p>
+<tt class="docutils literal">uint</tt>, <tt class="docutils literal">DYNAMIC</tt>, and <tt class="docutils literal">CONSTANT</tt> types are not available.</p>
 </div>
 <p>A <tt class="docutils literal">HOOK</tt> block can set the following options:</p>
 <dl class="docutils">
@@ -7557,11 +7557,11 @@ overwriting the hooked texture.</dd>
 <dt>WIDTH &lt;szexpr&gt;, HEIGHT &lt;szexpr&gt;</dt>
 <dd>Specifies the size of the resulting texture for this pass. <tt class="docutils literal">szexpr</tt>
 refers to an expression in RPN (reverse polish notation), using the
-operators + - * / &gt; &lt; !, floating point literals, and references to
+operators + - * / &gt; &lt; ! = %, floating point literals, and references to
 sizes of existing texture (such as MAIN.width or CHROMA.height),
-OUTPUT, or NATIVE_CROPPED (size of an input texture cropped after
-pan-and-scan, video-align-x/y, video-pan-x/y, etc. and possibly
-prescaled). By default, these are set to HOOKED.w and HOOKED.h,
+OUTPUT, tunable parameters, or NATIVE_CROPPED (size of an input texture
+cropped after pan-and-scan, video-align-x/y, video-pan-x/y, etc. and
+possibly prescaled). By default, these are set to HOOKED.w and HOOKED.h,
 espectively.</dd>
 <dt>WHEN &lt;szexpr&gt;</dt>
 <dd>Specifies a condition that needs to be true (non-zero) for the shader
