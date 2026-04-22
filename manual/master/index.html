@@ -2307,7 +2307,7 @@ matched in the same way as <tt class="docutils literal">exclude</tt>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">all_formats=&lt;yes|no&gt;</span></tt></dt>
 <dd><p class="first">If 'yes' will attempt to add all formats found reported by youtube-dl
-(default: no). Each format is added as a separate track. In addition,
+(default: yes). Each format is added as a separate track. In addition,
 they are delay-loaded, and actually opened only when a track is selected
 (this should keep load times as low as without this option).</p>
 <p>It adds average bitrate metadata, if available, which means you can use
@@ -2317,10 +2317,6 @@ way, thus the option name.)</p>
 <p>Tracks which represent formats that were selected by youtube-dl as
 default will have the default flag set. This means mpv should generally
 still select formats chosen with <tt class="docutils literal"><span class="pre">--ytdl-format</span></tt> by default.</p>
-<p>Although this mechanism makes it possible to switch streams at runtime,
-it's not suitable for this purpose for various technical reasons. (It's
-slow, which can't be really fixed.) In general, this option is not
-useful, and was only added to show that it's possible.</p>
 <p>There are two cases that must be considered when doing quality/bandwidth
 selection:</p>
 <blockquote>
@@ -16402,7 +16398,9 @@ Thumbnailer is active. See the <a class="reference internal" href="#osc-preview-
 </dd>
 </dl>
 <p>The following options configure what commands are run when the buttons are
-clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered with <tt class="docutils literal">shift+mbtn_left</tt>.</p>
+clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered with <tt class="docutils literal">shift+mbtn_left</tt>.
+An option that ends with <tt class="docutils literal">_down_command</tt> means that the command is
+continuously called while the mouse button is held down.</p>
 <p><tt class="docutils literal"><span class="pre">menu_mbtn_left_command=script-binding</span> select/menu; <span class="pre">script-message-to</span> osc <span class="pre">osc-hide</span></tt></p>
 <p><tt class="docutils literal">menu_mbtn_mid_command=</tt></p>
 <p><tt class="docutils literal">menu_mbtn_right_command=</tt></p>
@@ -16442,6 +16440,21 @@ clicked. <tt class="docutils literal">mbtn_mid</tt> commands are also triggered 
 <p><tt class="docutils literal"><span class="pre">fullscreen_mbtn_left_command=&quot;cycle</span> fullscreen&quot;</tt></p>
 <p><tt class="docutils literal">fullscreen_mbtn_mid_command=</tt></p>
 <p><tt class="docutils literal"><span class="pre">fullscreen_mbtn_right_command=&quot;cycle</span> <span class="pre">window-maximized&quot;</span></tt></p>
+<p><tt class="docutils literal">skip_backward_mbtn_left_down_command=seek <span class="pre">-5</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">skip_backward_mbtn_mid_down_command=frame-back-step</span></tt></p>
+<p><tt class="docutils literal">skip_backward_mbtn_right_down_command=seek <span class="pre">-30</span></tt></p>
+<p><tt class="docutils literal">skip_forward_mbtn_left_down_command=seek 10</tt></p>
+<p><tt class="docutils literal"><span class="pre">skip_forward_mbtn_mid_down_command=frame-step</span></tt></p>
+<p><tt class="docutils literal">skip_forward_mbtn_right_down_command=seek 60</tt></p>
+<p><tt class="docutils literal">close_mbtn_left_command=quit</tt></p>
+<p><tt class="docutils literal">close_mbtn_mid_command=</tt></p>
+<p><tt class="docutils literal">close_mbtn_right_command=</tt></p>
+<p><tt class="docutils literal">minimize_mbtn_left_command=cycle <span class="pre">window-minimized</span></tt></p>
+<p><tt class="docutils literal">minimize_mbtn_mid_command=</tt></p>
+<p><tt class="docutils literal">minimize_mbtn_right_command=</tt></p>
+<p><tt class="docutils literal">maximize_mbtn_left_command=cycle <span class="pre">${?fullscreen==yes:fullscreen}${!fullscreen==yes:window-maximized}</span></tt></p>
+<p><tt class="docutils literal">maximize_mbtn_mid_command=</tt></p>
+<p><tt class="docutils literal">maximize_mbtn_right_command=</tt></p>
 </div>
 <div class="section" id="custom-buttons">
 <h3>Custom Buttons</h3>
