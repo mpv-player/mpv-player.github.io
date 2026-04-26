@@ -298,8 +298,9 @@ and <tt class="docutils literal">Page up</tt> and <tt class="docutils literal">C
 <dt>g-e</dt>
 <dd>Select an MKV edition or DVD/Blu-ray title.</dd>
 <dt>g-l</dt>
-<dd>Select a subtitle line to seek to. This currently requires <tt class="docutils literal">ffmpeg</tt> in
-<tt class="docutils literal">PATH</tt>, or in the same folder as mpv on Windows.</dd>
+<dd>Select a subtitle line to seek to.</dd>
+<dt>g-L</dt>
+<dd>Select a secondary subtitle line to seek to.</dd>
 <dt>g-d</dt>
 <dd>Select an audio device.</dd>
 <dt>g-h</dt>
@@ -14716,6 +14717,24 @@ instead.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">secondary-sub-end</span></tt></dt>
 <dd>Same as <tt class="docutils literal"><span class="pre">sub-end</span></tt>, but for the secondary subtitles.</dd>
+<dt><tt class="docutils literal"><span class="pre">sub-lines</span></tt></dt>
+<dd><p class="first">The list of subtitle lines in memory. Not available if the subtitle is not
+text-based (i.e. DVD/BD subtitles).</p>
+<p>When querying the property with the client API using <tt class="docutils literal">MPV_FORMAT_NODE</tt>,
+or with Lua <tt class="docutils literal">mp.get_property_native</tt>, this will return a mpv_node with
+the following contents:</p>
+<pre class="literal-block">
+MPV_FORMAT_NODE_ARRAY
+    MPV_FORMAT_NODE_MAP (for each subtitle line)
+        &quot;text&quot;  MPV_FORMAT_STRING
+        &quot;start&quot; MPV_FORMAT_DOUBLE
+        &quot;end&quot;   MPV_FORMAT_DOUBLE
+</pre>
+<p>ASS tags are stripped from <tt class="docutils literal">text</tt>.</p>
+<p class="last"><tt class="docutils literal">end</tt> is absent if unknown.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">secondary-sub-lines</span></tt></dt>
+<dd>Same as <tt class="docutils literal"><span class="pre">sub-lines</span></tt>, but for the secondary subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">playlist-pos</span></tt> (RW)</dt>
 <dd><p class="first">Current position on playlist. The first entry is on position 0. Writing to
 this property may start playback at the new position.</p>
@@ -17176,10 +17195,7 @@ entries are formatted.</dd>
 <dt><tt class="docutils literal"><span class="pre">select-edition</span></tt></dt>
 <dd>Select an MKV edition or DVD/Blu-ray title.</dd>
 <dt><tt class="docutils literal"><span class="pre">select-subtitle-line</span></tt></dt>
-<dd><p class="first">Select a subtitle line to seek to. This doesn't work with image subtitles.</p>
-<p class="last">This currently requires <tt class="docutils literal">ffmpeg</tt> in <tt class="docutils literal">PATH</tt>, or in the same folder as mpv
-on Windows.</p>
-</dd>
+<dd>Select a subtitle line to seek to. This doesn't work with image subtitles.</dd>
 <dt><tt class="docutils literal"><span class="pre">select-audio-device</span></tt></dt>
 <dd>Select an audio device.</dd>
 <dt><tt class="docutils literal"><span class="pre">select-watch-history</span></tt></dt>
