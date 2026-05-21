@@ -3200,8 +3200,8 @@ instead, if available.</p>
 <tt class="docutils literal">all</tt> always allows all codecs.</p>
 <p>You can get the list of allowed codecs with <tt class="docutils literal">mpv <span class="pre">--vd=help</span></tt>. Remove the
 prefix, e.g. instead of <tt class="docutils literal">lavc:h264</tt> use <tt class="docutils literal">h264</tt>.</p>
-<p>By default, this is set to <tt class="docutils literal">h264,vc1,hevc,vp8,vp9,av1,prores,prores_raw,ffv1,dpx</tt>. Note that
-the hardware acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not
+<p>By default, this is set to <tt class="docutils literal">h264,vc1,hevc,vp8,vp9,av1,prores,prores_raw,ffv1,dpx,apv</tt>.
+Note that the hardware acceleration special codecs like <tt class="docutils literal">h264_vdpau</tt> are not
 relevant anymore, and in fact have been removed from FFmpeg in this form.</p>
 <p>This is usually only needed with broken GPUs, where a codec is reported
 as supported, but decoding causes more problems than it solves.</p>
@@ -4815,7 +4815,7 @@ Sets the level of an on-top window (default: window).</p>
 </table>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--focus-on=&lt;never|open|all&gt;</span></tt>,</dt>
-<dd><p class="first">(macOS only)
+<dd><p class="first">(X11 and macOS only)
 Focus the video window and make it the front most window on specific events (default: open).</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -5638,9 +5638,10 @@ mpv iterated no archive entries yet.</p>
 all. The default is <tt class="docutils literal">auto</tt>, which behaves like <tt class="docutils literal">recursive</tt> with
 <tt class="docutils literal"><span class="pre">--shuffle</span></tt>, and like <tt class="docutils literal">lazy</tt> otherwise.</dd>
 <dt><tt class="docutils literal"><span class="pre">--directory-filter-types=&lt;video,audio,image,archive,playlist&gt;</span></tt></dt>
-<dd><p class="first">Media file types to filter when opening directory. To have all files added
-to the playlist, clear the list using <tt class="docutils literal"><span class="pre">--directory-filter-types-clr</span></tt>.
-(Default: <tt class="docutils literal">video,audio,image,archive,playlist</tt>)</p>
+<dd><p class="first">Media file types to filter when opening directories and archives. To have
+all files added to the playlist, clear the list using
+<tt class="docutils literal"><span class="pre">--directory-filter-types-clr</span></tt>. (Default:
+<tt class="docutils literal">video,audio,image,archive,playlist</tt>)</p>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--autocreate-playlist=&lt;no|filter|same&gt;</span></tt></dt>
@@ -6596,11 +6597,7 @@ properties, e.g. <tt class="docutils literal"><span class="pre">--term-playing-m
 <dd>Print out a custom string during playback instead of the standard status
 line. Expands properties. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</dd>
 <dt><tt class="docutils literal"><span class="pre">--term-title=&lt;string&gt;</span></tt></dt>
-<dd><p class="first">Set the terminal title. Currently, this simply concatenates the escape
-sequence setting the window title with the provided (property expanded)
-string. This will mess up if the expanded string contain bytes that end the
-escape sequence, or if the terminal does not understand the sequence. The
-latter probably includes the regrettable win32.</p>
+<dd><p class="first">Set the terminal title.</p>
 <p class="last">Expands properties. See <a class="reference internal" href="#property-expansion">Property Expansion</a>.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--msg-module</span></tt></dt>
@@ -16678,9 +16675,7 @@ script via the following <tt class="docutils literal"><span class="pre">user-dat
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">user-data/osc/draw-preview</span></tt></dt>
 <dd><p class="first">Set by the OSC to request a thumbnail within the currently playing file.
-The requested thumbnail timestamp in seconds is set in
-<tt class="docutils literal"><span class="pre">user-data/osc/hover-sec</span></tt>. The <tt class="docutils literal"><span class="pre">draw-preview</span></tt> property is a table with
-the following fields:</p>
+The <tt class="docutils literal"><span class="pre">draw-preview</span></tt> property is a table with the following fields:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal">x</tt>, <tt class="docutils literal">y</tt></dt>
 <dd>Top-left coordinates (positive integers) to draw the thumbnail at.</dd>
@@ -16688,6 +16683,8 @@ the following fields:</p>
 <dd>Width and height (positive non-zero integers) of the area to draw the
 thumbnail in. Note that this only specifies the drawing width and
 height, the actual backing thumbnail size may differ.</dd>
+<dt><tt class="docutils literal"><span class="pre">hover-sec</span></tt></dt>
+<dd>Requested thumbnail timestamp in seconds.</dd>
 <dt><tt class="docutils literal">ass</tt></dt>
 <dd>Optional ASS string to render alongside the thumbnail, using OSD
 coordinates. This can be used for decorations such as a thumbnail
