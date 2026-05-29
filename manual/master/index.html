@@ -6804,9 +6804,16 @@ ytdl script use the proxy.</dd>
 <dt><tt class="docutils literal"><span class="pre">--tls-ca-file=&lt;filename&gt;</span></tt></dt>
 <dd>Certificate authority database file for use with TLS. (Silently fails with
 older FFmpeg versions.)</dd>
-<dt><tt class="docutils literal"><span class="pre">--tls-verify</span></tt></dt>
-<dd>Verify peer certificates when using TLS (e.g. with <tt class="docutils literal"><span class="pre">https://...</span></tt>).
-(Silently fails with older FFmpeg versions.)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tls-verify=&lt;yes|no&gt;</span></tt></dt>
+<dd><p class="first">Verify peer certificates when using TLS (e.g. with <tt class="docutils literal"><span class="pre">https://...</span></tt>)
+(default: yes*). Disabling this option allows man-in-the-middle attacks
+to silently substitute the content of an HTTPS stream and is only
+recommended as a per-stream override when verification fails for a
+known-good reason (e.g. an outdated CA bundle, a corporate proxy, a
+development server with a self-signed certificate).</p>
+<p class="last">This is disabled by default, if mpv is built without libcurl and
+libavformat is older than 63.0.100.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--tls-cert-file</span></tt></dt>
 <dd>A file containing a certificate to use in the handshake with the
 peer.</dd>
