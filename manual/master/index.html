@@ -8589,11 +8589,14 @@ differ from the requested <tt class="docutils literal"><span class="pre">--targe
 before display on-screen. This LUT is fed values in normalized RGB, after
 encoding into the target colorspace, so after the application of
 <tt class="docutils literal"><span class="pre">--target-trc</span></tt>. (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</dd>
-<dt><tt class="docutils literal"><span class="pre">--hdr-reference-white=&lt;auto|10-1000000&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--hdr-reference-white=&lt;auto|10-10000&gt;</span></tt></dt>
 <dd><p class="first">Specifies the assumed peak brightness of the mastering display for SDR
 content, in cd/m² (nits). This is used as HDR diffuse white level for SDR
 content. Essentially this is the SDR brightness in HDR container.
-Default is 203 cd/m². (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
+(Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
+<p>In <tt class="docutils literal">auto</tt> mode (default), the reference white luminance is queried from
+the system. This is currently only supported on Windows. If the system does
+not provide a value, 203 cd/m² is assumed.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">This option overrides the <tt class="docutils literal"><span class="pre">--target-peak</span></tt> if is set and the target
