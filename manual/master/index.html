@@ -1434,6 +1434,9 @@ mpv &quot;archive://file.zip|video.mkv&quot;
 <p class="last">This will play <tt class="docutils literal">video.mkv</tt> in the archive file <tt class="docutils literal">file.zip</tt>.</p>
 </div>
 </blockquote>
+<p><tt class="docutils literal"><span class="pre">env://variable</span></tt></p>
+<blockquote>
+Read the environment variable <tt class="docutils literal">variable</tt> as source data.</blockquote>
 </div>
 <div class="section" id="pseudo-gui-mode">
 <h1>PSEUDO GUI MODE</h1>
@@ -10792,6 +10795,31 @@ and <tt class="docutils literal">&lt;speed&gt; != 0</tt>. (default: 8.0)</dd>
 <dt><tt class="docutils literal"><span class="pre">window-size=&lt;amount&gt;</span></tt></dt>
 <dd>Length in milliseconds of the overlap-and-add window. (default: 12)</dd>
 </dl>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">lavfi-tempo[=[filter=]&lt;filter_name&gt;]</span></tt></dt>
+<dd><p class="first">Scales audio tempo using <tt class="docutils literal">atempo</tt> or <tt class="docutils literal">ascale</tt> filters from FFmpeg's
+libavfilter.</p>
+<p>If <tt class="docutils literal">ascale</tt> (Librempeg only) is not available in the loaded
+libavfilter, <tt class="docutils literal">atempo</tt> will be used as a fall-back.</p>
+<p>This can be used in place of <tt class="docutils literal">scaletempo</tt> and <tt class="docutils literal">scaletempo2</tt>.</p>
+<div class="admonition admonition-examples last">
+<p class="first admonition-title">Examples</p>
+<dl class="last docutils">
+<dt><tt class="docutils literal">mpv <span class="pre">--af=lavfi-tempo</span> <span class="pre">--speed=1.2</span> media.ogg</tt></dt>
+<dd>Would play media at 1.2x normal speed at normal pitch with tempo
+scaled by the <tt class="docutils literal">atempo</tt> filter from lavfi.</dd>
+<dt><tt class="docutils literal">mpv <span class="pre">--af=lavfi-tempo=atempo</span> <span class="pre">--speed=1.2</span> media.ogg</tt></dt>
+<dd>Same as above.</dd>
+<dt><tt class="docutils literal">mpv <span class="pre">--af=lavfi-tempo=filter=atempo</span> <span class="pre">--speed=1.2</span> media.ogg</tt></dt>
+<dd>Same as above.</dd>
+<dt><tt class="docutils literal">mpv <span class="pre">--af=lavfi-tempo=ascale</span> <span class="pre">--speed=1.2</span> media.ogg</tt></dt>
+<dd>Would play media at 1.2x normal speed at normal pitch with tempo
+scaled by the <tt class="docutils literal">ascale</tt> filter from lavfi, unless the filter is
+not available, then <tt class="docutils literal">atempo</tt> will be used as a fall-back.</dd>
+<dt><tt class="docutils literal">mpv <span class="pre">--af=lavfi-tempo=filter=ascale</span> <span class="pre">--speed=1.2</span> media.ogg</tt></dt>
+<dd>Same as above.</dd>
+</dl>
+</div>
 </dd>
 <dt><tt class="docutils literal">rubberband</tt></dt>
 <dd><p class="first">High quality pitch correction with librubberband. This can be used in place
