@@ -4184,10 +4184,12 @@ videos (default: 1000). <tt class="docutils literal">sdr</tt> is 203 cd/m² for 
 <p class="last">This also affects image subtitle brightness in HDR tone mapping with
 <tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video&gt;</span></tt>.</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--sub-hdr-peak=&lt;sdr|10-10000&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--sub-hdr-peak=&lt;auto|sdr|10-10000&gt;</span></tt></dt>
 <dd><p class="first">Controls the text subtitle and OSD diffuse white level in cd/m² (nits)
-for HDR output (default: sdr). <tt class="docutils literal">sdr</tt> is 203 cd/m² for standard SDR white.
-(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+for HDR output (default: auto). In <tt class="docutils literal">auto</tt> mode, subtitles and OSD follow
+the reference white (see <tt class="docutils literal"><span class="pre">--hdr-reference-white</span></tt>), matching the diffuse
+white level used for SDR content. <tt class="docutils literal">sdr</tt> forces 203 cd/m² for standard SDR
+white. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
 <p class="last">This also affects text subtitle brightness in HDR tone mapping with
 <tt class="docutils literal"><span class="pre">--blend-subtitles=&lt;yes|video&gt;</span></tt>.</p>
 </dd>
@@ -8599,7 +8601,8 @@ content. Essentially this is the SDR brightness in HDR container.
 (Only for <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>)</p>
 <p>In <tt class="docutils literal">auto</tt> mode (default), the reference white luminance is queried from
 the system. This is currently only supported on Windows. If the system does
-not provide a value, 203 cd/m² is assumed.</p>
+not provide a value, 203 cd/m² is assumed. (<tt class="docutils literal">auto</tt> mode works only
+with libplacebo &gt;= 371)</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p class="last">This option overrides the <tt class="docutils literal"><span class="pre">--target-peak</span></tt> if is set and the target
