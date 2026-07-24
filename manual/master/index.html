@@ -5788,15 +5788,17 @@ In both cases, you must make sure that the FD is actually inherited by mpv
 supports only integer FDs, and cannot open actual paths.</p>
 <div class="admonition admonition-example">
 <p class="first admonition-title">Example</p>
-<p class="last"><tt class="docutils literal"><span class="pre">--input-ipc-client=fd://123</span></tt></p>
+<p class="last"><tt class="docutils literal"><span class="pre">--input-ipc-client=fd://123</span></tt>
+<tt class="docutils literal"><span class="pre">--input-ipc-client=handle://123</span></tt></p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">To use this option on Windows, the fd must refer to a wrapped
 (created by <tt class="docutils literal">_open_osfhandle</tt>) named pipe server handle with a client
-already connected. The named pipe must be created duplex with overlapped
-IO and inheritable handles. The program communicates with mpv through
-the client handle.</p>
+already connected. Alternatively, the Windows HANDLE can be passed by
+prefixing it with handle:// if mpv inherited it from the parent. The
+named pipe must be created duplex with overlapped IO and inheritable
+handles. The program communicates with mpv through the client handle.</p>
 </div>
 <div class="admonition warning last">
 <p class="first admonition-title">Warning</p>
