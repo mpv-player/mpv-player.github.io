@@ -2952,18 +2952,24 @@ be queried with <tt class="docutils literal">help</tt> (mpv CLI only).</p>
 <p class="last">Runtime changes to this are ignored (the current option value is used
 whenever the renderer is created).</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--hwdec-extra-frames=&lt;N&gt;</span></tt></dt>
-<dd><p class="first">Number of GPU frames hardware decoding should preallocate (default: see
-<tt class="docutils literal"><span class="pre">--list-options</span></tt> output). If this is too low, frame allocation may fail
-during decoding, and video frames might get dropped and/or corrupted.
-Setting it too high simply wastes GPU memory and has no advantages.</p>
+<dt><tt class="docutils literal"><span class="pre">--hwdec-extra-frames=&lt;auto|N&gt;</span></tt></dt>
+<dd><p class="first">Number of extra GPU frames hardware decoding should preallocate, on top of
+what the codec itself requires (default: <tt class="docutils literal">auto</tt>).</p>
 <p>This value is used only for hardware decoding APIs which require
 preallocating surfaces (known examples include <tt class="docutils literal">d3d11va</tt> and <tt class="docutils literal">vaapi</tt>).
 For other APIs, frames are allocated as needed. The details depend on the
 libavcodec implementations of the hardware decoders.</p>
-<p class="last">The required number of surfaces depends on dynamic runtime situations. The
-default is a fixed value that is thought to be sufficient for most uses. But
-in certain situations, it may not be enough.</p>
+<p>In <tt class="docutils literal">auto</tt> mode, the number is derived from how many frames the player
+and the VO may reference at the same time. For example, enabling
+<tt class="docutils literal"><span class="pre">--interpolation</span></tt> increases it in proportion to the <tt class="docutils literal"><span class="pre">--tscale</span></tt> filter
+radius, and VO deinterlacing adds the temporal reference frames it needs.
+The value is determined when the decoder is initialized; runtime option
+changes that increase frame requirements do not resize the pool, so set a
+fixed value if you intend to switch such options during playback.</p>
+<p class="last">Setting a fixed value overrides the automatic sizing in both directions.
+If it is too low, frame allocation may fail during decoding, and video
+frames might get dropped and/or corrupted. Setting it too high simply
+wastes GPU memory and has no advantages.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--hwdec-image-format=&lt;name&gt;</span></tt></dt>
 <dd><p class="first">Set the internal pixel format used by hardware decoding via <tt class="docutils literal"><span class="pre">--hwdec</span></tt>
@@ -3184,9 +3190,12 @@ detects that the video frame is interlaced. Be aware that there can be false
 positives in certain cases, such as when files are encoded as interlaced
 despite the video not actually being so. This is why <tt class="docutils literal">auto</tt> is not the
 default value.</p>
-<p class="last">Keep in mind that using this filter <strong>will</strong> conflict with any manually
+<p>Keep in mind that using this filter <strong>will</strong> conflict with any manually
 inserted deinterlacing filters, and that this will make video look worse if
 it's not actually interlaced.</p>
+<p class="last">Enabling video output deinterlacing at runtime may require setting
+<tt class="docutils literal"><span class="pre">--hwdec-extra-frames</span></tt>, as the hardware decoder's surface pool is sized
+at decoder initialization.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--deinterlace-field-parity=&lt;tff|bff|auto&gt;</span></tt></dt>
 <dd><p class="first">Specify the field parity/order when deinterlacing (default: auto).
@@ -7103,11 +7112,14 @@ the filter implied by <tt class="docutils literal"><span class="pre">--scale</sp
 used if <tt class="docutils literal"><span class="pre">--interpolation</span></tt> is enabled. The only valid choices for
 <tt class="docutils literal"><span class="pre">--tscale</span></tt> are separable convolution filters (use <tt class="docutils literal"><span class="pre">--tscale=help</span></tt> to
 get a list). The default is <tt class="docutils literal">oversample</tt>.</p>
-<p class="last">Common <tt class="docutils literal"><span class="pre">--tscale</span></tt> choices include <tt class="docutils literal">oversample</tt>, <tt class="docutils literal">linear</tt>,
+<p>Common <tt class="docutils literal"><span class="pre">--tscale</span></tt> choices include <tt class="docutils literal">oversample</tt>, <tt class="docutils literal">linear</tt>,
 <tt class="docutils literal">catmull_rom</tt>, <tt class="docutils literal">mitchell</tt>, <tt class="docutils literal">gaussian</tt>, or <tt class="docutils literal">bicubic</tt>. These are
 listed in increasing order of smoothness/blurriness, with <tt class="docutils literal">bicubic</tt>
 being the smoothest/blurriest and <tt class="docutils literal">oversample</tt> being the sharpest/least
 smooth.</p>
+<p class="last">Switching to a filter with a larger radius at runtime may require setting
+<tt class="docutils literal"><span class="pre">--hwdec-extra-frames</span></tt>, as the hardware decoder's surface pool is sized
+at decoder initialization.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--scale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--scale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--cscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--dscale-param2=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param1=&lt;value&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--tscale-param2=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Set filter parameters. By default, these are set to the special string
@@ -7242,9 +7254,11 @@ rate (also known as judder).</p>
 <p class="last">This requires setting the <tt class="docutils literal"><span class="pre">--video-sync</span></tt> option to one
 of the <tt class="docutils literal">display-</tt> modes, or it will be silently disabled.</p>
 </div>
-<p class="last">This essentially attempts to interpolate the missing frames by convoluting
+<p>This essentially attempts to interpolate the missing frames by convoluting
 the video along the temporal axis. The filter used can be controlled using
 the <tt class="docutils literal"><span class="pre">--tscale</span></tt> setting.</p>
+<p class="last">Enabling this at runtime may require setting <tt class="docutils literal"><span class="pre">--hwdec-extra-frames</span></tt>, as
+the hardware decoder's surface pool is sized at decoder initialization.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--interpolation-threshold=&lt;0..1,-1&gt;</span></tt></dt>
 <dd><p class="first">Threshold below which frame ratio interpolation gets disabled (default:
