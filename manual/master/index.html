@@ -12828,7 +12828,7 @@ value as <tt class="docutils literal"><span class="pre">--osd-duration</span></t
 <dt><tt class="docutils literal"><span class="pre">show-progress</span></tt></dt>
 <dd>Show the progress bar, the elapsed time and the total duration of the file
 on the OSD. <tt class="docutils literal"><span class="pre">no-osd</span></tt> has no effect on this command.</dd>
-<dt><tt class="docutils literal"><span class="pre">overlay-add</span> &lt;id&gt; &lt;x&gt; &lt;y&gt; &lt;file&gt; &lt;offset&gt; &lt;fmt&gt; &lt;w&gt; &lt;h&gt; &lt;stride&gt; &lt;dw&gt; &lt;dh&gt;</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">overlay-add</span> &lt;id&gt; &lt;x&gt; &lt;y&gt; &lt;file&gt; &lt;offset&gt; &lt;fmt&gt; &lt;w&gt; &lt;h&gt; &lt;stride&gt; [&lt;dw&gt; [&lt;dh&gt; [&lt;video_colorspace&gt; [&lt;max_luma&gt; [&lt;primaries&gt; <span class="pre">[&lt;transfer&gt;]]]]]]</span></tt></dt>
 <dd><p class="first">Add an OSD overlay sourced from raw data. This might be useful for scripts
 and applications controlling mpv, and which want to display things on top
 of the video window.</p>
@@ -12877,6 +12877,20 @@ for simplicity, the player will access all <tt class="docutils literal">stride *
 The overlay visible portion of the overlay (<tt class="docutils literal">w</tt> and <tt class="docutils literal">h</tt>) is scaled to
 in display to <tt class="docutils literal">dw</tt> and <tt class="docutils literal">dh</tt>.  If parameters are not present, the
 values for <tt class="docutils literal">w</tt> and <tt class="docutils literal">h</tt> are used.</p>
+<p><tt class="docutils literal">video_colorspace</tt> (default: no) interprets the overlay in the video's
+colorspace, including HDR metadata, so it is tone mapped exactly like
+the video.</p>
+<p><tt class="docutils literal">max_luma</tt> specifies the (optional) luminance peak of the overlay in
+cd/m². If unset, it is inferred from the overlay's colorspace, or taken
+from the video for <tt class="docutils literal">video_colorspace</tt> overlays.</p>
+<p><tt class="docutils literal">primaries</tt> and <tt class="docutils literal">transfer</tt> specify the (optional) colorspace the
+overlay is encoded in, and accept the same values as <tt class="docutils literal"><span class="pre">--target-prim</span></tt>
+and <tt class="docutils literal"><span class="pre">--target-trc</span></tt>. The default <tt class="docutils literal">auto</tt> means sRGB (BT.709 primaries
+and sRGB transfer). They are ignored if <tt class="docutils literal">video_colorspace</tt> is set.</p>
+<p>Currently only <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> honors these parameters. <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>
+always assumes the overlay is sRGB and adapts it to the display. Other
+VOs ignore these parameters, and either blend the overlay without any
+colorspace conversion or pass it to the system compositor.</p>
 <div class="admonition note last">
 <p class="first admonition-title">Note</p>
 <p>Before mpv 0.42.0, the file was mapped into memory with <tt class="docutils literal">mmap()</tt>,
