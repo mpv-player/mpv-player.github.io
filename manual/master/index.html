@@ -178,6 +178,13 @@ information.</dd>
 <tt class="docutils literal">Z</tt> currently, but use is discouraged.</dd>
 <dt>l</dt>
 <dd>Set/clear A-B loop points. See <tt class="docutils literal"><span class="pre">ab-loop</span></tt> command for details.</dd>
+<dt>Ctrl+m</dt>
+<dd>Jump to the disc menu when playing a DVD or Blu-ray (see the <tt class="docutils literal">discnav</tt>
+command). While a menu with a button highlight is on screen, the arrow
+keys, ENTER, ESC/BACKSPACE and the mouse control the menu instead of
+their usual functions.</dd>
+<dt>Ctrl+M</dt>
+<dd>Show or hide the Blu-ray popup menu.</dd>
 <dt>L</dt>
 <dd>Toggle infinite looping.</dd>
 <dt>Ctrl++ and Ctrl+-</dt>
@@ -1293,19 +1300,38 @@ Play a path from  Samba share. (Requires FFmpeg support.)</blockquote>
 <blockquote>
 <p>Play a Blu-ray disc. Since libbluray 1.0.1, you can read from ISO files
 by passing them to <tt class="docutils literal"><span class="pre">--bluray-device</span></tt>.</p>
+<p>A Blu-ray <tt class="docutils literal">.iso</tt> image passed directly (e.g. <tt class="docutils literal">mpv disc.iso</tt>) is also
+detected and opened.</p>
 <p><tt class="docutils literal">title</tt> can be: <tt class="docutils literal">longest</tt> or <tt class="docutils literal">first</tt> (selects the default
-playlist); <tt class="docutils literal"><span class="pre">mpls/&lt;number&gt;</span></tt> (selects &lt;number&gt;.mpls playlist);
+playlist); <tt class="docutils literal">menu</tt> (starts in the disc menu, see <tt class="docutils literal"><span class="pre">--disc-menu</span></tt> and the
+<tt class="docutils literal">discnav</tt> command); <tt class="docutils literal"><span class="pre">mpls/&lt;number&gt;</span></tt> (selects &lt;number&gt;.mpls playlist);
 <tt class="docutils literal">&lt;number&gt;</tt> (select playlist with the same index). mpv will list
 the available playlists on loading.</p>
 <p><tt class="docutils literal"><span class="pre">bluray://</span></tt> is an alias.</p>
 </blockquote>
 <p><tt class="docutils literal"><span class="pre">dvd://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvd-device=PATH</span></tt></p>
 <blockquote>
-<p>Play a DVD. DVD menus are not supported. If no title is given, the longest
-title is auto-selected. Without <tt class="docutils literal"><span class="pre">--dvd-device</span></tt>, it will probably try
-to open an actual optical drive, if available and implemented for the OS.</p>
+<p>Play a DVD. If no title is given, the longest title is auto-selected.
+<tt class="docutils literal">title</tt> can also be <tt class="docutils literal">menu</tt> to start in the disc menu (see
+<tt class="docutils literal"><span class="pre">--disc-menu</span></tt> and the <tt class="docutils literal">discnav</tt> command). Without <tt class="docutils literal"><span class="pre">--dvd-device</span></tt>,
+it will probably try to open an actual optical drive, if available and
+implemented for the OS.</p>
+<p>A DVD-Video <tt class="docutils literal">.iso</tt> image passed directly (e.g. <tt class="docutils literal">mpv disc.iso</tt>) is also
+detected and opened.</p>
 <p><tt class="docutils literal"><span class="pre">dvdnav://</span></tt> is an old alias for <tt class="docutils literal"><span class="pre">dvd://</span></tt> and does exactly the same
 thing.</p>
+</blockquote>
+<p><tt class="docutils literal"><span class="pre">dvda://[title][/device]</span></tt> <tt class="docutils literal"><span class="pre">--dvda-device=PATH</span></tt></p>
+<blockquote>
+<p>Play the AUDIO_TS zone of a DVD-Audio disc. Titles correspond to the
+disc's audio groups, tracks are exposed as chapters. If no title is
+given, the longest title is auto-selected. Menus are not supported.</p>
+<p>Still images (ASVS), such as cover art or booklet pages a disc associates
+with its tracks, are exposed as a video track and shown by default. Can be
+disabled with <tt class="docutils literal"><span class="pre">--vid=no</span></tt>.</p>
+<p>A DVD-Audio <tt class="docutils literal">.iso</tt> image passed directly (e.g. <tt class="docutils literal">mpv disc.iso</tt>) is also
+detected and opened. For hybrid discs, the DVD-Audio zone is preferred over
+the DVD-Video zone.</p>
 </blockquote>
 <p><tt class="docutils literal"><span class="pre">dvb://[cardnumber&#64;]channel</span></tt> <tt class="docutils literal"><span class="pre">--dvbin-...</span></tt></p>
 <blockquote>
@@ -5232,6 +5258,11 @@ of hardware/drivers/etc. happens to be.</p>
 <div class="section" id="disc-devices">
 <h2>Disc Devices</h2>
 <dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">--disc-menu=&lt;yes|no&gt;</span></tt></dt>
+<dd>When set, opening <tt class="docutils literal"><span class="pre">dvd://</span></tt> or <tt class="docutils literal"><span class="pre">bd://</span></tt> boots into the disc's interactive
+menu instead of automatically playing the longest title (default: <tt class="docutils literal">no</tt>).
+The menu can also be reached at any time via the synthetic &quot;Disc Menu&quot;
+entry in the editions/titles list, or with <tt class="docutils literal">discnav menu</tt> command.</dd>
 <dt><tt class="docutils literal"><span class="pre">--cdda-device=&lt;path&gt;</span></tt></dt>
 <dd>Specify the CD device for CDDA playback. The default device path depends on
 the OS. See the <a class="reference internal" href="#optical-drives">OPTICAL DRIVES</a> section.</dd>
@@ -5245,6 +5276,20 @@ the OS. See the <a class="reference internal" href="#optical-drives">OPTICAL DRI
 <p class="last"><tt class="docutils literal">mpv <span class="pre">dvd://</span> <span class="pre">--dvd-device=/path/to/dvd/</span></tt></p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--dvda-device=&lt;path&gt;</span></tt></dt>
+<dd><p class="first">Specify the DVD-Audio device or .iso filename for <tt class="docutils literal"><span class="pre">dvda://</span></tt> playback.
+You can also specify a directory that contains files previously copied
+directly from a DVD-Audio disc. The default device path depends on
+the OS. See the <a class="reference internal" href="#optical-drives">OPTICAL DRIVES</a> section.</p>
+<div class="admonition admonition-example last">
+<p class="first admonition-title">Example</p>
+<p class="last"><tt class="docutils literal">mpv <span class="pre">dvda://</span> <span class="pre">--dvda-device=/path/to/dvda/</span></tt></p>
+</div>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--dvda-page=&lt;-1|0-...&gt;</span></tt></dt>
+<dd>Force the still picture page shown during DVD-Audio playback, instead of
+the page scheduled for the current playback position (default: -1, use
+the scheduled page).</dd>
 <dt><tt class="docutils literal"><span class="pre">--bluray-device=&lt;path&gt;</span></tt></dt>
 <dd><p class="first">Specify the Blu-ray disc location. Must be a directory with Blu-ray
 structure. The default device path depends on the OS. See the
@@ -13595,6 +13640,44 @@ button can begin window dragging, while X11 and Wayland allow other mouse
 buttons.</dd>
 <dt><tt class="docutils literal"><span class="pre">context-menu</span></tt></dt>
 <dd>Show context menu on the video window. See <a class="reference internal" href="#context-menu">Context Menu</a> section for details.</dd>
+<dt><tt class="docutils literal">discnav &lt;action&gt; [&lt;x&gt; &lt;y&gt;]</tt></dt>
+<dd><p class="first">Send a navigation command to the optical-disc stream that is currently
+playing. The command does nothing when no disc is being played.</p>
+<p><tt class="docutils literal">&lt;action&gt;</tt> is one of:</p>
+<dl class="docutils">
+<dt>up, down, left, right</dt>
+<dd>Move the on-disc button selection.</dd>
+<dt>select</dt>
+<dd>Activate the currently highlighted button.</dd>
+<dt>menu</dt>
+<dd>Jump to the root menu of the current title set (DVD: VTSM root menu,
+BD: HDMV top menu).</dd>
+<dt>title-menu</dt>
+<dd>Jump to the disc's title menu (DVD: VMGM title menu, treated like
+<tt class="docutils literal">menu</tt> on BD).</dd>
+<dt>popup</dt>
+<dd>Show / dismiss the Blu-ray popup menu. For DVDs, falls back to the
+chapter menu where available.</dd>
+<dt>prev</dt>
+<dd>Return from a menu to playback, or to the previous menu domain.</dd>
+<dt>mouse-move</dt>
+<dd>Forward a mouse position to the disc, so it can update the focused
+button under the cursor. With no <tt class="docutils literal">&lt;x&gt; &lt;y&gt;</tt> arguments, the position
+is read from the <tt class="docutils literal"><span class="pre">mouse-pos</span></tt> property and mapped from window into
+source-video coordinates automatically.</dd>
+<dt>mouse-click</dt>
+<dd>Like <tt class="docutils literal"><span class="pre">mouse-move</span></tt> but also activates the button under the cursor.</dd>
+</dl>
+<p><tt class="docutils literal">&lt;x&gt;</tt> and <tt class="docutils literal">&lt;y&gt;</tt> are optional and only meaningful for the <tt class="docutils literal"><span class="pre">mouse-*</span></tt>
+actions. They are normalized coordinates in the range 0..1 (top-left at
+<tt class="docutils literal">0,0</tt>), and are used instead of the live <tt class="docutils literal"><span class="pre">mouse-pos</span></tt>.</p>
+<p class="last">mpv ships default bindings for this command in the <tt class="docutils literal">{discnav}</tt> input
+section (<tt class="docutils literal">UP</tt>/<tt class="docutils literal">DOWN</tt>/<tt class="docutils literal">LEFT</tt>/<tt class="docutils literal">RIGHT</tt> for navigation, <tt class="docutils literal">ENTER</tt> to
+select, <tt class="docutils literal">ESC</tt> / <tt class="docutils literal">BS</tt> to leave, <tt class="docutils literal">MBTN_LEFT</tt> / <tt class="docutils literal">MOUSE_MOVE</tt> for
+mouse). The player enables and disables that section automatically as
+the menu appears and disappears, so the bindings only shadow the normal
+ones while a menu is actually on screen.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">update-clipboard</span> &lt;type&gt; [timeout]</tt></dt>
 <dd><p class="first">Update the clipboard content so that the <tt class="docutils literal">clipboard</tt> property reflects
 up-to-date value. This command is required to update the <tt class="docutils literal">clipboard</tt>
@@ -14200,6 +14283,11 @@ matters with <tt class="docutils literal"><span class="pre">--edition=auto</span
 loaded, or the file has no editions. (Matroska files make a difference
 between having no editions and a single edition, which will be reflected by
 the property, although in practice it does not matter.)</dd>
+<dt><tt class="docutils literal"><span class="pre">disc-menu-active</span></tt></dt>
+<dd><tt class="docutils literal">yes</tt> when the current optical-disc stream (DVD or Blu-ray) is showing
+an interactive menu (a DVD menu domain, or a visible Blu-ray menu
+overlay), and <tt class="docutils literal">no</tt> otherwise. Unavailable when the currently playing
+source is not an optical disc.</dd>
 <dt><tt class="docutils literal">chapters</tt></dt>
 <dd>Number of chapters.</dd>
 <dt><tt class="docutils literal">editions</tt></dt>
