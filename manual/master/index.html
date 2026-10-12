@@ -10372,25 +10372,6 @@ resolution. (Default.)</dd>
 theory works in more places.</dd>
 </dl>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--vo-tct-buffering=&lt;pixel|line|frame&gt;</span></tt></dt>
-<dd><p class="first">Specifies the size of data batches buffered before being sent to the
-terminal.</p>
-<p>TCT image output is not synchronized with other terminal output from mpv,
-which can lead to broken images. Sending data to the terminal in small
-batches may improve parallelism between terminal processing and mpv
-processing but incurs a static overhead of generating tens of thousands
-of small writes. Also, depending on the terminal used, sending frames in
-one chunk might help with tearing of the output, especially if not used
-with <tt class="docutils literal"><span class="pre">--really-quiet</span></tt> and other logs interrupt the data stream.</p>
-<dl class="last docutils">
-<dt>pixel</dt>
-<dd>Send data to terminal for each pixel.</dd>
-<dt>line</dt>
-<dd>Send data to terminal for each line. (Default)</dd>
-<dt>frame</dt>
-<dd>Send data to terminal for each frame.</dd>
-</dl>
-</dd>
 <dt><tt class="docutils literal"><span class="pre">--vo-tct-width=&lt;width&gt;</span></tt>  <tt class="docutils literal"><span class="pre">--vo-tct-height=&lt;height&gt;</span></tt></dt>
 <dd>Assume the terminal has the specified character width and/or height.
 These default to 80x25 if the terminal size cannot be determined.</dd>
@@ -10441,11 +10422,6 @@ escape sequences directly to the terminal.</p>
 <dt><tt class="docutils literal">sixel</tt></dt>
 <dd><p class="first">Graphical output for the terminal, using sixels. Tested with <tt class="docutils literal">mlterm</tt> and
 <tt class="docutils literal">xterm</tt>.</p>
-<p>Note: the Sixel image output is not synchronized with other terminal
-output from mpv, which can lead to broken images.
-The option <tt class="docutils literal"><span class="pre">--really-quiet</span></tt> can help with that, and is recommended.
-On some platforms, using the <tt class="docutils literal"><span class="pre">--vo-sixel-buffered</span></tt> option may work as
-well.</p>
 <p>You may need to use <tt class="docutils literal"><span class="pre">--profile=sw-fast</span></tt> to get decent performance.</p>
 <p>Note: at the time of writing, <tt class="docutils literal">xterm</tt> does not enable sixel by default -
 launching it as <tt class="docutils literal">xterm <span class="pre">-ti</span> 340</tt> is one way to enable it. Also, <tt class="docutils literal">xterm</tt>
@@ -10461,19 +10437,18 @@ and mpv cannot detect this state using standard methods.</p>
 <p>Sixel size and alignment options:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--vo-sixel-cols=&lt;columns&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--vo-sixel-rows=&lt;rows&gt;</span></tt> (default: 0)</dt>
-<dd>Specify the terminal size in character cells, otherwise (0) read it
-from the terminal, or fall back to 80x25. Note that mpv doesn't use the
-the last row with sixel because this seems to result in scrolling.</dd>
+<dd>Size of the area the image may use, in character cells. The default
+(0) is the terminal size from the position the image starts at, or
+80x25 if the terminal size cannot be read. The last row is left free
+for the status line.</dd>
 <dt><tt class="docutils literal"><span class="pre">--vo-sixel-width=&lt;width&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--vo-sixel-height=&lt;height&gt;</span></tt> (default: 0)</dt>
-<dd>Specify the available size in pixels, otherwise (0) read it from the
-terminal, or fall back to 320x240. Other than excluding the last line,
-the height is also further rounded down to a multiple of 6 (sixel unit
-height) to avoid overflowing below the designated size.</dd>
+<dd>Size of the area the image may use, in pixels. The default (0) is what
+the terminal reports for the rows and columns above, or 320x240 if it
+reports nothing. Other than excluding the last row, the height is
+rounded down to a multiple of 6, the height of a sixel band.</dd>
 <dt><tt class="docutils literal"><span class="pre">--vo-sixel-left=&lt;col&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--vo-sixel-top=&lt;row&gt;</span></tt> (default: 0)</dt>
-<dd>Specify the position in character cells where the image starts (1 is
-the first column or row). If 0 (default) then try to automatically
-determine it according to the other values and the image aspect ratio
-and zoom.</dd>
+<dd>Position in character cells where the area the image may use starts
+(1 is the first column or row). 0 (default) is the same as 1.</dd>
 <dt><tt class="docutils literal"><span class="pre">--vo-sixel-pad-x=&lt;pad_x&gt;</span></tt>, <tt class="docutils literal"><span class="pre">--vo-sixel-pad-y=&lt;pad_y&gt;</span></tt> (default: -1)</dt>
 <dd>Used only when mpv reads the size in pixels from the terminal.
 Specify the number of padding pixels (on one side) which are included
@@ -10485,18 +10460,9 @@ when the overall padding per axis is smaller than the number of cells.</dd>
 <dd>Whether or not to clear the terminal whenever the output is
 reconfigured (e.g. when video size changes).</dd>
 <dt><tt class="docutils literal"><span class="pre">--vo-sixel-alt-screen=&lt;yes|no&gt;</span></tt> (default: yes)</dt>
-<dd><p class="first">Whether or not to use the alternate screen buffer and return the
+<dd>Whether or not to use the alternate screen buffer and return the
 terminal to its previous state on exit. When set to no, the last
-sixel image stays on screen after quit, with the cursor following it.</p>
-<p class="last"><tt class="docutils literal"><span class="pre">--vo-sixel-exit-clear</span></tt> is a deprecated alias for this option and
-may be removed in the future.</p>
-</dd>
-<dt><tt class="docutils literal"><span class="pre">--vo-sixel-buffered=&lt;yes|no&gt;</span></tt> (default: no)</dt>
-<dd>Buffers the full output sequence before writing it to the terminal.
-On POSIX platforms, this can help prevent interruption (including from
-other applications) and thus broken images, but may come at a
-performance cost with some terminals and is subject to implementation
-details.</dd>
+sixel image stays on screen after quit, with the cursor following it.</dd>
 </dl>
 <p>Sixel image quality options:</p>
 <dl class="last docutils">
