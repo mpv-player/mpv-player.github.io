@@ -1442,6 +1442,24 @@ mpv slice://100m&#64;appending://cap.ts
 reads until end of file.</p>
 </div>
 </blockquote>
+<p><tt class="docutils literal"><span class="pre">aes-ctr://key:iv&#64;URL</span></tt></p>
+<blockquote>
+<p>Decrypt a stream that was encrypted as a whole with AES in CTR mode.</p>
+<p><tt class="docutils literal">key</tt> is the AES key as 32, 48 or 64 hex digits. <tt class="docutils literal">iv</tt> is the initial
+counter block as 32 hex digits. The counter block is incremented as a
+128 bit big endian number, which is what <tt class="docutils literal">openssl enc <span class="pre">-aes-128-ctr</span></tt>
+does.</p>
+<p>Seeking works if the stream behind <tt class="docutils literal">URL</tt> is seekable.</p>
+<div class="admonition admonition-example">
+<p class="first admonition-title">Example</p>
+<pre class="literal-block">
+mpv aes-ctr://000102030405060708090a0b0c0d0e0f:f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff&#64;video.mkv.enc
+</pre>
+<p class="last">This plays a file that was encrypted with
+<tt class="docutils literal">openssl enc <span class="pre">-aes-128-ctr</span> <span class="pre">-K</span> 000102030405060708090a0b0c0d0e0f
+<span class="pre">-iv</span> f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff <span class="pre">-in</span> video.mkv <span class="pre">-out</span> video.mkv.enc</tt>.</p>
+</div>
+</blockquote>
 <p><tt class="docutils literal"><span class="pre">null://</span></tt></p>
 <blockquote>
 Simulate an empty file. If opened for writing, it will discard all data.
