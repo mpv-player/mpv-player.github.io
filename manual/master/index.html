@@ -10632,11 +10632,12 @@ and setting <tt class="docutils literal"><span class="pre">--drm-draw-surface-si
 lower resolution (the video when handled by the hwdec will be on the
 drmprime-video plane and at full 4K resolution)</p>
 </dd>
-<dt><tt class="docutils literal"><span class="pre">--drm-format=&lt;xrgb8888|xbgr8888|xrgb2101010|xbgr2101010|yuyv&gt;</span></tt></dt>
+<dt><tt class="docutils literal"><span class="pre">--drm-format=&lt;xrgb8888|xbgr8888|xrgb2101010|xbgr2101010|rgb565|yuyv&gt;</span></tt></dt>
 <dd><p class="first">Select the DRM format to use (default: xrgb8888). This allows you to
 choose the bit depth and color type of the DRM mode.</p>
 <p>xrgb8888 is your usual 24bpp packed RGB format with 8 bits of padding.
 xrgb2101010 is a 30bpp packed RGB format with 2 bits of padding.
+rgb565 is a 16bpp packed RGB format with reduced colour accuracy.
 yuyv is a 32bpp packed YUV 4:2:2 format. No planar formats are currently
 supported.</p>
 <p class="last">There are cases when xrgb2101010 will work with the <tt class="docutils literal">drm</tt> VO, but not
@@ -17653,7 +17654,8 @@ where it is not, it opens <tt class="docutils literal">context_menu.lua</tt>.</p
 <tt class="docutils literal">context_menu.lua</tt> can be disabled entirely using the
 <tt class="docutils literal"><span class="pre">--load-context-menu=no</span></tt> option. On platforms where the integration is
 implemented, it is already disabled by default, and <tt class="docutils literal"><span class="pre">--load-context-menu=yes</span></tt>
-will make <tt class="docutils literal">select.lua</tt> use it.</p>
+will make <tt class="docutils literal">select.lua</tt> use it. It is also loaded when <tt class="docutils literal"><span class="pre">--d3d11-exclusive-fs</span></tt>
+is enabled, and <tt class="docutils literal">select.lua</tt> uses it in exclusive fullscreen.</p>
 </div>
 <div class="section" id="script-messages">
 <h2>Script messages</h2>
