@@ -1547,6 +1547,14 @@ Equivalent ISO 639-1 two-letter and ISO 639-2 three-letter codes are treated
 the same. The first tag in the list that matches track's language in the file
 will be used. A track that matches more subtags will be preferred over one
 that matches fewer. See also <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
+<p>On a disc the list is also handed to the disc's own selection logic. A DVD
+register holds a single two-letter ISO 639-1 code, so only the first
+two-letter entry is used and longer ones are skipped. Blu-ray takes one
+three-letter code, picked by matching the whole list against the disc.
+Either way this only affects what the disc itself picks, mpv's own track
+selection always uses the whole list.</p>
+<p><tt class="docutils literal"><span class="pre">--slang</span></tt> additionally chooses the DVD menu language. Discs that carry
+only one menu language ignore it.</p>
 <p>This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 <div class="admonition admonition-examples last">
 <p class="first admonition-title">Examples</p>
@@ -5283,10 +5291,19 @@ of hardware/drivers/etc. happens to be.</p>
 <h2>Disc Devices</h2>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">--disc-menu=&lt;yes|no&gt;</span></tt></dt>
-<dd>When set, opening <tt class="docutils literal"><span class="pre">dvd://</span></tt> or <tt class="docutils literal"><span class="pre">bd://</span></tt> boots into the disc's interactive
+<dd><p class="first">When set, opening <tt class="docutils literal"><span class="pre">dvd://</span></tt> or <tt class="docutils literal"><span class="pre">bd://</span></tt> boots into the disc's interactive
 menu instead of automatically playing the longest title (default: <tt class="docutils literal">no</tt>).
-The menu can also be reached at any time via the synthetic &quot;Disc Menu&quot;
-entry in the editions/titles list, or with <tt class="docutils literal">discnav menu</tt> command.</dd>
+On DVD the disc's virtual machine runs either way, so the menu can be
+reached at any time via the synthetic &quot;Disc Menu&quot; entry in the
+editions/titles list, or with the <tt class="docutils literal">discnav menu</tt> command. A Blu-ray only
+has disc navigation when playback started in menu mode, so neither is
+available for a plain <tt class="docutils literal"><span class="pre">bd://</span></tt>.</p>
+<p class="last">Blu-ray discs whose menus are BD-J rather than HDMV additionally need a
+Java runtime and libbluray's BD-J jar (<tt class="docutils literal"><span class="pre">libbluray-j2se-&lt;version&gt;.jar</span></tt>).
+libbluray should be able to find them automatically, but their locations
+can also be overridden with the <tt class="docutils literal">JAVA_HOME</tt> and <tt class="docutils literal">LIBBLURAY_CP</tt>
+environment variables.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--cdda-device=&lt;path&gt;</span></tt></dt>
 <dd>Specify the CD device for CDDA playback. The default device path depends on
 the OS. See the <a class="reference internal" href="#optical-drives">OPTICAL DRIVES</a> section.</dd>
@@ -5323,6 +5340,33 @@ structure. The default device path depends on the OS. See the
 <p class="last"><tt class="docutils literal">mpv <span class="pre">bd://</span> <span class="pre">--bluray-device=/path/to/bd/</span></tt></p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--bluray-region=&lt;auto|a|b|c&gt;</span></tt></dt>
+<dd>Blu-ray player region code (default: auto). <tt class="docutils literal">auto</tt> leaves libbluray's
+own default in place, which is region B. Only matters for discs whose
+menus or BD-J code check the player region.</dd>
+<dt><tt class="docutils literal"><span class="pre">--bluray-uo-restriction=&lt;auto|disabled|relaxed|safe|compliant&gt;</span></tt></dt>
+<dd><p class="first">How strictly to enforce the disc's User Operation prohibition masks
+(default: auto, which leaves libbluray's default of <tt class="docutils literal">relaxed</tt> in place).</p>
+<p class="last">Discs use these masks to make warnings and trailers unskippable.
+<tt class="docutils literal">disabled</tt> executes every operation unconditionally and may break
+playback on some discs, <tt class="docutils literal">compliant</tt> obeys the disc fully, and the two
+values in between trade compliance for usability.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--bluray-min-title-length=&lt;seconds&gt;</span></tt></dt>
+<dd><p class="first">Ignore Blu-ray titles (playlists) shorter than this when building the
+title list (default: 0, list every title). Discs commonly carry a large
+number of very short playlists used only by the disc menus, and those show
+up as editions. Setting this to something like 180 hides them.</p>
+<p>If no title is long enough, the whole list is used instead, so that a disc
+is never left unplayable by this.</p>
+<p class="last">Note that the title list is what <tt class="docutils literal"><span class="pre">bd://&lt;N&gt;</span></tt> and <tt class="docutils literal"><span class="pre">--edition</span></tt> index
+into, so changing this renumbers them. <tt class="docutils literal"><span class="pre">bd://mpls/&lt;NNNNN&gt;</span></tt> is unaffected.
+The language preferences are also picked from the titles that survive the
+filter.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--bluray-key-file=&lt;path&gt;</span></tt></dt>
+<dd>Path to a <tt class="docutils literal">KEYDB.cfg</tt> unit key database, passed to libbluray for AACS
+decryption (default: unset, let libaacs use its own configured location).</dd>
 <dt><tt class="docutils literal"><span class="pre">--cdda-...</span></tt></dt>
 <dd>These options can be used to tune the CD Audio reading feature of mpv.</dd>
 <dt><tt class="docutils literal"><span class="pre">--cdda-speed=&lt;value&gt;</span></tt></dt>
@@ -5367,6 +5411,10 @@ multiples of 1385 kB/s, i.e. <tt class="docutils literal"><span class="pre">--dv
 <p class="last">You need write access to the DVD device to change the speed.</p>
 </div>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--dvd-region=&lt;auto|1-8&gt;</span></tt></dt>
+<dd>DVD player region code (default: auto). <tt class="docutils literal">auto</tt> claims whichever regions
+the disc itself allows, so region checks in the disc's own code pass.
+Naming a region claims exactly that one.</dd>
 <dt><tt class="docutils literal"><span class="pre">--dvd-angle=&lt;ID&gt;</span></tt></dt>
 <dd>Some DVDs contain scenes that can be viewed from multiple angles.
 This option tells mpv which angle to use (default: 1).</dd>
@@ -13651,8 +13699,17 @@ BD: HDMV top menu).</dd>
 <dt>popup</dt>
 <dd>Show / dismiss the Blu-ray popup menu. For DVDs, falls back to the
 chapter menu where available.</dd>
+<dt>audio-menu, sub-menu, angle-menu</dt>
+<dd>Jump to the disc's audio, subtitle or angle menu. DVD only, discs are
+not required to have them and nothing happens when they do not.</dd>
+<dt>up-menu</dt>
+<dd>Play the &quot;go up&quot; program chain the disc authored for the current
+position, which usually leads to a higher level menu. DVD only, and
+nothing happens when the disc did not author one.</dd>
 <dt>prev</dt>
 <dd>Return from a menu to playback, or to the previous menu domain.</dd>
+<dt>red, green, yellow, blue</dt>
+<dd>Send a colored remote key. Blu-ray only.</dd>
 <dt>mouse-move</dt>
 <dd>Forward a mouse position to the disc, so it can update the focused
 button under the cursor. With no <tt class="docutils literal">&lt;x&gt; &lt;y&gt;</tt> arguments, the position
