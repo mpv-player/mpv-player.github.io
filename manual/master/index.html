@@ -1586,9 +1586,10 @@ Portuguese subtitles if available, and otherwise any Portuguese subtitles.</li>
 <p class="last">This is a string list option. See <a class="reference internal" href="#list-options">List Options</a> for details.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--aid=&lt;ID|auto|no&gt;</span></tt></dt>
-<dd><p class="first">Select audio track. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables audio.
-See also <tt class="docutils literal"><span class="pre">--alang</span></tt>. mpv normally prints available audio tracks on the
-terminal when starting playback of a file.</p>
+<dd><p class="first">Select audio track. <tt class="docutils literal">auto</tt> selects the default, or the next best track
+if the default fails to initialize. <tt class="docutils literal">no</tt> disables audio. See also
+<tt class="docutils literal"><span class="pre">--alang</span></tt>. mpv normally prints available audio tracks on the terminal
+when starting playback of a file.</p>
 <p><tt class="docutils literal"><span class="pre">--audio</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--aid</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">--aid=no</span></tt> or <tt class="docutils literal"><span class="pre">--audio=no</span></tt> disables audio playback.</p>
 <div class="admonition note last">
@@ -1634,12 +1635,14 @@ This is because runtime selection enables the fingerprint heuristic.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--sid=&lt;ID|auto|no&gt;</span></tt></dt>
 <dd><p class="first">Display the subtitle stream specified by <tt class="docutils literal">&lt;ID&gt;</tt>. <tt class="docutils literal">auto</tt> selects
-the default, <tt class="docutils literal">no</tt> disables subtitles.</p>
+the default, or the next best stream if the default fails to initialize.
+<tt class="docutils literal">no</tt> disables subtitles.</p>
 <p><tt class="docutils literal"><span class="pre">--sub</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--sid</span></tt>.</p>
 <p class="last"><tt class="docutils literal"><span class="pre">--sid=no</span></tt> or <tt class="docutils literal"><span class="pre">--sub=no</span></tt> disables subtitle decoding.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--vid=&lt;ID|auto|no&gt;</span></tt></dt>
-<dd><p class="first">Select video channel. <tt class="docutils literal">auto</tt> selects the default, <tt class="docutils literal">no</tt> disables video.</p>
+<dd><p class="first">Select video channel. <tt class="docutils literal">auto</tt> selects the default, or the next best track
+if the default fails to initialize. <tt class="docutils literal">no</tt> disables video.</p>
 <p><tt class="docutils literal"><span class="pre">--video</span></tt> is an alias for <tt class="docutils literal"><span class="pre">--vid</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">--vid=no</span></tt> or <tt class="docutils literal"><span class="pre">--video=no</span></tt> disables video playback.</p>
 <p class="last">If video is disabled, mpv will try to download the audio only if media is
@@ -2061,7 +2064,8 @@ work with OGM or XML chapters directly.</p>
 <dd>Stop playback if either audio or video fails to initialize (default: no).
 With <tt class="docutils literal">no</tt>, playback will continue in video-only or audio-only mode if one
 of them fails. This doesn't affect playback of audio-only or video-only
-files.</dd>
+files. If the automatically selected track fails to initialize, the next
+best track is tried before this option takes effect.</dd>
 <dt><tt class="docutils literal"><span class="pre">--play-direction=&lt;forward|+|backward|-&gt;</span></tt></dt>
 <dd><p class="first">Control the playback direction (default: forward). Setting <tt class="docutils literal">backward</tt>
 will attempt to play the file in reverse direction, with decreasing
@@ -11282,7 +11286,8 @@ be selected automatically, using the following heuristics: If the
 corresponding primaries are used. Otherwise, if the video height is
 exactly 576 (PAL), BT.601-625 is used. If it's exactly 480 or 486 (NTSC),
 BT.601-525 is used. If the video resolution is anything else, BT.709 is
-used.</p>
+used. Untagged XYZ content is decoded into DCI-P3, or into BT.2020
+when its transfer is linear light.</p>
 <p>Available primaries are:</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -11304,7 +11309,7 @@ used.</p>
 </tr>
 <tr class="field"><th class="field-name">prophoto:</th><td class="field-body">ProPhoto RGB (ROMM)</td>
 </tr>
-<tr class="field"><th class="field-name">cie1931:</th><td class="field-body">CIE 1931 RGB, in RGB formats this marks XYZ data (ST 428-1)</td>
+<tr class="field"><th class="field-name">cie1931:</th><td class="field-body">CIE 1931 RGB</td>
 </tr>
 <tr class="field"><th class="field-name">dci-p3:</th><td class="field-body">DCI-P3 (Digital Cinema)</td>
 </tr>
@@ -18634,12 +18639,14 @@ then trailing non-whitespace text is tolerated by the function, and the
 trailing text is returned as 3rd return value. (The 3rd return value is
 always there, but with <tt class="docutils literal">trail</tt> set, no error is raised.)</p>
 </dd>
-<dt><tt class="docutils literal">utils.format_json(v)</tt></dt>
+<dt><tt class="docutils literal">utils.format_json(v [, pretty])</tt></dt>
 <dd><p class="first">Format the given Lua table (or value) as a JSON string and return it. On
 error, returns <tt class="docutils literal">nil, error</tt>. (Errors usually only happen on value types
 incompatible with JSON.)</p>
-<p class="last">The argument value uses similar conventions as <tt class="docutils literal">mp.set_property_native()</tt>
+<p>The argument value uses similar conventions as <tt class="docutils literal">mp.set_property_native()</tt>
 to distinguish empty objects and arrays.</p>
+<p class="last">If the <tt class="docutils literal">pretty</tt> parameter is <tt class="docutils literal">true</tt> (or any value equal to <tt class="docutils literal">true</tt>),
+then the output string is formatted and indented for human consumption.</p>
 </dd>
 <dt><tt class="docutils literal">utils.to_string(v)</tt></dt>
 <dd>Turn the given value into a string. Formats tables and their contents. This
