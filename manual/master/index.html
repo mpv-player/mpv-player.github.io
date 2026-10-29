@@ -8873,12 +8873,68 @@ Conceptually simpler than ST2094-40, and generally produces worse
 results.</dd>
 </dl>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-knee-adaptation=&lt;0.0..1.0&gt;</span></tt></dt>
+<dd><p class="first">Controls how strongly the knee point adapts to the source scene average
+brightness, relative to the target average in PQ space. A value of 1.0
+fully adapts the source average to the target average, while 0.0 disables
+adaptation. Defaults to 0.4.</p>
+<p class="last">Affects <tt class="docutils literal"><span class="pre">st2094-40</span></tt>, <tt class="docutils literal"><span class="pre">st2094-10</span></tt> and <tt class="docutils literal">spline</tt>.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-knee-minimum=&lt;0.0..0.5&gt;</span></tt></dt>
+<dd>Sets the minimum knee point as a fraction of the PQ luminance range.
+Limits how low the automatically determined knee point can be.
+Defaults to 0.1. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-knee-maximum=&lt;0.5..1.0&gt;</span></tt></dt>
+<dd>Sets the maximum knee point as a fraction of the PQ luminance range.
+Limits how high the automatically determined knee point can be.
+Defaults to 0.8. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-knee-default=&lt;0.0..1.0&gt;</span></tt></dt>
+<dd>Sets the fallback knee point used when source scene average brightness
+metadata is unavailable. Normally, the knee point is determined from
+the source scene average instead. The value should be between
+<tt class="docutils literal"><span class="pre">--tone-mapping-knee-minimum</span></tt> and <tt class="docutils literal"><span class="pre">--tone-mapping-knee-maximum</span></tt>.
+Defaults to 0.4. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-knee-offset=&lt;0.5..2.0&gt;</span></tt></dt>
+<dd>Sets the knee point offset for <tt class="docutils literal">bt.2390</tt>. The ITU-R specification
+defines 0.5 as the default, but libplacebo uses 1.0.
+Defaults to 1.0. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-slope-tuning=&lt;0.0..10.0&gt;</span></tt></dt>
+<dd>Controls how the slope of the <tt class="docutils literal">spline</tt> curve is adjusted based on
+the difference between source and target peaks. The tuning aims to
+preserve a slope closer to 1.0 for small differences and approach
+linear mapping for larger differences. Defaults to 1.5.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-slope-offset=&lt;0.0..1.0&gt;</span></tt></dt>
+<dd>Controls the slope adjustment of the <tt class="docutils literal">spline</tt> curve, together with
+<tt class="docutils literal"><span class="pre">--tone-mapping-slope-tuning</span></tt>. Defaults to 0.2.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-spline-contrast=&lt;0.0..1.5&gt;</span></tt></dt>
+<dd>Controls the contrast of the <tt class="docutils literal">spline</tt> curve. Higher values produce
+a steeper curve, preserving midtone contrast at the cost of shadow
+and highlight detail. Lower values produce a shallower curve,
+preserving highlights at the cost of midtone contrast. Values above
+1.0 can increase contrast beyond that of the source.
+Defaults to 0.5. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-reinhard-contrast=&lt;0.0..1.0&gt;</span></tt></dt>
+<dd>Sets the local contrast coefficient at the display peak for
+<tt class="docutils literal">reinhard</tt>. A value of 0.5 makes reference white approximately
+half as bright as when clipping. Defaults to 0.5.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-linear-knee=&lt;0.0..1.0&gt;</span></tt></dt>
+<dd>Sets the knee point for the legacy <tt class="docutils literal">mobius</tt> and <tt class="docutils literal">gamma</tt> curves,
+which operate on linear light. Defaults to 0.3.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--tone-mapping-exposure=&lt;0.0..10.0&gt;</span></tt></dt>
+<dd>Sets the linear exposure or gain applied by the <tt class="docutils literal">linear</tt> curve.
+Defaults to 1.0.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
 <dt><tt class="docutils literal"><span class="pre">--tone-mapping-param=&lt;value&gt;</span></tt></dt>
 <dd><p class="first">Set tone mapping parameters. By default, this is set to the special string
 <tt class="docutils literal">default</tt>, which maps to an algorithm-specific default value. Ignored if
 the tone mapping algorithm is not tunable. This affects the following tone
 mapping algorithms:</p>
-<dl class="last docutils">
+<dl class="docutils">
 <dt>clip</dt>
 <dd>Specifies an extra linear coefficient to multiply into the signal
 before clipping. Defaults to 1.0.</dd>
@@ -8905,6 +8961,8 @@ higher than the value from the original ITU-R specification (0.5).
 <dt>st2094-10</dt>
 <dd>Specifies the contrast (slope) at the knee point. Defaults to 1.0.</dd>
 </dl>
+<p class="last">This option only affects <tt class="docutils literal"><span class="pre">--vo=gpu</span></tt>. For <tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt>, use
+<tt class="docutils literal"><span class="pre">--tone-mapping-*</span></tt> options instead.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">--inverse-tone-mapping</span></tt></dt>
 <dd>If set, allows inverse tone mapping (expanding dynamic range). Can be used
@@ -9024,6 +9082,17 @@ obtain contrast information - a value of 2.0 corresponds to 2x downscaling.
 Users on low DPI displays (&lt;= 100) may want to lower this value, while
 users on very high DPI displays (&quot;retina&quot;) may want to increase it. (Only
 for <tt class="docutils literal"><span class="pre">vo=gpu-next</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">--hdr-mastering-clip=&lt;0.0..1.0&gt;</span></tt></dt>
+<dd>Controls soft clipping of source values above the mastering display's peak
+luminance when the mastering metadata is considered reliable. The effect
+fades out as the measured scene luminance exceeds the mastering peak.
+Defaults to 1.0. (<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
+<dt><tt class="docutils literal"><span class="pre">--hdr-film-strength=&lt;0.0..2.0&gt;</span></tt></dt>
+<dd>Controls the strength of the film-like response during tone mapping. Higher
+values whiten compressed highlights at the cost of saturation, while lower
+values preserve their original chromaticity. Values above 1.0 increase the
+effect further at the risk of clipping highlights. Defaults to 0.3.
+(<tt class="docutils literal"><span class="pre">--vo=gpu-next</span></tt> only)</dd>
 <dt><tt class="docutils literal"><span class="pre">--use-embedded-icc-profile</span></tt></dt>
 <dd>Load the embedded ICC profile contained in media files such as PNG images.
 (Default: yes). Note that this option only works when also using a display
