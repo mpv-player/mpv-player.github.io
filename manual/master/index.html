@@ -15771,8 +15771,12 @@ mpv video output is currently active. You may observe the <tt class="docutils li
 property to check if this is the case.</p>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">working-directory</span></tt></dt>
-<dd>The working directory of the mpv process. Can be useful for JSON IPC users,
-because the command line player usually works with relative paths.</dd>
+<dd><p class="first">The working directory of the mpv process. Can be useful for JSON IPC users,
+because the command line player usually works with relative paths.</p>
+<p class="last">On Unix-like systems, it is taken from the <tt class="docutils literal">PWD</tt> environment variable and
+keeps symbolic links. If <tt class="docutils literal">PWD</tt> is stale and does not refer to the current
+directory, the path with symbolic links resolved is used instead.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">current-watch-later-dir</span></tt></dt>
 <dd>The directory in which watch later config files are stored. This returns
 <tt class="docutils literal"><span class="pre">--watch-later-dir</span></tt>, or the default directory if <tt class="docutils literal"><span class="pre">--watch-later-dir</span></tt> has
