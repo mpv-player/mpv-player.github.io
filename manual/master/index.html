@@ -3364,7 +3364,7 @@ This can speed up video upload, and may help with large resolutions or
 slow hardware. This works only with the following VOs:</p>
 <blockquote>
 <ul class="simple">
-<li><tt class="docutils literal">gpu</tt>: requires at least OpenGL 4.4 or Vulkan.</li>
+<li><tt class="docutils literal"><span class="pre">gpu-next</span></tt>, <tt class="docutils literal">gpu</tt>: requires at least OpenGL 4.4 or Vulkan.</li>
 <li><tt class="docutils literal">libmpv</tt>: The libmpv render API has optional support.</li>
 </ul>
 </blockquote>
@@ -17093,6 +17093,9 @@ stats:</p>
 <tr><td>5</td>
 <td>Selected Tracks Info (scroll)</td>
 </tr>
+<tr><td>6</td>
+<td>Sync stats</td>
+</tr>
 <tr><td>0</td>
 <td>Internal stuff (scroll)</td>
 </tr>
@@ -17156,6 +17159,8 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dd>Default: 4</dd>
 <dt><tt class="docutils literal">key_page_5</tt></dt>
 <dd>Default: 5</dd>
+<dt><tt class="docutils literal">key_page_6</tt></dt>
+<dd>Default: 6</dd>
 <dt><tt class="docutils literal">key_page_0</tt></dt>
 <dd>Default: 0</dd>
 <dt><tt class="docutils literal">key_exit</tt></dt>
@@ -17179,6 +17184,11 @@ option. The configuration syntax is described in <a class="reference internal" h
 <dt><tt class="docutils literal">redraw_delay</tt></dt>
 <dd><p class="first">Default: 1</p>
 <p class="last">How long it takes to refresh the displayed stats in seconds (toggling).</p>
+</dd>
+<dt><tt class="docutils literal">sync_window</tt></dt>
+<dd><p class="first">Default: 5 (minimum: 1)</p>
+<p class="last">How many seconds the mean and the standard deviation of the sync values
+cover (toggling). The graphs of the sync page show the same time.</p>
 </dd>
 <dt><tt class="docutils literal">persistent_overlay</tt></dt>
 <dd><p class="first">Default: no</p>
@@ -17207,12 +17217,6 @@ scripts decide to print text at the same time.</p>
 <dd><p class="first">Default: no</p>
 <p class="last">Show graphs for performance data (page 2).</p>
 </dd>
-<dt><tt class="docutils literal">plot_vsync_ratio</tt></dt>
-<dd>Default: no</dd>
-<dt><tt class="docutils literal">plot_vsync_jitter</tt></dt>
-<dd><p class="first">Default: no</p>
-<p class="last">Show graphs for vsync and jitter values (page 1). Only when toggled.</p>
-</dd>
 <dt><tt class="docutils literal">plot_cache</tt></dt>
 <dd><p class="first">Default: yes</p>
 <p class="last">Show graphs for cache values (page 3). Only when toggled.</p>
@@ -17220,6 +17224,19 @@ scripts decide to print text at the same time.</p>
 <dt><tt class="docutils literal">plot_tonemapping_lut</tt></dt>
 <dd><p class="first">Default: no</p>
 <p class="last">Enable tone-mapping LUT visualization automatically. Only when toggled.</p>
+</dd>
+<dt><tt class="docutils literal">plot_sync_dashes</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Draw one dash per value in the graphs of the sync page instead of a line.</p>
+</dd>
+<dt><tt class="docutils literal">plot_sync_band</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Show the mean of each value on the sync page as a line in its graph, with a
+band of one standard deviation around it.</p>
+</dd>
+<dt><tt class="docutils literal">plot_sync_every_frame</tt></dt>
+<dd><p class="first">Default: no</p>
+<p class="last">Also redraw the sync page with every video frame. This takes more CPU time.</p>
 </dd>
 <dt><tt class="docutils literal">flush_graph_data</tt></dt>
 <dd><p class="first">Default: yes</p>
@@ -17324,6 +17341,18 @@ sequences can be disabled by adding <tt class="docutils literal">-</tt> before <
 <tt class="docutils literal"><span class="pre">--script-opt=stats-bindlist=-yes</span></tt>.</p>
 <p>Like with <tt class="docutils literal"><span class="pre">--input-test</span></tt>, the list includes bindings from <tt class="docutils literal">input.conf</tt> and
 from user scripts. Use <tt class="docutils literal"><span class="pre">--no-config</span></tt> to list only built-in bindings.</p>
+</div>
+<div class="section" id="sync-stats-page">
+<h3>Sync stats page</h3>
+<p>Shows the A/V difference and the presentation delay. With display sync it also
+shows the speed corrections of video and audio, the vsync ratio and the vsync
+jitter.</p>
+<p>When toggled, each value is shown as its mean over the last <tt class="docutils literal">sync_window</tt>
+seconds, followed by the standard deviation. Marks on the upper edge of a graph
+show the frames that were dropped (red), delayed (orange) or mistimed (yellow).
+The bars at its right end show the share of that time the value spent at each
+height.</p>
+<p>This page is always shown as with <tt class="docutils literal">persistent_overlay=yes</tt>.</p>
 </div>
 <div class="section" id="internal-stuff-page">
 <h3>Internal stuff page</h3>
