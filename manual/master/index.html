@@ -8195,6 +8195,21 @@ Quantizer (PQ) transfer function.</td>
 </table>
 <p class="last">macOS and cocoa-cb only.</p>
 </dd>
+<dt><tt class="docutils literal"><span class="pre">--cocoa-cb-renderer=&lt;renderer&gt;</span></tt></dt>
+<dd><p class="first">This sets the renderer used by libmpv when using cocoa-cb.</p>
+<p><tt class="docutils literal">&lt;renderer&gt;</tt> can be one of the following:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">gpu:</th><td class="field-body">The renderer of the gpu video output.</td>
+</tr>
+<tr class="field"><th class="field-name">gpu-next:</th><td class="field-body">The renderer of the gpu-next video output (default).</td>
+</tr>
+</tbody>
+</table>
+<p class="last">macOS and cocoa-cb only.</p>
+</dd>
 <dt><tt class="docutils literal"><span class="pre">--macos-title-bar-appearance=&lt;appearance&gt;</span></tt></dt>
 <dd><p class="first">Sets the appearance of the title bar (default: auto). Not all combinations
 of appearances and <tt class="docutils literal"><span class="pre">--macos-title-bar-material</span></tt> materials make sense or
@@ -10695,8 +10710,8 @@ takes the frame number padded with leading zeros as name.</p>
 is used like a normal VO within mpv (cocoa-cb). Otherwise useless in any
 other contexts.
 (See <tt class="docutils literal">&lt;mpv/render.h&gt;</tt>.)</p>
-<p class="last">This also supports many of the options the <tt class="docutils literal">gpu</tt> VO has, depending on the
-backend.</p>
+<p class="last">This also supports many of the options the <tt class="docutils literal"><span class="pre">gpu-next</span></tt> or the <tt class="docutils literal">gpu</tt> VO
+has, depending on the renderer and the backend the application selects.</p>
 </dd>
 <dt><tt class="docutils literal">drm</tt> (Direct Rendering Manager)</dt>
 <dd><p class="first">Video output driver using Kernel Mode Setting / Direct Rendering Manager.
