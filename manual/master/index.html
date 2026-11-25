@@ -4810,8 +4810,8 @@ fullscreen to based on the screen name from the video backend. The same
 caveats in the <tt class="docutils literal"><span class="pre">--fs-screen</span></tt> option also apply here. This option is
 ignored and does nothing if <tt class="docutils literal"><span class="pre">--fs-screen</span></tt> is explicitly set.</dd>
 <dt><tt class="docutils literal"><span class="pre">--keep-open=&lt;yes|no|always&gt;</span></tt></dt>
-<dd><p class="first">Do not terminate when playing or seeking beyond the end of the file, and
-there is no next file to be played (and <tt class="docutils literal"><span class="pre">--loop</span></tt> is not used).
+<dd><p class="first">Do not unload the current file when playing or seeking beyond the end of the
+file, and there is no next file to be played (and <tt class="docutils literal"><span class="pre">--loop</span></tt> is not used).
 Instead, pause the player. When trying to seek beyond end of the file, the
 player will attempt to seek to the last frame.</p>
 <p>Normally, this will act like <tt class="docutils literal">set pause yes</tt> on EOF, unless the
@@ -4821,11 +4821,11 @@ player will attempt to seek to the last frame.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">no:</th><td class="field-body">If the current file ends, go to the next file or terminate.
-(Default.)</td>
+<tr class="field"><th class="field-name">no:</th><td class="field-body">If the current file ends, go to the next file or unload the
+current file. (Default.)</td>
 </tr>
-<tr class="field"><th class="field-name">yes:</th><td class="field-body">Don't terminate if the current file is the last playlist entry.
-Equivalent to <tt class="docutils literal"><span class="pre">--keep-open</span></tt> without arguments.</td>
+<tr class="field"><th class="field-name">yes:</th><td class="field-body">Don't unload file if the current file is the last playlist
+entry. Equivalent to <tt class="docutils literal"><span class="pre">--keep-open</span></tt> without arguments.</td>
 </tr>
 <tr class="field"><th class="field-name">always:</th><td class="field-body">Like <tt class="docutils literal">yes</tt>, but also applies to files before the last playlist
 entry. This means playback will never automatically advance to
@@ -4838,8 +4838,10 @@ the next file.</td>
 <p>This option is not respected when using <tt class="docutils literal"><span class="pre">--frames</span></tt>. Explicitly
 skipping to the next file if the binding uses <tt class="docutils literal">force</tt> will terminate
 playback as well.</p>
-<p class="last">Also, if errors or unusual circumstances happen, the player can quit
+<p>Also, if errors or unusual circumstances happen, the player can quit
 anyway.</p>
+<p class="last">Whether the player enters idle mode or quits when the current file is
+unloaded is controlled by <tt class="docutils literal"><span class="pre">--idle</span></tt>.</p>
 </div>
 <p class="last"><tt class="docutils literal">yes</tt> doesn't pause if there is a next file in the playlist, or the
 playlist is looped. Approximately, this will pause when the player would
